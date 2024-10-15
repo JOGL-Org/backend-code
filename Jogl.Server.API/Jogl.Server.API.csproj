@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="cat.jpg" />
+    <None Remove="cat.png" />
+    <None Remove="cat_tn.png" />
+    <None Remove="Controllers\bots.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="cat_tn.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bots.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
+    <PackageReference Include="Polly.Extensions" Version="8.2.1" />
+    <PackageReference Include="Recaptcha.Verify.Net" Version="2.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.28.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Documents\Jogl.Server.Documents.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Events\Jogl.Server.Events.csproj" />
+    <ProjectReference Include="..\Jogl.Server.GitHub\Jogl.Server.GitHub.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Images\Jogl.Server.Images.csproj" />
+    <ProjectReference Include="..\Jogl.Server.LinkedIn\Jogl.Server.LinkedIn.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Orcid\Jogl.Server.Orcid.csproj" />
+    <ProjectReference Include="..\Jogl.Server.SemanticScholar\Jogl.Server.SemanticScholar.csproj" />
+    <ProjectReference Include="..\Jogl.Server.PubMed\Jogl.Server.PubMed.csproj" />
+    <ProjectReference Include="..\Jogl.Server.GoogleAuth\Jogl.Server.GoogleAuth.csproj" />
+    <ProjectReference Include="..\Jogl.Server.OpenAlex\Jogl.Server.OpenAlex.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Sockets\Jogl.Server.Sockets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Production.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.Staging.Production.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

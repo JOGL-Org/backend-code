@@ -1,0 +1,26 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "dev": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Environment": "Development"
+      }
+    },
+    "staging": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Environment": "Staging"
+      }
+    },
+    "prod": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Environment": "Production"
+      }
+    }
+  }
+}

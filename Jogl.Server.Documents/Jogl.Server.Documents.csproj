@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Syncfusion.XlsIORenderer.Net.Core" Version="26.1.39" />
+	  <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="26.1.39" />
+	  <PackageReference Include="Syncfusion.PresentationRenderer.Net.Core" Version="26.1.39" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
+  </ItemGroup>
+
+</Project>

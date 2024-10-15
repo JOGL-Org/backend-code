@@ -1,0 +1,25 @@
+{
+  "profiles": {
+    "dev": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "staging": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      }
+    },
+    "prod": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

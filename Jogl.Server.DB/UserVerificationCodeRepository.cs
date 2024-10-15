@@ -1,0 +1,27 @@
+﻿using Jogl.Server.Data;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
+
+namespace Jogl.Server.DB
+{
+    public class UserVerificationCodeRepository : BaseRepository<UserVerificationCode>, IUserVerificationCodeRepository
+    {
+        public UserVerificationCodeRepository(IConfiguration configuration) : base(configuration)
+        {
+        }
+
+        protected override string CollectionName => "userVerificationCodes";
+
+        public UserVerificationCode GetForCode(string code)
+        {
+            var coll = GetCollection<UserVerificationCode>();
+            return coll.Find(e => e.Code == code && !e.Deleted).FirstOrDefault();
+        }
+
+        protected override UpdateDefinition<UserVerificationCode> GetDefaultUpdateDefinition(UserVerificationCode updatedEntity)
+        {
+            return Builders<UserVerificationCode>.Update.Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
+                                                        .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId) .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
+        }
+    }
+}
