@@ -20,12 +20,33 @@ namespace Jogl.Server.GitHub
         {
             try
             {
-                var client = new RestClient($"{_configuration["GitHub:AccessTokenURL"]}");
+                var client = new RestClient($"https://github.com/login/oauth/access_token");
                 var request = new RestRequest("/");
                 request.AddParameter("application/x-www-form-urlencoded", $"grant_type=authorization_code&code={authorizationCode}&client_id={_configuration["GitHub:ClientId"]}&client_secret={_configuration["GitHub:ClientSecret"]}&redirect_uri={_configuration["GitHub:RedirectURL"]}", ParameterType.RequestBody);
 
                 var response = await client.ExecuteGetAsync<TokenInfo>(request);
                 return response.Data?.AccessToken;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return null;
+            }
+        }
+
+        public async Task<Repo> GetRepoAsync(string repo, string accessToken)
+        {
+            try
+            {
+                var client = new RestClient($"https://api.github.com/");
+                var request = new RestRequest($"repos/{repo}");
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+
+                var response = await client.ExecuteGetAsync<Repo>(request);
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                return response.Data;
             }
             catch (Exception ex)
             {

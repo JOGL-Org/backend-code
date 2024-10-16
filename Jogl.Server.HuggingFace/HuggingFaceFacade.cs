@@ -16,6 +16,23 @@ namespace Jogl.Server.HuggingFace
             _logger = logger;
         }
 
+        public async Task<Repo> GetRepoAsync(string repo)
+        {
+            try
+            {
+                var client = new RestClient($"https://huggingface.co/api/");
+                var request = new RestRequest($"models/{repo}");
+
+                var response = await client.ExecuteGetAsync<Repo>(request);
+                return response.Data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return null;
+            }
+        }
+
         public async Task<List<Discussion>> ListPRsAsync(string repo)
         {
             try

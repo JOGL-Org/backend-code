@@ -31,6 +31,7 @@ using Jogl.Server.ServiceBus;
 using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
 using Recaptcha.Verify.Net.Configuration;
+using Jogl.Server.HuggingFace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,6 +151,7 @@ builder.Services.AddTransient<IPubMedFacade, PubMedFacade>();
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
 builder.Services.AddTransient<IGitHubFacade, GitHubFacade>();
+builder.Services.AddTransient<IHuggingFaceFacade, HuggingFaceFacade>();
 builder.Services.AddTransient<IOpenAlexFacade, OpenAlexFacade>();
 
 //images

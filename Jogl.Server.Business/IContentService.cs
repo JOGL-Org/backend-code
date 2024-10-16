@@ -53,8 +53,11 @@ namespace Jogl.Server.Business
         Draft GetDraft(string entityId, string userId);
         Task SetDraftAsync(string entityId, string userId, string text);
 
+        Task<bool> ValidateFeedIntegrationAsync(FeedIntegration feedIntegration);
+        Task<string> ExchangeFeedIntegrationTokenAsync(FeedIntegrationType type, string authorizationCode);
         Task<string> CreateFeedIntegrationAsync(FeedIntegration feedIntegration);
         FeedIntegration GetFeedIntegration(string id);
+        FeedIntegration GetFeedIntegration(string feedId, FeedIntegrationType type, string sourceId);
         List<FeedIntegration> ListFeedIntegrations(string feedId, string search);
         Task DeleteIntegrationAsync(FeedIntegration feedIntegration);
     }

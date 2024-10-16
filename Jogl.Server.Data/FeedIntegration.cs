@@ -14,5 +14,7 @@ namespace Jogl.Server.Data
         public string SourceId { get; set; }
         
         public string SourceUrl { get; set; }
+        
+        public string? AccessToken { get; set; }
     }
 }

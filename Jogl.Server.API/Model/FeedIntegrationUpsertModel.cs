@@ -17,5 +17,7 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("source_url")]
         public string SourceUrl { get; set; }
 
+        [JsonPropertyName("access_token")]
+        public string? AccessToken { get; set; }
     }
 }

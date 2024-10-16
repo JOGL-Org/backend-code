@@ -848,15 +848,25 @@ namespace Jogl.Server.API.Controllers
         [Route("{feedId}/integrations")]
         [SwaggerOperation($"Adds a feed integration to the specified feed")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to add integrations to the feed")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The feed integration was created")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, $"The operation failed validation; this may be because the source id does not exist, or it's private and the access token needs to be supplied")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, $"The integration already exists for the feed")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The feed integration id", typeof(string))]
         public async Task<IActionResult> AddIntegration([FromRoute] string feedId, [FromBody] FeedIntegrationUpsertModel model)
         {
             if (!_communityEntityService.HasPermission(feedId, Permission.Manage, CurrentUserId))
                 return Forbid();
 
+            var existingIntegration = _contentService.GetFeedIntegration(feedId, model.Type, model.SourceId);
+            if (existingIntegration != null)
+                return Conflict();
+
             var integration = _mapper.Map<FeedIntegration>(model);
             integration.FeedId = feedId;
             await InitCreationAsync(integration);
+            var res = await _contentService.ValidateFeedIntegrationAsync(integration);
+            if (!res)
+                return NotFound();
+
             var id = await _contentService.CreateFeedIntegrationAsync(integration);
             return Ok(id);
         }
@@ -874,6 +884,20 @@ namespace Jogl.Server.API.Controllers
             var data = _contentService.ListFeedIntegrations(feedId, model.Search);
             var models = data.Select(f => _mapper.Map<FeedIntegrationModel>(f));
             return Ok(models);
+        }
+
+        [HttpPost]
+        [Route("integrations/token")]
+        [SwaggerOperation($"Exchanges an authorization code for an access token")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The operation failed")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The access token", typeof(string))]
+        public async Task<IActionResult> ExchangeFeedIntegrationToken([FromBody] FeedIntegrationTokenModel model)
+        {
+            var token = await _contentService.ExchangeFeedIntegrationTokenAsync(model.Type, model.AuthorizationCode);
+            if (string.IsNullOrEmpty(token))
+                return NotFound();
+
+            return Ok(token);
         }
 
         [HttpDelete]

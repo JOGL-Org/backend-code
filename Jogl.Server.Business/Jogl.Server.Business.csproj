@@ -18,6 +18,8 @@
     <ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
     <ProjectReference Include="..\Jogl.Server.Events\Jogl.Server.Events.csproj" />
+    <ProjectReference Include="..\Jogl.Server.GitHub\Jogl.Server.GitHub.csproj" />
+    <ProjectReference Include="..\Jogl.Server.HuggingFace\Jogl.Server.HuggingFace.csproj" />
     <ProjectReference Include="..\Jogl.Server.Notifications\Jogl.Server.Notifications.csproj" />
     <ProjectReference Include="..\Jogl.Server.Sockets\Jogl.Server.Sockets.csproj" />
     <ProjectReference Include="..\Jogl.Server.Storage\Jogl.Server.Storage.csproj" />
