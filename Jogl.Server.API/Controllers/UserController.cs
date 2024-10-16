@@ -165,14 +165,14 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [Route("{id}/portfolio")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Portfolio data", typeof(List<PortfolioModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Portfolio data", typeof(List<PortfolioItemModel>))]
         public async Task<IActionResult> GetPortfolio([FromRoute] string id, [FromQuery] SearchModel model)
         {
             var user = _userService.Get(id);
             if (user == null)
                 return NotFound();
 
-            var data = _documentService.ListPortfolioForUser(CurrentUserId, id, model.Search, model.Page, model.Page, model.SortKey, model.SortAscending);
+            var data = _documentService.ListPortfolioForUser(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var models = data.Select(d => _mapper.Map<PortfolioItemModel>(d));
             return Ok(models);
         }
