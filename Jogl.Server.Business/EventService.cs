@@ -367,7 +367,7 @@ namespace Jogl.Server.Business
                 .OrderByDescending(ea => ea.AccessLevel)
                 .ThenByDescending(ea => ea.Labels?.FirstOrDefault())
                 .ThenBy(ea => GetStatusOrder(ea.Status))
-                .ThenBy(ea => ea.User?.LastName ?? ea.UserEmail)
+                .ThenBy(ea => ea.User?.FullName ?? ea.UserEmail)
                 .ToList();
         }
 
