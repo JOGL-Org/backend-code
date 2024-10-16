@@ -363,7 +363,24 @@ namespace Jogl.Server.Business
             !a.Deleted);
             EnrichEventAttendanceData(attendances);
 
-            return GetFilteredAttendances(attendances, search, page, pageSize);
+            return GetFilteredAttendances(attendances, search, page, pageSize)
+                .OrderByDescending(ea => ea.AccessLevel)
+                .ThenBy(ea => ea.Labels?.FirstOrDefault())
+                .ThenBy(ea => GetStatusOrder(ea.Status))
+                .ToList();
+        }
+
+        private int GetStatusOrder(AttendanceStatus status)
+        {
+            switch (status)
+            {
+                case AttendanceStatus.Yes:
+                    return 0;
+                case AttendanceStatus.Pending:
+                    return 1;
+                default:
+                    return 2;
+            }
         }
 
         public long CountOrganizers(string eventId)
