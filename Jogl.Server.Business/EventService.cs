@@ -365,8 +365,9 @@ namespace Jogl.Server.Business
 
             return GetFilteredAttendances(attendances, search, page, pageSize)
                 .OrderByDescending(ea => ea.AccessLevel)
-                .ThenBy(ea => ea.Labels?.FirstOrDefault())
+                .ThenByDescending(ea => ea.Labels?.FirstOrDefault())
                 .ThenBy(ea => GetStatusOrder(ea.Status))
+                .ThenBy(ea => ea.User?.LastName ?? ea.UserEmail)
                 .ToList();
         }
 
