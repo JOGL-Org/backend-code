@@ -77,7 +77,7 @@ namespace Jogl.Server.GitHub
         {
             try
             {
-                var client = new RestClient($"{_configuration["GitHub:InfoURL"]}");
+                var client = new RestClient($"https://api.github.com/user");
                 var request = new RestRequest("/");
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
 
