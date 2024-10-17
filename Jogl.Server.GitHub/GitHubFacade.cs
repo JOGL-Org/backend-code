@@ -40,7 +40,8 @@ namespace Jogl.Server.GitHub
             {
                 var client = new RestClient($"https://api.github.com/");
                 var request = new RestRequest($"repos/{repo}");
-                request.AddHeader("Authorization", $"Bearer {accessToken}");
+                if (!string.IsNullOrEmpty(accessToken))
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
 
                 var response = await client.ExecuteGetAsync<Repo>(request);
                 if (!response.IsSuccessStatusCode)
