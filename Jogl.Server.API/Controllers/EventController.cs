@@ -551,7 +551,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No attendance was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to manage access level for the event")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The access level was set")]
-        public async Task<IActionResult> SetAttendanceAccessLevel([FromRoute] string attendanceId, [FromBody] AttendanceAccessLevel level)
+        public async Task<IActionResult> SetAttendanceAccessLevel([FromRoute] string attendanceId, [FromBody] EventAttendanceAccessLevelModel model)
         {
             var a = _eventService.GetAttendance(attendanceId);
             if (a == null)
@@ -564,7 +564,7 @@ namespace Jogl.Server.API.Controllers
             if (!ev.Permissions.Contains(Permission.Manage))
                 return Forbid();
 
-            a.AccessLevel = level;
+            a.AccessLevel = model.AccessLevel;
             await InitUpdateAsync(a);
             await _eventService.UpdateAsync(a);
             return Ok();
