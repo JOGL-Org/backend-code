@@ -26,5 +26,11 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; set; }
+
+        [JsonPropertyName("publication_date")]
+        public string PublicationDate { get; set; }
+
+        [JsonPropertyName("keywords")]
+        public List<string>? Keywords { get; set; }
     }
 }
