@@ -31,7 +31,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         }
 
         [Function("ARXIV-publication-monitor")]
-        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 6 * * *")] TimerInfo myTimer)
         {
             //load new papers from arxiv
             var entries = await _arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
