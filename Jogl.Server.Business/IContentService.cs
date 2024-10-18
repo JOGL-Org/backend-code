@@ -55,6 +55,7 @@ namespace Jogl.Server.Business
 
         Task<bool> ValidateFeedIntegrationAsync(FeedIntegration feedIntegration);
         Task<string> ExchangeFeedIntegrationTokenAsync(FeedIntegrationType type, string authorizationCode);
+        List<string> ListFeedIntegrationOptions(FeedIntegrationType feedIntegrationType);
         Task<string> CreateFeedIntegrationAsync(FeedIntegration feedIntegration);
         FeedIntegration GetFeedIntegration(string id);
         FeedIntegration GetFeedIntegration(string feedId, FeedIntegrationType type, string sourceId);

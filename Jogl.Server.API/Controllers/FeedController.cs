@@ -900,6 +900,16 @@ namespace Jogl.Server.API.Controllers
             return Ok(token);
         }
 
+        [HttpGet]
+        [Route("integrations/options/{feedIntegrationType}")]
+        [SwaggerOperation($"Lists feed integration options for a specific feed integration type")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The options", typeof(List<string>))]
+        public async Task<IActionResult> ListFeedIntegrationOptions([FromRoute] FeedIntegrationType feedIntegrationType)
+        {
+            var data = _contentService.ListFeedIntegrationOptions(feedIntegrationType);
+            return Ok(data);
+        }
+
         [HttpDelete]
         [Route("integrations/{id}")]
         [SwaggerOperation($"Removes a feed integration")]

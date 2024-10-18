@@ -1485,7 +1485,22 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.GitHub:
                     return await _githubFacade.GetAccessTokenAsync(authorizationCode);
                 case FeedIntegrationType.HuggingFace:
+                case FeedIntegrationType.Arxiv:
                     return null;
+                default:
+                    throw new Exception($"Unable to exchange feed integration token for type {type}");
+            }
+        }
+
+        public List<string> ListFeedIntegrationOptions(FeedIntegrationType feedIntegrationType)
+        {
+            switch (feedIntegrationType)
+            {
+                case FeedIntegrationType.GitHub:
+                case FeedIntegrationType.HuggingFace:
+                    return new List<string>();
+                case FeedIntegrationType.Arxiv:
+                    return _arxivFacade.ListCategories();
                 default:
                     throw new Exception($"Unable to exchange feed integration token for type {type}");
             }
