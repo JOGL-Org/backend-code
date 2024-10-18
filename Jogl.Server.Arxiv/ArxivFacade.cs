@@ -56,7 +56,7 @@ namespace Jogl.Server.Arxiv
 
         public List<string> ListCategories()
         {
-            return File.ReadAllLines("archiv_categories.txt").ToList();
+            return Resources.archiv_categories.Split(Environment.NewLine).ToList();
         }
 
     }

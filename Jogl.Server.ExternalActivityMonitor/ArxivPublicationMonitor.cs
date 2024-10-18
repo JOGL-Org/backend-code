@@ -6,6 +6,7 @@ using Jogl.Server.GitHub.DTO;
 using Jogl.Server.Orcid;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
+using static System.Net.WebRequestMethods;
 
 namespace Jogl.Server.ExternalActivityMonitor
 {
@@ -31,7 +32,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         }
 
         [Function("ARXIV-publication-monitor")]
-        public async Task Run([TimerTrigger("0 0 6 * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
         {
             //load new papers from arxiv
             var entries = await _arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
@@ -106,18 +107,11 @@ namespace Jogl.Server.ExternalActivityMonitor
                 Status = ContentEntityStatus.Active,
                 Overrides = new ContentEntityOverrides
                 {
+                    UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/arxiv-logomark-small.svg",
                     UserName = $"Arxiv.org",
                     UserURL = publication.ExternalURL
                 }
             };
         }
-
     }
-
-
-
-
-
-
-
 }

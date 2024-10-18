@@ -900,6 +900,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(token);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("integrations/options/{feedIntegrationType}")]
         [SwaggerOperation($"Lists feed integration options for a specific feed integration type")]
