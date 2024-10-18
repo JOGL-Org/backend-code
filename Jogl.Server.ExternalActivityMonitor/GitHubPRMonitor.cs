@@ -3,14 +3,14 @@ using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.GitHub;
 using Jogl.Server.GitHub.DTO;
-using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 
 namespace Jogl.Server.Mailer
 {
-    public class GitHub : Base<PullRequest>
+    public class GitHubPRMonitor : BasePRMonitor<PullRequest>
     {
         private readonly IGitHubFacade _githubFacade;
         private readonly IContentService _contentService;
@@ -20,16 +20,16 @@ namespace Jogl.Server.Mailer
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
-        public GitHub(IGitHubFacade githubFacade, IContentService contentService, IFeedEntityService feedEntityService, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration, ILoggerFactory loggerFactory) : base(contentService, feedEntityService, contentEntityRepository, feedIntegrationRepository, configuration)
+        public GitHubPRMonitor(IGitHubFacade githubFacade, IContentService contentService, IFeedEntityService feedEntityService, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration, ILoggerFactory loggerFactory) : base(contentService, feedEntityService, contentEntityRepository, feedIntegrationRepository, configuration)
         {
             _githubFacade = githubFacade;
-            _logger = loggerFactory.CreateLogger<GitHub>();
+            _logger = loggerFactory.CreateLogger<GitHubPRMonitor>();
         }
 
         protected override FeedIntegrationType Type => FeedIntegrationType.GitHub;
 
-        [Function("GitHub")]
-        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
+        [Function("GitHub-PR-monitor")]
+        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
         {
             await RunPRs();
         }
@@ -60,9 +60,9 @@ namespace Jogl.Server.Mailer
             return pr.Id.ToString();
         }
 
-        protected async override Task<List<PullRequest>> ListPRsAsync(string sourceId)
+        protected async override Task<List<PullRequest>> ListPRsAsync(FeedIntegration integration)
         {
-            return await _githubFacade.ListPRsAsync(sourceId);
+            return await _githubFacade.ListPRsAsync(integration.SourceId, integration.AccessToken);
         }
     }
 }

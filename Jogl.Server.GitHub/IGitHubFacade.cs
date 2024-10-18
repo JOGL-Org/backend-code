@@ -6,7 +6,7 @@ namespace Jogl.Server.GitHub
     {
         Task<string> GetAccessTokenAsync(string authorizationCode);
         Task<UserInfo> GetUserInfoAsync(string accessToken);
-        Task<List<PullRequest>> ListPRsAsync(string repo);
+        Task<List<PullRequest>> ListPRsAsync(string repo, string accessToken);
         Task<Repo> GetRepoAsync(string repo, string accessToken);
     }
 }

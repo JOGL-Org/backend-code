@@ -2,14 +2,14 @@ using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.HuggingFace;
-using Jogl.Server.HuggingFace.DTO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Discussion = Jogl.Server.HuggingFace.DTO.Discussion;
 
 namespace Jogl.Server.Mailer
 {
-    public class HuggingFace : Base<Jogl.Server.HuggingFace.DTO.Discussion>
+    public class HuggingFacePRMonitor : BasePRMonitor<Discussion>
     {
         private readonly IHuggingFaceFacade _huggingfaceFacade;
         private readonly IContentService _contentService;
@@ -19,21 +19,21 @@ namespace Jogl.Server.Mailer
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
-        public HuggingFace(IHuggingFaceFacade huggingfaceFacade, IContentService contentService, IFeedEntityService feedEntityService, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration, ILoggerFactory loggerFactory) : base(contentService, feedEntityService, contentEntityRepository, feedIntegrationRepository, configuration)
+        public HuggingFacePRMonitor(IHuggingFaceFacade huggingfaceFacade, IContentService contentService, IFeedEntityService feedEntityService, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration, ILoggerFactory loggerFactory) : base(contentService, feedEntityService, contentEntityRepository, feedIntegrationRepository, configuration)
         {
             _huggingfaceFacade = huggingfaceFacade;
-            _logger = loggerFactory.CreateLogger<HuggingFace>();
+            _logger = loggerFactory.CreateLogger<HuggingFacePRMonitor>();
         }
 
         protected override FeedIntegrationType Type => FeedIntegrationType.HuggingFace;
 
-        [Function("HuggingFace")]
-        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
+        [Function("HuggingFace-PR-monitor")]
+        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
         {
             await RunPRs();
         }
 
-        protected override ContentEntity GenerateContentEntity(Jogl.Server.HuggingFace.DTO.Discussion pr, FeedIntegration integration)
+        protected override ContentEntity GenerateContentEntity(Discussion pr, FeedIntegration integration)
         {
             return new ContentEntity
             {
@@ -54,14 +54,14 @@ namespace Jogl.Server.Mailer
             };
         }
 
-        protected override string GetExternalId(Jogl.Server.HuggingFace.DTO.Discussion pr)
+        protected override string GetExternalId(Discussion pr)
         {
             return pr.Num.ToString();
         }
 
-        protected async override Task<List<Jogl.Server.HuggingFace.DTO.Discussion>> ListPRsAsync(string sourceId)
+        protected async override Task<List<Discussion>> ListPRsAsync(FeedIntegration integration)
         {
-            return await _huggingfaceFacade.ListPRsAsync(sourceId);
+            return await _huggingfaceFacade.ListPRsAsync(integration.SourceId);
         }
     }
 }

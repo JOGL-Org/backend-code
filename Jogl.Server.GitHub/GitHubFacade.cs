@@ -56,13 +56,14 @@ namespace Jogl.Server.GitHub
             }
         }
 
-        public async Task<List<PullRequest>> ListPRsAsync(string repo)
+        public async Task<List<PullRequest>> ListPRsAsync(string repo, string accessToken)
         {
             try
             {
                 var client = new RestClient($"https://api.github.com/");
                 var request = new RestRequest($"repos/{repo}/pulls?sort=created");
-                //request.AddHeader("Authorization", $"Bearer {accessToken}");
+                if (!string.IsNullOrEmpty(accessToken))
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
 
                 var response = await client.ExecuteGetAsync<List<PullRequest>>(request);
                 return response.Data;

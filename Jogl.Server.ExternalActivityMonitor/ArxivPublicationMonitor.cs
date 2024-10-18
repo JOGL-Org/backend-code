@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jogl.Server.ExternalActivityMonitor
 {
-    public class Arxiv
+    public class ArxivPublicationMonitor
     {
         private readonly IArxivFacade _arxivFacade;
         private readonly IContentService _contentService;
@@ -19,7 +19,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         private readonly IFeedIntegrationRepository _feedIntegrationRepository;
         private readonly IConfiguration _configuration;
 
-        public Arxiv(IArxivFacade arxivFacade, IContentService contentService, IFeedEntityService feedEntityService, IPublicationRepository publicationRepository, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration)
+        public ArxivPublicationMonitor(IArxivFacade arxivFacade, IContentService contentService, IFeedEntityService feedEntityService, IPublicationRepository publicationRepository, IContentEntityRepository contentEntityRepository, IFeedIntegrationRepository feedIntegrationRepository, IConfiguration configuration)
         {
             _arxivFacade = arxivFacade;
             _contentService = contentService;
@@ -30,7 +30,7 @@ namespace Jogl.Server.ExternalActivityMonitor
             _configuration = configuration;
         }
 
-        [Function("ARXIV-publication-rss")]
+        [Function("ARXIV-publication-monitor")]
         public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
         {
             //load new papers from arxiv
