@@ -1502,7 +1502,7 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.Arxiv:
                     return _arxivFacade.ListCategories();
                 default:
-                    throw new Exception($"Unable to exchange feed integration token for type {type}");
+                    throw new Exception($"Unable to exchange feed integration token for type {feedIntegrationType}");
             }
         }
 
