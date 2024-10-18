@@ -18,19 +18,14 @@ namespace Jogl.Server.HuggingFace
 
         public async Task<Repo> GetRepoAsync(string repo)
         {
-            try
-            {
-                var client = new RestClient($"https://huggingface.co/api/");
-                var request = new RestRequest($"models/{repo}");
+            var client = new RestClient($"https://huggingface.co/api/");
+            var request = new RestRequest($"{repo}");
 
-                var response = await client.ExecuteGetAsync<Repo>(request);
-                return response.Data;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
+            var response = await client.ExecuteGetAsync<Repo>(request);
+            if (!response.IsSuccessStatusCode)
                 return null;
-            }
+
+            return response.Data;
         }
 
         public async Task<List<Discussion>> ListPRsAsync(string repo)
@@ -38,10 +33,11 @@ namespace Jogl.Server.HuggingFace
             try
             {
                 var client = new RestClient($"https://huggingface.co/api/");
-                var request = new RestRequest($"models/{repo}/discussions?status=open&type=pull_request");
-                //request.AddHeader("Authorization", $"Bearer {accessToken}");
-
+                var request = new RestRequest($"{repo}/discussions?status=open&type=pull_request");
                 var response = await client.ExecuteGetAsync<DiscussionResponse>(request);
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
                 return response.Data.Discussions;
             }
             catch (Exception ex)
