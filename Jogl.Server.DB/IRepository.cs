@@ -38,6 +38,7 @@ namespace Jogl.Server.DB
         Dictionary<string, long> Counts(Expression<Func<T, bool>> filter, Expression<Func<T, string>> groupBy);
         Task UpdateAsync(T entity);
         Task UpdateAsync(List<T> entities);
+        Task UpsertAsync(T entity, Expression<Func<T, object>> key);
         Task UpdateLastActivityAsync(string id, DateTime lastActivityUTC, string updatedByUserId);
         Task UpdateLastActivityAsync(Entity entity);
         Task DeleteAsync(string entityId);

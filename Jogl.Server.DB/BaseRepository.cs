@@ -17,7 +17,8 @@ namespace Jogl.Server.DB
         protected abstract string CollectionName { get; }
         protected Collation DefaultCollation { get { return new Collation("en", strength: CollationStrength.Primary); } }
 
-        protected abstract UpdateDefinition<T> GetDefaultUpdateDefinition(T updatedEntity);
+        protected virtual UpdateDefinition<T> GetDefaultUpdateDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default update definition");
+        protected virtual UpdateDefinition<T> GetDefaultUpsertDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default upsert definition");
 
         protected virtual Expression<Func<T, object>> GetSort(SortKey key)
         {
@@ -377,6 +378,16 @@ namespace Jogl.Server.DB
         protected async Task UpdateAsync(T entity, UpdateDefinition<T> updateDefinition)
         {
             await UpdateAsync(entity.Id.ToString(), updateDefinition);
+        }
+
+        public async Task UpsertAsync(T entity, Expression<Func<T, object>> key)
+        {
+            var coll = GetCollection<T>();
+
+            var filter = Builders<T>.Filter.Eq(key, key.Compile().Invoke(entity));
+            var update = GetDefaultUpsertDefinition(entity);
+
+            await UpsertAsync(filter, update);
         }
 
         protected async Task UpdateAsync(string id, UpdateDefinition<T> updateDefinition)

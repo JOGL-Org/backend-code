@@ -32,6 +32,7 @@ using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
 using Recaptcha.Verify.Net.Configuration;
 using Jogl.Server.HuggingFace;
+using Jogl.Server.Arxiv;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -142,6 +143,7 @@ builder.Services.AddTransient<IEventAttendanceRepository, EventAttendanceReposit
 builder.Services.AddTransient<IWaitlistRecordRepository, WaitlistRecordRepository>();
 builder.Services.AddTransient<IPushNotificationTokenRepository, PushNotificationTokenRepository>();
 builder.Services.AddTransient<IFeedIntegrationRepository, FeedIntegrationRepository>();
+builder.Services.AddTransient<IPublicationRepository, PublicationRepository>();
 builder.Services.AddTransient<IInitializer, Initializer>();
 builder.Services.AddInitializers();
 
@@ -151,6 +153,7 @@ builder.Services.AddTransient<IPubMedFacade, PubMedFacade>();
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
 builder.Services.AddTransient<IGitHubFacade, GitHubFacade>();
+builder.Services.AddTransient<IArxivFacade, ArxivFacade>();
 builder.Services.AddTransient<IHuggingFaceFacade, HuggingFaceFacade>();
 builder.Services.AddTransient<IOpenAlexFacade, OpenAlexFacade>();
 

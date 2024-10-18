@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.Data
 {
-    public enum FeedIntegrationType { GitHub, HuggingFace }
+    public enum FeedIntegrationType { GitHub, HuggingFace, Arxiv }
 
     [BsonIgnoreExtraElements]
     public class FeedIntegration : Entity

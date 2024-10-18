@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data;
+﻿using Jogl.Server.Arxiv;
+using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
@@ -18,6 +19,7 @@ namespace Jogl.Server.Business
     {
         private readonly IGitHubFacade _githubFacade;
         private readonly IHuggingFaceFacade _huggingfaceFacade;
+        private readonly IArxivFacade _arxivFacade;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly ICallForProposalRepository _callForProposalRepository;
         private readonly INodeRepository _nodeRepository;
@@ -36,10 +38,11 @@ namespace Jogl.Server.Business
         private const string MENTION_REGEX = @"<span class=""mention"" data-index=""[0-9]"" data-denotation-char=""[\S]"" data-value=""(?:[^""]+)"" data-link=""\/?([^""]+)\/([^""]+)""";
         private const string MENTION_REGEX_2 = @"data-type=\""mention\"" data-id=\""([^""]+)\"" data-label=\""([^""]+)\""";
 
-        public ContentService(IGitHubFacade githubFacade, IHuggingFaceFacade huggingfaceFacade, IOrganizationRepository organizationRepository, ICallForProposalRepository callForProposalRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, IDraftRepository draftRepository, IFeedIntegrationRepository feedIntegrationRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IStorageService storageService, IEmailService emailService, IUrlService urlService, INotificationFacade notificationFacade, IConfiguration configuration, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public ContentService(IGitHubFacade githubFacade, IHuggingFaceFacade huggingfaceFacade, IArxivFacade arxivFacade, IOrganizationRepository organizationRepository, ICallForProposalRepository callForProposalRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, IDraftRepository draftRepository, IFeedIntegrationRepository feedIntegrationRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IStorageService storageService, IEmailService emailService, IUrlService urlService, INotificationFacade notificationFacade, IConfiguration configuration, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _githubFacade = githubFacade;
             _huggingfaceFacade = huggingfaceFacade;
+            _arxivFacade = arxivFacade;
             _organizationRepository = organizationRepository;
             _callForProposalRepository = callForProposalRepository;
             _nodeRepository = nodeRepository;
@@ -1467,6 +1470,9 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.HuggingFace:
                     var hfRepo = await _huggingfaceFacade.GetRepoAsync(feedIntegration.SourceId);
                     return hfRepo != null;
+                case FeedIntegrationType.Arxiv:
+                    var categories = _arxivFacade.ListCategories();
+                    return categories.Contains(feedIntegration.SourceId);
                 default:
                     throw new Exception($"Unable to validate feed integration for type {feedIntegration.Type}");
             }

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj" />
     <ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
     <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
     <ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />

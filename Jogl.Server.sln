@@ -69,7 +69,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.ExternalActivit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.HuggingFace", "Jogl.Server.HuggingFace\Jogl.Server.HuggingFace.csproj", "{1876A689-5556-43C7-A0D1-E76FAD0ED8A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Configuration", "Jogl.Server.Configuration\Jogl.Server.Configuration.csproj", "{94696CB8-3E5D-4DDB-B256-725BF3F71487}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Configuration", "Jogl.Server.Configuration\Jogl.Server.Configuration.csproj", "{94696CB8-3E5D-4DDB-B256-725BF3F71487}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Loader.Arxiv", "Jogl.Server.Loader.Arxiv\Jogl.Server.Loader.Arxiv.csproj", "{2A844990-0EC8-46E4-BB23-B9E64FE6B09E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Arxiv", "Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj", "{E6E2FA4C-0783-4296-B01E-94B0269CC30F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +213,14 @@ Global
 		{94696CB8-3E5D-4DDB-B256-725BF3F71487}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94696CB8-3E5D-4DDB-B256-725BF3F71487}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94696CB8-3E5D-4DDB-B256-725BF3F71487}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6E2FA4C-0783-4296-B01E-94B0269CC30F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6E2FA4C-0783-4296-B01E-94B0269CC30F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6E2FA4C-0783-4296-B01E-94B0269CC30F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6E2FA4C-0783-4296-B01E-94B0269CC30F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -216,6 +228,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D954E27E-FE89-4F0C-AEA8-749BC79BF49C} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 		{953A9F84-4F05-4728-A600-068A199CC637} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
+		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635F8D0F-097B-43A6-B570-C3E47AA829E5}
