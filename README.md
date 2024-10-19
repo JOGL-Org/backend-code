@@ -77,8 +77,8 @@ To run the project, execute the following command:
 Contributions are welcome! Here are several ways you can contribute:
 
 - **[Report Issues](https://github.com/JOGL-Org/backend-code/issues)**: Submit bugs found or log feature requests for the `backend-code` project.
-- **[Submit Pull Requests](https://github.com/JOGL-Org/backend-code/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
-- **[Join the Discussions](https://github.com/JOGL-Org/backend-code/discussions)**: Share your insights, provide feedback, or ask questions.
+- **[Submit Pull Requests](https://github.com/JOGL-Org/backend-code/pulls)**: Review open PRs, and submit your own PRs.
+- **[Join the Discussions](https://app2.jogl.io)**: Sign up on JOGL to share your insights, provide feedback, or ask questions.
 
 <details closed>
 <summary>Contributing Guidelines</summary>
@@ -90,19 +90,20 @@ Contributions are welcome! Here are several ways you can contribute:
    ```
 3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
    ```sh
-   git checkout -b new-feature-x
+   git checkout -b feat/fv/new-feature
    ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
+   where fv are your initials and new-feature is a descriptive name for the changes the branch enables
+5. **Make Your Changes**: Develop and test your changes locally.
+6. **Commit Your Changes**: Commit with a clear message describing your updates.
    ```sh
    git commit -m 'Implemented new feature x.'
    ```
-6. **Push to github**: Push the changes to your forked repository.
+7. **Push to github**: Push the changes to your forked repository.
    ```sh
    git push origin new-feature-x
    ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
+8. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
+9. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
 </details>
 
 <details closed>
