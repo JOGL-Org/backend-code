@@ -261,7 +261,7 @@ namespace Jogl.Server.Business
         public async Task<string> CreateAttendanceAsync(EventAttendance attendance)
         {
             var res = await UpsertAttendancesAsync(new List<EventAttendance> { attendance }, attendance.CreatedByUserId, true);
-            return res.Single();
+            return res.SingleOrDefault();
         }
 
         public async Task<List<string>> UpsertAttendancesAsync(List<EventAttendance> attendances, string currentUserId, bool upsert)
@@ -347,7 +347,8 @@ namespace Jogl.Server.Business
                 res = await _eventAttendanceRepository.CreateAsync(toCreate);
 
             //raise notifications
-            await _notificationService.NotifyEventInviteCreatedAsync(ev, evCommunityEntity, user, toCreate.Where(a => !string.IsNullOrEmpty(a.UserId) && a.UserId != a.CreatedByUserId).ToList());
+            if (user != null)
+                await _notificationService.NotifyEventInviteCreatedAsync(ev, evCommunityEntity, user, toCreate.Where(a => !string.IsNullOrEmpty(a.UserId) && a.UserId != a.CreatedByUserId).ToList());
             await _notificationFacade.NotifyInvitedAsync(toCreate.Where(a => !string.IsNullOrEmpty(a.UserId) && a.UserId != a.CreatedByUserId).ToList());
 
             return res;
@@ -411,6 +412,13 @@ namespace Jogl.Server.Business
 
         public EventAttendance GetAttendanceForEventAndInvitee(EventAttendance attendance)
         {
+            var user = _userRepository.Get(u => u.Email == attendance.UserEmail);
+            if (user != null)
+            {
+                attendance.UserEmail = null;
+                attendance.UserId = user.Id.ToString();
+            };
+
             return _eventAttendanceRepository.Get(a => a.EventId == attendance.EventId && a.UserEmail == attendance.UserEmail && a.UserId == attendance.UserId && a.CommunityEntityId == attendance.CommunityEntityId && !a.Deleted);
         }
 
