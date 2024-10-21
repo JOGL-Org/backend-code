@@ -30,7 +30,6 @@ using Jogl.Server.Images;
 using Jogl.Server.ServiceBus;
 using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
-using Recaptcha.Verify.Net.Configuration;
 using Jogl.Server.HuggingFace;
 using Jogl.Server.Arxiv;
 
@@ -180,12 +179,6 @@ builder.Services.AddResiliencePipeline("retry", builder =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddRecaptcha(o =>
-{
-    o.SecretKey = builder.Configuration["Captcha:Token"];
-    o.ScoreThreshold = float.Parse(builder.Configuration["Captcha:Score"]);
-});
-
 builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new MappingProfiles(provider.GetService<IHttpContextAccessor>()));
