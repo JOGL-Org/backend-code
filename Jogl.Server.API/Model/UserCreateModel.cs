@@ -33,6 +33,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("verification_code")]
         public string? VerificationCode { get; set; }
 
+        [JsonPropertyName("redirect_url")]
+        public string? RedirectURL { get; set; }
+
         [JsonPropertyName("captcha_verification_token")]
         public string? CaptchaVerificationToken { get; set; }
     }

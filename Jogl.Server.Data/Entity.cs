@@ -22,6 +22,9 @@ namespace Jogl.Server.Data
         public List<Permission> Permissions { get; set; }
 
         [BsonIgnore]
+        public List<FeedEntity>? Path { get; set; }
+
+        [BsonIgnore]
         [JsonIgnore]
         public User CreatedBy { get; set; }
     }

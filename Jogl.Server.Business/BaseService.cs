@@ -1764,6 +1764,28 @@ namespace Jogl.Server.Business
             return e.CreatedByUserId == userId || eventAttendances.Any(ea => ea.UserId == userId && ea.Status == AttendanceStatus.Yes && !ea.Deleted);
         }
 
+        protected DiscussionStats GetDiscussionStats(string currentUserId, string feedId)
+        {
+            var contentEntities = _contentEntityRepository.List(ce => ce.FeedId == feedId && !ce.Deleted);
+
+            var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId && !ufr.Deleted);
+            var currentUserMentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
+            var currentUserContentEntityRecords = _userContentEntityRecordRepository.List(r => r.UserId == currentUserId && r.FeedId == feedId && !r.Deleted);
+            var currentUserContentEntityRecordsEntityIds = currentUserContentEntityRecords.Select(ucer => ucer.ContentEntityId);
+            var currentUserContentEntityRecordsComments = _commentRepository.List(c => currentUserContentEntityRecordsEntityIds.Contains(c.ContentEntityId) && !c.Deleted);
+
+            var unreadPosts = contentEntities.Count(ce => ce.CreatedUTC > (currentUserFeedRecord?.LastReadUTC ?? DateTime.MaxValue));
+            var unreadMentions = currentUserMentions.Count(m => m.Unread);
+            var unreadThreads = contentEntities.Count(ce => currentUserContentEntityRecordsComments.Any(c => c.ContentEntityId == ce.Id.ToString() && c.CreatedUTC > (currentUserContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue)));
+
+            return new DiscussionStats
+            {
+                UnreadPosts = unreadPosts,
+                UnreadMentions = unreadMentions,
+                UnreadThreads = unreadThreads
+            };
+        }
+
         protected async Task DeleteFeedAsync(string id)
         {
             //delete event feeds

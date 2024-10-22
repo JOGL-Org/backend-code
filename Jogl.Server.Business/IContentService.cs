@@ -11,8 +11,6 @@ namespace Jogl.Server.Business
         ContentEntity Get(string entityId);
         ContentEntity GetDetail(string entityId, string userId);
         Discussion GetDiscussion(string currentUserId, string feedId, ContentEntityType? type, ContentEntityFilter filter, string search, int page, int pageSize);
-        DiscussionStats GetDiscussionStats(string currentUserId, string feedId);
-        // DiscussionStats GetAggregateData(string currentUserId, FeedType type, string nodeId, bool mention, string search, int page, int pageSize);
         ListPage<ContentEntity> ListPostContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
         ListPage<ContentEntity> ListMentionContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
         ListPage<ContentEntity> ListThreadContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);

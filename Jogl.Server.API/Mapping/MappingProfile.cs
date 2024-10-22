@@ -486,6 +486,9 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.TargetCommunityEntity?.LogoId, true)))
                 .IncludeMembers(m => m.TargetCommunityEntity);
 
+            CreateMap<Feed, FeedModel>();
+
+
             CreateMap<ContentEntity, ContentEntityModel>();
             CreateMap<ContentEntityOverrides, ContentEntityOverridesModel>();
 
@@ -686,6 +689,8 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.Stats, opt => opt.MapFrom(src => src));
             CreateMap<Channel, ChannelExtendedModel>()
               .IncludeBase<Channel, ChannelModel>();
+            CreateMap<Channel, ChannelDetailModel>()
+            .IncludeBase<Channel, ChannelModel>();
             CreateMap<ChannelUpsertModel, Channel>();
             CreateMap<Channel, ChannelStatModel>();
 

@@ -78,14 +78,28 @@ namespace Jogl.Server.Business
             return channelId;
         }
 
-        public Channel Get(string communityId, string userId)
+        public Channel Get(string channelId, string userId)
         {
-            var channel = _channelRepository.Get(communityId);
+            var channel = _channelRepository.Get(channelId);
             if (channel == null)
                 return null;
 
             EnrichChannelData(new Channel[] { channel }, userId);
+
+            return channel;
+        }
+
+        public Channel GetDetail(string channelId, string userId)
+        {
+            var channel = Get(channelId, userId);
+            if (channel == null)
+                return null;
+
             channel.Path = _feedEntityService.GetPath(channel, userId);
+            var stats = GetDiscussionStats(userId, channelId);
+            channel.UnreadPosts = stats.UnreadPosts;
+            channel.UnreadThreads = stats.UnreadThreads;
+            channel.UnreadMentions = stats.UnreadMentions;
 
             return channel;
         }

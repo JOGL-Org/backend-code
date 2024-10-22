@@ -17,9 +17,6 @@ namespace Jogl.Server.Data
         public virtual string? FeedLogoId { get; }
 
         [BsonIgnore]
-        public List<FeedEntity>? Path { get; set; }
-
-        [BsonIgnore]
         [JsonIgnore]
         public int PostCount { get; set; }
     }

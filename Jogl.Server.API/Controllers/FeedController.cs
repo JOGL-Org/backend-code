@@ -69,21 +69,6 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpGet]
-        [Route("{feedId}/stats")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view the feed")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"Discussion stats for the currently logged in user", typeof(DiscussionStatModel))]
-        public async Task<IActionResult> GetDiscussionStats([FromRoute] string feedId)
-        {
-            if (!_communityEntityService.HasPermission(feedId, Permission.Read, CurrentUserId))
-                return Forbid();
-
-            var data = _contentService.GetDiscussionStats(CurrentUserId, feedId);
-            var dataModel = _mapper.Map<DiscussionStatModel>(data);
-
-            return Ok(dataModel);
-        }
-
-        [HttpGet]
         [Route("{feedId}/permissions")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view the feed")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"Discussion permissions for the currently logged in user", typeof(List<Permission>))]
@@ -258,16 +243,40 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("contentEntities/{contentEntityId}/feed")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No content entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the rights to view the content entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The feed data", typeof(FeedModel))]
+        public async Task<IActionResult> GetFeedForContentEntity([FromRoute] string contentEntityId)
+        {
+            var contentEntity = _contentService.GetDetail(contentEntityId, CurrentUserId);
+            if (contentEntity == null)
+                return NotFound();
+
+            if (!_communityEntityService.HasPermission(contentEntity.FeedId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var feed = _contentService.GetFeed(contentEntity.FeedId);
+            var model = _mapper.Map<FeedModel>(feed);
+            return Ok(model);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
         [Route("contentEntities/{contentEntityId}")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No content entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the rights to view the content entity")]
         [SwaggerResponse((int)HttpStatusCode.OK, "The content entity data", typeof(ContentEntityModel))]
         public async Task<IActionResult> GetContentEntity([FromRoute] string contentEntityId)
         {
-            //TODO check access rights to entity and return 403 or 404 if needed
-            var contentObject = _contentService.GetDetail(contentEntityId, CurrentUserId);
-            if (contentObject == null)
+            var contentEntity = _contentService.GetDetail(contentEntityId, CurrentUserId);
+            if (contentEntity == null)
                 return NotFound();
 
-            var model = _mapper.Map<ContentEntityModel>(contentObject);
+            if (!_communityEntityService.HasPermission(contentEntity.FeedId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var model = _mapper.Map<ContentEntityModel>(contentEntity);
             return Ok(model);
         }
 

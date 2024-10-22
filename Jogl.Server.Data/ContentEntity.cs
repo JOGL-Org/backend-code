@@ -21,7 +21,7 @@ namespace Jogl.Server.Data
         public ContentEntityOverrides Overrides { get; set; }
 
         [BsonIgnore]
-        public Entity FeedEntity { get; set; }
+        public FeedEntity FeedEntity { get; set; }
         [BsonIgnore]
         public List<Document> Documents { get; set; }
         [BsonIgnore]

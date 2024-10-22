@@ -54,6 +54,25 @@ namespace Jogl.Server.API.Controllers
             return Ok(channelModel);
         }
 
+        [HttpGet]
+        [Route("{id}/detail")]
+        [SwaggerOperation($"Returns a single channel")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No channel was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to see the channel")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The channel data including detailed path", typeof(ChannelDetailModel))]
+        public async Task<IActionResult> GetChannelDetail([FromRoute] string id)
+        {
+            var channel = _channelService.GetDetail(id, CurrentUserId);
+            if (channel == null)
+                return NotFound();
+
+            if (!channel.Permissions.Contains(Permission.Read))
+                return Forbid();
+
+            var channelModel = _mapper.Map<ChannelDetailModel>(channel);
+            return Ok(channelModel);
+        }
+
         [HttpPut]
         [Route("{id}")]
         [SwaggerOperation($"Updates the channel")]

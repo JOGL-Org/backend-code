@@ -33,9 +33,6 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("stats")]
         public virtual ChannelStatModel Stats { get; set; }
 
-        [JsonPropertyName("path")]
-        public List<EntityMiniModel> Path { get; set; }
-
         [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; set; }
 
