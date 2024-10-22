@@ -111,13 +111,13 @@ namespace Jogl.Server.API.Controllers
             //if no verification code present, trigger verification
             if (string.IsNullOrEmpty(model.VerificationCode))
             {
-                await _userVerificationService.CreateAsync(user, VerificationAction.Verify, true);
+                await _userVerificationService.CreateAsync(user, VerificationAction.Verify, model.RedirectURL, true);
                 return Ok(userId);
             }
 
             //if no verification code present, process
             var result = await _userVerificationService.VerifyAsync(model.Email, VerificationAction.Verify, model.VerificationCode);
-            switch (result)
+            switch (result.Status)
             {
                 //if invalid, return HTTP 400
                 case VerificationStatus.Invalid:

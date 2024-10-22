@@ -22,7 +22,7 @@ namespace Jogl.Server.Business
             _configuration = configuration;
         }
 
-        public async Task<string> CreateAsync(User user, VerificationAction action, bool notify)
+        public async Task<string> CreateAsync(User user, VerificationAction action, string redirectURL, bool notify)
         {
             //invalidate existing verification codes
             //var existingVerifications = _verificationCodeRepository.List(c => c.UserEmail == userEmail && c.Action == action);
@@ -34,6 +34,7 @@ namespace Jogl.Server.Business
             {
                 Action = action,
                 Code = code,
+                RedirectURL = redirectURL,
                 CreatedUTC = DateTime.UtcNow,
                 UserEmail = user.Email,
                 ValidUntilUTC = DateTime.UtcNow.AddDays(1)
@@ -60,20 +61,20 @@ namespace Jogl.Server.Business
             return VerificationStatus.OK;
         }
 
-        public async Task<VerificationStatus> VerifyAsync(string userEmail, VerificationAction action, string code)
+        public async Task<VerificationResult> VerifyAsync(string userEmail, VerificationAction action, string code)
         {
             var existingVerification = _verificationCodeRepository.Get(c => c.UserEmail == userEmail && c.Action == action && c.Code == code);
-            if (existingVerification == null )
-                return VerificationStatus.Invalid;
+            if (existingVerification == null)
+                return new VerificationResult { Status = VerificationStatus.Invalid };
 
             var user = _userRepository.Get(u => u.Email == userEmail);
             if (user == null || user.Status != UserStatus.Pending)
-                return VerificationStatus.Invalid;
+                return new VerificationResult { Status = VerificationStatus.Invalid };
 
             await _verificationCodeRepository.DeleteAsync(existingVerification.Id.ToString());
             await _userRepository.SetVerifiedAsync(user.Id.ToString());
 
-            return VerificationStatus.OK;
+            return new VerificationResult { Status = VerificationStatus.OK, RedirectURL = existingVerification.RedirectURL };
         }
 
         private string GenerateCode(int size = 16)

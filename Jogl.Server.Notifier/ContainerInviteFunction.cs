@@ -99,18 +99,13 @@ namespace Jogl.Server.Notifier
             var redirectUrl = $"{_configuration["App:URL"]}/signup";
             var communityEntity = _communityEntityService.Get(invitation.CommunityEntityId);
             var inviterUser = _userRepository.Get(invitation.CreatedByUserId);
-            var verificationCode = await _userVerificationService.CreateAsync(new User { Email = invitation.InviteeEmail }, VerificationAction.Verify, false);
+            var verificationCode = await _userVerificationService.CreateAsync(new User { Email = invitation.InviteeEmail }, VerificationAction.Verify, null, false);
             await _emailService.SendEmailAsync(invitation.InviteeEmail, EmailTemplate.InvitationWithEmail, new
             {
                 NAME = inviterUser.FeedTitle,
                 CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
                 CONTAINER_NAME = communityEntity.FeedTitle,
                 CTA_URL = redirectUrl + $"?email={WebUtility.UrlEncode(invitation.InviteeEmail)}&verification_code={verificationCode}",
-                invitor = inviterUser.FeedTitle, //TODO delete after release
-                url = redirectUrl + $"?email={WebUtility.UrlEncode(invitation.InviteeEmail)}&verification_code={verificationCode}",//TODO delete after release
-                access_level = invitation.AccessLevel.ToString(),//TODO delete after release
-                entity_type = _communityEntityService.GetPrintName(invitation.CommunityEntityType),//TODO delete after release
-                entity_name = communityEntity.Title//TODO delete after release
             }, fromName: inviterUser.FirstName);
         }
     }

@@ -107,7 +107,7 @@ namespace Jogl.Server.API.Controllers
             if (user == null)
                 return NotFound();
 
-            await _userVerificationService.CreateAsync(user, VerificationAction.Verify, true);
+            await _userVerificationService.CreateAsync(user, VerificationAction.Verify, null, true);
             return Ok();
         }
 
@@ -131,7 +131,7 @@ namespace Jogl.Server.API.Controllers
         public async Task<IActionResult> VerificationConfirm(VerificationConfirmationModel model)
         {
             var status = await _userVerificationService.VerifyAsync(model.Email, VerificationAction.Verify, model.Code);
-            switch (status)
+            switch (status.Status)
             {
                 case VerificationStatus.Invalid:
                     return BadRequest();
