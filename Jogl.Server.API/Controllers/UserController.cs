@@ -515,6 +515,7 @@ namespace Jogl.Server.API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("interests")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The interest data", typeof(List<TextValueModel>))]
         public async Task<IActionResult> GetInterests([FromQuery] SearchModel model)
         {
             var skills = _tagService.GetTags(model.Search, model.Page, model.PageSize);
