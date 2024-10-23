@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
-    public class UserPatchModel : UserUpdateModel
+    public class UserPatchModel
     {
         [JsonPropertyName("first_name")]
         public string? FirstName { get; set; }
