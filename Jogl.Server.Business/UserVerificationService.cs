@@ -45,7 +45,7 @@ namespace Jogl.Server.Business
                 await _emailService.SendEmailAsync(user.Email, EmailTemplate.UserVerification, new
                 {
                     first_name = user.FirstName,
-                    url = _configuration["App:URL"] + $"/confirm?email={HttpUtility.UrlEncode(user.Email)}&verification_code={HttpUtility.UrlEncode(code)}",
+                    url = _configuration["App:URL"] + $"/confirm?email={HttpUtility.UrlEncode(user.Email)}&verification_code={HttpUtility.UrlEncode(code)}&redirectURL={redirectURL}",
                 });
             }
 

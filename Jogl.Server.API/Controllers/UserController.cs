@@ -115,7 +115,7 @@ namespace Jogl.Server.API.Controllers
                 return Ok(userId);
             }
 
-            //if no verification code present, process
+            //if verification code present, process
             var result = await _userVerificationService.VerifyAsync(model.Email, VerificationAction.Verify, model.VerificationCode);
             switch (result.Status)
             {
