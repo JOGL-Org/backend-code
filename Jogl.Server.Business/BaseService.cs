@@ -154,9 +154,10 @@ namespace Jogl.Server.Business
             switch (permission)
             {
                 case Permission.Read:
+                    return CanSeeEvent(e, currentUserMemberships, attendances, userId);
                 case Permission.PostContentEntity:
                 case Permission.PostComment:
-                    return CanSeeEvent(e, currentUserMemberships, attendances, userId);
+                    return attendance != null;
                 case Permission.Manage:
                 case Permission.ManageDocuments:
                 case Permission.DeleteContentEntity:
