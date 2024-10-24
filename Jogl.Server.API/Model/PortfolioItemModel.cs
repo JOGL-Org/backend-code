@@ -32,5 +32,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("keywords")]
         public List<string>? Keywords { get; set; }
+
+        [JsonPropertyName("external_id")]
+        public string ExternalId { get; set; }
     }
 }
