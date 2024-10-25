@@ -217,7 +217,8 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [Route("{id}/workspaces")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id")]
-        public async Task<IActionResult> GetSpaces([FromRoute] string id, [FromQuery] Permission? permission, [FromQuery] SearchModel model)
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user's workspaces", typeof(List<CommunityEntityMiniModel>))]
+        public async Task<IActionResult> GetWorkspaces([FromRoute] string id, [FromQuery] Permission? permission, [FromQuery] SearchModel model)
         {
             var user = _userService.Get(id);
             if (user == null)
@@ -232,6 +233,7 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [Route("{id}/nodes")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user's nodes", typeof(List<CommunityEntityMiniModel>))]
         public async Task<IActionResult> GetNodes([FromRoute] string id, [FromQuery] Permission? permission, [FromQuery] SearchModel model)
         {
             var user = _userService.Get(id);
