@@ -45,6 +45,7 @@ namespace Jogl.Server.API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
+        [Route("login/password")]
         [SwaggerOperation($"Logs a user in using an email and password")]
         [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Invalid user credentials")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "User not yet verified")]
@@ -55,7 +56,7 @@ namespace Jogl.Server.API.Controllers
             if (user == null)
                 return Unauthorized();
 
-            var userToken = _authService.GetToken(user, model.Password);
+            var userToken = _authService.GetTokenWithPassword(user, model.Password);
             if (string.IsNullOrEmpty(userToken))
                 return Unauthorized();
 
@@ -68,32 +69,6 @@ namespace Jogl.Server.API.Controllers
                 UserId = user.Id.ToString()
             });
         }
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("verifyConfirm")]
-        //[SwaggerOperation($"Verifies a user using a code delivered to their email address")]
-        //[SwaggerResponse((int)HttpStatusCode.OK, "The user was verified successfully")]
-        //[SwaggerResponse((int)HttpStatusCode.Forbidden, "The user does not exist, the code is invalid or has expired")]
-        //public async Task<IActionResult> VerifyUserConfirm(string email, string code)
-        //{
-        //    var res = await _userService.VerifyUserConfirmAsync(email, code);
-
-        //    var user = _userService.GetForEmail(email);
-        //    var invitations = _invitationService.List(user.Id.ToString());
-
-        //    var redirectUrl = $"{_configuration["App:URL"]}";
-        //    if (!res)
-        //        redirectUrl += $"/signin?confirmed=false&email={WebUtility.UrlEncode(email)}";
-        //    else
-        //    {
-        //        redirectUrl += $"/signin?confirmed=true&email={WebUtility.UrlEncode(email)}";
-        //        if (invitations.Count > 0)
-        //            redirectUrl += "&invited=true";
-        //    }
-
-        //    return Redirect(redirectUrl);
-        //}
 
         [AllowAnonymous]
         [HttpPost]

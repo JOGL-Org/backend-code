@@ -23,7 +23,7 @@ namespace Jogl.Server.Auth
             _userRepository = userRepository;
         }
 
-        public string GetToken(User user, string password)
+        public string GetTokenWithPassword(User user, string password)
         {
             if (user == null)
                 return null;
