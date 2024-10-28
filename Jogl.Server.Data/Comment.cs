@@ -10,9 +10,11 @@ namespace Jogl.Server.Data
         public string UserId { get; set; }
         public string Text { get; set; }
         public string ReplyToId { get; set; }
+        public string? ExternalID { get; set; }
+        public string? ExternalSourceID { get; set; }
+        public CommentOverrides Overrides { get; set; }
 
         [BsonIgnore]
-       
         public ContentEntity ContentEntity { get; set; }
        
         [BsonIgnore]
@@ -40,5 +42,14 @@ namespace Jogl.Server.Data
         public List<Reaction> Reactions { get; set; }
         [BsonIgnore]
         public Reaction UserReaction { get; set; }
+    }
+
+
+    [BsonIgnoreExtraElements]
+    public class CommentOverrides
+    {
+        public string UserAvatarURL { get; set; }
+        public string UserURL { get; set; }
+        public string UserName { get; set; }
     }
 }

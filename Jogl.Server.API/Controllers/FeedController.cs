@@ -849,7 +849,23 @@ namespace Jogl.Server.API.Controllers
                 return Ok(new List<UserMiniModel>()); //TODO return 403 when front end is fixed
 
             var users = _userService.AutocompleteForEntity(feedId, model.Search, model.Page, model.PageSize);
-            var userModels = users.Select(_mapper.Map<UserMiniModel>);
+            var userModels = users.Select(_mapper.Map<UserMiniModel>).ToList();
+
+            var feedIntegrations = _contentService.ListFeedIntegrations(feedId, model.Search);
+            foreach (var feedIntegration in feedIntegrations)
+            {
+                if (feedIntegration.Type != FeedIntegrationType.JOGLAgentPublication)
+                    continue;
+
+                userModels.Add(new UserMiniModel
+                {
+                    FirstName = feedIntegration.SourceId,
+                    LastName = "(AI)",
+                    Id = feedIntegration.Id.ToString(),
+                    Username = feedIntegration.SourceId.ToLower()
+                });
+            }
+
             return Ok(userModels);
         }
 

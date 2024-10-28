@@ -15,6 +15,33 @@ namespace Jogl.Server.AI
             _configuration = configuration;
         }
 
+        public async Task<string> GetResponseAsync(IEnumerable<string> contextData, IEnumerable<InputItem> userInputs)
+        {
+            var client = new AnthropicClient(_configuration["Claude:APIKey"]);
+
+            var prompts = new List<SystemMessage>();
+            prompts.Add(new SystemMessage($"The following is a concatenation of paper abstracts pertinent to a discussion:"));
+            prompts.AddRange(contextData.Where(abs => !string.IsNullOrEmpty(abs)).Select(abs => new SystemMessage(abs)));
+            prompts.Add(new SystemMessage($"Use the above as context. Keep your answers limited to a paragraph or so."));
+
+            var parameters = new MessageParameters()
+            {
+                Messages = userInputs.Select(i => new Message(i.FromUser ? RoleType.User : RoleType.Assistant, i.Text)).ToList(),
+                Model = AnthropicModels.Claude35Sonnet,
+                Stream = false,
+                MaxTokens = 1024,
+                Temperature = 0.5m,
+                PromptCaching = PromptCacheType.Messages,
+                System = prompts
+            };
+
+            var response = await client.Messages.GetClaudeMessageAsync(parameters);
+            if (response?.Message == null)
+                throw new Exception($"Claude request failed for feed prompt");
+
+            return response.Message.ToString();
+        }
+
         public async Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity
         {
             var client = new AnthropicClient(_configuration["Claude:APIKey"]);

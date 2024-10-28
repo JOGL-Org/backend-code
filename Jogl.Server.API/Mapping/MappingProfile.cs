@@ -488,7 +488,6 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<Feed, FeedModel>();
 
-
             CreateMap<ContentEntity, ContentEntityModel>();
             CreateMap<ContentEntityOverrides, ContentEntityOverridesModel>();
 
@@ -502,8 +501,10 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<Comment, CommentModel>();
             CreateMap<Comment, CommentExtendedModel>();
-            CreateMap<Comment, CommentUpsertModel>();
+            CreateMap<CommentOverrides, CommentOverridesModel>();
+           
             CreateMap<CommentUpsertModel, Comment>();
+            CreateMap<Comment, CommentUpsertModel>();
 
             CreateMap<Entity, ActivityRecordModel>()
                 .ForMember(dst => dst.Comment, opt => opt.MapFrom((src, dst, obj, ctx) =>

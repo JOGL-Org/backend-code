@@ -1451,6 +1451,8 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.Arxiv:
                     var categories = _arxivFacade.ListCategories();
                     return categories.Contains(feedIntegration.SourceId);
+                case FeedIntegrationType.JOGLAgentPublication:
+                    return true;
                 default:
                     throw new Exception($"Unable to validate feed integration for type {feedIntegration.Type}");
             }

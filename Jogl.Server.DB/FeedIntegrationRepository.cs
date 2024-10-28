@@ -16,7 +16,7 @@ namespace Jogl.Server.DB
         {
             get
             {
-                return new Expression<Func<FeedIntegration, object>>[] { e => e.SourceUrl};
+                return new Expression<Func<FeedIntegration, object>>[] { e => e.SourceId, e => e.SourceUrl };
             }
         }
 
