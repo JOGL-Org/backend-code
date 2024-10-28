@@ -120,8 +120,8 @@ namespace Jogl.Server.API.Controllers
             if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
                 return Forbid();
 
-            var folders = _documentService.ListAllFolders(entityId, model.Search, model.Page, model.PageSize / 2);
-            var documents = _documentService.ListAllDocuments(CurrentUserId, entityId, model.Search, model.Page, model.PageSize / 2);
+            var folders = _documentService.ListAllFolders(entityId, model.Search, 1, int.MaxValue);
+            var documents = _documentService.ListAllDocuments(CurrentUserId, entityId, model.Search, 1, int.MaxValue);
             var folderModels = folders.Select(_mapper.Map<DocumentOrFolderModel>);
             var documentModels = documents.Select(_mapper.Map<DocumentOrFolderModel>);
 
