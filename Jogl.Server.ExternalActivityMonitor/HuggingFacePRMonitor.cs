@@ -28,7 +28,7 @@ namespace Jogl.Server.Mailer
         protected override FeedIntegrationType Type => FeedIntegrationType.HuggingFace;
 
         [Function("HuggingFace-PR-monitor")]
-        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 0 * * *")] TimerInfo myTimer)
         {
             await RunPRs();
         }
