@@ -12,9 +12,9 @@ namespace Jogl.Server.API.Model
         public FeedIntegrationType Type { get; set; }
 
         [JsonPropertyName("source_id")]
-        public string SourceId { get; set; }
+        public string? SourceId { get; set; }
 
         [JsonPropertyName("source_url")]
-        public string SourceUrl { get; set; }
+        public string? SourceUrl { get; set; }
     }
 }
