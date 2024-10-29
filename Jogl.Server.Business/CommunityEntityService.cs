@@ -333,7 +333,10 @@ namespace Jogl.Server.Business
                     return paper.Permissions;
 
                 case FeedType.User:
-                    return new List<Permission> { };
+                    if (id == userId)
+                        return new List<Permission> { Permission.Read, Permission.ManageDocuments };
+                    else
+                        return new List<Permission> { Permission.Read };
 
                 case FeedType.Channel:
                     var channel = _channelRepository.Get(id);
