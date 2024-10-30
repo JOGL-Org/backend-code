@@ -20,6 +20,8 @@ namespace Jogl.Server.DB
             }
         }
 
+        protected override Expression<Func<FeedIntegration, string>> AutocompleteField => (e) => e.SourceId;
+
         protected override string CollectionName => "feedIntegrations";
 
         protected override UpdateDefinition<FeedIntegration> GetDefaultUpdateDefinition(FeedIntegration updatedEntity)

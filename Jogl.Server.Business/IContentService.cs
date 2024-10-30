@@ -58,6 +58,7 @@ namespace Jogl.Server.Business
         FeedIntegration GetFeedIntegration(string id);
         FeedIntegration GetFeedIntegration(string feedId, FeedIntegrationType type, string sourceId);
         List<FeedIntegration> ListFeedIntegrations(string feedId, string search);
+        List<FeedIntegration> AutocompleteFeedIntegrations(string feedId, string search);
         Task DeleteIntegrationAsync(FeedIntegration feedIntegration);
     }
 }

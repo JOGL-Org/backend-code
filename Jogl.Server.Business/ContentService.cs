@@ -1510,6 +1510,11 @@ namespace Jogl.Server.Business
             return _feedIntegrationRepository.SearchList(i => i.FeedId == feedId && !i.Deleted, search);
         }
 
+        public List<FeedIntegration> AutocompleteFeedIntegrations(string feedId, string search)
+        {
+            return _feedIntegrationRepository.AutocompleteList(i => i.FeedId == feedId && !i.Deleted, search);
+        }
+
         public async Task DeleteIntegrationAsync(FeedIntegration feedIntegration)
         {
             await _feedIntegrationRepository.DeleteAsync(feedIntegration);
