@@ -22,6 +22,7 @@ namespace Jogl.Server.API.Controllers
         private readonly IUserService _userService;
         private readonly IUserVerificationService _userVerificationService;
         private readonly IAuthService _authService;
+        private readonly IAuthChallengeService _challengeService;
         private readonly IGoogleFacade _googleFacade;
         private readonly ILinkedInFacade _linkedInFacade;
         private readonly IGitHubFacade _githubFacade;
@@ -29,11 +30,12 @@ namespace Jogl.Server.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly IOrcidFacade _orcidFacade;
 
-        public AuthController(IGoogleFacade googleFacade, ILinkedInFacade linkedInFacade, IGitHubFacade githubFacade, IOrcidFacade orcidFacade, IUserService userService, IUserVerificationService userVerificationService, IAuthService authService, IInvitationService invitationService, IConfiguration configuration, IMapper mapper, ILogger<AuthController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public AuthController(IGoogleFacade googleFacade, ILinkedInFacade linkedInFacade, IGitHubFacade githubFacade, IOrcidFacade orcidFacade, IUserService userService, IUserVerificationService userVerificationService, IAuthService authService, IAuthChallengeService authChallengeService, IInvitationService invitationService, IConfiguration configuration, IMapper mapper, ILogger<AuthController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _userVerificationService = userVerificationService;
             _authService = authService;
+            _challengeService = authChallengeService;
             _invitationService = invitationService;
             _configuration = configuration;
             _orcidFacade = orcidFacade;
@@ -84,6 +86,44 @@ namespace Jogl.Server.API.Controllers
 
             await _userVerificationService.CreateAsync(user, VerificationAction.Verify, null, true);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("wallet/challenge/{wallet}")]
+        [SwaggerOperation($"Retrieves a user challenge for a wallet signature login")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "User challenge", typeof(string))]
+        public async Task<IActionResult> GetLoginChallenge([FromRoute] string wallet)
+        {
+            var challenge = _challengeService.GetChallenge(wallet);
+            return Ok(challenge);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("wallet/{walletType}")]
+        [SwaggerOperation($"Logs a user in using a web3 wallet signature")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Invalid signature")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "User not yet verified")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "User login successful", typeof(AuthResultModel))]
+        public async Task<IActionResult> LoginWithWalletSignature([FromRoute] WalletType walletType, [FromBody] UserLoginSignatureModel model)
+        {
+            var user = _userService.GetForWallet(model.Wallet);
+            if (user == null)
+                return Unauthorized();
+
+            var userToken = _authService.GetTokenWithSignature(user, walletType, model.Wallet, model.Signature);
+            if (string.IsNullOrEmpty(userToken))
+                return Unauthorized();
+
+            if (user.Status == Data.UserStatus.Pending)
+                return Forbid();
+
+            return Ok(new AuthResultModel
+            {
+                Token = userToken,
+                UserId = user.Id.ToString()
+            });
         }
 
         [AllowAnonymous]

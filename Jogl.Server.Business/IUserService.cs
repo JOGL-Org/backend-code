@@ -9,6 +9,7 @@ namespace Jogl.Server.Business
         User Get(string userId);
         User GetDetail(string userId, string currentUserId);
         User GetForEmail(string email);
+        User GetForWallet(string wallet);
         User GetForUsername(string username);
         ListPage<User> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         long Count(string userId, string search);

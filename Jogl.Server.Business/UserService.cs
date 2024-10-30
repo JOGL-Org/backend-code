@@ -149,6 +149,11 @@ namespace Jogl.Server.Business
             return _userRepository.Get(u => u.Email == email);
         }
 
+        public User GetForWallet(string wallet)
+        {
+            return _userRepository.Get(u => u.Wallets.Any(w => w.Address == wallet));
+        }
+
         public User GetForUsername(string username)
         {
             return _userRepository.Get(u => u.Username == username);

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Jogl.Server.API.Model;
 using Jogl.Server.API.Services;
+using Jogl.Server.Auth;
 using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
@@ -42,10 +43,11 @@ namespace Jogl.Server.API.Controllers
         private readonly IOrcidFacade _orcidFacade;
         private readonly IPubMedFacade _pubMedFacade;
         private readonly IVerificationService _verificationService;
+        private readonly IAuthService _authService;
         private readonly ISemanticScholarFacade _s2Facade;
         private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public UserController(IUserService userService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _userVerificationService = userVerificationService;
@@ -67,6 +69,7 @@ namespace Jogl.Server.API.Controllers
             _orcidFacade = orcidFacade;
             _pubMedFacade = pubMedFacade;
             _verificationService = verificationService;
+            _authService = authService;
             _s2Facade = s2Facade;
             _configuration = configuration;
         }
@@ -90,21 +93,13 @@ namespace Jogl.Server.API.Controllers
             if (existingUserEmail != null)
                 return Conflict(new ErrorModel("email"));
 
-            if (!string.IsNullOrEmpty(model.Username))
-            {
-                //check for duplicate usernames
-                var existingUserUsername = _userService.GetForUsername(model.Username);
-                if (existingUserUsername != null)
-                    return Conflict(new ErrorModel("username"));
-            }
-            else
-            {
-                //autogenerate username
-                model.Username = _userService.GetUniqueUsername(model.FirstName, model.LastName);
-            }
-
-            //create user
+            //create user object
             var user = _mapper.Map<User>(model);
+
+            //autogenerate username
+            user.Username = _userService.GetUniqueUsername(user.FirstName, user.LastName);
+
+            //create
             await InitCreationAsync(user);
             var userId = await _userService.CreateAsync(user, model.Password);
 
@@ -128,6 +123,49 @@ namespace Jogl.Server.API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("wallet/{walletType}")]
+        [SwaggerOperation($"Register a user with a wallet signature")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Signature invalid")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "A user with this wallet, email or nickname already exists", typeof(ErrorModel))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Registration successful", typeof(string))]
+        public async Task<IActionResult> CreateUserWithWallet([FromRoute] WalletType walletType, [FromBody] UserCreateWalletModel model)
+        {
+            if (!_authService.VerifySignature(walletType, model.Wallet, model.Signature))
+                return Unauthorized();
+
+            //check for duplicate email
+            var existingUserEmail = _userService.GetForEmail(model.Email);
+            if (existingUserEmail != null)
+                return Conflict(new ErrorModel("email"));
+
+            //check for duplicate wallet
+            var existingUserForWallet = _userService.GetForWallet(model.Wallet);
+            if (existingUserForWallet != null)
+                return Conflict(new ErrorModel("wallet"));
+
+            //create user object
+            var user = new User
+            {
+                FirstName = model.FirstName.Trim(),
+                LastName = model.LastName.Trim(),
+                Username = _userService.GetUniqueUsername(model.FirstName, model.LastName),
+                Email = model.Email.Trim(),
+                Status = UserStatus.Pending,
+                Wallets = new List<Wallet>(new Wallet[] { new Wallet { Address = model.Wallet, Type = walletType } })
+            };
+
+            //create
+            await InitCreationAsync(user);
+            var userId = await _userService.CreateAsync(user);
+
+            //trigger verification
+            await _userVerificationService.CreateAsync(user, VerificationAction.Verify, null, true);
+            return Ok(userId);
+        }
+
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("check")]
@@ -329,16 +367,28 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("exists/{username}")]
+        [Route("exists/username/{username}")]
+        [SwaggerOperation($"Checks whether a username is already taken or not")]
         [SwaggerResponse((int)HttpStatusCode.Conflict, "Username is already taken")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Username is available")]
-        public async Task<IActionResult> Exists([FromRoute] string username)
+        public async Task<IActionResult> ExistsUsername([FromRoute] string username)
         {
             var user = _userService.GetForUsername(username);
             if (user == null)
                 return Ok();
 
             return Conflict();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("exists/wallet/{wallet}")]
+        [SwaggerOperation($"Checks whether a wallet address exists on JOGL or not")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Whether or not the specified wallet exits", typeof(bool))]
+        public async Task<IActionResult> ExistsWallet([FromRoute] string wallet)
+        {
+            var user = _userService.GetForWallet(wallet);
+            return Ok(user != null);
         }
 
         [Obsolete]
@@ -819,6 +869,7 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
         [HttpGet]
         [Route("notifications")]
         [SwaggerOperation($"Lists all notifications for current user")]
@@ -830,8 +881,23 @@ namespace Jogl.Server.API.Controllers
                 return NotFound();
 
             var notifications = _notificationService.ListSince(CurrentUserId, DateTime.UtcNow.AddYears(-1), model.Page, model.PageSize);
-            var notificationModels = notifications.Select(_mapper.Map<NotificationModel>);
+            var notificationModels = notifications.Items.Select(_mapper.Map<NotificationModel>);
             return Ok(notificationModels);
+        }
+
+        [HttpGet]
+        [Route("current/notifications")]
+        [SwaggerOperation($"Lists all notifications for current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<NotificationModel>))]
+        public async Task<IActionResult> GetNotificationsCurrent([FromQuery] SearchModel model)
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user == null)
+                return NotFound();
+
+            var notifications = _notificationService.ListSince(CurrentUserId, DateTime.UtcNow.AddYears(-1), model.Page, model.PageSize);
+            var notificationModels = notifications.Items.Select(_mapper.Map<NotificationModel>);
+            return Ok(new ListPage<NotificationModel>(notificationModels, notifications.Total));
         }
 
         [HttpPost]

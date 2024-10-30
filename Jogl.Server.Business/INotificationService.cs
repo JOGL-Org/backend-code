@@ -1,10 +1,11 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.Data.Util;
 
 namespace Jogl.Server.Business
 {
     public interface INotificationService
     {
-        List<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize);
+        ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize);
         Notification Get(string notificationId);
         Task UpdateAsync(Notification notification);
         Task NotifyRequestAcceptedAsync(Invitation invitation);

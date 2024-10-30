@@ -39,8 +39,9 @@ namespace Jogl.Server.Business
             await _notificationFacade.NotifyCreatedAsync(notifications);
         }
 
-        public List<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
+        public ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
         {
+            var total = _notificationRepository.Count(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Deleted);
             var notifications = _notificationRepository.List(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Deleted, page, pageSize, SortKey.CreatedDate);
             foreach (var notification in notifications)
             {
@@ -60,7 +61,7 @@ namespace Jogl.Server.Business
                 }
             }
 
-            return notifications;
+            return new ListPage<Notification>(notifications, (int)total);
         }
 
         public Notification Get(string notificationId)

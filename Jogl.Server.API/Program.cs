@@ -68,6 +68,8 @@ builder.Services.AddTransient<TelemetryMiddleware>();
 builder.Services.AddTransient<IVerificationService, CaptchaVerificationService>();
 builder.Services.AddTransient<IContextService, ContextService>();
 //auth services
+builder.Services.AddMemoryCache();
+builder.Services.AddTransient<IAuthChallengeService, AuthChallengeService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 //business
 builder.Services.AddTransient<ICommunityEntityService, CommunityEntityService>();

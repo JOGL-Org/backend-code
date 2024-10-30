@@ -6,6 +6,7 @@ namespace Jogl.Server.API.Model
     {
         [JsonPropertyName("subject")]
         public string Subject { get; set; }
+       
         [JsonPropertyName("text")]
         public string Text { get; set; }
     }

@@ -8,5 +8,8 @@ namespace Jogl.Server.Auth
         string GetToken(string email);
         string HashPasword(string password, out byte[] salt);
         bool VerifyPassword(string password, string hash, byte[] salt);
+
+        string GetTokenWithSignature(User user, WalletType walletType, string wallet, string signature);
+        bool VerifySignature(WalletType walletType, string wallet, string signature);
     }
 }

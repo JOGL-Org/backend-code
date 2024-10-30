@@ -39,6 +39,7 @@ namespace Jogl.Server.Data
         public List<UserExperience>? Experience { get; set; }
         public List<UserEducation>? Education { get; set; }
         public UserExternalAuth Auth { get; set; }
+        public List<Wallet> Wallets { get; set; }
         public DateTime? NotificationsReadUTC { get; set; }
         public string Language { get; set; }
 
