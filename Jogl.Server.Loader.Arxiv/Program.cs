@@ -15,32 +15,39 @@ IConfiguration config = new ConfigurationBuilder()
 var publicationRepository = new PublicationRepository(config);
 await Parallel.ForEachAsync(File.ReadLines("arxiv-metadata-oai-snapshot.json"), new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (line, token) =>
 {
-    var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
-    DateTime published;
-    var publishDateParsed = DateTime.TryParseExact(ap.Versions.FirstOrDefault()?.Created, "ddd, d MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out published);
-
-    var id = ap.Id.Replace("oai:arXiv.org:", string.Empty);
-
-    var publication = new Publication
+    try
     {
-        Authors = ap.AuthorsParsed.Select(a => string.Join(" ", a.Reverse<string>().Where(str => !string.IsNullOrEmpty(str)))).ToList(),
-        CreatedUTC = DateTime.UtcNow,
-        DOI = ap.Doi,
-        Journal = ap.JournalRef,
-        LicenseURL = ap.License,
-        Published = publishDateParsed ? published : null,
-        ExternalID = id,
-        Submitter = ap.Submitter,
-        ExternalSystem = "ARXIV",
-        ExternalURL = $"https://arxiv.org/abs/{id}",
-        ExternalFileURL = $"https://arxiv.org/pdf/{id}",
-        Summary = ap.Abstract.Trim(),
-        Tags = ap.Categories.Split(' ').ToList(),
-        Title = ap.Title
-    };
+        var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
+        DateTime published;
+        var publishDateParsed = DateTime.TryParseExact(ap.Versions.FirstOrDefault()?.Created, "ddd, d MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out published);
 
-    await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
-    Console.WriteLine(id);
+        var id = ap.Id.Replace("oai:arXiv.org:", string.Empty);
+
+        var publication = new Publication
+        {
+            Authors = ap.AuthorsParsed.Select(a => string.Join(" ", a.Reverse<string>().Where(str => !string.IsNullOrEmpty(str)))).ToList(),
+            CreatedUTC = DateTime.UtcNow,
+            DOI = ap.Doi,
+            Journal = ap.JournalRef,
+            LicenseURL = ap.License,
+            Published = publishDateParsed ? published : null,
+            ExternalID = id,
+            Submitter = ap.Submitter,
+            ExternalSystem = "ARXIV",
+            ExternalURL = $"https://arxiv.org/abs/{id}",
+            ExternalFileURL = $"https://arxiv.org/pdf/{id}",
+            Summary = ap.Abstract.Trim(),
+            Tags = ap.Categories.Split(' ').ToList(),
+            Title = ap.Title
+        };
+
+        await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
+        Console.WriteLine(id);
+    }
+    catch (Exception ex)
+    {
+
+    }
 });
 
 Console.ReadLine();
