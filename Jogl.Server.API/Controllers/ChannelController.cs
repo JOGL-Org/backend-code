@@ -35,6 +35,7 @@ namespace Jogl.Server.API.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("{id}")]
         [SwaggerOperation($"Returns a single channel")]
@@ -54,6 +55,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(channelModel);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("{id}/detail")]
         [SwaggerOperation($"Returns a single channel")]
