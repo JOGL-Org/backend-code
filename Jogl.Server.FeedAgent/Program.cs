@@ -15,7 +15,7 @@ var host = new HostBuilder()
     {
         config.SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile($"appSettings.json", false, true)
-            .AddJsonFile($"appSettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", false)
+            .AddJsonFile($"appSettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development"}.json", false)
             .AddEnvironmentVariables()
             .AddKeyVault();
     })
