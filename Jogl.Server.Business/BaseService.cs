@@ -2,6 +2,7 @@
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
+using System.Security;
 
 namespace Jogl.Server.Business
 {
@@ -282,7 +283,7 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Channel c, Membership? membership, Permission permission)
+        protected bool Can(Channel c, Membership? membership, Membership? communityEntityMembership, Permission permission)
         {
             switch (permission)
             {
@@ -303,6 +304,8 @@ namespace Jogl.Server.Business
                     return membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner);
                 case Permission.Delete:
                     return membership != null && membership.AccessLevel == AccessLevel.Admin;
+                case Permission.Join:
+                    return communityEntityMembership != null;
                 default:
                     return false;
             }
@@ -802,8 +805,9 @@ namespace Jogl.Server.Business
                 if (count.Count() > 1)
                     return;
                 var membership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.Id.ToString());
+                var communityEntityMembership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.CommunityEntityId);
 
-                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, membership, p)).ToList();
+                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, membership, communityEntityMembership, p)).ToList();
                 c.CurrentUserAccessLevel = membership?.AccessLevel;
             }
         }
@@ -1308,7 +1312,7 @@ namespace Jogl.Server.Business
 
         protected List<Channel> GetFilteredChannels(IEnumerable<Channel> channels, IEnumerable<Membership> currentUserMemberships)
         {
-            return channels.Where(c => currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString()) || (c.Visibility == ChannelVisibility.Open && currentUserMemberships.Any(m => m.CommunityEntityId == c.CommunityEntityId)))
+            return channels.Where(c => currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString()) || (c.Visibility == ChannelVisibility.Open))
                            .ToList();
         }
 
@@ -1610,7 +1614,7 @@ namespace Jogl.Server.Business
                             return CanSeeEvent(feedEntity as Event, currentUserMemberships, currentUserAttendances, userId);
                         case FeedType.Channel:
                             var membership = currentUserMemberships.FirstOrDefault(m => m.CommunityEntityId == feedEntity.Id.ToString());
-                            return Can(feedEntity as Channel, membership, Permission.Read);
+                            return Can(feedEntity as Channel, membership, null, Permission.Read);
                         default:
                             return Can(feedEntity as CommunityEntity, currentUserMemberships, entityRelations, Permission.Read);
                     }
