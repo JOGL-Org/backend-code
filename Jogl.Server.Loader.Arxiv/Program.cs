@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 using Jogl.Server.Configuration;
 using Jogl.Server.Data;
 using System.Globalization;
-using SharpCompress.Common;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
