@@ -13,8 +13,7 @@ IConfiguration config = new ConfigurationBuilder()
     .Build();
 
 var publicationRepository = new PublicationRepository(config);
-var publications = publicationRepository.List(a => !a.Deleted);
-foreach (var line in File.ReadLines("arxiv-metadata-oai-snapshot.json"))
+await Parallel.ForEachAsync(File.ReadLines("arxiv-metadata-oai-snapshot.json"), new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (line, token) =>
 {
     var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
     DateTime published;
@@ -40,13 +39,9 @@ foreach (var line in File.ReadLines("arxiv-metadata-oai-snapshot.json"))
         Title = ap.Title
     };
 
-    var existingPublication = publications.SingleOrDefault(p => p.ExternalID == publication.ExternalID);
-    if (existingPublication != null)
-        continue;
-
-    await publicationRepository.CreateAsync(publication);
-    Console.WriteLine(ap.Id);
-}
+    await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
+    Console.WriteLine(id);
+});
 
 Console.ReadLine();
 
