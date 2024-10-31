@@ -272,6 +272,9 @@ namespace Jogl.Server.API.Controllers
             if (!channel.Permissions.Contains(Permission.Read))
                 return Forbid();
 
+            if (!channel.Permissions.Contains(Permission.Join))
+                return Forbid();
+
             var membership = new Membership
             {
                 CommunityEntityId = id,
