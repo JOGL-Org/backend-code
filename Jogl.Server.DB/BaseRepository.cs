@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Search;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace Jogl.Server.DB
@@ -462,6 +463,23 @@ namespace Jogl.Server.DB
         {
             var dbFilter = Builders<T>.Filter.Where(filter);
             await DeleteAsync(dbFilter);
+        }
+
+        public virtual async Task EnsureExistsAsync()
+        {
+            var coll = GetCollection<T>();
+            var db = GetDatabase(_configuration["MongoDB:DB"]);
+
+            //query collection
+            var filter = new BsonDocument("name", CollectionName);
+            var collections = await db.ListCollectionsAsync(new ListCollectionsOptions { Filter = filter });
+
+            //check for existence
+            if (await collections.AnyAsync())
+                return;
+
+            //collection does not exist - create
+            await db.CreateCollectionAsync(CollectionName);
         }
 
         public virtual async Task InitializeAsync()

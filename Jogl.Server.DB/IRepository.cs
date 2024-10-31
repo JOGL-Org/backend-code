@@ -6,6 +6,7 @@ namespace Jogl.Server.DB
 {
     public interface IRepository
     {
+        Task EnsureExistsAsync();
         Task InitializeAsync();
     }
 

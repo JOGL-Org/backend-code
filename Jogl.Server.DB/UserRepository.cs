@@ -97,6 +97,7 @@ namespace Jogl.Server.DB
 
         public async override Task InitializeAsync()
         {
+            await EnsureExistsAsync();
             var coll = GetCollection<User>();
             await coll.Indexes.CreateOneAsync(new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(u => u.Username), new CreateIndexOptions { Unique = true }));
             await coll.Indexes.CreateOneAsync(new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(u => u.Email), new CreateIndexOptions { Unique = true }));

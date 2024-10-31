@@ -42,7 +42,9 @@ namespace Jogl.Server.DB
 
         public override async Task InitializeAsync()
         {
+            await EnsureExistsAsync();
             var coll = GetCollection<T>();
+
             var searchIndexes = await ListSearchIndexesAsync();
             if (!searchIndexes.Contains(INDEX_SEARCH))
                 await coll.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(INDEX_SEARCH, new BsonDocument(new BsonDocument { { "storedSource", true }, { "mappings", new BsonDocument { { "dynamic", true } } } })));

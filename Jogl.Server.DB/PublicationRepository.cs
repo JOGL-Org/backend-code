@@ -79,6 +79,7 @@ namespace Jogl.Server.DB
 
         public override async Task InitializeAsync()
         {
+            await EnsureExistsAsync();
             var coll = GetCollection<Publication>();
 
             var searchIndexes = await ListSearchIndexesAsync();

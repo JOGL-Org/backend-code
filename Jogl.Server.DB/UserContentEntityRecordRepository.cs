@@ -62,7 +62,9 @@ namespace Jogl.Server.DB
 
         public override async Task InitializeAsync()
         {
+            await EnsureExistsAsync();
             var coll = GetCollection<UserContentEntityRecord>();
+
             var searchIndexes = await ListIndexesAsync();
             if (!searchIndexes.Contains(INDEX_UNIQUE))
             {
