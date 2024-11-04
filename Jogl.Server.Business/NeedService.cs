@@ -177,6 +177,7 @@ namespace Jogl.Server.Business
             }
 
             EnrichNeedsWithPermissions(needs, currentUserId);
+            EnrichEntitiesWithCreatorData(needs);
         }
 
         public List<Need> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)

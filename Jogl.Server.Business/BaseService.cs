@@ -181,6 +181,7 @@ namespace Jogl.Server.Business
             switch (permission)
             {
                 case Permission.Manage:
+                case Permission.ManageDocuments:
                 case Permission.Delete:
                 case Permission.DeleteContentEntity:
                 case Permission.DeleteComment:

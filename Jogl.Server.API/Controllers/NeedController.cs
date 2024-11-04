@@ -28,6 +28,11 @@ namespace Jogl.Server.API.Controllers
         public NeedController(INeedService needService, ICommunityEntityService communityEntityService, IUserService userService, IDocumentService documentService, IMembershipService membershipService, IConfiguration configuration, IMapper mapper, ILogger<EventController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _needService = needService;
+            _communityEntityService = communityEntityService;
+            _userService = userService;
+            _documentService = documentService;
+            _membershipService = membershipService;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -41,7 +46,7 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             var need = _mapper.Map<Need>(model);
-            need.FeedId = entityId;
+            need.EntityId = entityId;
 
             await InitCreationAsync(need);
             var id = await _needService.CreateAsync(need);

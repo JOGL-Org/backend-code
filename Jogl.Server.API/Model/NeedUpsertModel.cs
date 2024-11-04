@@ -17,7 +17,7 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("end_date")]
         public DateTime? EndDate { get; set; }
 
-        [JsonPropertyName("skills")]
+        [JsonPropertyName("keywords")]
         public List<string>? Skills { get; set; }
 
         [JsonPropertyName("interests")]
