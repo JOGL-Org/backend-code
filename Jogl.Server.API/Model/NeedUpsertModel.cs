@@ -25,5 +25,15 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("type")]
         public NeedType? Type { get; set; }
+
+        [JsonPropertyName("default_visibility")]
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
+
+        [JsonPropertyName("user_visibility")]
+        public List<FeedEntityUserVisibilityUpsertModel>? UserVisibility { get; set; }
+
+        [JsonPropertyName("communityentity_visibility")]
+        public List<FeedEntityCommunityEntityVisibilityUpsertModel>? CommunityEntityVisibility { get; set; }
+
     }
 }

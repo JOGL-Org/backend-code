@@ -59,6 +59,11 @@ namespace Jogl.Server.URL
             }
         }
 
+        public string GetContentEntityUrl(string contentEntityId)
+        {
+            return $"{_configuration["App:URL"]}/post/{contentEntityId}";
+        }
+
         public string GetUrl(FeedEntity entity, Channel channel)
         {
             var url = GetUrl(entity);

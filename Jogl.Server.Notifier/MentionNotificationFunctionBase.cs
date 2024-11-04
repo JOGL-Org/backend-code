@@ -20,7 +20,7 @@ namespace Jogl.Server.Notifier
             _feedEntityService = feedEntityService;
         }
 
-        protected async Task SendMentionEmailAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, CommunityEntity communityEntity, string text, Channel channel = null)
+        protected async Task SendMentionEmailAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, CommunityEntity communityEntity, string text, string contentEntityId)
         {
             var communityEntityEmailData = users
                           .ToDictionary(u => u.Email, u => (object)new
@@ -31,12 +31,12 @@ namespace Jogl.Server.Notifier
                               CONTAINER_URL = communityEntity == null ? null : _urlService.GetUrl(communityEntity),
                               CONTAINER_NAME = communityEntity == null ? null : communityEntity.FeedTitle,
                               OBJECT_TYPE = _feedEntityService.GetPrintName(feedEntity.FeedType),
-                              OBJECT_URL = _urlService.GetUrl(feedEntity, channel),
+                              OBJECT_URL = _urlService.GetUrl(feedEntity),
                               OBJECT_NAME = feedEntity.FeedTitle,
                               ORIGIN_TYPE = Origin,
-                              ORIGIN_URL = _urlService.GetUrl(feedEntity, channel),
+                              ORIGIN_URL = _urlService.GetContentEntityUrl(contentEntityId),
                               ORIGIN_TEXT = text,
-                              CTA_URL = _urlService.GetUrl(feedEntity, channel),
+                              CTA_URL = _urlService.GetContentEntityUrl(contentEntityId),
                               ABOUT_VISIBLE = communityEntity != feedEntity
                           });
 
@@ -44,22 +44,22 @@ namespace Jogl.Server.Notifier
             await _emailService.SendEmailAsync(communityEntityEmailData, EmailTemplate.MentionCreated, fromName: author.FirstName);
         }
 
-        protected async Task SendMentionPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, Channel channel = null)
+        protected async Task SendMentionPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, string contentEntityId)
         {
             var userIds = users.Select(u => u.Id.ToString());
             var pushTokens = _pushNotificationTokenRepository.List(t => userIds.Contains(t.UserId) && !t.Deleted);
 
             SetPushProcessed(users);
-            await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), $"New mention in {feedEntity.FeedTitle}", $"{author.FullName} {OriginAction}", _urlService.GetUrl(feedEntity, channel));
+            await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), $"New mention in {feedEntity.FeedTitle}", $"{author.FullName} {OriginAction}", _urlService.GetContentEntityUrl(contentEntityId));
         }
 
-        protected async Task SendPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, Channel channel = null)
+        protected async Task SendPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, string contentEntityId)
         {
             var userIds = users.Select(u => u.Id.ToString());
             var pushTokens = _pushNotificationTokenRepository.List(t => userIds.Contains(t.UserId) && !t.Deleted);
 
             SetPushProcessed(users);
-            await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), $"New {Origin} in {feedEntity.FeedTitle}", $"{author.FullName} {OriginAction}", _urlService.GetUrl(feedEntity, channel));
+            await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), $"New {Origin} in {feedEntity.FeedTitle}", $"{author.FullName} {OriginAction}", _urlService.GetContentEntityUrl(contentEntityId));
         }
     }
 }
