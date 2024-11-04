@@ -14,6 +14,7 @@ namespace Jogl.Server.DB
     {
         Task<string> CreateAsync(T entity);
         Task<List<string>> CreateAsync(List<T> entities);
+        Task CreateBulkAsync(List<T> entities);
         T Get(string entityId);
         T Get(Expression<Func<T, bool>> filter);
         T GetNewest(Expression<Func<T, bool>> filter);

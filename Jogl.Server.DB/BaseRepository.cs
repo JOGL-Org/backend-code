@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Search;
-using System.Collections;
 using System.Linq.Expressions;
 
 namespace Jogl.Server.DB
@@ -89,6 +88,12 @@ namespace Jogl.Server.DB
             var coll = GetCollection<T>();
             await coll.InsertManyAsync(entities);
             return entities.Select(e => e.Id.ToString()).ToList();
+        }
+
+        public async Task CreateBulkAsync(List<T> entities)
+        {
+            var coll = GetCollection<T>();
+            await coll.BulkWriteAsync(entities.Select(e => new InsertOneModel<T>(e)));
         }
 
         public T Get(string entityId)
