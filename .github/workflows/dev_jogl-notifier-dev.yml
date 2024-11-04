@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './Jogl.Server.Notifier' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '7.0.x' # set this to the dotnet version to use
 
 jobs:
@@ -18,7 +18,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       id-token: write #This is required for requesting the JWT
-      contents: read #fixes build issue
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -37,11 +36,11 @@ jobs:
           popd
       
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_382C7E640CE44A38B56176B8670749E8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DC41D96D585E400D812993855456FC51 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A0B77A74E08E46C58A6AC935DB777EB8 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2759030ABB5C4DEAA321843EF0C79132 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_365F5ACE651F45F78EB36ECFCB0BD303 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6B0F34DB8CB54283AB9E059C59DE51F4 }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
