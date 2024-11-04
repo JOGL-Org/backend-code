@@ -64,6 +64,9 @@ namespace Jogl.Server.DB
                                         .Set(e => e.Interests, updatedEntity.Interests)
                                         .Set(e => e.Skills, updatedEntity.Skills)
                                         .Set(e => e.Type, updatedEntity.Type)
+                                        .Set(e => e.DefaultVisibility, updatedEntity.DefaultVisibility)
+                                        .Set(e => e.UserVisibility, updatedEntity.UserVisibility)
+                                        .Set(e => e.CommunityEntityVisibility, updatedEntity.CommunityEntityVisibility)
                                         .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                         .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId).Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }

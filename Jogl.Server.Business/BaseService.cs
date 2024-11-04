@@ -196,14 +196,14 @@ namespace Jogl.Server.Business
             }
         }
 
-        private FeedEntityVisibility? GetFeedEntityVisibility(Document document, IEnumerable<Membership> memberships, string userId)
+        private FeedEntityVisibility? GetFeedEntityVisibility(FeedEntity feedEntity, IEnumerable<Membership> memberships, string userId)
         {
-            if (document.CreatedByUserId == userId && !string.IsNullOrEmpty(userId))
+            if (feedEntity.CreatedByUserId == userId && !string.IsNullOrEmpty(userId))
                 return FeedEntityVisibility.Edit;
 
-            var defaultVisibility = document.DefaultVisibility;
-            var userVisibility = document.UserVisibility?.FirstOrDefault(u => u.UserId == userId)?.Visibility;
-            var communityEntityVisibility = document.CommunityEntityVisibility?.FirstOrDefault(u => memberships.Any(m => m.CommunityEntityId == u.CommunityEntityId && m.UserId == userId))?.Visibility; //TODO fix case for multiple CE memberships
+            var defaultVisibility = feedEntity.DefaultVisibility;
+            var userVisibility = feedEntity.UserVisibility?.FirstOrDefault(u => u.UserId == userId)?.Visibility;
+            var communityEntityVisibility = feedEntity.CommunityEntityVisibility?.FirstOrDefault(u => memberships.Any(m => m.CommunityEntityId == u.CommunityEntityId && m.UserId == userId))?.Visibility; //TODO fix case for multiple CE memberships
 
             var visibilities = new List<FeedEntityVisibility?> { defaultVisibility, userVisibility, communityEntityVisibility }.Where(v => v != null).ToList();
             if (!visibilities.Any())
@@ -251,8 +251,9 @@ namespace Jogl.Server.Business
                         case Permission.Delete:
                             switch (feedEntity.FeedType)
                             {
+                                case FeedType.Need:
                                 case FeedType.Document:
-                                    var parentDocVisibility = GetFeedEntityVisibility(feedEntity as Document, currentUserMemberships, userId);
+                                    var parentDocVisibility = GetFeedEntityVisibility(feedEntity, currentUserMemberships, userId);
                                     return parentDocVisibility == FeedEntityVisibility.Edit;
                                 case FeedType.Event:
                                     return attendance != null && attendance.AccessLevel == AttendanceAccessLevel.Admin;
@@ -1616,6 +1617,9 @@ namespace Jogl.Server.Business
                         case FeedType.Channel:
                             var membership = currentUserMemberships.FirstOrDefault(m => m.CommunityEntityId == feedEntity.Id.ToString());
                             return Can(feedEntity as Channel, membership, null, Permission.Read);
+                        case FeedType.Need:
+                            return true;//TODO fix
+                            //return Can(feedEntity as Need, currentUserMemberships, null, Permission.Read);
                         default:
                             return Can(feedEntity as CommunityEntity, currentUserMemberships, entityRelations, Permission.Read);
                     }

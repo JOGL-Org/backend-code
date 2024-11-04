@@ -46,7 +46,6 @@ namespace Jogl.Server.DB
                                             .Set(e => e.URL, updatedEntity.URL)
                                             .Set(e => e.Description, updatedEntity.Description)
                                             .Set(e => e.ImageId, updatedEntity.ImageId)
-                                            .Set(e => e.Visibility, updatedEntity.Visibility)
                                             .Set(e => e.DefaultVisibility, updatedEntity.DefaultVisibility)
                                             .Set(e => e.UserVisibility, updatedEntity.UserVisibility)
                                             .Set(e => e.CommunityEntityVisibility, updatedEntity.CommunityEntityVisibility)

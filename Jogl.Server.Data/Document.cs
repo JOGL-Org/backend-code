@@ -30,9 +30,6 @@ namespace Jogl.Server.Data
         public List<string>? UserIds { get; set; }
         [Obsolete]
         public ContentEntityVisibility Visibility { get; set; }
-        public FeedEntityVisibility? DefaultVisibility { get; set; }
-        public List<FeedEntityUserVisibility>? UserVisibility { get; set; }
-        public List<FeedEntityCommunityEntityVisibility>? CommunityEntityVisibility { get; set; }
 
         [BsonIgnore]
         [JsonIgnore]

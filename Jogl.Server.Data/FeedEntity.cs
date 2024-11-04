@@ -16,6 +16,10 @@ namespace Jogl.Server.Data
         [BsonIgnore]
         public virtual string? FeedLogoId { get; }
 
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
+        public List<FeedEntityUserVisibility>? UserVisibility { get; set; }
+        public List<FeedEntityCommunityEntityVisibility>? CommunityEntityVisibility { get; set; }
+
         [BsonIgnore]
         [JsonIgnore]
         public int PostCount { get; set; }
