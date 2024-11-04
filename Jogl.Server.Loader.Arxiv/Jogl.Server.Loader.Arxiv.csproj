@@ -34,10 +34,12 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="morelinq" Version="4.3.0" />
 	</ItemGroup>
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
 		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
 	</ItemGroup>

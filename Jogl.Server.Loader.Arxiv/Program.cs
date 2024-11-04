@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 using Jogl.Server.Configuration;
 using Jogl.Server.Data;
 using System.Globalization;
+using MoreLinq;
+using Jogl.Server.Arxiv;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -13,9 +15,14 @@ IConfiguration config = new ConfigurationBuilder()
     .Build();
 
 var publicationRepository = new PublicationRepository(config);
-await Parallel.ForEachAsync(File.ReadLines("arxiv-metadata-oai-snapshot.json"), new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (line, token) =>
+
+//initial load
+var i = 0;
+foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
 {
-    try
+    var publicationBatch = new List<Publication>();
+
+    foreach (var line in lineBatch)
     {
         var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
         DateTime published;
@@ -41,17 +48,49 @@ await Parallel.ForEachAsync(File.ReadLines("arxiv-metadata-oai-snapshot.json"), 
             Title = ap.Title
         };
 
-        await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
-        Console.WriteLine(id);
+        publicationBatch.Add(publication);
     }
-    catch (Exception ex)
-    {
 
-    }
+    await publicationRepository.CreateBulkAsync(publicationBatch);
+    Console.WriteLine(++i);
+}
+
+//load new papers from arxiv
+var arxivFacade = new ArxivFacade(config, null);
+var entries = await arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
+
+//transform to publication object
+var publications = entries.Select(entry =>
+{
+    var id = entry.Id.Replace("http://arxiv.org/abs/", string.Empty);
+    var idWithoutVersion = id.Substring(0, id.IndexOf("v"));
+
+    return new Publication
+    {
+        Authors = entry.Author.Select(a => a.Name).ToList(),
+        CreatedUTC = DateTime.UtcNow,
+        DOI = entry.Doi?.Text,
+        Journal = entry.JournalRef?.Text,
+        //LicenseURL = entry.
+        Published = entry.Published,
+        ExternalID = idWithoutVersion,
+        //Submitter =entry.
+        ExternalSystem = "ARXIV",
+        ExternalURL = $"https://arxiv.org/abs/{idWithoutVersion}",
+        ExternalFileURL = $"https://arxiv.org/pdf/{idWithoutVersion}",
+        Summary = entry.Summary,
+        Tags = entry.Category.Select(c => c.Term).ToList(),
+        Title = entry.Title
+    };
 });
 
-Console.ReadLine();
+//store papers
+foreach (var publication in publications)
+{
+    await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
+}
 
+Console.ReadLine();
 
 public class ArxivPublication
 {
