@@ -2,7 +2,6 @@
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
-using System.Security;
 
 namespace Jogl.Server.Business
 {
@@ -1272,6 +1271,27 @@ namespace Jogl.Server.Business
             EnrichEntitiesWithCreatorData(entities, users);
         }
 
+        protected void EnrichFeedEntitiesWithVisibilityData(IEnumerable<FeedEntity> feedEntities)
+        {
+            var visibilityUserIds = feedEntities.SelectMany(d => (d.UserVisibility ?? new List<FeedEntityUserVisibility>()).Select(uv => uv.UserId)).ToList();
+            var visibilityEntityIds = feedEntities.SelectMany(d => (d.CommunityEntityVisibility ?? new List<FeedEntityCommunityEntityVisibility>()).Select(cev => cev.CommunityEntityId)).ToList();
+            var visibilityUsers = _userRepository.Get(visibilityUserIds);
+            var visibilityCes = _feedEntityService.GetFeedEntitySetForCommunities(visibilityEntityIds);
+
+            foreach (var fe in feedEntities)
+            {
+                foreach (var uv in fe.UserVisibility ?? new List<FeedEntityUserVisibility>())
+                {
+                    uv.User = visibilityUsers.SingleOrDefault(u => u.Id.ToString() == uv.UserId);
+                }
+
+                foreach (var cev in fe.CommunityEntityVisibility ?? new List<FeedEntityCommunityEntityVisibility>())
+                {
+                    cev.CommunityEntity = visibilityCes.CommunityEntities.SingleOrDefault(ce => ce.Id.ToString() == cev.CommunityEntityId);
+                }
+            }
+        }
+
         protected void EnrichEntitiesWithCreatorData(IEnumerable<Entity> entities, IEnumerable<User> users)
         {
             foreach (var entity in entities)
@@ -1619,7 +1639,7 @@ namespace Jogl.Server.Business
                             return Can(feedEntity as Channel, membership, null, Permission.Read);
                         case FeedType.Need:
                             return true;//TODO fix
-                            //return Can(feedEntity as Need, currentUserMemberships, null, Permission.Read);
+                                        //return Can(feedEntity as Need, currentUserMemberships, null, Permission.Read);
                         default:
                             return Can(feedEntity as CommunityEntity, currentUserMemberships, entityRelations, Permission.Read);
                     }

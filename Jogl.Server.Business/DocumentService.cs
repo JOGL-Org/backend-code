@@ -238,23 +238,8 @@ namespace Jogl.Server.Business
             var userContentEntityRecords = _userContentEntityRecordRepository.List(ucer => ucer.UserId == currentUserId && documentIds.Contains(ucer.FeedId) && !ucer.Deleted);
             var mentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.Unread && documentIds.Contains(m.OriginFeedId) && !m.Deleted);
 
-            var visibilityUserIds = documents.SelectMany(d => (d.UserVisibility ?? new List<FeedEntityUserVisibility>()).Select(uv => uv.UserId)).ToList();
-            var visibilityEntityIds = documents.SelectMany(d => (d.CommunityEntityVisibility ?? new List<FeedEntityCommunityEntityVisibility>()).Select(cev => cev.CommunityEntityId)).ToList();
-            var visibilityUsers = _userRepository.Get(visibilityUserIds);
-            var visibilityCes = _feedEntityService.GetFeedEntitySetForCommunities(visibilityEntityIds);
-
             foreach (var doc in documents)
             {
-                foreach (var uv in doc.UserVisibility ?? new List<FeedEntityUserVisibility>())
-                {
-                    uv.User = visibilityUsers.SingleOrDefault(u => u.Id.ToString() == uv.UserId);
-                }
-
-                foreach (var cev in doc.CommunityEntityVisibility ?? new List<FeedEntityCommunityEntityVisibility>())
-                {
-                    cev.CommunityEntity = visibilityCes.CommunityEntities.SingleOrDefault(ce => ce.Id.ToString() == cev.CommunityEntityId);
-                }
-
                 var feedRecord = userFeedRecords.SingleOrDefault(ufr => ufr.FeedId == doc.Id.ToString());
 
                 doc.FeedEntity = _feedEntityService.GetEntityFromLists(doc.FeedId, feedEntitySet);
@@ -267,6 +252,7 @@ namespace Jogl.Server.Business
                 doc.IsMedia = IsMedia(doc);
             }
 
+            EnrichFeedEntitiesWithVisibilityData(documents);
             EnrichDocumentsWithPermissions(documents, currentUserId);
             EnrichEntitiesWithCreatorData(documents, users);
         }

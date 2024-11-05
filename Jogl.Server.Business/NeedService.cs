@@ -176,6 +176,7 @@ namespace Jogl.Server.Business
                 }
             }
 
+            EnrichFeedEntitiesWithVisibilityData(needs);
             EnrichNeedsWithPermissions(needs, currentUserId);
             EnrichEntitiesWithCreatorData(needs);
         }
