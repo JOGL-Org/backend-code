@@ -16,44 +16,44 @@ IConfiguration config = new ConfigurationBuilder()
 
 var publicationRepository = new PublicationRepository(config);
 
-//initial load
-var i = 0;
-foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
-{
-    var publicationBatch = new List<Publication>();
+////initial load
+//var i = 0;
+//foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
+//{
+//    var publicationBatch = new List<Publication>();
 
-    foreach (var line in lineBatch)
-    {
-        var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
-        DateTime published;
-        var publishDateParsed = DateTime.TryParseExact(ap.Versions.FirstOrDefault()?.Created, "ddd, d MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out published);
+//    foreach (var line in lineBatch)
+//    {
+//        var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
+//        DateTime published;
+//        var publishDateParsed = DateTime.TryParseExact(ap.Versions.FirstOrDefault()?.Created, "ddd, d MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out published);
 
-        var id = ap.Id.Replace("oai:arXiv.org:", string.Empty);
+//        var id = ap.Id.Replace("oai:arXiv.org:", string.Empty);
 
-        var publication = new Publication
-        {
-            Authors = ap.AuthorsParsed.Select(a => string.Join(" ", a.Reverse<string>().Where(str => !string.IsNullOrEmpty(str)))).ToList(),
-            CreatedUTC = DateTime.UtcNow,
-            DOI = ap.Doi,
-            Journal = ap.JournalRef,
-            LicenseURL = ap.License,
-            Published = publishDateParsed ? published : null,
-            ExternalID = id,
-            Submitter = ap.Submitter,
-            ExternalSystem = "ARXIV",
-            ExternalURL = $"https://arxiv.org/abs/{id}",
-            ExternalFileURL = $"https://arxiv.org/pdf/{id}",
-            Summary = ap.Abstract.Trim(),
-            Tags = ap.Categories.Split(' ').ToList(),
-            Title = ap.Title
-        };
+//        var publication = new Publication
+//        {
+//            Authors = ap.AuthorsParsed.Select(a => string.Join(" ", a.Reverse<string>().Where(str => !string.IsNullOrEmpty(str)))).ToList(),
+//            CreatedUTC = DateTime.UtcNow,
+//            DOI = ap.Doi,
+//            Journal = ap.JournalRef,
+//            LicenseURL = ap.License,
+//            Published = publishDateParsed ? published : null,
+//            ExternalID = id,
+//            Submitter = ap.Submitter,
+//            ExternalSystem = "ARXIV",
+//            ExternalURL = $"https://arxiv.org/abs/{id}",
+//            ExternalFileURL = $"https://arxiv.org/pdf/{id}",
+//            Summary = ap.Abstract.Trim(),
+//            Tags = ap.Categories.Split(' ').ToList(),
+//            Title = ap.Title
+//        };
 
-        publicationBatch.Add(publication);
-    }
+//        publicationBatch.Add(publication);
+//    }
 
-    await publicationRepository.CreateBulkAsync(publicationBatch);
-    Console.WriteLine(++i);
-}
+//    await publicationRepository.CreateBulkAsync(publicationBatch);
+//    Console.WriteLine(++i);
+//}
 
 //load new papers from arxiv
 var arxivFacade = new ArxivFacade(config, null);
@@ -85,10 +85,11 @@ var publications = entries.Select(entry =>
 });
 
 //store papers
-foreach (var publication in publications)
+await Parallel.ForEachAsync(publications, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (publication, cancellationToken) =>
 {
     await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
-}
+    Console.WriteLine(publication.Published);
+});
 
 Console.ReadLine();
 

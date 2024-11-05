@@ -32,7 +32,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         }
 
         [Function("ARXIV-publication-monitor")]
-        public async Task Run([TimerTrigger("0 0 0 * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 7 * * *")] TimerInfo myTimer)
         {
             //load new papers from arxiv
             var entries = await _arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
@@ -63,10 +63,10 @@ namespace Jogl.Server.ExternalActivityMonitor
             });
 
             //store papers
-            foreach (var publication in publications)
+            await Parallel.ForEachAsync(publications, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (publication, cancellationToken) =>
             {
                 await _publicationRepository.UpsertAsync(publication, p => p.ExternalID);
-            }
+            });
 
             //create posts for feed integration sources
             var sources = _feedIntegrationRepository.List(eas => eas.Type == FeedIntegrationType.Arxiv && !string.IsNullOrEmpty(eas.SourceId) && !eas.Deleted);
