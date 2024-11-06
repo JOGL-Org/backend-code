@@ -27,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
 		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
 	</ItemGroup>

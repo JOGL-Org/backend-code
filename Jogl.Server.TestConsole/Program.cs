@@ -1,36 +1,16 @@
-﻿using Jogl.Server.DB;
+﻿using Jogl.Server.Configuration;
+using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
-using System.Text.Json;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.json")
     .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("Environment")}.json")
+    .AddKeyVault()
     .Build();
 
-var paperRepository = new PaperRepository(config);
-var papers = paperRepository.List(a => !a.Deleted && !string.IsNullOrEmpty(a.Journal));
+var ceRepo = new ContentEntityRepository(config);
+var cesToDelete = ceRepo.List(ce => !string.IsNullOrEmpty(ce.ExternalID));
+await ceRepo.DeleteAsync(cesToDelete);
 
-foreach (var paper in papers)
-{
-    Console.WriteLine(paper.Journal);
-    try
-    {
-        var journalData = JsonSerializer.Deserialize<JournalData>(paper.Journal);
-        paper.Journal = journalData.journal;
-        paper.OpenAccessPdfUrl = journalData.open_access_pdf;
-
-        paperRepository.UpdateAsync(paper).Wait();
-    }
-    catch (Exception)
-    {
-        continue;
-    }
-}
 Console.ReadLine();
-
-class JournalData
-{
-    public string journal { get; set; }
-    public string open_access_pdf { get; set; }
-}
