@@ -2,6 +2,7 @@
 using Jogl.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 using System.Text.Json;
 
 namespace Jogl.Server.ServiceBus
@@ -22,6 +23,18 @@ namespace Jogl.Server.ServiceBus
             var sender = client.CreateSender(queueName);
 
             await sender.SendMessageAsync(new ServiceBusMessage(JsonSerializer.Serialize(payload)));
+        }
+
+        public async Task SendAsync<T>(IEnumerable<T> payload, string queueName) where T : Entity
+        {
+            var client = new ServiceBusClient(_configuration["Azure:ServiceBus:ConnectionString"]);
+            var sender = client.CreateSender(queueName);
+
+            foreach (var batch in payload.Batch(50))
+            {
+                var msgs = batch.Select(p => new ServiceBusMessage(JsonSerializer.Serialize(p))).ToList();
+                await sender.SendMessagesAsync(msgs);
+            }
         }
 
         public async Task SubscribeAsync<T>(string queueName, string subscriptionName, Func<T, Task> onMessage) where T : Entity

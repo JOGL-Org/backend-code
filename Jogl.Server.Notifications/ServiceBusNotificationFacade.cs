@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data;
+﻿using Azure;
+using Jogl.Server.Data;
 using Jogl.Server.ServiceBus;
 
 namespace Jogl.Server.Notifications
@@ -57,6 +58,16 @@ namespace Jogl.Server.Notifications
         public async Task NotifyAddedAsync(Paper paper)
         {
             await _serviceBus.SendAsync(paper, "paper-added");
+        }
+
+        public async Task NotifyLoadedAsync(IEnumerable<Publication> publications)
+        {
+            await _serviceBus.SendAsync(publications, "publication-loaded");
+        }
+
+        public async Task NotifyLoadedAsync(Publication publication)
+        {
+            await _serviceBus.SendAsync(publication, "publication-loaded");
         }
 
         public async Task NotifyInvitedAsync(Invitation invitation)

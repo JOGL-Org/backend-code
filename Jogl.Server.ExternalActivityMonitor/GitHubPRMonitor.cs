@@ -6,7 +6,6 @@ using Jogl.Server.GitHub.DTO;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 
 namespace Jogl.Server.Mailer
 {

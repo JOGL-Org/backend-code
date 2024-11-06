@@ -13,6 +13,8 @@ namespace Jogl.Server.Notifications
         Task NotifyCreatedAsync(Notification notification);
         Task NotifyCreatedAsync(IEnumerable<Notification> notifications);
         Task NotifyAddedAsync(Paper paper);
+        Task NotifyLoadedAsync(IEnumerable<Publication> publications);
+        Task NotifyLoadedAsync(Publication publication);
         Task NotifyInvitedAsync(Invitation invitation);
         Task NotifyInvitedAsync(List<Invitation> invitations);
         Task NotifyInvitedAsync(EventAttendance invitation);
