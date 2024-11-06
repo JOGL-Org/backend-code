@@ -30,7 +30,7 @@ namespace Jogl.Server.ExternalActivityMonitor
             _configuration = configuration;
         }
 
-        [Function("publication-feed-monitor")]
+        [Function("publication-feed-processor")]
         public async Task RunCommentsAsync(
         [ServiceBusTrigger("publication-loaded", "feed", Connection = "ConnectionString")]
         ServiceBusReceivedMessage message,

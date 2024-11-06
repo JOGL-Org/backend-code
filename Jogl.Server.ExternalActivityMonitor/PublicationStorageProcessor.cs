@@ -20,7 +20,7 @@ namespace Jogl.Server.ExternalActivityMonitor
             _configuration = configuration;
         }
 
-        [Function("publication-loader")]
+        [Function("publication-storage-processor")]
         public async Task RunCommentsAsync(
         [ServiceBusTrigger("publication-loaded", "storage", Connection = "ConnectionString")]
         ServiceBusReceivedMessage message,
