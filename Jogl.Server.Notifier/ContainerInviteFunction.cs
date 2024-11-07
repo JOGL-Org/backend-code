@@ -73,7 +73,6 @@ namespace Jogl.Server.Notifier
                 {
                     NAME = inviter.FeedTitle,
                     CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
-                    CONTAINER_URL = _urlService.GetUrl(communityEntity),
                     CONTAINER_NAME = communityEntity.FeedTitle,
                     CTA_URL = _urlService.GetUrl("actions"),
                 }, fromName: inviter.FirstName);
