@@ -152,27 +152,29 @@ namespace Jogl.Server.Business
             });
         }
 
-        public async Task NotifyInviteCreatedAsync(Invitation invitation, IEnumerable<Invitation> invitations, User user)
+        public async Task NotifyInvitesCreatedAsync(IEnumerable<Invitation> invitations)
         {
-            var communityEntity = _communityEntityService.Get(invitation.CommunityEntityId, invitation.CommunityEntityType);
-
-            await NotifyAsync(invitations.Select(i => new Notification
+            foreach (var grp in invitations.GroupBy(i => i.Entity))
             {
-                CreatedUTC = DateTime.UtcNow,
-                CreatedByUserId = invitation.CreatedByUserId,
-                Type = NotificationType.Invite,
-                UserId = i.InviteeUserId,
-                OriginFeedId = invitation.CommunityEntityId,
-                Data = new List<NotificationData>
-                {
-                    new NotificationData{ Key = NotificationDataKey.Invitation, EntityId = i.Id.ToString(), EntitySubtype= invitation.AccessLevel.ToString().ToLower()},
-                    new NotificationData{ Key = NotificationDataKey.User, EntityId = user.Id.ToString(), EntityTitle = user.FeedTitle },
-                    new NotificationData{ Key = NotificationDataKey.CommunityEntity, EntityId = communityEntity.Id.ToString(), EntityTitle = communityEntity.Title, CommunityEntityType = communityEntity.Type, EntityLogoId = communityEntity.LogoId, EntityBannerId = communityEntity.BannerId, EntityHomeChannelId = communityEntity.HomeChannelId}
-                },
-                Text = GetNotificationText(NotificationType.Invite, invitation, user, communityEntity)
-            }).ToList());
-        }
+                var communityEntity = grp.Key;
 
+                await NotifyAsync(invitations.Select(i => new Notification
+                {
+                    CreatedUTC = DateTime.UtcNow,
+                    CreatedByUserId = i.CreatedByUserId,
+                    Type = NotificationType.Invite,
+                    UserId = i.InviteeUserId,
+                    OriginFeedId = i.CommunityEntityId,
+                    Data = new List<NotificationData>
+                    {
+                        new NotificationData{ Key = NotificationDataKey.Invitation, EntityId = i.Id.ToString(), EntitySubtype= i.AccessLevel.ToString().ToLower()},
+                        new NotificationData{ Key = NotificationDataKey.User, EntityId = i.CreatedBy.Id.ToString(), EntityTitle = i.CreatedBy.FeedTitle },
+                        new NotificationData{ Key = NotificationDataKey.CommunityEntity, EntityId = communityEntity.Id.ToString(), EntityTitle = communityEntity.Title, CommunityEntityType = communityEntity.Type, EntityLogoId = communityEntity.LogoId, EntityBannerId = communityEntity.BannerId, EntityHomeChannelId = communityEntity.HomeChannelId}
+                    },
+                    Text = GetNotificationText(NotificationType.Invite, i, i.CreatedBy, communityEntity)
+                }).ToList());
+            }
+        }
 
         public async Task NotifyEventInviteCreatedAsync(Event ev, CommunityEntity communityEntity, User user, IEnumerable<EventAttendance> invitations)
         {
@@ -476,28 +478,31 @@ namespace Jogl.Server.Business
             }
         }
 
-        public async Task NotifyRequestCreatedAsync(Invitation invitation, IEnumerable<Invitation> invitations)
+        public async Task NotifyRequestsCreatedAsync(IEnumerable<Invitation> invitations)
         {
-            var adminMemberships = _membershipRepository.List(m => m.CommunityEntityId == invitation.CommunityEntityId && (m.AccessLevel == AccessLevel.Admin || m.AccessLevel == AccessLevel.Owner) && !m.Deleted);
-            var communityEntity = _communityEntityService.Get(invitation.CommunityEntityId, invitation.CommunityEntityType);
-
-            foreach (var adminMembership in adminMemberships)
+            foreach (var grp in invitations.GroupBy(i => i.Entity))
             {
-                await NotifyAsync(invitations.Select(i => new Notification
+                var communityEntity = grp.Key;
+                var adminMemberships = _membershipRepository.List(m => m.CommunityEntityId == communityEntity.Id.ToString() && (m.AccessLevel == AccessLevel.Admin || m.AccessLevel == AccessLevel.Owner) && !m.Deleted);
+
+                foreach (var adminMembership in adminMemberships)
                 {
-                    CreatedUTC = DateTime.UtcNow,
-                    CreatedByUserId = invitation.CreatedByUserId,
-                    Type = NotificationType.AdminRequest,
-                    UserId = adminMembership.UserId,
-                    OriginFeedId = invitation.CommunityEntityId,
-                    Data = new List<NotificationData>
+                    await NotifyAsync(invitations.Select(i => new Notification
                     {
-                        new NotificationData{ Key = NotificationDataKey.Invitation, EntityId = i.Id.ToString()},
-                        new NotificationData{ Key = NotificationDataKey.User, EntityId = i.InviteeUserId, EntityTitle = i.User.FirstName + " " + i.User.LastName},
-                        new NotificationData{ Key = NotificationDataKey.CommunityEntity, EntityId = communityEntity.Id.ToString(), EntityTitle = communityEntity.Title, CommunityEntityType = communityEntity.Type, EntityBannerId = communityEntity.BannerId, EntityLogoId = communityEntity.LogoId}
-                    },
-                    Text = GetNotificationText(NotificationType.AdminRequest, invitation, i.User, communityEntity),
-                }).ToList());
+                        CreatedUTC = DateTime.UtcNow,
+                        CreatedByUserId = i.CreatedByUserId,
+                        Type = NotificationType.AdminRequest,
+                        UserId = adminMembership.UserId,
+                        OriginFeedId = i.CommunityEntityId,
+                        Data = new List<NotificationData>
+                        {
+                            new NotificationData{ Key = NotificationDataKey.Invitation, EntityId = i.Id.ToString()},
+                            new NotificationData{ Key = NotificationDataKey.User, EntityId = i.InviteeUserId, EntityTitle = i.User.FirstName + " " + i.User.LastName},
+                            new NotificationData{ Key = NotificationDataKey.CommunityEntity, EntityId = communityEntity.Id.ToString(), EntityTitle = communityEntity.Title, CommunityEntityType = communityEntity.Type, EntityBannerId = communityEntity.BannerId, EntityLogoId = communityEntity.LogoId}
+                        },
+                        Text = GetNotificationText(NotificationType.AdminRequest, i, i.User, communityEntity),
+                    }).ToList());
+                }
             }
         }
 

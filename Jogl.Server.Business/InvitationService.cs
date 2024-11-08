@@ -41,140 +41,112 @@ namespace Jogl.Server.Business
             return await CreateWithIdAsync(invitation);
         }
 
-        public async Task<List<OperationResult<string>>> CreateMultipleAsync(Invitation invitation, List<string> emails, string redirectUrl)
+        public async Task<List<OperationResult<string>>> CreateMultipleAsync(IEnumerable<Invitation> invitations, string redirectUrl)
         {
-            var inviterUser = _userRepository.GetForEmail(invitation.CreatedByUserId);
-            var existingInvitations = _invitationRepository.List(i => invitation.CommunityEntityId == i.CommunityEntityId && i.Status == InvitationStatus.Pending && !i.Deleted);
-            var existingMemberships = _membershipRepository.List(m => invitation.CommunityEntityId == m.CommunityEntityId && !m.Deleted);
             var res = new List<OperationResult<string>>();
-
-            var existingUsers = _userRepository.List(u => emails.Any(email => u.Email == email && !u.Deleted));
-            var targetUsers = new List<User>();
-            var targetEmails = new List<string>();
-
-            foreach (var email in emails.Distinct(StringComparer.CurrentCultureIgnoreCase))
+            foreach (var grp in invitations.GroupBy(i => i.Entity))
             {
-                var user = existingUsers.FirstOrDefault(u => string.Equals(u.Email, email, StringComparison.CurrentCultureIgnoreCase));
-                if (user == null)
+                var communityEntity = grp.Key;
+
+                var existingInvitations = _invitationRepository.List(i => communityEntity.Id.ToString() == i.CommunityEntityId && i.Status == InvitationStatus.Pending && !i.Deleted);
+                var existingMemberships = _membershipRepository.List(m => communityEntity.Id.ToString() == m.CommunityEntityId && !m.Deleted);
+
+                //repoint email invites for email invitations to existing users
+                var emails = grp.Where(i => !string.IsNullOrEmpty(i.InviteeEmail)).Select(i => i.InviteeEmail).ToList();
+                var emailUsers = _userRepository.List(u => emails.Any(email => u.Email == email && !u.Deleted));
+                foreach (var invitation in grp.Where(i => !string.IsNullOrEmpty(i.InviteeEmail)))
                 {
-                    if (existingInvitations.Any(m => string.Equals(m.InviteeEmail, email, StringComparison.CurrentCultureIgnoreCase)))
+                    var user = emailUsers.SingleOrDefault(u => u.Email.Equals(invitation.InviteeEmail, StringComparison.InvariantCultureIgnoreCase));
+                    if (user != null)
                     {
-                        res.Add(new OperationResult<string> { OriginalPayload = email, Status = Status.Conflict });
-                        continue;
+                        invitation.InviteeUserId = user.Id.ToString();
+                        invitation.InviteeEmail = null;
                     }
-
-                    res.Add(new OperationResult<string> { OriginalPayload = email, Status = Status.OK });
-                    targetEmails.Add(email);
                 }
-                else
+
+                //populate users for user invites
+                var ids = grp.Where(i => !string.IsNullOrEmpty(i.InviteeUserId)).Select(i => i.InviteeUserId).ToList();
+                var inviteeUsers = _userRepository.Get(ids);
+                foreach (var invitation in grp.Where(i => !string.IsNullOrEmpty(i.InviteeUserId)))
                 {
-                    if (existingMemberships.Any(m => m.UserId == user.Id.ToString()))
-                    {
-                        res.Add(new OperationResult<string> { OriginalPayload = user.Email, Status = Status.Conflict });
-                        continue;
-                    }
-
-                    if (existingInvitations.Any(m => m.InviteeUserId == user.Id.ToString()))
-                    {
-                        res.Add(new OperationResult<string> { OriginalPayload = user.Email, Status = Status.Conflict });
-                        continue;
-                    }
-
-                    res.Add(new OperationResult<string> { OriginalPayload = user.Email, Status = Status.OK });
-                    targetUsers.Add(user);
+                    invitation.User = inviteeUsers.SingleOrDefault(u => u.Id.ToString() == invitation.InviteeUserId);
                 }
+
+                //filter out duplicates and empty invites
+                var finalizedInvitations = new List<Invitation>();
+                foreach (var invitation in grp)
+                {
+                    //empty invites
+                    if (string.IsNullOrEmpty(invitation.InviteeUserId) && string.IsNullOrEmpty(invitation.InviteeEmail))
+                    {
+                        res.Add(new OperationResult<string> { OriginalPayload = invitation.InviteeUserId ?? invitation.InviteeEmail, Status = Status.Conflict });
+                        continue;
+                    }
+
+                    //duplicates
+                    if (existingInvitations.Any(ei => ei.InviteeUserId == invitation.InviteeUserId && ei.InviteeEmail == invitation.InviteeEmail))
+                    {
+                        res.Add(new OperationResult<string> { OriginalPayload = invitation.InviteeUserId ?? invitation.InviteeEmail, Status = Status.Conflict });
+                        continue;
+                    }
+
+                    if (!string.IsNullOrEmpty(invitation.InviteeUserId) && existingMemberships.Any(m => m.UserId == invitation.InviteeUserId))
+                    {
+                        res.Add(new OperationResult<string> { OriginalPayload = invitation.InviteeUserId ?? invitation.InviteeEmail, Status = Status.Conflict });
+                        continue;
+                    }
+
+                    if (finalizedInvitations.Any(ei => ei.InviteeUserId == invitation.InviteeUserId && ei.InviteeEmail == invitation.InviteeEmail))
+                    {
+                        res.Add(new OperationResult<string> { OriginalPayload = invitation.InviteeUserId ?? invitation.InviteeEmail, Status = Status.Conflict });
+                        continue;
+                    }
+
+                    finalizedInvitations.Add(invitation);
+                    res.Add(new OperationResult<string> { OriginalPayload = invitation.InviteeUserId ?? invitation.InviteeEmail, Status = Status.OK });
+                }
+
+                await CreateMultipleWithIdAsync(finalizedInvitations.Where(i => !string.IsNullOrEmpty(i.InviteeUserId)).ToList(), redirectUrl);
+                await CreateMultipleWithEmailAsync(finalizedInvitations.Where(i => !string.IsNullOrEmpty(i.InviteeEmail)).ToList(), redirectUrl);
             }
-
-            await CreateMultipleWithIdAsync(invitation, targetUsers, redirectUrl);
-            await CreateMultipleWithEmailAsync(invitation, targetEmails, redirectUrl);
 
             return res;
         }
 
-        private async Task<List<OperationResult<User>>> CreateMultipleWithIdAsync(Invitation invitation, List<User> users, string redirectUrl)
+        private async Task<List<OperationResult<string>>> CreateMultipleWithIdAsync(List<Invitation> invitations, string redirectUrl)
         {
-            if (users == null || users.Count == 0)
-                return new List<OperationResult<User>>();
+            if (invitations == null || invitations.Count() == 0)
+                return new List<OperationResult<string>>();
 
-            //create entity
-            var inviterUser = _userRepository.Get(invitation.CreatedByUserId);
-            var invitations = users.Select(u => new Invitation
-            {
-                CommunityEntityId = invitation.CommunityEntityId,
-                CommunityEntityType = invitation.CommunityEntityType,
-                CreatedUTC = invitation.CreatedUTC,
-                CreatedByUserId = invitation.CreatedByUserId,
-                Status = invitation.Status,
-                Type = invitation.Type,
-                User = u,
-                InviteeUserId = u.Id.ToString(),
-                AccessLevel = invitation.AccessLevel,
-            }).ToList();
-
+            //create
             await _invitationRepository.CreateAsync(invitations);
 
-            ////process emails
-            //switch (invitation.Type)
-            //{
-            //    case InvitationType.Invitation:
-            //        await _emailService.SendEmailAsync(users.ToDictionary(u => u.Email, u => (object)new
-            //        {
-            //            url = redirectUrl,
-            //            first_name = u.FirstName,
-            //            invitor = inviterUser.FeedTitle,
-            //            access_level = invitation.AccessLevel.ToString(),
-            //            entity_type = _communityEntityService.GetPrintName(invitation.CommunityEntityType),
-            //            entity_name = invitation.Entity.Title
-            //        }), EmailTemplate.Invitation, fromName: inviterUser.FeedTitle);
-            //        break;
-            //}
-
             //process notifications
-            switch (invitation.Type)
-            {
-                case InvitationType.Invitation:
-                    await _notificationService.NotifyInviteCreatedAsync(invitation, invitations, inviterUser);
-                    await _notificationFacade.NotifyInvitedAsync(invitations);
-                    break;
-                case InvitationType.Request:
-                    await _notificationService.NotifyRequestCreatedAsync(invitation, invitations);
-                    break;
-            }
+            EnrichEntitiesWithCreatorData(invitations);
+
+            var invites = invitations.Where(i => i.Type == InvitationType.Invitation).ToList();
+            await _notificationService.NotifyInvitesCreatedAsync(invites);
+            await _notificationFacade.NotifyInvitedAsync(invites);
+
+            var requests = invitations.Where(i => i.Type == InvitationType.Request).ToList();
+            await _notificationService.NotifyRequestsCreatedAsync(requests);
 
             //return
             return invitations
-                .Select(i => new OperationResult<User> { Id = i.Id.ToString(), OriginalPayload = i.User, Status = Status.OK })
+                .Select(i => new OperationResult<string> { Id = i.Id.ToString(), OriginalPayload = i.User.Id.ToString(), Status = Status.OK })
                 .ToList();
         }
 
-        private async Task<List<OperationResult<string>>> CreateMultipleWithEmailAsync(Invitation invitation, List<string> userEmails, string redirectUrl)
+        private async Task<List<OperationResult<string>>> CreateMultipleWithEmailAsync(List<Invitation> invitations, string redirectUrl)
         {
-            if (userEmails == null || userEmails.Count == 0)
+            if (invitations == null || invitations.Count() == 0)
                 return new List<OperationResult<string>>();
 
-            //create entity
-            var inviterUser = _userRepository.Get(invitation.CreatedByUserId);
-            var invitations = userEmails.Select(email => new Invitation
-            {
-                CommunityEntityId = invitation.CommunityEntityId,
-                CommunityEntityType = invitation.CommunityEntityType,
-                CreatedUTC = invitation.CreatedUTC,
-                CreatedByUserId = invitation.CreatedByUserId,
-                Status = invitation.Status,
-                Type = invitation.Type,
-                InviteeEmail = email,
-                AccessLevel = invitation.AccessLevel,
-            }).ToList();
-
+            //create
             await _invitationRepository.CreateAsync(invitations);
 
-            //process emails
-            switch (invitation.Type)
-            {
-                case InvitationType.Invitation:
-                    await _notificationFacade.NotifyInvitedAsync(invitations);
-                    break;
-            }
+            //process notifications
+            await _notificationFacade.NotifyInvitedAsync(invitations);
 
             //return
             return invitations

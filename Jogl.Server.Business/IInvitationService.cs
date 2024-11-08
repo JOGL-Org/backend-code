@@ -6,7 +6,7 @@ namespace Jogl.Server.Business
     public interface IInvitationService
     {
         Task<string> CreateAsync(Invitation invitation);
-        Task<List<OperationResult<string>>> CreateMultipleAsync(Invitation invitation, List<string> emails, string redirectUrl);
+        Task<List<OperationResult<string>>> CreateMultipleAsync(IEnumerable<Invitation> invitations, string redirectUrl);
         Invitation Get(string invitationId);
         Invitation Get(string invitationId, string userId);
         Invitation GetForUserAndEntity(string userId, string entityId);

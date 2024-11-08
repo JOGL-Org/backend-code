@@ -547,12 +547,12 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpPost]
-        [Route("{id}/invite/email/batch")]
-        [SwaggerOperation("Invite a user to an entity using their email")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new invitation object", typeof(string))]
+        [Route("{id}/invite/batch")]
+        [SwaggerOperation("Invite a batch of users to an entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The users were successfully invited")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The currently logged-in user does not have the rights to invite people to the specified entity")]
-        public async Task<IActionResult> InviteUserViaBatch([SwaggerParameter("ID of the entity")][FromRoute] string id, [SwaggerParameter("ID of the user to invite")][FromBody] List<string> userEmails)
+        public async Task<IActionResult> InviteUsersBatch([SwaggerParameter("ID of the entity")][FromRoute] string id, [SwaggerParameter("Users to invite")][FromBody] List<InvitationUpsertModel> invitationModels)
         {
             var entity = GetEntity(id);
             if (entity == null)
@@ -561,20 +561,23 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Manage))
                 return Forbid();
 
-            var invitation = new Invitation
+            var invitations = invitationModels.Select(i => new Invitation
             {
                 CommunityEntityId = id,
                 CommunityEntityType = EntityType,
                 Entity = entity,
                 Type = InvitationType.Invitation,
-                AccessLevel = AccessLevel.Member,
-            };
+                InviteeEmail = i.Email,
+                InviteeUserId = i.UserId,
+                AccessLevel = i.AccessLevel,
+                Status = InvitationStatus.Pending,
+            }).ToList();
 
-            await InitCreationAsync(invitation);
+            await InitCreationAsync(invitations);
             var redirectUrl = $"{_configuration["App:URL"]}/signup";
 
-            var invitationResultSet = await _invitationService.CreateMultipleAsync(invitation, userEmails, redirectUrl);
-            return Ok(invitationResultSet);
+            await _invitationService.CreateMultipleAsync(invitations, redirectUrl);
+            return Ok();
         }
 
         [AllowAnonymous]
@@ -688,7 +691,7 @@ namespace Jogl.Server.API.Controllers
                     break;
                 case InvitationType.Invitation:
                     if (!entity.Permissions.Contains(Permission.Manage))
-                        return Forbid(); 
+                        return Forbid();
 
                     break;
             }

@@ -17,7 +17,7 @@ namespace Jogl.Server.Business
         Task NotifyCommunityEntityJoinedAsync(Relation relation);
         Task NotifyMemberJoinedAsync(Membership membership);
         Task NotifyInviteCreatedAsync(Invitation invitation, User user);
-        Task NotifyInviteCreatedAsync(Invitation invitation, IEnumerable<Invitation> invitations, User user);
+        Task NotifyInvitesCreatedAsync(IEnumerable<Invitation> invitations);
         Task NotifyInviteWithdrawAsync(Invitation invitation);
         Task NotifyInvitesWithdrawAsync(IEnumerable<Invitation> invitations);
         Task NotifyEventInviteCreatedAsync(Event ev, CommunityEntity communityEntity, User user, IEnumerable<EventAttendance> invitations);
@@ -25,7 +25,7 @@ namespace Jogl.Server.Business
         Task NotifyEventInviteWithdrawAsync(EventAttendance invitation);
         Task NotifyEventInvitesWithdrawAsync(IEnumerable<EventAttendance> invitations);
         Task NotifyRequestCreatedAsync(Invitation invitation);
-        Task NotifyRequestCreatedAsync(Invitation invitation, IEnumerable<Invitation> invitations);
+        Task NotifyRequestsCreatedAsync( IEnumerable<Invitation> invitations);
         Task NotifyRequestCreatedWithdrawAsync(Invitation invitation);
         Task NotifyCommunityEntityInviteCreatedAsync(CommunityEntityInvitation invitation);
         Task NotifyCommunityEntityInviteCreatedWithdrawAsync(CommunityEntityInvitation invitation);
