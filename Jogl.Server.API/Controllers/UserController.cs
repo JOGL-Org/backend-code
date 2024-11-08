@@ -707,6 +707,22 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        [Route("google")]
+        [SwaggerOperation($"Removes the Google account link")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No Google record found or user not found")]
+        public async Task<IActionResult> UnloadGoogle()
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user == null)
+                return NotFound();
+
+            user.Auth.IsGoogleUser = false;
+            await _userService.UpdateAsync(user);
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("papers/orcid")]
         [SwaggerOperation($"Gets papers for the current user's ORCID")]
