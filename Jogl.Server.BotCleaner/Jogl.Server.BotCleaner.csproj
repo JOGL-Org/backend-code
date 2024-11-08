@@ -41,6 +41,7 @@
     <ProjectReference Include="..\Jogl.Server.AI\Jogl.Server.AI.csproj" />
     <ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
     <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
   </ItemGroup>
   <ItemGroup>

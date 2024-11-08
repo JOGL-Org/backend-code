@@ -33,7 +33,7 @@ namespace Jogl.Server.Mailer
         }
 
         [Function("Users")]
-        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
         {
             var entityScores = _entityScoreRepository.List(s => s.EntityType == EntityScore.USER && !s.Deleted);
             var users = _userRepository.List(u => !entityScores.Select(s => s.EntityId).Contains(u.Id.ToString()) && !u.Deleted);

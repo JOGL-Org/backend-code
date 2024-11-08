@@ -9,6 +9,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Jogl.Server.Configuration;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -17,13 +18,16 @@ var host = new HostBuilder()
         config.SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile($"appSettings.json", false, true)
             .AddJsonFile($"appSettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development"}.json", false)
+            .AddKeyVault()
             .AddEnvironmentVariables();
     })
     .ConfigureServices(services =>
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
+        services.AddMemoryCache();
         services.AddTransient<IAuthService, AuthService>();
+        services.AddTransient<IAuthChallengeService, AuthChallengeService>();
         services.AddTransient<IFeedEntityService, FeedEntityService>();
         services.AddTransient<ICommunityEntityService, CommunityEntityService>();
         services.AddTransient<INotificationFacade, ServiceBusNotificationFacade>();
