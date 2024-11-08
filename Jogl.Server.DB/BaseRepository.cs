@@ -118,11 +118,11 @@ namespace Jogl.Server.DB
             return coll.Find(filter, new FindOptions { Collation = DefaultCollation }).ToList();
         }
 
-        public T Get(Expression<Func<T, bool>> filter)
+        public T Get(Expression<Func<T, bool>> filter, bool includeDeleted = false)
         {
             var coll = GetCollection<T>();
             var filterBuilder = Builders<T>.Filter;
-            var filterDefinition = new ExpressionFilterDefinition<T>(filter) & filterBuilder.Eq(e => e.Deleted, false);
+            var filterDefinition = new ExpressionFilterDefinition<T>(filter) & (includeDeleted ? filterBuilder.Empty : filterBuilder.Eq(e => e.Deleted, false));
             return coll.Find(filterDefinition, new FindOptions { Collation = DefaultCollation }).FirstOrDefault();
         }
 

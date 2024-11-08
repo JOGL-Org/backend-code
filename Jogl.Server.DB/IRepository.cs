@@ -16,7 +16,7 @@ namespace Jogl.Server.DB
         Task<List<string>> CreateAsync(List<T> entities);
         Task CreateBulkAsync(List<T> entities);
         T Get(string entityId);
-        T Get(Expression<Func<T, bool>> filter);
+        T Get(Expression<Func<T, bool>> filter, bool includeDeleted = false);
         T GetNewest(Expression<Func<T, bool>> filter);
         List<T> Get(List<string> entityIds);
         List<T> List(Expression<Func<T, bool>> filter, int page, int pageSize, SortKey sortKey = SortKey.Relevance, bool ascending = false);

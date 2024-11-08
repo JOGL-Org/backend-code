@@ -89,7 +89,7 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             //check for duplicate emails
-            var existingUserEmail = _userService.GetForEmail(model.Email);
+            var existingUserEmail = _userService.GetForEmail(model.Email, true);
             if (existingUserEmail != null)
                 return Conflict(new ErrorModel("email"));
 
@@ -136,12 +136,12 @@ namespace Jogl.Server.API.Controllers
                 return Unauthorized();
 
             //check for duplicate email
-            var existingUserEmail = _userService.GetForEmail(model.Email);
+            var existingUserEmail = _userService.GetForEmail(model.Email, true);
             if (existingUserEmail != null)
                 return Conflict(new ErrorModel("email"));
 
             //check for duplicate wallet
-            var existingUserForWallet = _userService.GetForWallet(model.Wallet);
+            var existingUserForWallet = _userService.GetForWallet(model.Wallet, true);
             if (existingUserForWallet != null)
                 return Conflict(new ErrorModel("wallet"));
 
@@ -174,7 +174,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.Conflict, "A user with this email already exists")]
         public async Task<IActionResult> CheckEmail([FromBody] EmailModel model)
         {
-            var existingUserEmail = _userService.GetForEmail(model.Email);
+            var existingUserEmail = _userService.GetForEmail(model.Email, true);
             if (existingUserEmail != null)
                 return Conflict();
 

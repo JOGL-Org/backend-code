@@ -8,9 +8,9 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(User user, string password = "");
         User Get(string userId);
         User GetDetail(string userId, string currentUserId);
-        User GetForEmail(string email);
-        User GetForWallet(string wallet);
-        User GetForUsername(string username);
+        User GetForEmail(string email, bool includeDeleted = false);
+        User GetForWallet(string wallet, bool includeDeleted = false);
+        User GetForUsername(string username, bool includeDeleted = false);
         ListPage<User> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         long Count(string userId, string search);
         ListPage<User> ListForNode(string userId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);

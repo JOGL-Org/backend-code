@@ -144,19 +144,19 @@ namespace Jogl.Server.Business
             return user;
         }
 
-        public User GetForEmail(string email)
+        public User GetForEmail(string email, bool includeDeleted = false)
         {
-            return _userRepository.Get(u => u.Email == email);
+            return _userRepository.Get(u => u.Email == email, includeDeleted);
         }
 
-        public User GetForWallet(string wallet)
+        public User GetForWallet(string wallet, bool includeDeleted = false)
         {
-            return _userRepository.Get(u => u.Wallets.Any(w => w.Address == wallet));
+            return _userRepository.Get(u => u.Wallets.Any(w => w.Address == wallet), includeDeleted);
         }
 
-        public User GetForUsername(string username)
+        public User GetForUsername(string username, bool includeDeleted = false)
         {
-            return _userRepository.Get(u => u.Username == username);
+            return _userRepository.Get(u => u.Username == username, includeDeleted);
         }
 
         public ListPage<User> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
