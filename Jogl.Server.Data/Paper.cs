@@ -15,6 +15,7 @@ namespace Jogl.Server.Data
         SEMANTIC, CROSSREF, DATACITE, PUBMED
     }
 
+    [BsonIgnoreExtraElements]
     public class Paper : FeedEntity, ICommunityEntityOwned
     {
         public string Title { get; set; }

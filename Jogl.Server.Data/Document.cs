@@ -7,6 +7,7 @@ namespace Jogl.Server.Data
     public enum DocumentType { Document, Link, JoglDoc }
     public enum DocumentFilter { Document, File, Media, Link, JoglDoc }
 
+    [BsonIgnoreExtraElements]
     public class Document : FeedEntity, IFeedEntityOwned
     {
         public string Name { get; set; }

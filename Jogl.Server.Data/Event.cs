@@ -6,6 +6,7 @@ namespace Jogl.Server.Data
     public enum EventVisibility { Private, Container, Public }
     public enum EventTag { Invited, Attending, Rejected, Organizer, Speaker, Attendee, Online, Physical }
 
+    [BsonIgnoreExtraElements]
     public class Event : FeedEntity, ICommunityEntityOwned, IFeedEntityOwned
     {
         public string Title { get; set; }
