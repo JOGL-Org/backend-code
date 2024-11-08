@@ -322,6 +322,9 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             var user = _userService.Get(id);
+            if (user == null)
+                return NotFound();
+
             var userModel = _mapper.Map<UserUpdateModel>(user);
             ApplyPatchModel(model, userModel);
 
