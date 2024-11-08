@@ -580,6 +580,40 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
+        [HttpPost]
+        [Route("{id}/invite/email/batch")]
+        [SwaggerOperation("Invite a user to an entity using their email")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new invitation object", typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The currently logged-in user does not have the rights to invite people to the specified entity")]
+        public async Task<IActionResult> InviteUserViaBatch([SwaggerParameter("ID of the entity")][FromRoute] string id, [SwaggerParameter("ID of the user to invite")][FromBody] List<string> userEmails)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            if (!entity.Permissions.Contains(Permission.Manage))
+                return Forbid();
+
+            var invitations = userEmails.Select(i => new Invitation
+            {
+                CommunityEntityId = id,
+                CommunityEntityType = EntityType,
+                Entity = entity,
+                Type = InvitationType.Invitation,
+                InviteeEmail = i,
+                AccessLevel = AccessLevel.Member,
+                Status = InvitationStatus.Pending,
+            }).ToList();
+
+            await InitCreationAsync(invitations);
+            var redirectUrl = $"{_configuration["App:URL"]}/signup";
+
+            await _invitationService.CreateMultipleAsync(invitations, redirectUrl);
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/invites")]
@@ -1023,6 +1057,7 @@ namespace Jogl.Server.API.Controllers
             var invitationId = await _communityEntityInvitationService.CreateAsync(invitation, redirectUrl);
             return Ok(invitationId);
         }
+
 
         [HttpGet]
         [Route("{id}/communityEntityInvites/incoming")]
