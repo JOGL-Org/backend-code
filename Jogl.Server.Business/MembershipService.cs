@@ -58,10 +58,11 @@ namespace Jogl.Server.Business
 
             foreach (var member in members)
             {
-                member.User = users.Single(u => u.Id == ObjectId.Parse(member.UserId));
+                member.User = users.SingleOrDefault(u => u.Id == ObjectId.Parse(member.UserId));
             }
 
             var memberPage = members
+                .Where(m => m.User != null)
                 .Where(m => (string.IsNullOrEmpty(search) || (m.User != null && (m.User.FirstName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || m.User.LastName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || m.User.Username.Contains(search, StringComparison.CurrentCultureIgnoreCase))))
                        && !m.Deleted)
                 .Skip((page - 1) * pageSize)
