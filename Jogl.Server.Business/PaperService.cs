@@ -166,6 +166,9 @@ namespace Jogl.Server.Business
         public List<Paper> ListForEntity(string currentUserId, string entityId, PaperType? type, List<PaperTag>? tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var feed = _feedRepository.Get(entityId);
+            if (feed == null)
+                return new List<Paper>();
+
             var papers = _paperRepository.SearchListSort(p => p.FeedIds.Contains(entityId) && !p.Deleted, sortKey, ascending, search);
 
             var filteredPapers = papers;
