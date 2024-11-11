@@ -18,7 +18,7 @@ namespace Jogl.Server.API.Controllers
     [Authorize]
     [ApiController]
     [Route("nodes")]
-    public class NodeController : CommunityEntityController<Data.Node, NodeModel, NodeDetailModel, CommunityEntityMiniModel, NodeUpsertModel, NodePatchModel>
+    public class NodeController : BaseCommunityEntityController<Data.Node, NodeModel, NodeDetailModel, CommunityEntityMiniModel, NodeUpsertModel, NodePatchModel>
     {
         private readonly IWorkspaceService _workspaceService;
         private readonly INodeService _nodeService;

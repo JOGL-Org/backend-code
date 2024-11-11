@@ -16,7 +16,7 @@ namespace Jogl.Server.API.Controllers
     [Authorize]
     [ApiController]
     [Route("organizations")]
-    public class OrganizationController : CommunityEntityController<Organization, OrganizationModel, OrganizationDetailModel, CommunityEntityMiniModel, OrganizationUpsertModel, OrganizationPatchModel>
+    public class OrganizationController : BaseCommunityEntityController<Organization, OrganizationModel, OrganizationDetailModel, CommunityEntityMiniModel, OrganizationUpsertModel, OrganizationPatchModel>
     {
         private readonly IWorkspaceService _workspaceService;
         private readonly INodeService _nodeService;

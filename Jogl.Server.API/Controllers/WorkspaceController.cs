@@ -16,7 +16,7 @@ namespace Jogl.Server.API.Controllers
     [Authorize]
     [ApiController]
     [Route("workspaces")]
-    public class WorkspaceController : CommunityEntityController<Workspace, WorkspaceModel, WorkspaceDetailModel, CommunityEntityMiniModel, WorkspaceUpsertModel, WorkspacePatchModel>
+    public class WorkspaceController : BaseCommunityEntityController<Workspace, WorkspaceModel, WorkspaceDetailModel, CommunityEntityMiniModel, WorkspaceUpsertModel, WorkspacePatchModel>
     {
         private readonly IWorkspaceService _workspaceService;
         private readonly INodeService _nodeService;

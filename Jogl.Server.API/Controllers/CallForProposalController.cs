@@ -15,7 +15,7 @@ namespace Jogl.Server.API.Controllers
     [Authorize]
     [ApiController]
     [Route("CFPs")]
-    public class CallForProposalController : CommunityEntityController<CallForProposal, CallForProposalModel, CallForProposalDetailModel, CallForProposalMiniModel, CallForProposalUpsertModel, CallForProposalPatchModel>
+    public class CallForProposalController : BaseCommunityEntityController<CallForProposal, CallForProposalModel, CallForProposalDetailModel, CallForProposalMiniModel, CallForProposalUpsertModel, CallForProposalPatchModel>
     {
         private readonly ICallForProposalService _callForProposalService;
         private readonly IWorkspaceService _workspaceService;
