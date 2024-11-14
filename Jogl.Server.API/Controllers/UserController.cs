@@ -578,6 +578,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(skillModels);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("papers")]
         [SwaggerOperation($"Adds a new paper")]
@@ -589,12 +590,14 @@ namespace Jogl.Server.API.Controllers
                 return BadRequest();
 
             var paper = _mapper.Map<Paper>(model);
+            paper.FeedId = CurrentUserId;
             await InitCreationAsync(paper);
-            var paperId = await _paperService.CreateAsync(CurrentUserId, paper);
+            var paperId = await _paperService.CreateAsync(paper);
 
             return Ok(paperId);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("papers/{paperId}")]
         [SwaggerOperation($"Associates a paper to the current user")]
@@ -617,6 +620,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(paperModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/papers")]
@@ -625,11 +629,12 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<PaperModel>))]
         public async Task<IActionResult> GetPapers([SwaggerParameter("ID of the user")][FromRoute] string id, [SwaggerParameter("The paper type")][FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
         {
-            var papers = _paperService.ListForEntity(CurrentUserId, id, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var papers = _paperService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Select(_mapper.Map<PaperModel>);
             return Ok(paperModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("papers/{paperId}")]
@@ -645,6 +650,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(paperModel);
         }
 
+        [Obsolete]
         [HttpDelete]
         [Route("papers/{paperId}")]
         [SwaggerOperation($"Disassociates the specified paper from the current user")]

@@ -1050,11 +1050,11 @@ namespace Jogl.Server.Business
             EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
         }
 
-        protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
-        {
-            var communityEntityMemberships = _membershipRepository.ListForCommunityEntities(communityEntities.Select(c => c.Id.ToString()));
-            EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
-        }
+        //protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
+        //{
+        //    var communityEntityMemberships = _membershipRepository.ListForCommunityEntities(communityEntities.Select(c => c.Id.ToString()));
+        //    EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
+        //}
 
         protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> communityEntityMemberships, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
         {
@@ -1525,15 +1525,26 @@ namespace Jogl.Server.Business
                                 .Where(n => permissions == null || permissions.All(pm => Can(n, currentUserMemberships, new List<Relation>(), pm)))
                                 .ToList();
         }
-        protected List<Paper> GetFilteredPapers(IEnumerable<Paper> papers, List<PaperTag>? tags)
+
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, int page, int pageSize) where T : FeedEntity
         {
-            return papers.Where(p => tags == null || !tags.Any() || tags.Any(t => p.OriginTags.Any(pt => pt == t)))
-                .ToList();
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
+
+            var filteredEntities = GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId);
+            return GetPage(filteredEntities, page, pageSize);
         }
 
-        protected List<Paper> GetFilteredPapers(IEnumerable<Paper> papers)
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId) where T : FeedEntity
         {
-            return papers.ToList();
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
+
+            return GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId);
+        }
+
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, IEnumerable<Membership> currentUserMemberships, string currentUserId) where T : FeedEntity
+        {
+            return entities.Where(e => CanSeeFeedEntity(e, currentUserMemberships, currentUserId))
+                         .ToList();
         }
 
         protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search, DocumentFilter? type, int page, int pageSize)
@@ -1541,11 +1552,10 @@ namespace Jogl.Server.Business
             return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, search, type), page, pageSize);
         }
 
-
         protected List<Document> GetFilteredJoglDocs(IEnumerable<Document> documents, string currentUserId)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            return documents.Where(d => CanSeeJoglDoc(d, currentUserMemberships, currentUserId)).ToList();
+            return documents.Where(d => CanSeeFeedEntity(d, currentUserMemberships, currentUserId)).ToList();
         }
 
         protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search = null, DocumentFilter? type = null)
@@ -1624,8 +1634,7 @@ namespace Jogl.Server.Business
             switch (document.Type)
             {
                 case DocumentType.JoglDoc:
-                    var docVisibility = GetFeedEntityVisibility(document, currentUserMemberships, userId);
-                    return docVisibility != null;
+                    return CanSeeFeedEntity(document, currentUserMemberships, userId);
                 default:
                     switch (feedEntity.FeedType)
                     {
@@ -1646,16 +1655,13 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool CanSeeJoglDoc(Document document, IEnumerable<Membership> currentUserMemberships, string userId)
+        protected bool CanSeeFeedEntity(FeedEntity entity, IEnumerable<Membership> currentUserMemberships, string userId)
         {
-            switch (document.Type)
-            {
-                case DocumentType.JoglDoc:
-                    var docVisibility = GetFeedEntityVisibility(document, currentUserMemberships, userId);
-                    return docVisibility != null;
-                default:
-                    return false;
-            }
+            if (entity == null)
+                return false;
+
+            var docVisibility = GetFeedEntityVisibility(entity, currentUserMemberships, userId);
+            return docVisibility != null;
         }
 
         protected bool CanSeeEvent(Event ev, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> eventAttendances, string userId)
@@ -1672,11 +1678,6 @@ namespace Jogl.Server.Business
                 default:
                     throw new Exception($"Cannot filter event for visibility {ev.Visibility}");
             }
-        }
-
-        protected List<Need> GetFilteredNeeds(IEnumerable<Need> needs)
-        {
-            return needs.ToList();
         }
 
         protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags, int page, int pageSize)

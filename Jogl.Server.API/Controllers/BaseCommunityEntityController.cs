@@ -1228,12 +1228,12 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             var paper = _mapper.Map<Paper>(model);
+            paper.FeedId = id;
             await InitCreationAsync(paper);
-            var paperId = await _paperService.CreateAsync(id, paper);
+            var paperId = await _paperService.CreateAsync( paper);
 
             return Ok(paperId);
         }
-
 
         [Obsolete]
         [HttpPost]
@@ -1278,7 +1278,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var papers = _paperService.ListForEntity(CurrentUserId, id, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var papers = _paperService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Select(_mapper.Map<PaperModel>);
             return Ok(paperModels);
         }

@@ -566,9 +566,9 @@ namespace Jogl.Server.Business
             feedEntitySet.Nodes = GetFilteredNodes(feedEntitySet.Nodes, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
             feedEntitySet.Organizations = GetFilteredOrganizations(feedEntitySet.Organizations, currentUserMemberships, currentUserInvitations, new List<Permission>());
             feedEntitySet.CallsForProposals = GetFilteredCallForProposals(feedEntitySet.CallsForProposals, feedEntitySet.Communities, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.Papers = GetFilteredPapers(feedEntitySet.Papers);
+            feedEntitySet.Papers = GetFilteredFeedEntities(feedEntitySet.Papers, userId);
             feedEntitySet.Documents = GetFilteredDocuments(feedEntitySet.Documents, feedEntitySet, allRelations, currentUserMemberships, currentUserEventAttendances, userId);
-            feedEntitySet.Needs = GetFilteredNeeds(feedEntitySet.Needs);
+            feedEntitySet.Needs = GetFilteredFeedEntities(feedEntitySet.Needs, userId);
             feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId);
 
             EnrichContentEntityData(contentEntities, feedEntitySet, contentEntitiesUsers, userId);
@@ -1198,11 +1198,11 @@ namespace Jogl.Server.Business
             events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId);
             var feedEntityIds = GetFeedEntityIdsForNodes(allRelations, events, nodeIds);
             var needs = _needRepository.List(n => communityEntityIds.Contains(n.EntityId) && !n.Deleted);
-            needs = GetFilteredNeeds(needs);
+            needs = GetFilteredFeedEntities(needs, userId);
             var documents = _documentRepository.List(d => feedEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
             documents = GetFilteredDocuments(documents, userId);
-            var papers = _paperRepository.List(p => communityEntityIds.Any(eId => p.FeedIds.Contains(eId)) && !p.Deleted);
-            papers = GetFilteredPapers(papers);
+            var papers = _paperRepository.List(p => communityEntityIds.Any(eId => p.FeedId == eId) && !p.Deleted);
+            papers = GetFilteredFeedEntities(papers, userId);
 
             var allUserFeedRecords = _userFeedRecordRepository.List(r => r.UserId == userId && !r.Deleted);
             var activeUserFeedRecords = allUserFeedRecords.Where(ufr => (ufr.LastReadUTC.HasValue || ufr.LastWriteUTC.HasValue || ufr.LastMentionUTC.HasValue) && !ufr.Muted);

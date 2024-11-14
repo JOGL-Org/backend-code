@@ -27,10 +27,7 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var paper = JsonSerializer.Deserialize<Paper>(message.Body.ToString());
-            if (!paper.FeedIds.Any())
-                return;
-
-            var feedEntity = _communityEntityService.GetFeedEntity(paper.FeedIds.Last());
+            var feedEntity = _communityEntityService.GetFeedEntity(paper.FeedId);
             var adder = _userRepository.Get(paper.UpdatedByUserId ?? paper.CreatedByUserId);
 
             await RunAsync(paper, feedEntity, u => u.NotificationSettings?.PaperMemberContainerEmail == true, u => u.NotificationSettings?.PaperMemberContainerJogl == true);

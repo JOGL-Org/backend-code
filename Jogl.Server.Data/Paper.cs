@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data.Util;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Data
 {
@@ -16,13 +17,13 @@ namespace Jogl.Server.Data
     }
 
     [BsonIgnoreExtraElements]
-    public class Paper : FeedEntity, ICommunityEntityOwned
+    public class Paper : FeedEntity, IFeedEntityOwned
     {
         public string Title { get; set; }
         public string Summary { get; set; }
         public string Authors { get; set; }
-        [Obsolete]
         public string FeedId { get; set; }
+        [Obsolete]
         public List<string> FeedIds { get; set; }
         public List<string> UserIds { get; set; }
         public string Journal { get; set; }
@@ -71,10 +72,10 @@ namespace Jogl.Server.Data
         public override string FeedTitle => Title;
 
         [BsonIgnore]
-        public string CommunityEntityId => FeedIds.FirstOrDefault();
+        [JsonIgnore]
+        public FeedEntity FeedEntity { get; set; }
 
-        [BsonIgnore]
-        public CommunityEntity CommunityEntity { get; set; }
+        public string FeedEntityId => FeedId;
     }
 
     public class TagData

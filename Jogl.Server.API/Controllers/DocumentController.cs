@@ -55,45 +55,6 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("{documentId}")]
-        [SwaggerOperation($"Returns a single document")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No document was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view documents for the parent entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The document", typeof(DocumentModel))]
-        public async Task<IActionResult> GetDocument([FromRoute] string documentId)
-        {
-            var document = await _documentService.GetAsync(documentId, CurrentUserId);
-            if (document == null)
-                return NotFound();
-
-            if (!document.Permissions.Contains(Permission.Read))
-                return Forbid();
-
-            var documentModel = _mapper.Map<DocumentModel>(document);
-            return Ok(documentModel);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("{documentId}/download")]
-        [SwaggerOperation($"Returns document data")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No document was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view documents for the parent entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The document data as a file")]
-        public async Task<IActionResult> GetDocumentData([FromRoute] string documentId)
-        {
-            var document = await _documentService.GetDataAsync(documentId, CurrentUserId);
-            if (document == null)
-                return NotFound();
-
-            //if (!document.Permissions.Contains(Permission.Read))
-            //    return Forbid();
-
-            return File(document.Data, document.Filetype);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
         [Route("{entityId}/documents")]
         [SwaggerOperation($"Lists all documents for the specified entity")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view documents for the entity")]
@@ -130,6 +91,45 @@ namespace Jogl.Server.API.Controllers
             models.AddRange(documentModels);
 
             return Ok(models);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{documentId}")]
+        [SwaggerOperation($"Returns a single document")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No document was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view documents for the parent entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The document", typeof(DocumentModel))]
+        public async Task<IActionResult> GetDocument([FromRoute] string documentId)
+        {
+            var document = await _documentService.GetAsync(documentId, CurrentUserId);
+            if (document == null)
+                return NotFound();
+
+            if (!document.Permissions.Contains(Permission.Read))
+                return Forbid();
+
+            var documentModel = _mapper.Map<DocumentModel>(document);
+            return Ok(documentModel);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{documentId}/download")]
+        [SwaggerOperation($"Returns document data")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No document was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view documents for the parent entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The document data as a file")]
+        public async Task<IActionResult> GetDocumentData([FromRoute] string documentId)
+        {
+            var document = await _documentService.GetDataAsync(documentId, CurrentUserId);
+            if (document == null)
+                return NotFound();
+
+            //if (!document.Permissions.Contains(Permission.Read))
+            //    return Forbid();
+
+            return File(document.Data, document.Filetype);
         }
 
         [HttpPut]

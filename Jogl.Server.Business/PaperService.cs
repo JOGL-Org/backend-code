@@ -8,7 +8,6 @@ using Jogl.Server.OpenAlex;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using Jogl.Server.Notifications;
-using System.Linq.Expressions;
 using Jogl.Server.Data.Util;
 
 namespace Jogl.Server.Business
@@ -36,21 +35,7 @@ namespace Jogl.Server.Business
             _logger = logger;
         }
 
-        public async Task<string> CreateAsync(string entityId, Paper paper)
-        {
-            var existingPaper = _paperRepository.Get(p => !string.IsNullOrEmpty(paper.ExternalId) && p.ExternalId == paper.ExternalId && !p.Deleted);
-            if (existingPaper == null)
-            {
-                return await CreateNewAsync(entityId, paper);
-            }
-            else
-            {
-                await AssociateAsync(entityId, existingPaper.Id.ToString(), paper.UserIds);
-                return existingPaper.Id.ToString();
-            }
-        }
-
-        private async Task<string> CreateNewAsync(string entityId, Paper paper)
+        public async Task<string> CreateAsync(Paper paper)
         {
             //create feed
             var feed = new Feed()
@@ -65,47 +50,15 @@ namespace Jogl.Server.Business
             //mark feed write
             await _userFeedRecordRepository.SetFeedWrittenAsync(paper.CreatedByUserId, id, DateTime.UtcNow);
 
-            switch (paper.ExternalSystem)
-            {
-                case ExternalSystem.None:
-                    paper.FeedIds = new List<string> { };
-                    break;
-                default:
-                    paper.FeedIds = new List<string> { entityId };
+            //automatically set paper to active 
+            paper.Status = ContentEntityStatus.Active;
 
-                    //automatically set paper to active 
-                    paper.Status = ContentEntityStatus.Active;
+            //load tags
+            await LoadTagsAsync(paper);
 
-                    //load tags
-                    await LoadTagsAsync(paper);
-
-                    //Attempt to load paper abstract from OA
-                    if (string.IsNullOrEmpty(paper.Summary))
-                        paper.Summary = FormatOAWorkAbstract(await _openAlexFacade.GetAbstractFromDOIAsync(paper.ExternalId));
-
-                    break;
-            }
-
-
-            switch (paper.Status)
-            {
-                case ContentEntityStatus.Draft:
-                    break;
-                default:
-                    //await CreateAutoContentEntityAsync(new ContentEntity
-                    //{
-                    //    Id = ObjectId.Parse(id),
-                    //    Title = paper.Title,
-                    //    Summary = paper.Summary,
-                    //    FeedId = entityId,
-                    //    Visibility = ContentEntityVisibility.Public,
-                    //    Type = ContentEntityType.Paper,
-                    //    CreatedByUserId = paper.CreatedByUserId,
-                    //    CreatedUTC = paper.CreatedUTC,
-                    //});
-
-                    break;
-            }
+            //Attempt to load paper abstract from OA
+            if (string.IsNullOrEmpty(paper.Summary))
+                paper.Summary = FormatOAWorkAbstract(await _openAlexFacade.GetAbstractFromDOIAsync(paper.ExternalId));
 
             //create paper
             paper.Id = ObjectId.Parse(id);
@@ -115,14 +68,13 @@ namespace Jogl.Server.Business
             return id;
         }
 
+        [Obsolete]
         public Paper GetDraft(string entityId, string userId)
         {
-            var draft = _paperRepository.Get(p => !p.Deleted && p.Status == ContentEntityStatus.Draft && p.FeedIds.Contains(entityId) && p.CreatedByUserId == userId);
-            EnrichPaperData(new List<Paper> { draft }, userId);
-
-            return draft;
+            return null;
         }
 
+        [Obsolete]
         public async Task AssociateAsync(string entityId, string paperId, List<string> userIds = null)
         {
             var paper = _paperRepository.Get(paperId);
@@ -142,6 +94,7 @@ namespace Jogl.Server.Business
             await _paperRepository.UpdateAsync(paper);
         }
 
+        [Obsolete]
         public async Task DisassociateAsync(string entityId, string paperId)
         {
             var paper = _paperRepository.Get(paperId);
@@ -157,26 +110,24 @@ namespace Jogl.Server.Business
         public Paper Get(string paperId, string currentUserId)
         {
             var paper = _paperRepository.Get(paperId);
-            EnrichPaperData(new List<Paper> { paper }, currentUserId);
+            if (paper == null)
+                return null;
+
+            var entitySet = _feedEntityService.GetFeedEntitySet(paper.FeedId);
+            EnrichPaperData(new List<Paper> { paper }, entitySet, currentUserId);
+            paper.Path = _feedEntityService.GetPath(paper, currentUserId);
             RecordListing(currentUserId, paper);
 
             return paper;
         }
 
-        public List<Paper> ListForEntity(string currentUserId, string entityId, PaperType? type, List<PaperTag>? tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var feed = _feedRepository.Get(entityId);
-            if (feed == null)
-                return new List<Paper>();
+            var papers = _paperRepository.SearchListSort(p => p.FeedId == entityId && !p.Deleted, sortKey, ascending, search);
+            var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
-            var papers = _paperRepository.SearchListSort(p => p.FeedIds.Contains(entityId) && !p.Deleted, sortKey, ascending, search);
-
-            var filteredPapers = papers;
-            filteredPapers = GetFilteredPapers(papers);
-            TagPapers(filteredPapers, entityId, CollectCommunityEntityTypeDictionary(feed), currentUserId);
-            filteredPapers = GetFilteredPapers(filteredPapers, tags);
-            filteredPapers = GetPage(filteredPapers, page, pageSize);
-            EnrichPaperData(filteredPapers, currentUserId);
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, page, pageSize);
+            EnrichPaperData(filteredPapers, entitySet, currentUserId);
             RecordListings(currentUserId, filteredPapers);
 
             return filteredPapers;
@@ -185,64 +136,42 @@ namespace Jogl.Server.Business
         public List<Paper> ListForAuthor(string currentUserId, string userId, PaperType? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var papers = _paperRepository.SearchListSort(p => p.UserIds.Contains(userId) && !p.Deleted, sortKey, ascending, search);
+            var entityIds = papers.Select(p => p.FeedId).ToList();
+            var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredPapers = GetFilteredPapers(papers);
-            filteredPapers = GetPage(filteredPapers, page, pageSize);
-            EnrichPaperData(filteredPapers, currentUserId);
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, page, pageSize);
+            EnrichPaperData(filteredPapers, entitySet, currentUserId);
             RecordListings(currentUserId, filteredPapers);
 
             return filteredPapers;
         }
 
-        public ListPage<Paper> ListForCommunity(string currentUserId, string communityId, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag>? tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Paper> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
+            var entityIds = GetFeedEntityIdsForNode(nodeId);
+
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchListSort(p => p.FeedIds.Any(id => entityIds.Contains(id)) && !p.Deleted, sortKey, ascending, search);
+            var papers = _paperRepository.SearchListSort(p => entityIds.Contains(p.FeedId) && !p.Deleted, sortKey, ascending, search);
+            var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredPapers = papers;
-            filteredPapers = GetFilteredPapers(papers);
-            TagPapers(filteredPapers, communityId, entities.ToDictionary(e => e.Id.ToString(), e => e.Type), currentUserId);
-            filteredPapers = GetFilteredPapers(filteredPapers, tags);
-            var total = filteredPapers.Count;
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId);
 
             var filteredPaperPage = GetPage(filteredPapers, page, pageSize);
-            EnrichPaperData(filteredPaperPage, currentUserId);
+            EnrichPaperData(filteredPaperPage, entitySet, currentUserId);
             RecordListings(currentUserId, filteredPaperPage);
 
-            return new ListPage<Paper>(filteredPaperPage, total);
-        }
-        public ListPage<Paper> ListForNode(string currentUserId, string nodeId, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag>? tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            var entityIds = GetCommunityEntityIdsForNode(nodeId);
-            if (communityEntityIds != null && communityEntityIds.Any())
-                entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
-
-            var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchListSort(p => p.FeedIds.Any(id => entityIds.Contains(id)) && !p.Deleted, sortKey, ascending, search);
-
-            var filteredPapers = GetFilteredPapers(papers);
-            TagPapers(filteredPapers, nodeId, entities.ToDictionary(e => e.Id.ToString(), e => e.Type), currentUserId);
-            filteredPapers = GetFilteredPapers(filteredPapers, tags);
-            var total = filteredPapers.Count;
-
-            var filteredPaperPage = GetPage(filteredPapers, page, pageSize);
-            EnrichPaperData(filteredPaperPage, currentUserId);
-            RecordListings(currentUserId, filteredPaperPage);
-
-            return new ListPage<Paper>(filteredPaperPage, total);
+            return new ListPage<Paper>(filteredPaperPage, filteredPapers.Count);
         }
 
         public long CountForNode(string userId, string nodeId, string search)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchList(p => p.FeedIds.Any(id => entityIds.Contains(id)) && !p.Deleted, search);
+            var papers = _paperRepository.SearchList(p => entityIds.Contains(p.FeedId) && !p.Deleted, search);
 
-            var filteredPapers = GetFilteredPapers(papers);
+            var filteredPapers = GetFilteredFeedEntities(papers, userId);
             return filteredPapers.Count;
         }
 
@@ -253,32 +182,22 @@ namespace Jogl.Server.Business
 
         public async Task UpdateAsync(Paper paper)
         {
-            var existingPaper = _paperRepository.Get(paper.Id.ToString());
-
-            //once papers are published, they are not to be edited
-            if (existingPaper.Status != ContentEntityStatus.Draft)
-                throw new Exception($"Can not update active paper");
-
-            //draft papers only belong to one feed
-            if (paper?.FeedIds.Count() != 1)
-                throw new Exception();
-
             await _paperRepository.UpdateAsync(paper);
+        }
+
+        public async Task DeleteAsync(Paper paper)
+        {
+            await DeleteFeedAsync(paper.Id.ToString());
+            await _paperRepository.DeleteAsync(paper);
         }
 
         public async Task DeleteForExternalSystemAndUserAsync(string userId, ExternalSystem externalSystem)
         {
-            var user = _userRepository.Get(userId);
-            var papers = _paperRepository.List(p => p.FeedIds.Contains(userId) && p.ExternalSystem == externalSystem);
-            foreach (var paper in papers)
-            {
-                paper.FeedIds.Remove(userId);
-                await _paperRepository.UpdateAsync(paper);
-                await _documentRepository.DeleteAsync(paper.Id.ToString());
-            }
+            var papers = _paperRepository.List(p => p.FeedId == userId && p.ExternalSystem == externalSystem);
+            await _paperRepository.DeleteAsync(papers);
         }
 
-        protected void EnrichPaperData(IEnumerable<Paper> papers, string currentUserId)
+        protected void EnrichPaperData(IEnumerable<Paper> papers, FeedEntitySet feedEntitySet, string currentUserId)
         {
             var users = _userRepository.Get(papers.Select(d => d.CreatedByUserId).Union(papers.SelectMany(d => d.UserIds ?? new List<string>())).ToList());
             var contentEntities = _contentEntityRepository.List(ce => papers.Any(p => p.Id.ToString() == ce.FeedId) && !ce.Deleted);
@@ -292,15 +211,13 @@ namespace Jogl.Server.Business
             {
                 var feedRecord = userFeedRecords.SingleOrDefault(ufr => ufr.FeedId == paper.Id.ToString());
 
+                paper.FeedEntity = _feedEntityService.GetEntityFromLists(paper.FeedId, feedEntitySet);
                 paper.Users = users.Where(u => paper.UserIds?.Contains(u.Id.ToString()) == true).ToList();
                 paper.PostCount = contentEntities.Count(ce => ce.FeedId == paper.Id.ToString());
                 paper.NewPostCount = contentEntities.Count(ce => ce.FeedId == paper.Id.ToString() && ce.CreatedUTC > (feedRecord?.LastReadUTC ?? DateTime.MinValue));
                 paper.NewMentionCount = mentions.Count(m => m.OriginFeedId == paper.Id.ToString());
                 paper.NewThreadActivityCount = contentEntities.Count(ce => ce.FeedId == paper.Id.ToString() && ce.LastActivityUTC > (userContentEntityRecords.SingleOrDefault(ucer => ucer.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue));
                 paper.IsNew = feedRecord == null;
-
-                if (!string.IsNullOrEmpty(currentUserId))
-                    paper.UserInLibrary = paper.FeedIds.Contains(currentUserId);
             }
 
             EnrichPapersWithPermissions(papers, currentUserId);
@@ -328,9 +245,6 @@ namespace Jogl.Server.Business
 
                 if (paper.UserIds?.Contains(currentUserId) == true)
                     paper.OriginTags.Add(PaperTag.AuthoredByMe);
-
-                if (!paper.FeedIds.Contains(feedId))
-                    paper.OriginTags.Add(PaperTag.Aggregated);
 
                 //else
                 //    switch (type)
@@ -439,30 +353,18 @@ namespace Jogl.Server.Business
             }
         }
 
-        public List<CommunityEntity> ListCommunityEntitiesForNodePapers(string currentUserId, string nodeId, List<CommunityEntityType> types, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize)
+        public List<CommunityEntity> ListCommunityEntitiesForNodePapers(string currentUserId, string nodeId, string search, int page, int pageSize)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchList(p => p.FeedIds.Any(id => entityIds.Contains(id)) && !p.Deleted, search);
+            var papers = _paperRepository.SearchList(p => entityIds.Contains(p.FeedId) && !p.Deleted, search);
 
-            var filteredPapers = GetFilteredPapers(papers);
-            TagPapers(filteredPapers, nodeId, entities.ToDictionary(e => e.Id.ToString(), e => e.Type), currentUserId);
-            filteredPapers = GetFilteredPapers(filteredPapers, tags);
+            var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            return entities.Where(e => papers.Any(p => p.FeedIds.Contains(e.Id.ToString()))).ToList();
-        }
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId);
+            EnrichPaperData(filteredPapers, entitySet, currentUserId);
 
-        public List<CommunityEntity> ListCommunityEntitiesForCommunityPapers(string currentUserId, string communityId, List<CommunityEntityType> types, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize)
-        {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
-            var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchList(p => p.FeedIds.Any(id => entityIds.Contains(id)) && !p.Deleted, search);
-
-            var filteredPapers = GetFilteredPapers(papers);
-            TagPapers(filteredPapers, communityId, entities.ToDictionary(e => e.Id.ToString(), e => e.Type), currentUserId);
-            filteredPapers = GetFilteredPapers(filteredPapers, tags);
-
-            return entities.Where(e => papers.Any(p => p.FeedIds.Contains(e.Id.ToString()))).ToList();
+            return entities.Where(e => papers.Any(p => p.FeedId == e.Id.ToString())).ToList();
         }
     }
 }

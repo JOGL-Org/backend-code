@@ -90,7 +90,7 @@ namespace Jogl.Server.API.Controllers
 
         protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            return _paperService.ListForCommunity(CurrentUserId, id, types, communityEntityIds, type, tags, search, page, pageSize, sortKey, ascending);
+            return new ListPage<Paper>(_paperService.ListForEntity(CurrentUserId, id, search, page, pageSize, sortKey, ascending));
         }
 
         protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
@@ -252,6 +252,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(cfpModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/papers/aggregate")]
@@ -264,6 +265,7 @@ namespace Jogl.Server.API.Controllers
             return await GetPapersAggregateAsync(id, types, communityEntityIds, type, tags, model);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/papers/aggregate/communityEntities")]
@@ -280,8 +282,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _paperService.ListCommunityEntitiesForCommunityPapers(CurrentUserId, id, types, type, tags, model.Search, model.Page, model.PageSize);
-            var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
+            var communityEntityModels = new List<CommunityEntityMiniModel>();
             return Ok(communityEntityModels);
         }
 

@@ -96,7 +96,7 @@ namespace Jogl.Server.API.Controllers
 
         protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            return _paperService.ListForNode(CurrentUserId, id, types, communityEntityIds, type, tags, search, page, pageSize, sortKey, ascending);
+            return _paperService.ListForNode(CurrentUserId, id, communityEntityIds, search, page, pageSize, sortKey, ascending);
         }
 
         protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
@@ -371,7 +371,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _paperService.ListCommunityEntitiesForNodePapers(CurrentUserId, id, types, type, tags, model.Search, model.Page, model.PageSize);
+            var communityEntities = _paperService.ListCommunityEntitiesForNodePapers(CurrentUserId, id, model.Search, model.Page, model.PageSize);
             var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
             return Ok(communityEntityModels);
         }

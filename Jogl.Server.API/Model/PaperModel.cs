@@ -45,9 +45,19 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("user_ids")]
         public List<string> UserIds { get; set; }
 
+        [JsonPropertyName("default_visibility")]
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
+
+        [JsonPropertyName("user_visibility")]
+        public List<FeedEntityUserVisibilityModel>? UserVisibility { get; set; }
+
+        [JsonPropertyName("communityentity_visibility")]
+        public List<FeedEntityCommunityEntityVisibilityModel>? CommunityEntityVisibility { get; set; }
+
         [JsonPropertyName("open_access_pdf")]
         public string OpenAccessPdfUrl { get; set; }
 
+        [Obsolete]
         [JsonPropertyName("feed_count")]
         public int FeedCount { get; set; }
 

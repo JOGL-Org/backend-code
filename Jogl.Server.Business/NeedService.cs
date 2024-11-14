@@ -63,7 +63,7 @@ namespace Jogl.Server.Business
         public ListPage<Need> List(string currentUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.SearchSort(search, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
@@ -76,7 +76,7 @@ namespace Jogl.Server.Business
         public long Count(string userId, string search)
         {
             var needs = _needRepository.Search(search);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
 
             return filteredNeeds.Count;
         }
@@ -84,7 +84,7 @@ namespace Jogl.Server.Business
         public List<Need> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.List(n => n.EntityId == entityId && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
             RecordListings(currentUserId, filteredNeeds);
@@ -100,7 +100,7 @@ namespace Jogl.Server.Business
 
             var communityEntities = _communityEntityService.List(entityIds);
             var needs = _needRepository.List(n => entityIds.Contains(n.EntityId) && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
@@ -121,7 +121,7 @@ namespace Jogl.Server.Business
             if (currentUser)
                 needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
@@ -138,7 +138,7 @@ namespace Jogl.Server.Business
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
             var needs = _needRepository.SearchList(n => entityIds.Contains(n.EntityId), search);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             return filteredNeeds.Count;
         }
@@ -184,7 +184,7 @@ namespace Jogl.Server.Business
         public List<Need> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.List(n => n.CreatedByUserId == targetUserId && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
 
             EnrichNeedData(filteredNeeds, userId);
             RecordListings(userId, filteredNeeds);
@@ -211,7 +211,7 @@ namespace Jogl.Server.Business
             if (currentUser)
                 needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
             return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
@@ -225,7 +225,7 @@ namespace Jogl.Server.Business
             if (currentUser)
                 needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
             return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
