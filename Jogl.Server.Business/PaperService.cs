@@ -87,7 +87,6 @@ namespace Jogl.Server.Business
                 paper.UserIds = paper.UserIds.Union(userIds).ToList();
 
             //process notifications
-            await _notificationService.NotifyPaperAssociatedAsync(paper, entityId);
             paper.FeedIds.Add(entityId);
             await _notificationFacade.NotifyAddedAsync(paper);
 

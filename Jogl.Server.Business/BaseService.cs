@@ -1,5 +1,4 @@
-﻿using Jogl.Server.Arxiv.DTO;
-using Jogl.Server.Data;
+﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
