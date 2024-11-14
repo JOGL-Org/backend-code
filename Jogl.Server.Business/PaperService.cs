@@ -175,11 +175,6 @@ namespace Jogl.Server.Business
             return filteredPapers.Count;
         }
 
-        public List<Paper> ListForExternalIds(IEnumerable<string> externalIds)
-        {
-            return _paperRepository.ListForExternalIds(externalIds);
-        }
-
         public async Task UpdateAsync(Paper paper)
         {
             await _paperRepository.UpdateAsync(paper);
@@ -222,45 +217,6 @@ namespace Jogl.Server.Business
 
             EnrichPapersWithPermissions(papers, currentUserId);
             EnrichEntitiesWithCreatorData(papers, users);
-        }
-
-        protected IEnumerable<CommunityEntityType> GetTypesFromTags(IEnumerable<PaperTag> paperTags)
-        {
-            foreach (var tag in paperTags ?? new List<PaperTag>())
-            {
-                CommunityEntityType entityType;
-                if (Enum.TryParse(tag.ToString(), out entityType))
-                    yield return entityType;
-            }
-        }
-
-        protected void TagPapers(IEnumerable<Paper> papers, string feedId, Dictionary<string, CommunityEntityType> feedTypes, string currentUserId)
-        {
-            foreach (var paper in papers)
-            {
-                paper.OriginTags = new List<PaperTag>();
-
-                if (paper.UserIds?.Contains(feedId) == true)
-                    paper.OriginTags.Add(PaperTag.AuthorOf);
-
-                if (paper.UserIds?.Contains(currentUserId) == true)
-                    paper.OriginTags.Add(PaperTag.AuthoredByMe);
-
-                //else
-                //    switch (type)
-                //    {
-                //        case FeedType.Project:
-                //            paper.OriginTags.Add(PaperTag.Reference);
-                //            continue;
-                //        case FeedType.Workspace:
-                //            paper.OriginTags.Add(PaperTag.Library);
-                //            continue;
-                //    }
-
-                //var applicableTypes = new[] { CommunityEntityType.Project, CommunityEntityType.Workspace, CommunityEntityType.Node }.Where(type => paper.FeedIds.Any(feedId => feedTypes.ContainsKey(feedId) && feedTypes[feedId] == type)).ToList();
-                //var applicableTags = new[] { PaperTag.Project, PaperTag.Community, PaperTag.Node }.Where(paperTag => applicableTypes.Any(type => Enum.Parse<PaperTag>(type.ToString()) == paperTag));
-                //paper.OriginTags.AddRange(applicableTags);
-            }
         }
 
         protected string FormatOAWorkAbstract(Dictionary<string, List<int>> invertedIndex)

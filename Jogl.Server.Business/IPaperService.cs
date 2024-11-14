@@ -8,7 +8,6 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(Paper paper);
         Paper Get(string paperId, string currentUserId);
         Paper GetDraft(string entityId, string userId);
-        List<Paper> ListForExternalIds(IEnumerable<string> externalIds);
         List<Paper> ListForAuthor(string currentUserId, string userId, PaperType? type, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         ListPage<Paper> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool ascending);
