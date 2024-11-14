@@ -359,7 +359,7 @@ namespace Jogl.Server.Business
 
         public List<Entity> ListPortfolioForUser(string currentUserId, string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var papers = _paperRepository.SearchList(p => p.FeedIds.Contains(userId), search);
+            var papers = _paperRepository.SearchList(p => p.FeedId == userId, search);
             var documents = _documentRepository.SearchList(d => d.FeedId == userId && d.Type == DocumentType.JoglDoc && !d.Deleted, search);
             var filteredDocuments = GetFilteredJoglDocs(documents, currentUserId);
 

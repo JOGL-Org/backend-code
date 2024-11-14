@@ -1274,7 +1274,7 @@ namespace Jogl.Server.Business
             events = events.Where(e => feedEntitiesIdsForNode.Contains(e.CommunityEntityId)).ToList();
             needs = needs.Where(n => feedEntitiesIdsForNode.Contains(n.CommunityEntityId)).ToList();
             documents = documents.Where(d => feedEntitiesIdsForNode.Contains(d.FeedEntityId)).ToList();
-            papers = papers.Where(p => feedEntitiesIdsForNode.Any(id => p.FeedIds.Contains(id))).ToList();
+            papers = papers.Where(p => feedEntitiesIdsForNode.Contains(p.FeedEntityId)).ToList();
 
             nfd.NewEvents = events.Any(e => !allUserFeedRecords.Any(ufr => ufr.FeedId == e.Id.ToString()));
             nfd.NewNeeds = needs.Any(n => (IsNeedForUser(n, userId) || nfd.Permissions.Contains(Permission.Read)) && !allUserFeedRecords.Any(ufr => ufr.FeedId == n.Id.ToString()));

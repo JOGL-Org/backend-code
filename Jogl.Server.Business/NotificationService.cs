@@ -367,44 +367,6 @@ namespace Jogl.Server.Business
             }
         }
 
-        public async Task NotifyPaperAssociatedAsync(Paper paper, string feedId)
-        {
-            var authors = _userRepository.Get(paper.UserIds);
-            var libraryUsers = _userRepository.Get(paper.FeedIds);
-            var memberships = _membershipRepository.List(m => m.CommunityEntityId == feedId && !m.Deleted);
-
-            var allUserIds = new List<string>();
-            allUserIds.AddRange(authors.Select(u => u.Id.ToString()));
-            allUserIds.AddRange(libraryUsers.Select(u => u.Id.ToString()));
-            allUserIds.AddRange(memberships.Select(m => m.UserId));
-
-            var communityEntity = _communityEntityService.Get(feedId);
-            var user = _userRepository.Get(paper.CreatedByUserId);
-
-            foreach (var userId in allUserIds.Distinct())
-            {
-                if (userId == paper.CreatedByUserId)
-                    continue;
-
-                var feedEntity = _communityEntityService.GetFeedEntity(feedId);
-
-                await NotifyAsync(new Notification
-                {
-                    CreatedUTC = DateTime.UtcNow,
-                    Type = NotificationType.Paper,
-                    UserId = userId,
-                    OriginFeedId = feedId,
-                    Data = new List<NotificationData>
-                    {
-                        new NotificationData{ Key = NotificationDataKey.User, EntityId = user.Id.ToString(), EntityTitle =user.FirstName + " " + user.LastName},
-                        new NotificationData{ Key = NotificationDataKey.ContentEntity, EntityId = paper.Id.ToString(), EntityTitle = paper.Title },
-                        GetFeedEntityData(feedEntity)
-                    },
-                    Text = GetNotificationText(NotificationType.Paper, user, paper, feedEntity),
-                });
-            }
-        }
-
         public async Task NotifyResourceCreatedAsync(Resource resource)
         {
             var memberships = _membershipRepository.List(m => m.CommunityEntityId == resource.FeedId && !m.Deleted);

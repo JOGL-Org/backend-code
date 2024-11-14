@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data;
+﻿using Jogl.Server.Arxiv.DTO;
+using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
@@ -926,7 +927,7 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForCommunities(relations, communityIds);
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => communityEntityIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
 
@@ -934,8 +935,8 @@ namespace Jogl.Server.Business
             {
                 c.NeedCount = needs.Count(need => c.Id.ToString() == need.EntityId);
                 c.NeedCountAggregate = needs.Count(need => c.Id.ToString() == need.EntityId || relations.Any(r => r.SourceCommunityEntityId == need.EntityId && r.TargetCommunityEntityId == c.Id.ToString()));
-                c.PaperCount = papers.Count(ppr => ppr.FeedIds.Any(id => c.Id.ToString() == id));
-                c.PaperCountAggregate = papers.Count(ppr => ppr.FeedIds.Any(id => c.Id.ToString() == id || relations.Any(r => r.SourceCommunityEntityId == id && r.TargetCommunityEntityId == c.Id.ToString())));
+                c.PaperCount = papers.Count(ppr => c.Id.ToString() == ppr.FeedId);
+                c.PaperCountAggregate = papers.Count(ppr => c.Id.ToString() == ppr.FeedId || relations.Any(r => r.SourceCommunityEntityId == ppr.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.ResourceCount = resources.Count(res => c.Id.ToString() == res.FeedId);
                 c.ResourceCountAggregate = resources.Count(res => c.Id.ToString() == res.FeedId || relations.Any(r => r.SourceCommunityEntityId == res.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.DocumentCount = documents.Count(d => c.Id.ToString() == d.FeedId);
@@ -972,7 +973,7 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForNodes(relations, nodeIds);
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => communityEntityIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
             var cfps = _callForProposalsRepository.List(cfp => communityEntityIds.Contains(cfp.ParentCommunityEntityId) && !cfp.Deleted);
@@ -983,8 +984,8 @@ namespace Jogl.Server.Business
 
                 n.NeedCount = needs.Count(need => n.Id.ToString() == need.EntityId);
                 n.NeedCountAggregate = needs.Count(need => nodeCommunityEntityIds.Contains(need.EntityId));
-                n.PaperCount = papers.Count(ppr => ppr.FeedIds.Any(id => n.Id.ToString() == id));
-                n.PaperCountAggregate = papers.Count(ppr => ppr.FeedIds.Any(id => nodeCommunityEntityIds.Contains(id)));
+                n.PaperCount = papers.Count(ppr => n.Id.ToString() == ppr.FeedId);
+                n.PaperCountAggregate = papers.Count(ppr => nodeCommunityEntityIds.Contains(ppr.FeedId));
                 n.ResourceCount = resources.Count(res => n.Id.ToString() == res.FeedId);
                 n.ResourceCountAggregate = resources.Count(res => nodeCommunityEntityIds.Contains(res.FeedId));
                 n.DocumentCount = documents.Count(d => n.Id.ToString() == d.FeedId);
@@ -1020,13 +1021,13 @@ namespace Jogl.Server.Business
             var orgIds = organizations.Select(c => c.Id.ToString()).ToList();
             var relations = _relationRepository.List(r => (orgIds.Contains(r.SourceCommunityEntityId) || orgIds.Contains(r.TargetCommunityEntityId)) && !r.Deleted);
 
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => orgIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => orgIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => orgIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => orgIds.Contains(d.FeedId) && !d.Deleted);
 
             foreach (var o in organizations)
             {
-                o.PaperCount = papers.Count(ppr => ppr.FeedIds.Contains(o.Id.ToString()));
+                o.PaperCount = papers.Count(ppr => ppr.FeedId == o.Id.ToString());
                 o.ResourceCount = resources.Count(r => r.FeedId == o.Id.ToString());
                 o.DocumentCount = documents.Count(d => d.FeedId == o.Id.ToString());
             }

@@ -330,6 +330,7 @@ namespace Jogl.Server.API.Controllers
             return await GetCommunitiesAsync(id, model);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("paper")]

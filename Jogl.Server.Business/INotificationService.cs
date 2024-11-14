@@ -11,7 +11,6 @@ namespace Jogl.Server.Business
         Task NotifyRequestAcceptedAsync(Invitation invitation);
         Task NotifyAccessLevelChangedAsync(Membership membership);
         Task NotifyUserFollowedAsync(UserFollowing following);
-        Task NotifyPaperAssociatedAsync(Paper paper, string feedId);
         Task NotifyResourceCreatedAsync(Resource resource);
         Task NotifyNeedCreatedAsync(Need need);
         Task NotifyCommunityEntityJoinedAsync(Relation relation);
