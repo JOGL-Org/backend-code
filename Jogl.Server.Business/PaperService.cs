@@ -62,8 +62,10 @@ namespace Jogl.Server.Business
 
             //create paper
             paper.Id = ObjectId.Parse(id);
-            await _notificationFacade.NotifyAddedAsync(paper);
             await _paperRepository.CreateAsync(paper);
+
+            //process notifications
+            await _notificationFacade.NotifyCreatedAsync(paper);
 
             return id;
         }
@@ -88,7 +90,6 @@ namespace Jogl.Server.Business
 
             //process notifications
             paper.FeedIds.Add(entityId);
-            await _notificationFacade.NotifyAddedAsync(paper);
 
             await _paperRepository.UpdateAsync(paper);
         }
@@ -177,6 +178,7 @@ namespace Jogl.Server.Business
         public async Task UpdateAsync(Paper paper)
         {
             await _paperRepository.UpdateAsync(paper);
+            await _notificationFacade.NotifyUpdatedAsync(paper);
         }
 
         public async Task DeleteAsync(Paper paper)

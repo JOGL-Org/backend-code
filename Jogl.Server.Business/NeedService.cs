@@ -43,7 +43,6 @@ namespace Jogl.Server.Business
             await _needRepository.CreateAsync(need);
 
             //process notifications
-            await _notificationService.NotifyNeedCreatedAsync(need);
             await _notificationFacade.NotifyCreatedAsync(need);
 
             //return
@@ -195,6 +194,7 @@ namespace Jogl.Server.Business
         public async Task UpdateAsync(Need need)
         {
             await _needRepository.UpdateAsync(need);
+            await _notificationFacade.NotifyUpdatedAsync(need);
         }
 
         public async Task DeleteAsync(string id)

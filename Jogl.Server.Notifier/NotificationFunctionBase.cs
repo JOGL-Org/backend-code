@@ -3,10 +3,8 @@ using Jogl.Server.DB;
 using Jogl.Server.Email;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Jogl.Server.Notifier
 {

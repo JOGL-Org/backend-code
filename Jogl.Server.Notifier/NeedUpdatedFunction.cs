@@ -11,20 +11,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.Notifier
 {
-    public class NeedCreatedFunction : FeedEntityCreatedFunctionBase<Need>
+    public class NeedUpdatedFunction : FeedEntityUpdatedFunctionBase<Need>
     {
-        public NeedCreatedFunction(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(communityEntityService, emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public NeedUpdatedFunction(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(communityEntityService, emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
         }
 
-        [Function(nameof(NeedCreatedFunction))]
+        [Function(nameof(PaperUpdatedFunction))]
         public async Task RunDocumentsAsync(
-            [ServiceBusTrigger("need-created", "notifications", Connection = "ConnectionString")]
+            [ServiceBusTrigger("need-updated", "notifications", Connection = "ConnectionString")]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)
         {
             var need = JsonSerializer.Deserialize<Need>(message.Body.ToString());
             var parentEntity = _communityEntityService.GetFeedEntity(need.EntityId);
+
             await RunAsync(need, parentEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
 
             // Complete the message

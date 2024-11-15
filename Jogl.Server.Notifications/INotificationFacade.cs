@@ -8,11 +8,13 @@ namespace Jogl.Server.Notifications
         Task NotifyCreatedAsync(Comment comment);
         Task NotifyCreatedAsync(Event ev);
         Task NotifyCreatedAsync(Need need);
+        Task NotifyUpdatedAsync(Need need);
         Task NotifyCreatedAsync(Document doc);
         Task NotifyUpdatedAsync(Document doc);
+        Task NotifyCreatedAsync(Paper paper);
+        Task NotifyUpdatedAsync(Paper paper);
         Task NotifyCreatedAsync(Notification notification);
         Task NotifyCreatedAsync(IEnumerable<Notification> notifications);
-        Task NotifyAddedAsync(Paper paper);
         Task NotifyLoadedAsync(IEnumerable<Publication> publications);
         Task NotifyLoadedAsync(Publication publication);
         Task NotifyInvitedAsync(Invitation invitation);

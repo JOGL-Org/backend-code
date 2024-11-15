@@ -38,19 +38,21 @@ namespace Jogl.Server.Business
 
             //create document
             document.Id = ObjectId.Parse(id);
+            await _documentRepository.CreateAsync(document);
 
             switch (document.Type)
             {
                 case DocumentType.Document:
                     document.FileSize = document.Data.Length;
-                    var documentId = await _documentRepository.CreateAsync(document);
-                    await _storageService.CreateOrReplaceAsync(IStorageService.DOCUMENT_CONTAINER, documentId, document.Data);
-                    await _notificationFacade.NotifyCreatedAsync(document);
-                    return documentId;
-                default:
-                    await _notificationFacade.NotifyCreatedAsync(document);
-                    return await _documentRepository.CreateAsync(document);
+                    await _storageService.CreateOrReplaceAsync(IStorageService.DOCUMENT_CONTAINER, document.Id.ToString(), document.Data);
+                    break;
             }
+
+
+            //process notifications
+            await _notificationFacade.NotifyCreatedAsync(document);
+
+            return id;
         }
 
         [Obsolete]
@@ -208,8 +210,8 @@ namespace Jogl.Server.Business
             if (existingDocument.Status != ContentEntityStatus.Draft && document.Status == ContentEntityStatus.Draft)
                 throw new Exception($"Can not set document status back into draft");
 
-            await _notificationFacade.NotifyUpdatedAsync(document);
             await _documentRepository.UpdateAsync(document);
+            await _notificationFacade.NotifyUpdatedAsync(document);
         }
 
         public async Task DeleteAsync(string id)
