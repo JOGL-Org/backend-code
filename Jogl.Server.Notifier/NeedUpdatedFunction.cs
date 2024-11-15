@@ -17,7 +17,7 @@ namespace Jogl.Server.Notifier
         {
         }
 
-        [Function(nameof(PaperUpdatedFunction))]
+        [Function(nameof(NeedUpdatedFunction))]
         public async Task RunDocumentsAsync(
             [ServiceBusTrigger("need-updated", "notifications", Connection = "ConnectionString")]
             ServiceBusReceivedMessage message,
