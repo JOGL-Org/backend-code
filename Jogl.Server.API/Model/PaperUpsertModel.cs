@@ -49,8 +49,5 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("open_access_pdf")]
         public string? OpenAccessPdfUrl { get; set; }
-
-        [JsonPropertyName("status")]
-        public ContentEntityStatus Status { get; set; }
     }
 }

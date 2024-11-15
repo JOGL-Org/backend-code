@@ -271,14 +271,22 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Paper p, string userId, Permission permission)
+        protected bool Can(Paper p, IEnumerable<Membership> currentUserMemberships, string userId, Permission permission)
         {
+            var docVisibility = GetFeedEntityVisibility(p, currentUserMemberships, userId);
             switch (permission)
             {
+                case Permission.Manage:
+                case Permission.ManageDocuments:
+                case Permission.Delete:
+                case Permission.DeleteContentEntity:
+                case Permission.DeleteComment:
+                    return docVisibility == FeedEntityVisibility.Edit;
                 case Permission.PostContentEntity:
                 case Permission.PostComment:
+                    return docVisibility == FeedEntityVisibility.Edit || docVisibility == FeedEntityVisibility.Comment;
                 case Permission.Read:
-                    return true;
+                    return docVisibility != null;
                 default:
                     return false;
             }
@@ -1196,12 +1204,19 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, string userId)
+        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, IEnumerable<Membership> currentUserMemberships, string userId)
         {
             foreach (var paper in papers)
             {
-                paper.Permissions = Enum.GetValues<Permission>().Where(p => Can(paper, userId, p)).ToList();
+                paper.Permissions = Enum.GetValues<Permission>().Where(p => Can(paper, currentUserMemberships, userId, p)).ToList();
             }
+        }
+
+        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, string userId)
+        {
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == userId && !p.Deleted);
+
+            EnrichPapersWithPermissions(papers, currentUserMemberships, userId);
         }
 
         protected void EnrichDocumentsWithPermissions(IEnumerable<Document> documents, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, IEnumerable<Relation> entityRelations, string userId)

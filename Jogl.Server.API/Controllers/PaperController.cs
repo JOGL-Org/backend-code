@@ -102,7 +102,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No paper was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to edit the paper")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The paper was updated")]
-        public async Task<IActionResult> UpdateDocument([FromRoute] string id, [FromBody] PaperUpsertModel model)
+        public async Task<IActionResult> UpdatePaper([FromRoute] string id, [FromBody] PaperUpsertModel model)
         {
             var existingPaper = _paperService.Get(id,CurrentUserId);
             if (existingPaper == null)
