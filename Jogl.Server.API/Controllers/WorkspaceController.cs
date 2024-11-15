@@ -105,7 +105,7 @@ namespace Jogl.Server.API.Controllers
 
         protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            return _needService.List(CurrentUserId, search, page, pageSize, sortKey, ascending);
+            return new ListPage<Need>(_needService.ListForEntity(CurrentUserId, id, search, page, pageSize, sortKey, ascending));
         }
 
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
