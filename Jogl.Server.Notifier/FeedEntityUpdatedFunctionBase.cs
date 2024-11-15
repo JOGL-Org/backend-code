@@ -19,6 +19,8 @@ namespace Jogl.Server.Notifier
             var updater = _userRepository.Get( entity.UpdatedByUserId);
             var emailRecords = _emailRecordRepository.List(er => er.ObjectId == entity.Id.ToString() && er.Type == EmailRecordType.Share && !er.Deleted);
             var users = GetUsersForFeedEntity(entity).Where(u => !emailRecords.Any(er => er.UserId == u.Id.ToString()));
+            if (!users.Any())
+                return;
 
             await SendEmailAsync(users.Where(emailFilter), u => GetEmailPayload(entity, parentEntity, updater), EmailTemplate.ObjectShared, updater.FirstName);
             await SendPushAsync(users.Where(pushFilter), $"New {_feedEntityService.GetPrintName(entity.FeedType)} in {parentEntity.FeedTitle}", $"{updater.FullName} shared {entity.FeedTitle} with you", _urlService.GetUrl(entity));
