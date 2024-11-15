@@ -91,24 +91,6 @@ namespace Jogl.Server.Business
             return filteredNeeds;
         }
 
-        public ListPage<Need> ListForCommunity(string currentUserId, string communityId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
-            if (communityEntityIds != null && communityEntityIds.Any())
-                entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
-
-            var communityEntities = _communityEntityService.List(entityIds);
-            var needs = _needRepository.List(n => entityIds.Contains(n.EntityId) && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
-            var total = filteredNeeds.Count;
-
-            var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
-            EnrichNeedData(filteredNeedPage, communityEntities, currentUserId);
-            RecordListings(currentUserId, filteredNeedPage);
-
-            return new ListPage<Need>(filteredNeedPage, total);
-        }
-
         public ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
@@ -206,20 +188,6 @@ namespace Jogl.Server.Business
         public List<CommunityEntity> ListCommunityEntitiesForNodeNeeds(string nodeId, string currentUserId, List<CommunityEntityType> types, bool currentUser, string search, int page, int pageSize)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
-            var needs = _needRepository.ListForEntityIds(entityIds);
-
-            if (currentUser)
-                needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
-
-            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
-
-            EnrichNeedData(filteredNeeds, currentUserId);
-            return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
-        }
-
-        public List<CommunityEntity> ListCommunityEntitiesForCommunityNeeds(string communityId, string currentUserId, List<CommunityEntityType> types, bool currentUser, string search, int page, int pageSize)
-        {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
             var needs = _needRepository.ListForEntityIds(entityIds);
 
             if (currentUser)

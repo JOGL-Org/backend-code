@@ -98,14 +98,14 @@ namespace Jogl.Server.API.Controllers
             throw new NotImplementedException();
         }
 
-        protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _needService.ListForCommunity(CurrentUserId, id, communityEntityIds, search, page, pageSize, sortKey, ascending);
-        }
-
         protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             throw new NotImplementedException();
+        }
+
+        protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        {
+            return _needService.List(CurrentUserId, search, page, pageSize, sortKey, ascending);
         }
 
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
@@ -286,6 +286,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(communityEntityModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/needs/aggregate")]
@@ -297,6 +298,7 @@ namespace Jogl.Server.API.Controllers
             return await GetNeedsAggregateAsync(id, communityEntityIds, false, model);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/needs/aggregate/communityEntities")]
@@ -313,8 +315,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _needService.ListCommunityEntitiesForCommunityNeeds(id, CurrentUserId, types, currentUser, model.Search, model.Page, model.PageSize);
-            var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
+            var communityEntityModels = new List<CommunityEntityMiniModel>();
             return Ok(communityEntityModels);
         }
 
