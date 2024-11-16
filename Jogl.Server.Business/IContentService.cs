@@ -36,8 +36,8 @@ namespace Jogl.Server.Business
         ContentEntity GetDraftContentEntity(string userId);
 
         //List<NodeFeedData> ListNodeMetadata(string userId);
-        List<NodeFeedDataNew> ListNodeMetadataNew(string userId);
-        //NodeFeedData GetNodeMetadata(string nodeId, string userId);
+        List<NodeFeedData> ListNodeMetadata(string userId);
+        NodeFeedData GetNodeMetadata(string nodeId, string userId);
         UserFeedRecord GetFeedRecord(string userId, string feedId);
         Task UpdateFeedRecordAsync(UserFeedRecord record);
 

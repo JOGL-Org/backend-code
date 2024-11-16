@@ -240,7 +240,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query visible to the current user", typeof(ListPage<NeedModel>))]
-        public async Task<IActionResult> GetNeedsAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<string> communityEntityIds, [FromQuery] bool currentUser, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetNeedsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] bool currentUser, [FromQuery] SearchModel model)
         {
             return await GetNeedsAggregateAsync(id, communityEntityIds, currentUser, model);
         }
@@ -284,7 +284,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "Event data", typeof(ListPage<EventModel>))]
-        public async Task<IActionResult> GetEventsAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] bool currentUser, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetEventsAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] bool currentUser, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
         {
             return await GetEventsAggregateAsync(id, types, communityEntityIds, currentUser, tags, from, to, model);
         }
@@ -350,7 +350,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<PaperModel>))]
-        public async Task<IActionResult> GetPapersAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetPapersAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
         {
             return await GetPapersAggregateAsync(id, types, communityEntityIds, type, tags, model);
         }
@@ -383,7 +383,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query visible to the current user", typeof(ListPage<UserMiniModel>))]
-        public async Task<IActionResult> GetUsersAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<string> communityEntityIds, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetUsersAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] SearchModel model)
         {
             var entity = GetEntity(id);
             if (entity == null)

@@ -1,12 +1,11 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Data
 {
     public class NodeFeedData : Node
     {
         [BsonIgnore]
-        public List<UserFeedRecord> Feeds { get; set; }
+        public List<CommunityEntity> Entities { get; set; }
 
         [BsonIgnore]
         public bool NewEvents { get; set; }

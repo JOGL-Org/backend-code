@@ -1168,25 +1168,24 @@ namespace Jogl.Server.Business
 
 
 
-        public List<NodeFeedDataNew> ListNodeMetadataNew(string userId)
+        public List<NodeFeedData> ListNodeMetadata(string userId)
         {
             var nodes = _nodeRepository.List(n => !n.Deleted);
-            var res = GetNodeMetadataNew(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
-            res.Insert(0, new NodeFeedDataNew { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
+            var res = GetNodeMetadata(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
+            res.Insert(0, new NodeFeedData { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
 
             return res;
         }
 
-        public NodeFeedDataNew GetNodeMetadataNew(string nodeId, string userId)
+        public NodeFeedData GetNodeMetadata(string nodeId, string userId)
         {
             var node = _nodeRepository.Get(nodeId);
-            return GetNodeMetadataNew(userId, node).Single();
+            return GetNodeMetadata(userId, node).Single();
         }
 
-        private List<NodeFeedDataNew> GetNodeMetadataNew(string userId, params Node[] nodes)
+        private List<NodeFeedData> GetNodeMetadata(string userId, params Node[] nodes)
         {
-
-            var allRelations = _relationRepository.List(r => !r.Deleted);
+                        var allRelations = _relationRepository.List(r => !r.Deleted);
             var currentUserEventAttendances = _eventAttendanceRepository.List(ea => ea.UserId == userId && ea.Status == AttendanceStatus.Yes && !ea.Deleted);
             var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
 
@@ -1237,18 +1236,18 @@ namespace Jogl.Server.Business
             }
 
             //calculate results
-            var res = new List<NodeFeedDataNew>();
+            var res = new List<NodeFeedData>();
             foreach (var node in nodes)
             {
-                res.Add(GetNodeMetadataNew(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances, events, needs, documents, papers, allUserFeedRecords, unreadPosts, unreadMentions, unreadThreads));
+                res.Add(GetNodeMetadata(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances, events, needs, documents, papers, allUserFeedRecords, unreadPosts, unreadMentions, unreadThreads));
             }
 
             return res;
         }
 
-        private NodeFeedDataNew GetNodeMetadataNew(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances, List<Event> events, List<Need> needs, List<Document> documents, List<Paper> papers, List<UserFeedRecord> allUserFeedRecords, List<ContentEntity> unreadPosts, List<Mention> unreadMentions, List<ContentEntity> unreadThreads)
+        private NodeFeedData GetNodeMetadata(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances, List<Event> events, List<Need> needs, List<Document> documents, List<Paper> papers, List<UserFeedRecord> allUserFeedRecords, List<ContentEntity> unreadPosts, List<Mention> unreadMentions, List<ContentEntity> unreadThreads)
         {
-            var nfd = new NodeFeedDataNew()
+            var nfd = new NodeFeedData()
             {
                 Id = node.Id,
                 Title = node.Title,
@@ -1360,7 +1359,7 @@ namespace Jogl.Server.Business
             return res;
         }
 
-        public UserFeedRecord GetFeedRecord(string userId, string feedId)
+                public UserFeedRecord GetFeedRecord(string userId, string feedId)
         {
             return _userFeedRecordRepository.Get(r => r.UserId == userId && r.FeedId == feedId);
         }

@@ -39,8 +39,8 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("created_by")]
         public UserMiniModel? CreatedBy { get; set; }
 
-        [JsonPropertyName("user_in_library")]
-        public bool UserInLibrary { get; set; }
+        [JsonPropertyName("feed_entity")]
+        public EntityMiniModel? FeedEntity { get; set; }
 
         [JsonPropertyName("user_ids")]
         public List<string> UserIds { get; set; }
@@ -69,5 +69,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; set; }
+
+        [JsonPropertyName("path")]
+        public List<EntityMiniModel> Path { get; set; }
     }
 }

@@ -48,9 +48,6 @@ namespace Jogl.Server.Data
         public List<User> Users { get; set; }
 
         [BsonIgnore]
-        public bool UserInLibrary { get; set; }
-
-        [BsonIgnore]
         public int NewPostCount { get; set; }
 
         [BsonIgnore]
