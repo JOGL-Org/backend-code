@@ -25,7 +25,7 @@ namespace Jogl.Server.API.Model
         public string ExternalId { get; set; }
 
         [JsonPropertyName("tags")]
-        public List<PaperTag> Tags { get; set; }
+        public List<string> Tags { get; set; }
 
         [JsonPropertyName("type")]
         public PaperType Type { get; set; }

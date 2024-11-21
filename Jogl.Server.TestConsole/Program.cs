@@ -45,7 +45,6 @@ foreach (var pap in papers)
                 ExternalSystem = pap.ExternalSystem,
                 Journal = pap.Journal,
                 OpenAccessPdfUrl = pap.OpenAccessPdfUrl,
-                OriginTags = pap.OriginTags,
                 PublicationDate = pap.PublicationDate,
                 Status = pap.Status,
                 Summary = pap.Summary,

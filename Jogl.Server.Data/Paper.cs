@@ -42,9 +42,6 @@ namespace Jogl.Server.Data
         public TagData TagData { get; set; }
 
         [BsonIgnore]
-        public List<PaperTag> OriginTags { get; set; }
-
-        [BsonIgnore]
         public List<User> Users { get; set; }
 
         [BsonIgnore]
