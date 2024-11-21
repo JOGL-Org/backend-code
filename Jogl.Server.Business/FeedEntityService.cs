@@ -417,5 +417,19 @@ namespace Jogl.Server.Business
             }
         }
 
+        public FeedType GetType(CommunityEntityType type)
+        {
+            return Enum.Parse<FeedType>(type.ToString());
+        }
+
+        public CommunityEntityType GetType(FeedType type)
+        {
+            return Enum.Parse<CommunityEntityType>(type.ToString());
+        }
+        
+        public Feed GetFeed(string id)
+        {
+            return _feedRepository.Get(id);
+        }
     }
 }

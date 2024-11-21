@@ -9,14 +9,16 @@ namespace Jogl.Server.Business
     public class InvitationService : BaseService, IInvitationService
     {
         private readonly IOnboardingQuestionnaireInstanceRepository _onboardingQuestionnaireInstanceRepository;
+        private readonly IInvitationKeyRepository _invitationKeyRepository;
         private readonly IWorkspaceRepository _workspaceRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly INotificationService _notificationService;
         private readonly INotificationFacade _notificationFacade;
 
-        public InvitationService(IOnboardingQuestionnaireInstanceRepository onboardingQuestionnaireInstanceRepository, IWorkspaceRepository workspaceRepository, IOrganizationRepository organizationRepository, INotificationService notificationService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public InvitationService(IOnboardingQuestionnaireInstanceRepository onboardingQuestionnaireInstanceRepository, IInvitationKeyRepository invitationKeyRepository, IWorkspaceRepository workspaceRepository, IOrganizationRepository organizationRepository, INotificationService notificationService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _onboardingQuestionnaireInstanceRepository = onboardingQuestionnaireInstanceRepository;
+            _invitationKeyRepository = invitationKeyRepository;
             _workspaceRepository = workspaceRepository;
             _organizationRepository = organizationRepository;
             _notificationService = notificationService;
@@ -361,6 +363,33 @@ namespace Jogl.Server.Business
                 case CommunityEntityType.Node: return "Hub";
                 default: return type.ToString();
             }
+        }
+
+        public InvitationKey GetInvitationKey(string entityId, string key)
+        {
+            return _invitationKeyRepository.Get(ik => ik.InviteKey == key && ik.CommunityEntityId == entityId);
+        }
+
+        public async Task<string> GetInvitationKeyForEntityAsync(string entityId)
+        {
+            var invitationKey = _invitationKeyRepository.Get(ik => ik.CommunityEntityId == entityId);
+            if (invitationKey == null)
+            {
+                var feed = _feedRepository.Get(entityId);
+                if (feed == null)
+                    return null;
+
+                invitationKey = new InvitationKey
+                {
+                    CommunityEntityId = entityId,
+                    InviteKey = ObjectId.GenerateNewId().ToString(),
+                    CommunityEntityType = _feedEntityService.GetType(feed.Type)
+                };
+
+               await _invitationKeyRepository.CreateAsync(invitationKey);
+            }
+
+            return invitationKey.InviteKey;
         }
     }
 }

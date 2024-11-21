@@ -145,6 +145,7 @@ builder.Services.AddTransient<IWaitlistRecordRepository, WaitlistRecordRepositor
 builder.Services.AddTransient<IPushNotificationTokenRepository, PushNotificationTokenRepository>();
 builder.Services.AddTransient<IFeedIntegrationRepository, FeedIntegrationRepository>();
 builder.Services.AddTransient<IPublicationRepository, PublicationRepository>();
+builder.Services.AddTransient<IInvitationKeyRepository, InvitationKeyRepository>();
 builder.Services.AddTransient<IInitializer, Initializer>();
 builder.Services.AddInitializers();
 

@@ -15,7 +15,6 @@ namespace Jogl.Server.DB
         protected override UpdateDefinition<Invitation> GetDefaultUpdateDefinition(Invitation updatedEntity)
         {
             return Builders<Invitation>.Update.Set(e => e.Status, updatedEntity.Status)
-                                              .Set(e => e.CommunityEntityType, updatedEntity.CommunityEntityType) //TODO remove after migration
                                               .Set(e => e.InviteeUserId, updatedEntity.InviteeUserId)
                                               .Set(e => e.InviteeEmail, updatedEntity.InviteeEmail)
                                               .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
