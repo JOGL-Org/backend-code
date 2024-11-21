@@ -11,7 +11,9 @@ IConfiguration config = new ConfigurationBuilder()
     .Build();
 
 var paperRepo = new PaperRepository(config);
+var needRepo = new NeedRepository(config);
 var feedRepo = new FeedRepository(config);
+
 var papers = paperRepo.List(p => !p.Deleted);
 foreach (var pap in papers)
 {
@@ -22,7 +24,7 @@ foreach (var pap in papers)
         {
             pap.FeedId = feedId;
             pap.FeedIds = new List<string>();
-            pap.DefaultVisibility = Jogl.Server.Data.FeedEntityVisibility.View;
+            pap.DefaultVisibility = Jogl.Server.Data.FeedEntityVisibility.Comment;
             await paperRepo.UpdateAsync(pap);
         }
         else
@@ -44,6 +46,7 @@ foreach (var pap in papers)
                 ExternalId = pap.ExternalId,
                 ExternalSystem = pap.ExternalSystem,
                 Journal = pap.Journal,
+                DefaultVisibility = Jogl.Server.Data.FeedEntityVisibility.Comment,
                 OpenAccessPdfUrl = pap.OpenAccessPdfUrl,
                 PublicationDate = pap.PublicationDate,
                 Status = pap.Status,
@@ -58,8 +61,17 @@ foreach (var pap in papers)
             });
         }
     }
+}
+var needs = needRepo.List(n => !n.Deleted);
+foreach (var n in needs)
+{
+    n.CommunityEntityVisibility = new List<Jogl.Server.Data.FeedEntityCommunityEntityVisibility> { new Jogl.Server.Data.FeedEntityCommunityEntityVisibility
+    {
+            CommunityEntityId = n.EntityId,
+            Visibility = Jogl.Server.Data.FeedEntityVisibility.Comment,
+    }};
 
-
+    await needRepo.UpdateAsync(n);
 }
 
 Console.ReadLine();
