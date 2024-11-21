@@ -57,19 +57,6 @@ namespace Jogl.Server.Notifications
             await _serviceBus.SendAsync(paper, "paper-updated");
         }
 
-        public async Task NotifyCreatedAsync(Notification notification)
-        {
-            await _serviceBus.SendAsync(notification, "notification-created");
-        }
-
-        public async Task NotifyCreatedAsync(IEnumerable<Notification> notifications)
-        {
-            foreach (var notification in notifications)
-            {
-                await NotifyCreatedAsync(notification);
-            }
-        }
-
         public async Task NotifyAddedAsync(Paper paper)
         {
             await _serviceBus.SendAsync(paper, "paper-added");

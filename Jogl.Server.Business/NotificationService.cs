@@ -27,7 +27,6 @@ namespace Jogl.Server.Business
         private async Task NotifyAsync(Notification notification)
         {
             await _notificationRepository.CreateAsync(notification);
-            await _notificationFacade.NotifyCreatedAsync(notification);
         }
 
         private async Task NotifyAsync(List<Notification> notifications)
@@ -36,7 +35,6 @@ namespace Jogl.Server.Business
                 return;
 
             await _notificationRepository.CreateAsync(notifications);
-            await _notificationFacade.NotifyCreatedAsync(notifications);
         }
 
         public ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
