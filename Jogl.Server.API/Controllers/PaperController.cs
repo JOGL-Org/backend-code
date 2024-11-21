@@ -20,26 +20,28 @@ namespace Jogl.Server.API.Controllers
     {
         private readonly IContentService _contentService;
         private readonly ICommunityEntityService _communityEntityService;
+        private readonly IFeedEntityService _feedEntityService;
         private readonly IPaperService _paperService;
         private readonly IConfiguration _configuration;
 
-        public PaperController(IContentService contentService, ICommunityEntityService communityEntityService, IPaperService paperService, IConfiguration configuration, IMapper mapper, ILogger<PaperController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public PaperController(IContentService contentService, ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IPaperService paperService, IConfiguration configuration, IMapper mapper, ILogger<PaperController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _contentService = contentService;
             _communityEntityService = communityEntityService;
+            _feedEntityService = feedEntityService;
             _paperService = paperService;
             _configuration = configuration;
         }
 
         [HttpPost]
         [Route("{entityId}/papers")]
-        [SwaggerOperation($"Adds a new paper and/or associates it to the specified entity")]
+        [SwaggerOperation($"Adds a new paper")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "The entity could not be found")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to add papers for the entity")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The ID of the new paper", typeof(string))]
         public async Task<IActionResult> AddPaper([SwaggerParameter("ID of the entity")][FromRoute] string entityId, [FromBody] PaperUpsertModel model)
         {
-            var entity = _communityEntityService.GetEnriched(entityId, CurrentUserId);
+            var entity = _feedEntityService.GetEntity(entityId, CurrentUserId);
             if (entity == null)
                 return NotFound();
 
@@ -64,7 +66,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "The paper data", typeof(List<PaperModel>))]
         public async Task<IActionResult> GetPapers([SwaggerParameter("ID of the entity")][FromRoute] string entityId, [FromQuery] SearchModel model)
         {
-            var entity = _communityEntityService.GetEnriched(entityId, CurrentUserId);
+            var entity = _feedEntityService.GetEntity(entityId, CurrentUserId);
             if (entity == null)
                 return NotFound();
 

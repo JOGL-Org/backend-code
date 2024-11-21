@@ -10,14 +10,12 @@ namespace Jogl.Server.Notifier
 {
     public abstract class FeedEntityFunctionBase<T> : NotificationFunctionBase where T : FeedEntity
     {
-        protected readonly ICommunityEntityService _communityEntityService;
         protected readonly IEmailRecordRepository _emailRecordRepository;
         protected readonly IMembershipRepository _membershipRepository;
         protected readonly IFeedEntityService _feedEntityService;
 
-        protected FeedEntityFunctionBase(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        protected FeedEntityFunctionBase( IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
-            _communityEntityService = communityEntityService;
             _emailRecordRepository = emailRecordRepository;
             _membershipRepository = membershipRepository;
             _feedEntityService = feedEntityService;

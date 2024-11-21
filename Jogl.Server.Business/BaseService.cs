@@ -171,30 +171,6 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Need need, CommunityEntity communityEntity, IEnumerable<Membership> memberships, Permission permission, string userId)
-        {
-            if (communityEntity == null)
-                return false;
-
-            var membership = memberships.SingleOrDefault(m => m.CommunityEntityId == communityEntity.Id.ToString());
-            switch (permission)
-            {
-                case Permission.Manage:
-                case Permission.ManageDocuments:
-                case Permission.Delete:
-                case Permission.DeleteContentEntity:
-                case Permission.DeleteComment:
-                    return (membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner))
-                        || need.CreatedByUserId == userId;
-                case Permission.PostContentEntity:
-                case Permission.PostComment:
-                case Permission.Read:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         private FeedEntityVisibility? GetFeedEntityVisibility(FeedEntity feedEntity, IEnumerable<Membership> memberships, string userId)
         {
             if (feedEntity.CreatedByUserId == userId && !string.IsNullOrEmpty(userId))
@@ -271,9 +247,9 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Paper p, IEnumerable<Membership> currentUserMemberships, string userId, Permission permission)
+        protected bool Can(FeedEntity e, IEnumerable<Membership> currentUserMemberships, string userId, Permission permission)
         {
-            var docVisibility = GetFeedEntityVisibility(p, currentUserMemberships, userId);
+            var docVisibility = GetFeedEntityVisibility(e, currentUserMemberships, userId);
             switch (permission)
             {
                 case Permission.Manage:
@@ -821,6 +797,18 @@ namespace Jogl.Server.Business
             }
         }
 
+        protected void EnrichChannelsWithPermissions(IEnumerable<Channel> channels,string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+
+            foreach (var c in channels)
+            {
+                var membership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.Id.ToString());
+                var communityEntityMembership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.CommunityEntityId);
+                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, membership, communityEntityMembership, p)).ToList();
+            }
+        }
+
         //protected void EnrichProjectData(IEnumerable<Project> projects, IEnumerable<Relation> relations, string userId)
         //{
         //    var needs = _needRepository.ListForEntityIds(projects.Select(p => p.Id.ToString()));
@@ -1241,7 +1229,7 @@ namespace Jogl.Server.Business
         {
             foreach (var n in needs)
             {
-                n.Permissions = Enum.GetValues<Permission>().Where(p => Can(n, n.CommunityEntity, currentUserMemberships, p, userId)).ToList();
+                n.Permissions = Enum.GetValues<Permission>().Where(p => Can(n, currentUserMemberships, userId,p)).ToList();
             }
         }
 
@@ -1263,6 +1251,25 @@ namespace Jogl.Server.Business
         {
             var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
             EnrichEventsWithPermissions(events, eventAttendances, currentUserMemberships, userId);
+        }
+
+        protected void EnrichEventsWithPermissions(IEnumerable<Event> events, string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+            var eventAttendances = _eventAttendanceRepository.List(m => m.UserId == userId && !m.Deleted);
+
+            EnrichEventsWithPermissions(events, eventAttendances, currentUserMemberships, userId);
+        }
+
+        protected void EnrichUsersWithPermissions(IEnumerable<User>users, string userId = null)
+        {
+            foreach (var u in users)
+            {
+                if (u.Id.ToString() == userId)
+                    u.Permissions = new List<Permission> { Permission.Read, Permission.Manage, Permission.ManageLibrary, Permission.ManageDocuments };
+                else
+                    u.Permissions = new List<Permission> { Permission.Read };
+            }
         }
 
         protected void EnrichCommunityEntitiesWithContentEntityData(IEnumerable<CommunityEntity> communityEntities)

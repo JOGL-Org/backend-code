@@ -8,17 +8,13 @@ using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using SharpCompress.Writers;
 
 namespace Jogl.Server.Notifier
 {
     public class EventCreatedFunction : CreatedFunctionBase<Event>
     {
-        private readonly ICommunityEntityService _communityEntityService;
-
-        public EventCreatedFunction(ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IMembershipRepository membershipRepository, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<CreatedFunctionBase<Event>> logger) : base(feedEntityService, membershipRepository, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public EventCreatedFunction( IFeedEntityService feedEntityService, IMembershipRepository membershipRepository, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<CreatedFunctionBase<Event>> logger) : base(feedEntityService, membershipRepository, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
-            _communityEntityService = communityEntityService;
         }
 
         [Function(nameof(EventCreatedFunction))]
@@ -31,7 +27,7 @@ namespace Jogl.Server.Notifier
             if (ev.Visibility == EventVisibility.Private)
                 return;
 
-            var feedEntity = _communityEntityService.GetFeedEntity(ev.CommunityEntityId);
+            var feedEntity = _feedEntityService.GetEntity(ev.CommunityEntityId);
             
             await RunAsync(ev, feedEntity, u => u.NotificationSettings?.EventMemberContainerEmail == true, u => u.NotificationSettings?.EventMemberContainerJogl == true);
 

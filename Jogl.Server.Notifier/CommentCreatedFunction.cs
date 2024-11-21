@@ -38,7 +38,7 @@ namespace Jogl.Server.Notifier
         {
             var comment = JsonSerializer.Deserialize<Comment>(message.Body.ToString());
             var contentEntity = _contentEntityRepository.Get(comment.ContentEntityId);
-            var feedEntity = _communityEntityService.GetFeedEntity(contentEntity.FeedId);
+            var feedEntity = _feedEntityService.GetEntity(contentEntity.FeedId);
             var author = _userRepository.Get(comment.CreatedByUserId);
 
             //send notifications to mentioned users

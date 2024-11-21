@@ -13,7 +13,7 @@ namespace Jogl.Server.Notifier
 {
     public class PaperCreatedFunction : FeedEntityCreatedFunctionBase<Paper>
     {
-        public PaperCreatedFunction(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(communityEntityService, emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public PaperCreatedFunction(IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base( emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
         }
 
@@ -24,7 +24,8 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var paper = JsonSerializer.Deserialize<Paper>(message.Body.ToString());
-            var parentEntity = _communityEntityService.GetFeedEntity(paper.FeedId);
+            var parentEntity = _feedEntityService.GetEntity(paper.FeedId);
+         
             await RunAsync(paper, parentEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
 
             // Complete the message

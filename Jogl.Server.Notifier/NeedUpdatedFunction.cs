@@ -13,7 +13,7 @@ namespace Jogl.Server.Notifier
 {
     public class NeedUpdatedFunction : FeedEntityUpdatedFunctionBase<Need>
     {
-        public NeedUpdatedFunction(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(communityEntityService, emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public NeedUpdatedFunction( IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
         }
 
@@ -24,7 +24,7 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var need = JsonSerializer.Deserialize<Need>(message.Body.ToString());
-            var parentEntity = _communityEntityService.GetFeedEntity(need.EntityId);
+            var parentEntity = _feedEntityService.GetEntity(need.EntityId);
 
             await RunAsync(need, parentEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
 

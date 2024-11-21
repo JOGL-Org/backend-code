@@ -92,32 +92,7 @@ namespace Jogl.Server.Business
                     }
             }
         }
-
-        public async Task UpdateAsync(CommunityEntity entity)
-        {
-            switch (entity.Type)
-            {
-                case CommunityEntityType.Workspace:
-                    await _workspaceRepository.UpdateAsync((Workspace)entity);
-                    break;
-
-                case CommunityEntityType.Node:
-                    await _nodeRepository.UpdateAsync((Node)entity);
-                    break;
-
-                case CommunityEntityType.Organization:
-                    await _organizationRepository.UpdateAsync((Organization)entity);
-                    break;
-
-                case CommunityEntityType.CallForProposal:
-                    await _callForProposalsRepository.UpdateAsync((CallForProposal)entity);
-                    break;
-
-                default:
-                    throw new NotImplementedException($"Cannot update entity for type {entity.Type}");
-            }
-        }
-
+    
         private CommunityEntityType? GetType(FeedType type)
         {
             CommunityEntityType t;
@@ -212,61 +187,6 @@ namespace Jogl.Server.Business
             return Get(id, type, userId);
         }
 
-        public CommunityEntity Get(string id, FeedType type)
-        {
-            return Get(id, type, null);
-        }
-
-        public CommunityEntity GetEnriched(string id, FeedType type, string userId)
-        {
-            return Get(id, type, userId);
-        }
-
-        public FeedEntity GetEntity(string id, FeedType type)
-        {
-            switch (type)
-            {
-                case FeedType.Workspace:
-                    return _workspaceRepository.Get(id);
-
-                case FeedType.Node:
-                    return _nodeRepository.Get(id);
-
-                case FeedType.Organization:
-                    return _organizationRepository.Get(id);
-
-                case FeedType.CallForProposal:
-                    return _callForProposalsRepository.Get(id);
-
-                case FeedType.Need:
-                    return _needRepository.Get(id);
-
-                case FeedType.Document:
-                    return _documentRepository.Get(id);
-
-                case FeedType.Event:
-                    return _eventRepository.Get(id);
-
-                case FeedType.Paper:
-                    return _paperRepository.Get(id);
-
-                case FeedType.User:
-                    return _userRepository.Get(id);
-
-                case FeedType.Channel:
-                    return _channelRepository.Get(id);
-
-                default:
-                    throw new NotImplementedException($"Cannot load entity for type {type}");
-            }
-        }
-
-        public FeedEntity GetFeedEntity(string feedId)
-        {
-            var feed = _feedRepository.Get(feedId);
-            return GetEntity(feedId, feed.Type);
-        }
-
         public List<Permission> ListPermissions(string id, string userId)
         {
             var feed = _feedRepository.Get(id);
@@ -311,13 +231,12 @@ namespace Jogl.Server.Business
 
                 case FeedType.Need:
                     var need = _needRepository.Get(id);
-                    need.CommunityEntity = Get(need.EntityId, userId);
                     EnrichNeedsWithPermissions(new Need[] { need }, userId);
                     return need.Permissions;
 
                 case FeedType.Document:
                     var doc = _documentRepository.Get(id);
-                    doc.FeedEntity = GetFeedEntity(doc.FeedEntityId);
+                    doc.FeedEntity = _feedEntityService.GetEntity(doc.FeedEntityId);
                     EnrichDocumentsWithPermissions(new Document[] { doc }, userId);
                     return doc.Permissions;
 
@@ -334,7 +253,7 @@ namespace Jogl.Server.Business
 
                 case FeedType.User:
                     if (id == userId)
-                        return new List<Permission> { Permission.Read, Permission.ManageDocuments };
+                        return new List<Permission> { Permission.Read, Permission.ManageDocuments, Permission.ManageLibrary };
                     else
                         return new List<Permission> { Permission.Read };
 
@@ -345,33 +264,6 @@ namespace Jogl.Server.Business
 
                 default:
                     throw new NotImplementedException($"Cannot load permissions for feed type {type}");
-            }
-        }
-
-        public CommunityEntityFollowing GetFollowing(string userIdFrom, string userIdTo)
-        {
-            return _communityEntityfollowingRepository.GetFollowing(userIdFrom, userIdTo);
-        }
-
-        public async Task<string> CreateFollowingAsync(CommunityEntityFollowing following)
-        {
-            return await _communityEntityfollowingRepository.CreateAsync(following);
-        }
-
-        public async Task DeleteFollowingAsync(string followingId)
-        {
-            await _communityEntityfollowingRepository.DeleteAsync(followingId);
-        }
-        public string GetPrintName(CommunityEntityType communityEntityType)
-        {
-            switch (communityEntityType)
-            {
-                case CommunityEntityType.Node:
-                    return "Hub";
-                case CommunityEntityType.CallForProposal:
-                    return "Call for proposals";
-                default:
-                    return communityEntityType.ToString();
             }
         }
     }

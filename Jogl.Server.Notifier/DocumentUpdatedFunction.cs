@@ -13,7 +13,7 @@ namespace Jogl.Server.Notifier
 {
     public class DocumentUpdatedFunction : FeedEntityUpdatedFunctionBase<Document>
     {
-        public DocumentUpdatedFunction(ICommunityEntityService communityEntityService, IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(communityEntityService, emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public DocumentUpdatedFunction(IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(emailRecordRepository, membershipRepository, feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
         {
         }
 
@@ -24,7 +24,7 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var doc = JsonSerializer.Deserialize<Document>(message.Body.ToString());
-            var parentEntity = _communityEntityService.GetFeedEntity(doc.FeedId);
+            var parentEntity = _feedEntityService.GetEntity(doc.FeedId);
 
             switch (doc.Type)
             {
