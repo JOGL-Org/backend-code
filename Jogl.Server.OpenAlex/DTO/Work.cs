@@ -40,6 +40,9 @@ namespace Jogl.Server.OpenAlex.DTO
         [JsonPropertyName("concepts")]
         public List<Concept> Concepts { get; set; }
 
+        [JsonPropertyName("keywords")]
+        public List<Keyword> Keywords { get; set; }
+
         [JsonPropertyName("cited_by_count")]
         public int? CitedByCount { get; set; }
 

@@ -617,6 +617,7 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, dst, ctx) => { return src.PublicationDate ?? src.PublicationYear?.ToString(); }))
                 .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, dst, ctx) => { return FormatAuthors(src.Authorships, a => a.Author.DisplayName); }))
                 .ForMember(dst => dst.OpenAccessPdfUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.PrimaryLocation?.PdfUrl ?? src.BestOaLocation?.PdfUrl; }))
+                .ForMember(dst => dst.Tags, opt => opt.MapFrom((src, dst, ctx) => { return src.Keywords.Select(kw => kw.DisplayName); }))
                 .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.Doi?.Split(".org/")[1]; }))
                 .ForMember(dst => dst.ExternalIdUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.Doi; }));
 

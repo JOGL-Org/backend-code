@@ -9,5 +9,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("external_id_url")]
         public string ExternalIdUrl { get; set; }
+
+        [JsonPropertyName("tags")]
+        public List<string> Tags { get; set; }
     }
 }
