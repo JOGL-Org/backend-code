@@ -61,6 +61,7 @@ var host = new HostBuilder()
         services.AddTransient<IWaitlistRecordRepository, WaitlistRecordRepository>();
         services.AddTransient<IEmailRecordRepository, EmailRecordRepository>();
         services.AddTransient<IPushNotificationTokenRepository, PushNotificationTokenRepository>();
+        services.AddTransient<IInvitationKeyRepository, InvitationKeyRepository>();
 
         services.AddTransient<ICommunityEntityService, CommunityEntityService>();
         services.AddTransient<ICommunityEntityInvitationService, CommunityEntityInvitationService>();
