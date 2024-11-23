@@ -43,7 +43,7 @@ namespace Jogl.Server.ExternalActivityMonitor
                     Published = entry.MedlineCitation.DateCompleted?.Value,
                     ExternalID = entry.MedlineCitation.PMID.Text,
                     ExternalSystem = "PUBMED",
-                    ExternalURL = $"https://pubmed.ncbi.nlm.nih.gov/{entry.MedlineCitation.PMID}",
+                    ExternalURL = $"https://pubmed.ncbi.nlm.nih.gov/{entry.MedlineCitation.PMID.Text}",
                     //ExternalFileURL = $"https://arxiv.org/pdf/{idWithoutVersion}",
                     Summary = entry.MedlineCitation.Article.Abstract?.AbstractText?.FirstOrDefault()?.Text,
                     Tags = entry.MedlineCitation.MeshHeadingList?.MeshHeading?.Select(m => m.DescriptorName.Text)?.ToList() ?? new List<string>(),
