@@ -45,8 +45,6 @@ var host = new HostBuilder()
         services.AddTransient<IPubMedFacade, PubMedFacade>();
         services.AddTransient<IArxivFacade, ArxivFacade>();
 
-        services.AddTransient<IS3Service, S3Service>();
-
         //data access
         services.AddTransient<IChannelRepository, ChannelRepository>();
         services.AddTransient<IProjectRepository, ProjectRepository>();
