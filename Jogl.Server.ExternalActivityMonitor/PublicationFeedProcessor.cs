@@ -71,13 +71,31 @@ namespace Jogl.Server.ExternalActivityMonitor
                 Text = $"A new publication was submitted to {publication.ExternalSystem}: <a href=\"{publication.ExternalURL}\">{publication.Title}</a>",
                 Type = ContentEntityType.Announcement,
                 Status = ContentEntityStatus.Active,
-                Overrides = new ContentEntityOverrides
-                {
-                    UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/arxiv-logomark-small.svg",
-                    UserName = $"Arxiv.org",
-                    UserURL = publication.ExternalURL
-                }
+                Overrides = GetOverrides(publication, integration)
             };
+        }
+
+        ContentEntityOverrides GetOverrides(Publication publication, FeedIntegration integration)
+        {
+            switch (integration.Type)
+            {
+                case FeedIntegrationType.Arxiv:
+                    return new ContentEntityOverrides
+                    {
+                        UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/arxiv-logomark-small.svg",
+                        UserName = $"Arxiv",
+                        UserURL = publication.ExternalURL
+                    };
+                case FeedIntegrationType.PubMed:
+                    return new ContentEntityOverrides
+                    {
+                        UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/US-NLM-PubMed-Logo.svg",
+                        UserName = $"PubMed",
+                        UserURL = publication.ExternalURL
+                    };
+                default:
+                    return null;
+            }
         }
     }
 }
