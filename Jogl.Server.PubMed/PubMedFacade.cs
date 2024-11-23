@@ -187,7 +187,7 @@ namespace Jogl.Server.PubMed
             while (true)
             {
                 var idNumber = int.Parse(lastId);
-                var idRange = Enumerable.Range(idNumber + 1, 20).Select(n=>n.ToString());
+                var idRange = Enumerable.Range(idNumber + 1, 20).Select(n => n.ToString());
 
                 var page = await ListArticlesAsync(idRange);
                 if (page.Count == 0)
@@ -232,11 +232,9 @@ namespace Jogl.Server.PubMed
             return articleSet;
         }
 
-        public Dictionary<string, List<string>> ListCategories()
+        public List<string> ListCategories()
         {
-            var list = Resources.pubmed_categories.Split(Environment.NewLine).ToList();
-
-            return list.ToDictionary(t => t.Split("|")[0], t => t.Split("|")[1].Split(",").ToList());
+            return Resources.pubmed_categories.Split(Environment.NewLine).Select(cat => cat.Split("|")[0]).ToList();
         }
     }
 }

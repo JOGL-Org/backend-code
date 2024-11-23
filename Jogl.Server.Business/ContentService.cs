@@ -1457,7 +1457,7 @@ namespace Jogl.Server.Business
                     return true;
                 case FeedIntegrationType.PubMed:
                     var pmCategories = _pubmedFacade.ListCategories();
-                    return pmCategories.ContainsKey(feedIntegration.SourceId);
+                    return pmCategories.Contains(feedIntegration.SourceId);
                 default:
                     throw new Exception($"Unable to validate feed integration for type {feedIntegration.Type}");
             }
@@ -1488,7 +1488,7 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.Arxiv:
                     return _arxivFacade.ListCategories();
                 case FeedIntegrationType.PubMed:
-                    return _pubmedFacade.ListCategories().Select(c=>c.Key).ToList();
+                    return _pubmedFacade.ListCategories();
                 default:
                     throw new Exception($"Unable to exchange feed integration token for type {feedIntegrationType}");
             }
