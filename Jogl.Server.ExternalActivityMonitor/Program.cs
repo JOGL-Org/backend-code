@@ -1,3 +1,4 @@
+using Jogl.Server.API.AWS;
 using Jogl.Server.Arxiv;
 using Jogl.Server.Business;
 using Jogl.Server.Configuration;
@@ -6,6 +7,7 @@ using Jogl.Server.Email;
 using Jogl.Server.GitHub;
 using Jogl.Server.HuggingFace;
 using Jogl.Server.Notifications;
+using Jogl.Server.PubMed;
 using Jogl.Server.ServiceBus;
 using Jogl.Server.Storage;
 using Jogl.Server.URL;
@@ -40,7 +42,10 @@ var host = new HostBuilder()
 
         services.AddTransient<IGitHubFacade, GitHubFacade>();
         services.AddTransient<IHuggingFaceFacade, HuggingFaceFacade>();
+        services.AddTransient<IPubMedFacade, PubMedFacade>();
         services.AddTransient<IArxivFacade, ArxivFacade>();
+
+        services.AddTransient<IS3Service, S3Service>();
 
         //data access
         services.AddTransient<IChannelRepository, ChannelRepository>();
@@ -83,6 +88,7 @@ var host = new HostBuilder()
         services.AddTransient<IEntityScoreRepository, EntityScoreRepository>();
         services.AddTransient<IFeedIntegrationRepository, FeedIntegrationRepository>();
         services.AddTransient<IPublicationRepository, PublicationRepository>();
+        services.AddTransient<ISystemValueRepository, SystemValueRepository>();
     })
     .Build();
 

@@ -37,7 +37,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         ServiceBusMessageActions messageActions)
         {
             var publication = JsonSerializer.Deserialize<Publication>(message.Body.ToString());
-            var sources = _feedIntegrationRepository.List(eas => eas.Type == FeedIntegrationType.Arxiv && publication.Tags.Contains(eas.SourceId) && !eas.Deleted);
+            var sources = _feedIntegrationRepository.List(eas => (eas.Type == FeedIntegrationType.Arxiv || eas.Type == FeedIntegrationType.PubMed) && publication.Tags.Contains(eas.SourceId) && !eas.Deleted);
             foreach (var source in sources)
             {
                 var existingCe = _contentEntityRepository.Get(ce => ce.ExternalID == publication.ExternalID && ce.FeedId == source.FeedId && !ce.Deleted);

@@ -24,13 +24,13 @@ namespace Jogl.Server.PubMed.DTO
 		public PMID PMID { get; set; }
 
 		[XmlElement(ElementName = "Created")]
-		public DateCreated DateCreated { get; set; }
+		public Date DateCreated { get; set; }
 
 		[XmlElement(ElementName = "DateCompleted")]
-		public DateCompleted DateCompleted { get; set; }
+		public Date DateCompleted { get; set; }
 
 		[XmlElement(ElementName = "DateRevised")]
-		public DateRevised DateRevised { get; set; }
+		public Date DateRevised { get; set; }
 
 		[XmlElement(ElementName = "Article")]
 		public Article Article { get; set; }
