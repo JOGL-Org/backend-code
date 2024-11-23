@@ -25,7 +25,7 @@ namespace Jogl.Server.ExternalActivityMonitor
         }
 
         [Function("PubMed-publication-loader")]
-        public async Task Run([TimerTrigger("0 * * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
         {
             var key = "LAST_PUBMED_ID";
             var lastIdSysValue = _systemValueRepository.Get(v => v.Key == key);
