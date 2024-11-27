@@ -209,7 +209,6 @@ var certClient = new CertificateClient(
 
 var cert = await certClient.GetCertificateAsync(builder.Configuration["JWT:Cert-Name"]);
 
-
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -253,7 +252,6 @@ app.UseSwaggerUI(options =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseIdentityServer();
 
 //enable custom middleware
 app.UseMiddleware<JObjectMiddleware>();
