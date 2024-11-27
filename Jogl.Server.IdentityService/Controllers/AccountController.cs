@@ -28,7 +28,7 @@ namespace Jogl.Server.IdentityService.Controllers
         {
             var vm = new LoginViewModel
             {
-                ReturnUrl = returnUrl
+                Redirect_url = returnUrl
             };
             return View(vm);
         }
@@ -36,8 +36,8 @@ namespace Jogl.Server.IdentityService.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-            if (context == null) return BadRequest("Invalid return URL");
+            var context = await _interaction.GetAuthorizationContextAsync(model.Redirect_url);
+            if (context == null) return BadRequest("Invalid redirect URL");
 
             if (!ModelState.IsValid)
             {
@@ -64,7 +64,7 @@ namespace Jogl.Server.IdentityService.Controllers
                     });
 
                     //_logger.LogInformation("User {Username} logged in successfully", model.Username);
-                    return Redirect(model.ReturnUrl);
+                    return Redirect(model.Redirect_url);
                 }
             }
             catch (Exception ex)
