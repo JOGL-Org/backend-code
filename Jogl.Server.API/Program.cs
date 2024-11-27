@@ -15,7 +15,6 @@ using Jogl.Server.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json.Serialization;
 using Jogl.Server.Events;
 using Polly;
@@ -32,6 +31,12 @@ using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
 using Jogl.Server.HuggingFace;
 using Jogl.Server.Arxiv;
+using Duende.IdentityServer.Models;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using System.Security.Cryptography.X509Certificates;
+using Duende.IdentityServer;
+using Duende.IdentityServer.Test;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -193,6 +198,18 @@ builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
     //options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
 });
 
+//add keys
+builder.Configuration.AddKeyVault();
+builder.Services.AddApplicationInsightsTelemetry();
+
+var certClient = new CertificateClient(
+    new Uri(builder.Configuration["Azure:KeyVault:URL"]),
+    new DefaultAzureCredential()
+);
+
+var cert = await certClient.GetCertificateAsync(builder.Configuration["JWT:Cert-Name"]);
+
+
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -204,18 +221,13 @@ builder.Services.AddAuthentication(x =>
     x.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"])),
+        IssuerSigningKey = new X509SecurityKey(new X509Certificate2(cert.Value.Cer)),
         ValidateLifetime = true,
         ValidateAudience = false,
         ValidateIssuer = false,
         ClockSkew = TimeSpan.FromMinutes(1)
     };
 });
-
-builder.Services.AddApplicationInsightsTelemetry();
-
-//add secrets
-builder.Configuration.AddKeyVault();
 
 var app = builder.Build();
 
@@ -241,6 +253,7 @@ app.UseSwaggerUI(options =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseIdentityServer();
 
 //enable custom middleware
 app.UseMiddleware<JObjectMiddleware>();

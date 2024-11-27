@@ -401,3 +401,4 @@ FodyWeavers.xsd
 /Jogl.Server.Loader.Arxiv/arxiv-metadata-oai-snapshot.json
 profile.arm.json
 /Jogl.Server.Loader.PubMed/pubmed-tags-2024.xml
+/Jogl.Server.IdentityService/tempkey.jwk
