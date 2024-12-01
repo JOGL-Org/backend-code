@@ -1168,9 +1168,6 @@ namespace Jogl.Server.Business
         //    return nodeIds.Contains(nodeId);
         //}
 
-
-
-
         public List<NodeFeedData> ListNodeMetadata(string userId)
         {
             var nodes = _nodeRepository.List(n => !n.Deleted);
@@ -1178,6 +1175,20 @@ namespace Jogl.Server.Business
             res.Insert(0, new NodeFeedData { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
 
             return res;
+        }
+
+        public NodeFeedData GetDefaultNodeMetadata(string userId)
+        {
+            var allRelations = _relationRepository.List(r => !r.Deleted);
+            var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
+
+            var nodeId = GetNodeIdsForMemberships(allRelations, currentUserMemberships).FirstOrDefault();
+
+            if (nodeId == null)
+                return null;
+
+            var node = _nodeRepository.Get(nodeId);
+            return GetNodeMetadata(userId, node).Single();
         }
 
         public NodeFeedData GetNodeMetadata(string nodeId, string userId)
@@ -1188,7 +1199,7 @@ namespace Jogl.Server.Business
 
         private List<NodeFeedData> GetNodeMetadata(string userId, params Node[] nodes)
         {
-                        var allRelations = _relationRepository.List(r => !r.Deleted);
+            var allRelations = _relationRepository.List(r => !r.Deleted);
             var currentUserEventAttendances = _eventAttendanceRepository.List(ea => ea.UserId == userId && ea.Status == AttendanceStatus.Yes && !ea.Deleted);
             var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
 
@@ -1362,7 +1373,7 @@ namespace Jogl.Server.Business
             return res;
         }
 
-                public UserFeedRecord GetFeedRecord(string userId, string feedId)
+        public UserFeedRecord GetFeedRecord(string userId, string feedId)
         {
             return _userFeedRecordRepository.Get(r => r.UserId == userId && r.FeedId == feedId);
         }

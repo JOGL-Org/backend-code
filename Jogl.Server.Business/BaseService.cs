@@ -332,6 +332,19 @@ namespace Jogl.Server.Business
                  .ToList();
         }
 
+        protected List<string> GetNodeIdsForMemberships(IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships)
+        {
+            var nodeIds = currentUserMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Node).Select(m => m.CommunityEntityId);
+            var workspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Node && r.SourceCommunityEntityType == CommunityEntityType.Workspace && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId ))
+                 .Select(r => r.TargetCommunityEntityId);
+
+            var subWorkspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Workspace && r.SourceCommunityEntityType == CommunityEntityType.Workspace && allRelations.Any(r2=> r2.SourceCommunityEntityId == r.TargetCommunityEntityId && r2.TargetCommunityEntityType== CommunityEntityType.Node) && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId))
+                 .Select(r => r.TargetCommunityEntityId);
+
+
+            return nodeIds.Concat(workspaceNodeIds).Concat(subWorkspaceNodeIds).ToList();
+        }
+
         protected List<string> GetCommunityEntityIdsForNode(IEnumerable<Relation> allRelations, string nodeId)
         {
             return GetCommunityEntityIdsForNodes(allRelations, new List<string> { nodeId });
