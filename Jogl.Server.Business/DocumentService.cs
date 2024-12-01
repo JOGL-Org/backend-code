@@ -129,7 +129,11 @@ namespace Jogl.Server.Business
 
         public List<Document> ListForEntity(string currentUserId, string entityId, string folderId, DocumentFilter? type, string search, int page, int pageSize)
         {
-            var documents = _documentRepository.Query(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null).Search(search).ToList();
+            var documents = _documentRepository
+                .Query(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null)
+                .Search(search)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
             var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type, page, pageSize);
@@ -141,7 +145,13 @@ namespace Jogl.Server.Business
 
         public ListPage<Document> ListForChannel(string currentUserId, string channelId, DocumentFilter type, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var documents = _documentRepository.Query(d => d.FeedId == channelId).Search(search).Sort(sortKey, sortAscending).ToList();
+            var documents = _documentRepository
+                .Query(d => d.FeedId == channelId)
+                .Search(search)
+                .WithLastOpenedUTC()
+                .Sort(sortKey, sortAscending)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(channelId);
 
             var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type);
@@ -158,10 +168,12 @@ namespace Jogl.Server.Business
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var documents = _documentRepository.Query(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
+            var documents = _documentRepository
+                .Query(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
                 .Search(search)
                 .WithLastOpenedUTC()
-                .Sort(sortKey, ascending).ToList();
+                .Sort(sortKey, ascending)
+                .ToList();
 
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
