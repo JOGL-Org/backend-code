@@ -88,19 +88,9 @@ namespace Jogl.Server.API.Controllers
             return _resourceService.ListForFeed(id, search, page, pageSize);
         }
 
-        protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return new ListPage<Paper>(_paperService.ListForEntity(CurrentUserId, id, search, page, pageSize, sortKey, ascending));
-        }
-
         protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             throw new NotImplementedException();
-        }
-
-        protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return new ListPage<Need>(_needService.ListForEntity(CurrentUserId, id, search, page, pageSize, sortKey, ascending));
         }
 
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
@@ -257,7 +247,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<PaperModel>))]
         public async Task<IActionResult> GetPapersAggregate([SwaggerParameter("ID of the workspace")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
         {
-            return await GetPapersAggregateAsync(id, types, communityEntityIds, type, tags, model);
+            return await GetPapers(id, type, tags, model);
         }
 
         [Obsolete]
@@ -290,7 +280,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<NeedModel>))]
         public async Task<IActionResult> GetNeedsAggregate([SwaggerParameter("ID of the workspace")] string id, [FromQuery] List<string> communityEntityIds, [FromQuery] SearchModel model)
         {
-            return await GetNeedsAggregateAsync(id, communityEntityIds, false, model);
+            return await GetNeeds(id, model);
         }
 
         [Obsolete]

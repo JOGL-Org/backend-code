@@ -126,7 +126,7 @@ namespace Jogl.Server.Business
             var papers = _paperRepository.SearchListSort(p => p.FeedId == entityId && !p.Deleted, sortKey, ascending, search);
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
-            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, page, pageSize);
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, null, page, pageSize);
             EnrichPaperData(filteredPapers, entitySet, currentUserId);
             RecordListings(currentUserId, filteredPapers);
 
@@ -139,14 +139,14 @@ namespace Jogl.Server.Business
             var entityIds = papers.Select(p => p.FeedId).ToList();
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, page, pageSize);
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, null, page, pageSize);
             EnrichPaperData(filteredPapers, entitySet, currentUserId);
             RecordListings(currentUserId, filteredPapers);
 
             return filteredPapers;
         }
 
-        public ListPage<Paper> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Paper> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
@@ -156,7 +156,7 @@ namespace Jogl.Server.Business
             var papers = _paperRepository.SearchListSort(p => entityIds.Contains(p.FeedId) && !p.Deleted, sortKey, ascending, search);
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId);
+            var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, filter);
 
             var filteredPaperPage = GetPage(filteredPapers, page, pageSize);
             EnrichPaperData(filteredPaperPage, entitySet, currentUserId);

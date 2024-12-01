@@ -10,7 +10,7 @@ namespace Jogl.Server.Business
         long Count(string userId, string search);
         List<Need> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         List<Need> ListForEntity(string userId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending);
+        ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         long CountForNode(string currentUserId, string nodeId, List<string> communityEntityIds, string search);
         Task<string> CreateAsync(Need need);
         Task UpdateAsync(Need need);

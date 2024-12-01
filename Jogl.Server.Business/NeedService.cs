@@ -14,7 +14,7 @@ namespace Jogl.Server.Business
         private readonly ICommunityEntityService _communityEntityService;
         private readonly INotificationFacade _notificationFacade;
 
-        public NeedService( IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, INotificationService notificationService, ICommunityEntityService communityEntityService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public NeedService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, INotificationService notificationService, ICommunityEntityService communityEntityService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _workspaceRepository = workspaceRepository;
             _nodeRepository = nodeRepository;
@@ -91,7 +91,7 @@ namespace Jogl.Server.Business
             return filteredNeeds;
         }
 
-        public ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             if (communityEntityIds != null && communityEntityIds.Any())
@@ -99,10 +99,8 @@ namespace Jogl.Server.Business
 
             var communityEntities = _communityEntityService.List(entityIds);
             var needs = _needRepository.SearchListSort(n => entityIds.Contains(n.EntityId), sortKey, ascending, search);
-            if (currentUser)
-                needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId, filter);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);

@@ -47,9 +47,7 @@ namespace Jogl.Server.API.Controllers
         protected abstract List<Data.Node> ListNodes(string id, string search, int page, int pageSize);
         protected abstract List<Organization> ListOrganizations(string id, string search, int page, int pageSize);
         protected abstract List<Resource> ListResources(string id, string search, int page, int pageSize);
-        protected abstract ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending);
 
-        protected abstract ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         protected abstract ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
 
         protected BaseCommunityEntityController(IAccessService accessService, IInvitationService invitationService, IMembershipService membershipService, IUserService userService, IDocumentService documentService, ICommunityEntityService communityEntityService, ICommunityEntityInvitationService communityEntityInvitationService, ICommunityEntityMembershipService communityEntityMembershipService, IContentService contentService, IEventService eventService, IChannelService channelService, IPaperService paperService, IResourceService resourceService, INeedService needService, IUrlService urlService, IConfiguration configuration, IMapper mapper, ILogger logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
@@ -1586,28 +1584,6 @@ namespace Jogl.Server.API.Controllers
 
             await _needService.DeleteAsync(needId);
             return Ok();
-        }
-
-        protected async Task<IActionResult> GetPapersAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var papers = ListPapersAggregate(id, types, communityEntityIds, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var paperModels = papers.Items.Select(_mapper.Map<PaperModel>);
-            return Ok(new ListPage<PaperModel>(paperModels, papers.Total));
-        }
-
-        protected async Task<IActionResult> GetNeedsAggregateAsync(string id, List<string> communityEntityIds, bool currentUser, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var needs = ListNeedsAggregate(id, communityEntityIds, currentUser, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var needModels = needs.Items.Select(_mapper.Map<NeedModel>);
-            return Ok(new ListPage<NeedModel>(needModels, needs.Total));
         }
 
         protected async Task<IActionResult> GetEventsAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, SearchModel model)

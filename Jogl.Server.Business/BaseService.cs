@@ -1561,25 +1561,26 @@ namespace Jogl.Server.Business
                                 .ToList();
         }
 
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, int page, int pageSize) where T : FeedEntity
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter, int page, int pageSize) where T : FeedEntity
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            var filteredEntities = GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId);
+            var filteredEntities = GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
             return GetPage(filteredEntities, page, pageSize);
         }
 
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId) where T : FeedEntity
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            return GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId);
+            return GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
         }
 
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, IEnumerable<Membership> currentUserMemberships, string currentUserId) where T : FeedEntity
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
         {
             return entities.Where(e => CanSeeFeedEntity(e, currentUserMemberships, currentUserId))
-                         .ToList();
+                           .Where(e => IsFeedEntityInFilter(e, filter, currentUserId))
+                           .ToList();
         }
 
         protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type, int page, int pageSize)
