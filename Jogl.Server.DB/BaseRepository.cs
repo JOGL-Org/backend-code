@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,6 +15,8 @@ namespace Jogl.Server.DB
         protected const string INDEX_AUTOCOMPLETE = "autocomplete_default";
         protected const string INDEX_UNIQUE = "unique_default";
         private readonly IConfiguration _configuration;
+        private readonly IOperationContext _context;
+
         protected abstract string CollectionName { get; }
         protected Collation DefaultCollation { get { return new Collation("en", strength: CollationStrength.Primary); } }
 
@@ -38,9 +41,10 @@ namespace Jogl.Server.DB
         protected virtual Expression<Func<T, string>> AutocompleteField => null;
         protected virtual Expression<Func<T, object>>[] SearchFields => null;
 
-        protected BaseRepository(IConfiguration configuration)
+        protected BaseRepository(IConfiguration configuration, IOperationContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         protected IMongoDatabase GetDatabase(string db)
@@ -492,18 +496,25 @@ namespace Jogl.Server.DB
 
         }
 
-        private IAggregateFluent<T> GetSearchQuery(string searchValue)
+        private class EntityWithUFRs : Entity
+        {
+            public List<UserFeedRecord> UserFeedRecords { get; set; }
+        }
+
+        private IAggregateFluent<T> GetSearchQuery(string searchValue, SortKey? sortKey = null)
         {
             var builder = new SearchPathDefinitionBuilder<T>();
             var searchDefinition = builder.Multi(SearchFields);
 
             var coll = GetCollection<T>();
-            return coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+            var query = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
             {
                 MaxEdits = 2,
                 PrefixLength = 1,
                 MaxExpansions = 256,
             }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted);
+
+            return query;
         }
 
         private IAggregateFluent<T> GetAutocompleteQuery(string searchValue)

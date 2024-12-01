@@ -27,5 +27,9 @@ namespace Jogl.Server.Data
         [BsonIgnore]
         [JsonIgnore]
         public User CreatedBy { get; set; }
+
+        [BsonIgnore]
+        public DateTime? LastOpenedUTC { get; set; }
+
     }
 }

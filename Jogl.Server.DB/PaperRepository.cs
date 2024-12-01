@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -9,7 +10,7 @@ namespace Jogl.Server.DB
 {
     public class PaperRepository : BaseRepository<Paper>, IPaperRepository
     {
-        public PaperRepository(IConfiguration configuration) : base(configuration)
+        public PaperRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

@@ -376,22 +376,5 @@ namespace Jogl.Server.Business
 
             return GetPage(entities.Cast<Entity>().OrderByDescending(e => e.CreatedUTC), page, pageSize);
         }
-
-        protected Expression<Func<Document, object>> GetDocumentSort(SortKey key)
-        {
-            switch (key)
-            {
-                case SortKey.CreatedDate:
-                    return (e) => e.CreatedUTC;
-                case SortKey.LastActivity:
-                    return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
-                case SortKey.Alphabetical:
-                    return (e) => e.FeedTitle;
-                default:
-                    throw new Exception($"Unknown sort key {key}");
-            }
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -8,7 +9,7 @@ namespace Jogl.Server.DB
 {
     public class FeedIntegrationRepository : BaseRepository<FeedIntegration>, IFeedIntegrationRepository
     {
-        public FeedIntegrationRepository(IConfiguration configuration) : base(configuration)
+        public FeedIntegrationRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

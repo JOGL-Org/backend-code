@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -8,7 +9,7 @@ namespace Jogl.Server.DB
 {
     public class FolderRepository : BaseRepository<Folder>, IFolderRepository
     {
-        public FolderRepository(IConfiguration configuration) : base(configuration)
+        public FolderRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

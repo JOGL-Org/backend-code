@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Jogl.Server.Configuration;
+using Jogl.Server.DB.Context;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -39,6 +40,7 @@ var host = new HostBuilder()
         services.AddTransient<IAIService, ClaudeAIService>();
 
         //data access
+        services.AddScoped<IOperationContext, OperationContext>();
         services.AddTransient<IChannelRepository, ChannelRepository>();
         services.AddTransient<IProjectRepository, ProjectRepository>();
         services.AddTransient<ICallForProposalRepository, CallForProposalRepository>();
