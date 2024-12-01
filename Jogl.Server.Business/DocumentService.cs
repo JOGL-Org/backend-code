@@ -3,9 +3,7 @@ using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using Jogl.Server.Notifications;
 using Jogl.Server.Storage;
-using Microsoft.Extensions.Azure;
 using MongoDB.Bson;
-using System.Linq.Expressions;
 
 namespace Jogl.Server.Business
 {
@@ -161,7 +159,7 @@ namespace Jogl.Server.Business
             return new ListPage<Document>(GetPage(filteredDocuments, page, pageSize), filteredDocuments.Count);
         }
 
-        public ListPage<Document> ListForNode(string currentUserId, string nodeId, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Document> ListForNode(string currentUserId, string nodeId,  List<string> communityEntityIds, DocumentFilter? type, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
@@ -177,7 +175,7 @@ namespace Jogl.Server.Business
 
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type, filter);
 
             var filteredDocumentPage = GetPage(filteredDocuments, page, pageSize);
             EnrichDocumentData(filteredDocumentPage, entitySet, currentUserId);

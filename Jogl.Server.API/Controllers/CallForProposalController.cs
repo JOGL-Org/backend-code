@@ -95,11 +95,6 @@ namespace Jogl.Server.API.Controllers
             throw new NotImplementedException();
         }
 
-        protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             throw new NotImplementedException();

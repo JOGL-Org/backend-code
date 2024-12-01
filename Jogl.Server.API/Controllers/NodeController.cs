@@ -10,7 +10,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.URL;
 using Jogl.Server.Data.Util;
-using System.Text.Json.Serialization;
 using Jogl.Server.API.Converters;
 
 namespace Jogl.Server.API.Controllers
@@ -97,11 +96,6 @@ namespace Jogl.Server.API.Controllers
         protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             return _paperService.ListForNode(CurrentUserId, id, communityEntityIds, search, page, pageSize, sortKey, ascending);
-        }
-
-        protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _documentService.ListForNode(CurrentUserId, id, types, communityEntityIds, type, search, page, pageSize, sortKey, ascending);
         }
 
         protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
@@ -317,9 +311,15 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<DocumentModel>))]
-        public async Task<IActionResult> GetDocumentsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] DocumentFilter? type, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetDocumentsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] DocumentFilter? type, [FromQuery] FeedEntityFilter? filter, [FromQuery] SearchModel model)
         {
-            return await GetDocumentsAggregateAsync(id, null, communityEntityIds, type, model);
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var documents = _documentService.ListForNode(CurrentUserId, id, communityEntityIds, type, filter, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var documentModels = documents.Items.Select(_mapper.Map<DocumentModel>);
+            return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
         }
 
         [AllowAnonymous]

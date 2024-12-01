@@ -48,7 +48,7 @@ namespace Jogl.Server.API.Controllers
         protected abstract List<Organization> ListOrganizations(string id, string search, int page, int pageSize);
         protected abstract List<Resource> ListResources(string id, string search, int page, int pageSize);
         protected abstract ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        protected abstract ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending);
+
         protected abstract ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         protected abstract ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
 
@@ -1652,17 +1652,6 @@ namespace Jogl.Server.API.Controllers
             var papers = ListPapersAggregate(id, types, communityEntityIds, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Items.Select(_mapper.Map<PaperModel>);
             return Ok(new ListPage<PaperModel>(paperModels, papers.Total));
-        }
-
-        protected async Task<IActionResult> GetDocumentsAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var documents = ListDocumentsAggregate(id, types, communityEntityIds, type, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var documentModels = documents.Items.Select(_mapper.Map<DocumentModel>);
-            return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
         }
 
         protected async Task<IActionResult> GetNeedsAggregateAsync(string id, List<string> communityEntityIds, bool currentUser, SearchModel model)

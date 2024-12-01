@@ -93,11 +93,6 @@ namespace Jogl.Server.API.Controllers
             return new ListPage<Paper>(_paperService.ListForEntity(CurrentUserId, id, search, page, pageSize, sortKey, ascending));
         }
 
-        protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             throw new NotImplementedException();

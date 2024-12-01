@@ -9,7 +9,6 @@ using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.Data.Enum;
-using Jogl.Server.Images;
 using Jogl.Server.Documents;
 using Jogl.Server.Data.Util;
 
