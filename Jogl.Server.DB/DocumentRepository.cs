@@ -15,7 +15,7 @@ namespace Jogl.Server.DB
         }
 
         protected override string CollectionName => "documents";
-        protected override Expression<Func<Document, object>>[] SearchFields
+        public override Expression<Func<Document, object>>[] SearchFields
         {
             get
             {
@@ -29,6 +29,8 @@ namespace Jogl.Server.DB
             {
                 case SortKey.CreatedDate:
                     return (e) => e.CreatedUTC;
+                case SortKey.RecentlyOpened:
+                    return (e) => e.LastOpenedUTC;
                 case SortKey.LastActivity:
                     return (e) => e.LastActivityUTC;
                 case SortKey.Date:

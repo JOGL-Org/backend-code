@@ -38,8 +38,8 @@ namespace Jogl.Server.DB
             }
         }
 
-        protected virtual Expression<Func<T, string>> AutocompleteField => null;
-        protected virtual Expression<Func<T, object>>[] SearchFields => null;
+        public virtual Expression<Func<T, string>> AutocompleteField => null;
+        public virtual Expression<Func<T, object>>[] SearchFields => null;
 
         protected BaseRepository(IConfiguration configuration, IOperationContext context)
         {
@@ -521,42 +521,12 @@ namespace Jogl.Server.DB
             return coll.Aggregate().Search(Builders<T>.Search.Autocomplete(searchDefinition, searchValue), new SearchOptions<T> { IndexName = INDEX_AUTOCOMPLETE }).Match(itm => !itm.Deleted);
         }
 
-        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter)
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null)
         {
             var coll = GetCollection<T>();
-
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
-            return new FluentQuery<T>(_configuration, this, _context, q);
-        }
-
-        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter, string searchValue)
-        {
-            var builder = new SearchPathDefinitionBuilder<T>();
-            var searchDefinition = builder.Multi(SearchFields);
-            var coll = GetCollection<T>();
-
-            var q = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
-            {
-                MaxEdits = 2,
-                PrefixLength = 1,
-                MaxExpansions = 256,
-            }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted).Match(filter);
-
-            return new FluentQuery<T>(_configuration, this, _context, q);
-        }
-
-        public IFluentQuery<T> Query(string searchValue)
-        {
-            var builder = new SearchPathDefinitionBuilder<T>();
-            var searchDefinition = builder.Multi(SearchFields);
-            var coll = GetCollection<T>();
-
-            var q = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
-            {
-                MaxEdits = 2,
-                PrefixLength = 1,
-                MaxExpansions = 256,
-            }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted);
+            if (filter != null)
+                q = q.Match(filter);
 
             return new FluentQuery<T>(_configuration, this, _context, q);
         }

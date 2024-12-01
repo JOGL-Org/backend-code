@@ -14,7 +14,7 @@ namespace Jogl.Server.DB
         {
         }
 
-        protected override Expression<Func<Paper, object>>[] SearchFields
+        public override Expression<Func<Paper, object>>[] SearchFields
         {
             get
             {

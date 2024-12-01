@@ -1582,9 +1582,9 @@ namespace Jogl.Server.Business
                          .ToList();
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search, DocumentFilter? type, int page, int pageSize)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type, int page, int pageSize)
         {
-            return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, search, type), page, pageSize);
+            return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, type), page, pageSize);
         }
 
         protected List<Document> GetFilteredJoglDocs(IEnumerable<Document> documents, string currentUserId)
@@ -1593,7 +1593,7 @@ namespace Jogl.Server.Business
             return documents.Where(d => CanSeeFeedEntity(d, currentUserMemberships, currentUserId)).ToList();
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
 
@@ -1601,23 +1601,22 @@ namespace Jogl.Server.Business
             var currentUserAttendances = _eventAttendanceRepository.List(a => a.UserId == currentUserId && !a.Deleted);
             var allRelations = _relationRepository.List(r => (entityIds.Contains(r.SourceCommunityEntityId) || entityIds.Contains(r.TargetCommunityEntityId)) && !r.Deleted);
 
-            return GetFilteredDocuments(documents, feedEntitySet, allRelations, currentUserMemberships, currentUserAttendances, currentUserId, search, type);
+            return GetFilteredDocuments(documents, feedEntitySet, allRelations, currentUserMemberships, currentUserAttendances, currentUserId, type);
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, string currentUserId, DocumentFilter? type = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            return GetFilteredDocuments(documents, feedEntitySet, currentUserId, search, type);
+            return GetFilteredDocuments(documents, feedEntitySet, currentUserId, type);
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, string currentUserId, DocumentFilter? type = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
             var entityRelations = allRelations.Where(r => (entityIds.Contains(r.TargetCommunityEntityId) || entityIds.Contains(r.SourceCommunityEntityId)) && !r.Deleted);
-            return documents.Where(d => string.IsNullOrEmpty(search) || d.Name.Contains(search, StringComparison.CurrentCultureIgnoreCase))
-                                        .Where(d => !d.Deleted)
+            return documents            .Where(d => !d.Deleted)
                                         .Where(d => d.Status != ContentEntityStatus.Draft)
                                         .Where(d =>
                                         {

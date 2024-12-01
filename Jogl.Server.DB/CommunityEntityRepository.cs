@@ -14,8 +14,8 @@ namespace Jogl.Server.DB
         {
         }
 
-        protected override Expression<Func<T, string>> AutocompleteField => e => e.Title;
-        protected override Expression<Func<T, object>>[] SearchFields
+        public override Expression<Func<T, string>> AutocompleteField => e => e.Title;
+        public override Expression<Func<T, object>>[] SearchFields
         {
             get
             {

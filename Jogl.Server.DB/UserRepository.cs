@@ -15,8 +15,8 @@ namespace Jogl.Server.DB
         }
 
         protected override string CollectionName => "users";
-        protected override Expression<Func<User, string>> AutocompleteField => u => u.FullName;
-        protected override Expression<Func<User, object>>[] SearchFields
+        public override Expression<Func<User, string>> AutocompleteField => u => u.FullName;
+        public override Expression<Func<User, object>>[] SearchFields
         {
             get
             {

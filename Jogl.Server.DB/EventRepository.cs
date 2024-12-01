@@ -16,7 +16,7 @@ namespace Jogl.Server.DB
 
         protected override string CollectionName => "events";
 
-        protected override Expression<Func<Event, object>>[] SearchFields
+        public override Expression<Func<Event, object>>[] SearchFields
         {
             get
             {
