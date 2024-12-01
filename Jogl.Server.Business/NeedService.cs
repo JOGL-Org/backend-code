@@ -194,7 +194,7 @@ namespace Jogl.Server.Business
             var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
-            return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
+            return GetPage(needs.Select(e => e.CommunityEntity).Where(e=>e!=null).DistinctBy(e => e.Id), page, pageSize);
         }
     }
 }
