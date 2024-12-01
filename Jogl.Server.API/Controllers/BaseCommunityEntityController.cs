@@ -1300,61 +1300,6 @@ namespace Jogl.Server.API.Controllers
         }
 
         [Obsolete]
-        [HttpGet]
-        [Route("{id}/papers/draft")]
-        [SwaggerOperation($"Returns a draft paper for the specified container")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No community entity was found for the specified id")]
-        [SwaggerResponse((int)HttpStatusCode.NoContent, "No draft paper was found for the community entity")]
-        public async Task<IActionResult> GetPaperDraft([FromRoute] string id)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var paper = _paperService.GetDraft(id, CurrentUserId);
-            if (paper == null)
-                return NoContent();
-
-            var paperModel = _mapper.Map<PaperModel>(paper);
-            return Ok(paperModel);
-        }
-
-        [Obsolete]
-        [HttpPut]
-        [Route("{id}/papers/{paperId}/draft")]
-        [SwaggerOperation($"Updates the paper draft")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, "Cannot update active paper")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id or the paper does not exist")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to edit documents for the entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper draft was updated")]
-        public async Task<IActionResult> UpdatePaper([FromRoute] string id, [FromRoute] string paperId, [FromBody] PaperUpsertModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var existingPaper = _paperService.Get(paperId, CurrentUserId);
-            if (existingPaper == null)
-                return NotFound();
-
-            if (existingPaper.Status != ContentEntityStatus.Draft)
-                return BadRequest();
-
-            if (!existingPaper.FeedIds.Contains(id))
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Data.Enum.Permission.ManageDocuments))
-                return Forbid();
-
-            var paper = _mapper.Map<Paper>(model);
-            paper.Id = ObjectId.Parse(paperId);
-            paper.FeedIds = existingPaper.FeedIds;
-            await InitUpdateAsync(paper);
-            await _paperService.UpdateAsync(paper);
-            return Ok();
-        }
-
-        [Obsolete]
         [HttpDelete]
         [Route("{id}/papers/{paperId}")]
         [SwaggerOperation($"Disassociates the specified paper from the specified community entity")]
