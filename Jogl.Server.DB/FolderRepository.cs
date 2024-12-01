@@ -10,7 +10,7 @@ namespace Jogl.Server.DB
 {
     public class FolderRepository : BaseRepository<Folder>, IFolderRepository
     {
-        public FolderRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public FolderRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
@@ -27,16 +27,10 @@ namespace Jogl.Server.DB
         {
             switch (key)
             {
-                case SortKey.CreatedDate:
-                    return (e) => e.CreatedUTC;
-                case SortKey.LastActivity:
-                    return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
                 case SortKey.Alphabetical:
-                    return (e) => e.Name;
+                    return e => e.Name;
                 default:
-                    return null;
+                    return base.GetSort(key);
             }
         }
 

@@ -29,10 +29,12 @@ namespace Jogl.Server.DB
             {
                 case SortKey.CreatedDate:
                     return (e) => e.CreatedUTC;
+                case SortKey.UpdatedDate:
+                    return (e) => e.UpdatedUTC;
                 case SortKey.LastActivity:
                     return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
+                case SortKey.RecentlyOpened:
+                    return (e) => e.LastOpenedUTC;
                 default:
                     return null;
             }
