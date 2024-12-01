@@ -13,7 +13,7 @@ namespace Jogl.Server.DB
         {
         }
 
-        public override Expression<Func<FeedIntegration, object>>[] SearchFields
+        protected override Expression<Func<FeedIntegration, object>>[] SearchFields
         {
             get
             {
@@ -21,7 +21,7 @@ namespace Jogl.Server.DB
             }
         }
 
-        public override Expression<Func<FeedIntegration, string>> AutocompleteField => (e) => e.SourceId;
+        protected override Expression<Func<FeedIntegration, string>> AutocompleteField => (e) => e.SourceId;
 
         protected override string CollectionName => "feedIntegrations";
 

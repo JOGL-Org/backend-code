@@ -15,7 +15,7 @@ namespace Jogl.Server.DB
         }
 
         protected override string CollectionName => "folders";
-        public override Expression<Func<Folder, object>>[] SearchFields
+        protected override Expression<Func<Folder, object>>[] SearchFields
         {
             get
             {

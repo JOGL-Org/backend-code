@@ -40,8 +40,8 @@ namespace Jogl.Server.DB
             }
         }
 
-        public virtual Expression<Func<T, string>> AutocompleteField => null;
-        public virtual Expression<Func<T, object>>[] SearchFields => null;
+        protected virtual Expression<Func<T, string>> AutocompleteField => null;
+        protected virtual Expression<Func<T, object>>[] SearchFields => null;
 
         protected BaseRepository(IConfiguration configuration, IOperationContext context)
         {
@@ -529,6 +529,28 @@ namespace Jogl.Server.DB
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
             if (filter != null)
                 q = q.Match(filter);
+
+            return new FluentQuery<T>(_configuration, this, _context, q);
+        }
+
+        public IFluentQuery<T> Query(string searchValue)
+        {
+            var coll = GetCollection<T>();
+            var q = coll.Aggregate();
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                var builder = new SearchPathDefinitionBuilder<T>();
+                var searchDefinition = builder.Multi(SearchFields);
+
+                q = q.Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+                {
+                    MaxEdits = 2,
+                    PrefixLength = 1,
+                    MaxExpansions = 256,
+                }), new SearchOptions<T> { IndexName = INDEX_SEARCH });
+            }
+
+            q = q.Match(itm => !itm.Deleted);
 
             return new FluentQuery<T>(_configuration, this, _context, q);
         }

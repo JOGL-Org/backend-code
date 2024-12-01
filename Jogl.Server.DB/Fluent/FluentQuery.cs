@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Search;
+using System.Linq.Expressions;
 
 namespace Jogl.Server.DB
 {
@@ -48,37 +49,26 @@ namespace Jogl.Server.DB
                     }))),
                 @as: o => o.UserFeedRecords)
                 .As<T>()
-                .AppendStage<T>(
-    new BsonDocument("$addFields", new BsonDocument
-    {
-        {
-            nameof(Entity.LastOpenedUTC), new BsonDocument("$cond", new BsonDocument
-            {
-                { "if", new BsonDocument("$gt", new BsonArray { new BsonDocument("$size", $"$UserFeedRecords"), 0 }) },
-                { "then", new BsonDocument("$arrayElemAt", new BsonArray { $"$UserFeedRecords.LastReadUTC", 0 }) },
-                { "else", BsonNull.Value }
-            })
-        }
-    }));
+                .AppendStage<T>(new BsonDocument("$addFields", new BsonDocument
+                                {
+                                    {
+                                        nameof(Entity.LastOpenedUTC), new BsonDocument("$cond", new BsonDocument
+                                        {
+                                            { "if", new BsonDocument("$gt", new BsonArray { new BsonDocument("$size", $"$UserFeedRecords"), 0 }) },
+                                            { "then", new BsonDocument("$arrayElemAt", new BsonArray { $"$UserFeedRecords.LastReadUTC", 0 }) },
+                                            { "else", BsonNull.Value }
+                                        })
+                                    }
+                                }));
 
             return this;
         }
 
 
-        public IFluentQuery<T> Search(string searchValue)
+        public IFluentQuery<T> Filter(Expression<Func<T, bool>> filter)
         {
-            if (string.IsNullOrEmpty(searchValue))
-                return this;
-
-            var builder = new SearchPathDefinitionBuilder<T>();
-            var searchDefinition = builder.Multi(_repository.SearchFields);
-
-            _query = _query.Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
-            {
-                MaxEdits = 2,
-                PrefixLength = 1,
-                MaxExpansions = 256,
-            }), new SearchOptions<T> { IndexName = INDEX_SEARCH });
+            if (filter != null)
+                _query = _query.Match(filter);
 
             return this;
         }

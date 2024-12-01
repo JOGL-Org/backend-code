@@ -128,8 +128,8 @@ namespace Jogl.Server.Business
         public List<Document> ListForEntity(string currentUserId, string entityId, string folderId, DocumentFilter? type, string search, int page, int pageSize)
         {
             var documents = _documentRepository
-                .Query(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null)
-                .Search(search)
+                .Query(search)
+                .Filter(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null)
                 .ToList();
 
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
@@ -144,8 +144,8 @@ namespace Jogl.Server.Business
         public ListPage<Document> ListForChannel(string currentUserId, string channelId, DocumentFilter type, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
             var documents = _documentRepository
-                .Query(d => d.FeedId == channelId)
-                .Search(search)
+                .Query(search)
+                .Filter(d => d.FeedId == channelId)
                 .WithLastOpenedUTC()
                 .Sort(sortKey, sortAscending)
                 .ToList();
@@ -167,8 +167,8 @@ namespace Jogl.Server.Business
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
             var documents = _documentRepository
-                .Query(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
-                .Search(search)
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
                 .WithLastOpenedUTC()
                 .Sort(sortKey, ascending)
                 .ToList();
@@ -188,7 +188,11 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
-            var documents = _documentRepository.Query(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null).Search(search).ToList();
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
             var filteredDocuments = GetFilteredDocuments(documents, entitySet, userId);
 
@@ -197,7 +201,10 @@ namespace Jogl.Server.Business
 
         public List<Document> ListAllDocuments(string currentUserId, string entityId, string search, int page, int pageSize)
         {
-            var documents = _documentRepository.Query(d => d.FeedId == entityId && d.ContentEntityId == null).Search(search).ToList();
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == entityId && d.ContentEntityId == null)
+                .ToList();
 
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityId);
             var filteredDocuments = GetFilteredDocuments(documents, feedEntitySet, currentUserId);
@@ -293,8 +300,8 @@ namespace Jogl.Server.Business
         public List<Folder> ListAllFolders(string entityId, string search, int page, int pageSize)
         {
             var folders = _folderRepository
-                .Query(f => f.FeedId == entityId)
-                .Search(search)
+                .Query(search)
+                .Filter(f => f.FeedId == entityId)
                 .Page(page, pageSize)
                 .ToList();
 
@@ -315,8 +322,8 @@ namespace Jogl.Server.Business
         public List<Folder> ListFolders(string entityId, string parentFolderId, string search, int page, int pageSize)
         {
             return _folderRepository
-                .Query(f => f.ParentFolderId == parentFolderId && f.FeedId == entityId && !f.Deleted)
-                .Search(search)
+                .Query(search)
+                .Filter(f => f.ParentFolderId == parentFolderId && f.FeedId == entityId && !f.Deleted)
                 .Page(page, pageSize)
                 .ToList();
         }
@@ -349,7 +356,11 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
-            var documents = _documentRepository.Query(d => entityIds.Contains(d.FeedId)).Search(search).ToList();
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId))
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
             var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type);
@@ -360,8 +371,16 @@ namespace Jogl.Server.Business
 
         public List<Entity> ListPortfolioForUser(string currentUserId, string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var papers = _paperRepository.Query(p => p.FeedId == userId).Search(search).ToList();
-            var documents = _documentRepository.Query(d => d.FeedId == userId && d.Type == DocumentType.JoglDoc).Search(search).ToList();
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => p.FeedId == userId)
+                .ToList();
+
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == userId && d.Type == DocumentType.JoglDoc)
+                .ToList();
+
             var filteredDocuments = GetFilteredJoglDocs(documents, currentUserId);
 
             EnrichPapersWithPermissions(papers, currentUserId);

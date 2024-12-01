@@ -16,9 +16,6 @@ namespace Jogl.Server.DB
 
     public interface IRepository<T> : IRepository where T : Entity
     {
-        Expression<Func<T, string>> AutocompleteField { get; }
-        Expression<Func<T, object>>[] SearchFields { get; }
-
         Expression<Func<T, object>> GetSort(SortKey sortKey);
         IMongoCollection<T> GetCollection<T>();
         IMongoCollection<T> GetCollection<T>(string collectionName);
@@ -61,5 +58,6 @@ namespace Jogl.Server.DB
         Task DeleteAsync(Expression<Func<T, bool>> filter);
 
         public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null);
+        public IFluentQuery<T> Query(string searchValue);
     }
 }

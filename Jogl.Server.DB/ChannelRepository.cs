@@ -16,8 +16,8 @@ namespace Jogl.Server.DB
 
         protected override string CollectionName => "channels";
 
-        public override Expression<Func<Channel, string>> AutocompleteField => e => e.Title;
-        public override Expression<Func<Channel, object>>[] SearchFields
+        protected override Expression<Func<Channel, string>> AutocompleteField => e => e.Title;
+        protected override Expression<Func<Channel, object>>[] SearchFields
         {
             get
             {
