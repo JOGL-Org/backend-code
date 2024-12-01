@@ -88,11 +88,6 @@ namespace Jogl.Server.API.Controllers
             return _resourceService.ListForFeed(id, search, page, pageSize);
         }
 
-        protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
         {
             return _nodeService.ListForCommunity(CurrentUserId, id, search, page, pageSize).Cast<CommunityEntity>().ToList();

@@ -90,11 +90,6 @@ namespace Jogl.Server.API.Controllers
             return _resourceService.ListForFeed(id, search, page, pageSize);
         }
 
-        protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
         [HttpPost]
         [SwaggerOperation($"Create a new call for proposals. The current user becomes a member of the call for proposals with the {nameof(AccessLevel.Owner)} role")]
         public async override Task<IActionResult> Create([FromBody] CallForProposalUpsertModel model)

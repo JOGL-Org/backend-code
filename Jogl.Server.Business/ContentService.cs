@@ -572,7 +572,7 @@ namespace Jogl.Server.Business
             feedEntitySet.Papers = GetFilteredFeedEntities(feedEntitySet.Papers, userId);
             feedEntitySet.Documents = GetFilteredDocuments(feedEntitySet.Documents, feedEntitySet, allRelations, currentUserMemberships, currentUserEventAttendances, userId);
             feedEntitySet.Needs = GetFilteredFeedEntities(feedEntitySet.Needs, userId);
-            feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId);
+            feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
 
             EnrichContentEntityData(contentEntities, feedEntitySet, contentEntitiesUsers, userId);
 
@@ -1208,7 +1208,7 @@ namespace Jogl.Server.Business
             var communityEntities = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds).CommunityEntities;
 
             var events = _eventRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
-            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId);
+            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
             var feedEntityIds = GetFeedEntityIdsForNodes(allRelations, events, nodeIds);
             var needs = _needRepository.List(n => communityEntityIds.Contains(n.EntityId) && !n.Deleted);
             needs = GetFilteredFeedEntities(needs, userId);
