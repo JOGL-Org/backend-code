@@ -15,7 +15,7 @@ namespace Jogl.Server.DB
 
         protected override string CollectionName => "folders";
 
-        protected override Expression<Func<Folder, object>> GetSort(SortKey key)
+        public override Expression<Func<Folder, object>> GetSort(SortKey key)
         {
             switch (key)
             {

@@ -25,7 +25,7 @@ namespace Jogl.Server.DB
             }
         }
 
-        protected override Expression<Func<Channel, object>> GetSort(SortKey key)
+        public override Expression<Func<Channel, object>> GetSort(SortKey key)
         {
             switch (key)
             {

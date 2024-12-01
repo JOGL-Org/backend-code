@@ -1,6 +1,10 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using MongoDB.Bson;
+using MongoDB.Driver.Search;
+using MongoDB.Driver;
 using System.Linq.Expressions;
+using System.Collections;
 
 namespace Jogl.Server.DB
 {
@@ -12,6 +16,10 @@ namespace Jogl.Server.DB
 
     public interface IRepository<T> : IRepository where T : Entity
     {
+        Expression<Func<T, object>> GetSort(SortKey sortKey);
+        IMongoCollection<T> GetCollection<T>();
+        IMongoCollection<T> GetCollection<T>(string collectionName);
+
         Task<string> CreateAsync(T entity);
         Task<List<string>> CreateAsync(List<T> entities);
         Task CreateBulkAsync(List<T> entities);
@@ -48,5 +56,9 @@ namespace Jogl.Server.DB
         Task DeleteAsync(List<string> entityIds);
         Task DeleteAsync(List<T> entities);
         Task DeleteAsync(Expression<Func<T, bool>> filter);
+
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter);
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter, string searchValue);
+        public IFluentQuery<T> Query(string searchValue);
     }
 }

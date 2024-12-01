@@ -22,7 +22,7 @@ namespace Jogl.Server.DB
             }
         }
 
-        protected override Expression<Func<Resource, object>> GetSort(SortKey key)
+        public override Expression<Func<Resource, object>> GetSort(SortKey key)
         {
             switch (key)
             {

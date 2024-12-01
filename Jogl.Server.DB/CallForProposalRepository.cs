@@ -1,7 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Jogl.Server.DB

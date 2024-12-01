@@ -23,7 +23,7 @@ namespace Jogl.Server.DB
         protected virtual UpdateDefinition<T> GetDefaultUpdateDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default update definition");
         protected virtual UpdateDefinition<T> GetDefaultUpsertDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default upsert definition");
 
-        protected virtual Expression<Func<T, object>> GetSort(SortKey key)
+        public virtual Expression<Func<T, object>> GetSort(SortKey key)
         {
             switch (key)
             {
@@ -55,12 +55,12 @@ namespace Jogl.Server.DB
             return client.GetDatabase(db);
         }
 
-        protected IMongoCollection<T> GetCollection<T>()
+        public IMongoCollection<T> GetCollection<T>()
         {
             return GetCollection<T>(CollectionName);
         }
 
-        protected IMongoCollection<T> GetCollection<T>(string collectionName)
+        public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             var db = GetDatabase(_configuration["MongoDB:DB"]);
             return db.GetCollection<T>(collectionName);
@@ -496,11 +496,6 @@ namespace Jogl.Server.DB
 
         }
 
-        private class EntityWithUFRs : Entity
-        {
-            public List<UserFeedRecord> UserFeedRecords { get; set; }
-        }
-
         private IAggregateFluent<T> GetSearchQuery(string searchValue, SortKey? sortKey = null)
         {
             var builder = new SearchPathDefinitionBuilder<T>();
@@ -524,6 +519,46 @@ namespace Jogl.Server.DB
 
             var coll = GetCollection<T>();
             return coll.Aggregate().Search(Builders<T>.Search.Autocomplete(searchDefinition, searchValue), new SearchOptions<T> { IndexName = INDEX_AUTOCOMPLETE }).Match(itm => !itm.Deleted);
+        }
+
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter)
+        {
+            var coll = GetCollection<T>();
+
+            var q = coll.Aggregate().Match(itm => !itm.Deleted);
+            return new FluentQuery<T>(_configuration, this, _context, q);
+        }
+
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter, string searchValue)
+        {
+            var builder = new SearchPathDefinitionBuilder<T>();
+            var searchDefinition = builder.Multi(SearchFields);
+            var coll = GetCollection<T>();
+
+            var q = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+            {
+                MaxEdits = 2,
+                PrefixLength = 1,
+                MaxExpansions = 256,
+            }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted).Match(filter);
+
+            return new FluentQuery<T>(_configuration, this, _context, q);
+        }
+
+        public IFluentQuery<T> Query(string searchValue)
+        {
+            var builder = new SearchPathDefinitionBuilder<T>();
+            var searchDefinition = builder.Multi(SearchFields);
+            var coll = GetCollection<T>();
+
+            var q = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+            {
+                MaxEdits = 2,
+                PrefixLength = 1,
+                MaxExpansions = 256,
+            }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted);
+
+            return new FluentQuery<T>(_configuration, this, _context, q);
         }
     }
 }
