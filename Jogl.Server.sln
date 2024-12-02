@@ -75,7 +75,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Loader.Arxiv", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Arxiv", "Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj", "{E6E2FA4C-0783-4296-B01E-94B0269CC30F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.FeedAgent", "Jogl.Server.FeedAgent\Jogl.Server.FeedAgent.csproj", "{A01246B8-00F8-4EA5-B99F-F367C8D1DA6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.FeedAgent", "Jogl.Server.FeedAgent\Jogl.Server.FeedAgent.csproj", "{A01246B8-00F8-4EA5-B99F-F367C8D1DA6C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Loader.PubMed", "Jogl.Server.Loader.PubMed\Jogl.Server.Loader.PubMed.csproj", "{429F7F23-B1B1-4BDD-B223-42C865509F77}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.AWS", "Jogl.Server.AWS\Jogl.Server.AWS.csproj", "{ED1E791B-1F3B-4BD3-9168-45025339C3ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.IdentityService", "Jogl.Server.IdentityService\Jogl.Server.IdentityService.csproj", "{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -227,6 +233,18 @@ Global
 		{A01246B8-00F8-4EA5-B99F-F367C8D1DA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A01246B8-00F8-4EA5-B99F-F367C8D1DA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A01246B8-00F8-4EA5-B99F-F367C8D1DA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{429F7F23-B1B1-4BDD-B223-42C865509F77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{429F7F23-B1B1-4BDD-B223-42C865509F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{429F7F23-B1B1-4BDD-B223-42C865509F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{429F7F23-B1B1-4BDD-B223-42C865509F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED1E791B-1F3B-4BD3-9168-45025339C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED1E791B-1F3B-4BD3-9168-45025339C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED1E791B-1F3B-4BD3-9168-45025339C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED1E791B-1F3B-4BD3-9168-45025339C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -235,6 +253,7 @@ Global
 		{D954E27E-FE89-4F0C-AEA8-749BC79BF49C} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 		{953A9F84-4F05-4728-A600-068A199CC637} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
+		{429F7F23-B1B1-4BDD-B223-42C865509F77} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635F8D0F-097B-43A6-B570-C3E47AA829E5}

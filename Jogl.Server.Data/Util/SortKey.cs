@@ -1,4 +1,4 @@
 ﻿namespace Jogl.Server.Data.Util
 {
-    public enum SortKey { CreatedDate, LastActivity, Date, Alphabetical, Relevance }
+    public enum SortKey { CreatedDate, UpdatedDate, LastActivity, RecentlyOpened, Date, Alphabetical, Relevance }
 }

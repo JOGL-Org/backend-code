@@ -8,8 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Jogl.Server.Data;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
-using Org.BouncyCastle.Utilities.Encoders;
 using Hexarc.Borsh.Serialization;
+using Azure.Security.KeyVault.Certificates;
+using Azure.Identity;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Jogl.Server.Auth
 {
@@ -98,11 +100,11 @@ namespace Jogl.Server.Auth
         {
             [BorshPropertyOrder(0)]
             public uint Tag { get; set; }
-            
+
             [BorshPropertyOrder(1)]
             public string Message { get; set; }
-            
-            [BorshPropertyOrder(2),BorshFixedArray(32)]
+
+            [BorshPropertyOrder(2), BorshFixedArray(32)]
             public byte[] Nonce { get; set; }
 
             [BorshPropertyOrder(3)]
@@ -195,17 +197,21 @@ namespace Jogl.Server.Auth
 
         private string GetToken(User user)
         {
+            var certClient = new CertificateClient(
+            new Uri(_configuration["Azure:KeyVault:URL"]),
+            new DefaultAzureCredential());
+
+            var cert = certClient.DownloadCertificate(_configuration["JWT:Cert-Name"]);
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Sid, user.Id.ToString())
-                }),
+                Subject = new ClaimsIdentity(
+                [
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Sid, user.Id.ToString())
+                ]),
                 Expires = DateTime.UtcNow.AddMonths(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new X509SigningCredentials(new X509Certificate2(cert.Value))
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

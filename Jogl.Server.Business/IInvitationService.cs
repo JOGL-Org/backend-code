@@ -17,5 +17,7 @@ namespace Jogl.Server.Business
         Task AcceptAsync(Invitation invitation);
         Task RejectAsync(Invitation invitation);
         Task ResendAsync(Invitation invitation);
+        InvitationKey GetInvitationKey(string entityId, string key);
+        Task<string> GetInvitationKeyForEntityAsync(string entityId);
     }
 }

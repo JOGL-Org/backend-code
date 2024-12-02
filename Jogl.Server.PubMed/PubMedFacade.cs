@@ -13,11 +13,6 @@ namespace Jogl.Server.PubMed
     {
         private readonly IConfiguration _configuration;
 
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello, world!");
-        }
-
         public PubMedFacade(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -163,6 +158,49 @@ namespace Jogl.Server.PubMed
             return new ListPage<PubmedArticle>(articleSet.PubmedArticles, totalResults);
         }
 
+        public async Task<List<PubmedArticle>> ListArticlesAsync(IEnumerable<string> ids, string webenv = null, string queryKey = null)
+        {
+            var client = new RestClient($"{_configuration["PubMed:EUtilsUrl"]}");
+
+            var eFetchRequest = new RestRequest("efetch.fcgi");
+            eFetchRequest.AddQueryParameter("db", "pubmed");
+            eFetchRequest.AddQueryParameter("id", string.Join(",", ids));
+            if (string.IsNullOrEmpty(webenv))
+                eFetchRequest.AddQueryParameter("WebEnv", webenv);
+            if (string.IsNullOrEmpty(queryKey))
+                eFetchRequest.AddQueryParameter("query_key", queryKey);
+
+            //Don't define any type <T> for ExecuteGetAsync, so no time is wasted trying to parse the content and failing due to DTD errors
+            var eFetchResponse = await client.ExecuteGetAsync(eFetchRequest);
+
+            //Deserialize content
+            var articleSet = XMLConverter(eFetchResponse.Content);
+            return articleSet.PubmedArticles;
+        }
+
+        public async Task<List<PubmedArticle>> ListNewPapersAsync(string lastId)
+        {
+            //var date = DateTime.Today;
+            // var term = "\"(\\\"2024/11/01\\\"[Date - Create] : \\\"2024/11/01\\\"[Date - Create])\"";
+            var res = new List<PubmedArticle>();
+
+            while (true)
+            {
+                var idNumber = int.Parse(lastId);
+                var idRange = Enumerable.Range(idNumber + 1, 20).Select(n => n.ToString());
+
+                var page = await ListArticlesAsync(idRange);
+                if (page.Count == 0)
+                    return res;
+
+                lastId = idRange.Last();
+                res.AddRange(page);
+
+                //avoid PubMed API throttling
+                Thread.Sleep(500);
+            }
+        }
+
         private string GetQueryFromSearch(string search)
         {
             return search?.Replace(" ", " ")?.ToLower();
@@ -192,6 +230,11 @@ namespace Jogl.Server.PubMed
             }
 
             return articleSet;
+        }
+
+        public List<string> ListCategories()
+        {
+            return Resources.pubmed_categories.Split(Environment.NewLine).Select(cat => cat.Split("|")[0]).ToList();
         }
     }
 }

@@ -26,9 +26,6 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("external_url")]
         public string ExternalUrl { get; set; }
 
-        [JsonPropertyName("on_jogl")]
-        public bool OnJogl { get; set; }
-
         [JsonPropertyName("type")]
         public PaperType Type { get; set; }
 

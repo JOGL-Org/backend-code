@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -9,7 +10,7 @@ namespace Jogl.Server.DB
 {
     public class PaperRepository : BaseRepository<Paper>, IPaperRepository
     {
-        public PaperRepository(IConfiguration configuration) : base(configuration)
+        public PaperRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 
@@ -21,20 +22,14 @@ namespace Jogl.Server.DB
             }
         }
 
-        protected override Expression<Func<Paper, object>> GetSort(SortKey key)
+        public override Expression<Func<Paper, object>> GetSort(SortKey key)
         {
             switch (key)
             {
-                case SortKey.CreatedDate:
-                    return (e) => e.CreatedUTC;
-                case SortKey.LastActivity:
-                    return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.PublicationDate;
                 case SortKey.Alphabetical:
                     return (e) => e.Title;
                 default:
-                    return null;
+                    return base.GetSort(key);
             }
         }
 
@@ -50,17 +45,21 @@ namespace Jogl.Server.DB
 
         protected override UpdateDefinition<Paper> GetDefaultUpdateDefinition(Paper updatedEntity)
         {
-            return Builders<Paper>.Update.Set(e => e.Title, updatedEntity.Title)
-                                         .Set(e => e.Summary, updatedEntity.Summary)
-                                         .Set(e => e.PublicationDate, updatedEntity.PublicationDate)
-                                         .Set(e => e.Authors, updatedEntity.Authors)
-                                         .Set(e => e.ExternalId, updatedEntity.ExternalId)
-                                         .Set(e => e.TagData, updatedEntity.TagData)
+            return Builders<Paper>.Update/*.Set(e => e.Title, updatedEntity.Title)*/
+                                         //.Set(e => e.Summary, updatedEntity.Summary)
+                                         //.Set(e => e.PublicationDate, updatedEntity.PublicationDate)
+                                         //.Set(e => e.Authors, updatedEntity.Authors)
+                                         //.Set(e => e.ExternalId, updatedEntity.ExternalId)
+                                         //.Set(e => e.TagData, updatedEntity.TagData)
+                                         //.Set(e => e.Status, updatedEntity.Status)
+                                         //.Set(e => e.UserIds, updatedEntity.UserIds)
+                                         //.Set(e => e.Journal, updatedEntity.Journal)
+                                         //.Set(e => e.OpenAccessPdfUrl, updatedEntity.OpenAccessPdfUrl)
                                          .Set(e => e.FeedIds, updatedEntity.FeedIds)
-                                         .Set(e => e.Status, updatedEntity.Status)
-                                         .Set(e => e.UserIds, updatedEntity.UserIds)
-                                         .Set(e => e.Journal, updatedEntity.Journal)
-                                         .Set(e => e.OpenAccessPdfUrl, updatedEntity.OpenAccessPdfUrl)
+                                         .Set(e => e.FeedId, updatedEntity.FeedId)
+                                         .Set(e => e.DefaultVisibility, updatedEntity.DefaultVisibility)
+                                         .Set(e => e.UserVisibility, updatedEntity.UserVisibility)
+                                         .Set(e => e.CommunityEntityVisibility, updatedEntity.CommunityEntityVisibility)
                                          .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                          .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                          .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);

@@ -8,5 +8,7 @@ namespace Jogl.Server.PubMed
         Task<MeshHeading[]> GetTagsFromDOI(string doi);
         Task<string> GetPMIDFromDOI(string doi);
         Task<ListPage<PubmedArticle>> ListArticlesAsync(string search, int page, int pageSize);
+        Task<List<PubmedArticle>> ListNewPapersAsync(string lastId);
+        List<string> ListCategories();
     }
 }

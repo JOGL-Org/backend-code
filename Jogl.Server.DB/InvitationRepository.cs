@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -6,7 +7,7 @@ namespace Jogl.Server.DB
 {
     public class InvitationRepository : BaseRepository<Invitation>, IInvitationRepository
     {
-        public InvitationRepository(IConfiguration configuration) : base(configuration)
+        public InvitationRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 
@@ -15,7 +16,6 @@ namespace Jogl.Server.DB
         protected override UpdateDefinition<Invitation> GetDefaultUpdateDefinition(Invitation updatedEntity)
         {
             return Builders<Invitation>.Update.Set(e => e.Status, updatedEntity.Status)
-                                              .Set(e => e.CommunityEntityType, updatedEntity.CommunityEntityType) //TODO remove after migration
                                               .Set(e => e.InviteeUserId, updatedEntity.InviteeUserId)
                                               .Set(e => e.InviteeEmail, updatedEntity.InviteeEmail)
                                               .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)

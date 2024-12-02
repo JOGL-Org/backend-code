@@ -47,10 +47,6 @@ namespace Jogl.Server.API.Controllers
         protected abstract List<Data.Node> ListNodes(string id, string search, int page, int pageSize);
         protected abstract List<Organization> ListOrganizations(string id, string search, int page, int pageSize);
         protected abstract List<Resource> ListResources(string id, string search, int page, int pageSize);
-        protected abstract ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        protected abstract ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        protected abstract ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        protected abstract ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
 
         protected BaseCommunityEntityController(IAccessService accessService, IInvitationService invitationService, IMembershipService membershipService, IUserService userService, IDocumentService documentService, ICommunityEntityService communityEntityService, ICommunityEntityInvitationService communityEntityInvitationService, ICommunityEntityMembershipService communityEntityMembershipService, IContentService contentService, IEventService eventService, IChannelService channelService, IPaperService paperService, IResourceService resourceService, INeedService needService, IUrlService urlService, IConfiguration configuration, IMapper mapper, ILogger logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
@@ -1228,12 +1224,12 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             var paper = _mapper.Map<Paper>(model);
+            paper.FeedId = id;
             await InitCreationAsync(paper);
-            var paperId = await _paperService.CreateAsync(id, paper);
+            var paperId = await _paperService.CreateAsync( paper);
 
             return Ok(paperId);
         }
-
 
         [Obsolete]
         [HttpPost]
@@ -1278,7 +1274,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var papers = _paperService.ListForEntity(CurrentUserId, id, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var papers = _paperService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Select(_mapper.Map<PaperModel>);
             return Ok(paperModels);
         }
@@ -1297,61 +1293,6 @@ namespace Jogl.Server.API.Controllers
 
             var paperModel = _mapper.Map<PaperModel>(paper);
             return Ok(paperModel);
-        }
-
-        [Obsolete]
-        [HttpGet]
-        [Route("{id}/papers/draft")]
-        [SwaggerOperation($"Returns a draft paper for the specified container")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No community entity was found for the specified id")]
-        [SwaggerResponse((int)HttpStatusCode.NoContent, "No draft paper was found for the community entity")]
-        public async Task<IActionResult> GetPaperDraft([FromRoute] string id)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var paper = _paperService.GetDraft(id, CurrentUserId);
-            if (paper == null)
-                return NoContent();
-
-            var paperModel = _mapper.Map<PaperModel>(paper);
-            return Ok(paperModel);
-        }
-
-        [Obsolete]
-        [HttpPut]
-        [Route("{id}/papers/{paperId}/draft")]
-        [SwaggerOperation($"Updates the paper draft")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, "Cannot update active paper")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id or the paper does not exist")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to edit documents for the entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper draft was updated")]
-        public async Task<IActionResult> UpdatePaper([FromRoute] string id, [FromRoute] string paperId, [FromBody] PaperUpsertModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var existingPaper = _paperService.Get(paperId, CurrentUserId);
-            if (existingPaper == null)
-                return NotFound();
-
-            if (existingPaper.Status != ContentEntityStatus.Draft)
-                return BadRequest();
-
-            if (!existingPaper.FeedIds.Contains(id))
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Data.Enum.Permission.ManageDocuments))
-                return Forbid();
-
-            var paper = _mapper.Map<Paper>(model);
-            paper.Id = ObjectId.Parse(paperId);
-            paper.FeedIds = existingPaper.FeedIds;
-            await InitUpdateAsync(paper);
-            await _paperService.UpdateAsync(paper);
-            return Ok();
         }
 
         [Obsolete]
@@ -1641,50 +1582,6 @@ namespace Jogl.Server.API.Controllers
 
             await _needService.DeleteAsync(needId);
             return Ok();
-        }
-
-        protected async Task<IActionResult> GetPapersAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var papers = ListPapersAggregate(id, types, communityEntityIds, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var paperModels = papers.Items.Select(_mapper.Map<PaperModel>);
-            return Ok(new ListPage<PaperModel>(paperModels, papers.Total));
-        }
-
-        protected async Task<IActionResult> GetDocumentsAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var documents = ListDocumentsAggregate(id, types, communityEntityIds, type, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var documentModels = documents.Items.Select(_mapper.Map<DocumentModel>);
-            return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
-        }
-
-        protected async Task<IActionResult> GetNeedsAggregateAsync(string id, List<string> communityEntityIds, bool currentUser, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var needs = ListNeedsAggregate(id, communityEntityIds, currentUser, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var needModels = needs.Items.Select(_mapper.Map<NeedModel>);
-            return Ok(new ListPage<NeedModel>(needModels, needs.Total));
-        }
-
-        protected async Task<IActionResult> GetEventsAggregateAsync(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            var events = ListEventsAggregate(id, types, communityEntityIds, currentUser, tags, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var eventModels = events.Items.Select(_mapper.Map<EventModel>);
-            return Ok(new ListPage<EventModel>(eventModels, events.Total));
         }
 
         protected async Task<IActionResult> GetCommunitiesAsync(string id, SearchModel model)

@@ -564,7 +564,6 @@ namespace Jogl.Server.API.Mapping
             CreateMap<Paper, EntityMiniModel>()
                 .ForMember(dst => dst.EntityType, opt => opt.MapFrom((src, dst, ctx) => FeedType.Paper));
             CreateMap<Paper, PaperModel>()
-                .ForMember(dst => dst.Tags, opt => opt.MapFrom(src => src.OriginTags))
                 .ForMember(dst => dst.FeedCount, opt => opt.MapFrom((src, dst, ctx) => { return src.FeedIds?.Count() ?? 0; }))
                 .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                 {
@@ -617,6 +616,7 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, dst, ctx) => { return src.PublicationDate ?? src.PublicationYear?.ToString(); }))
                 .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, dst, ctx) => { return FormatAuthors(src.Authorships, a => a.Author.DisplayName); }))
                 .ForMember(dst => dst.OpenAccessPdfUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.PrimaryLocation?.PdfUrl ?? src.BestOaLocation?.PdfUrl; }))
+                .ForMember(dst => dst.Tags, opt => opt.MapFrom((src, dst, ctx) => { return src.Keywords.Select(kw => kw.DisplayName); }))
                 .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.Doi?.Split(".org/")[1]; }))
                 .ForMember(dst => dst.ExternalIdUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.Doi; }));
 
@@ -663,7 +663,7 @@ namespace Jogl.Server.API.Mapping
                      };
                  }));
 
-            CreateMap<NodeFeedDataNew, NodeFeedDataModelNew>()
+            CreateMap<NodeFeedData, NodeFeedDataModelNew>()
             .ForMember(dst => dst.Type, opt => opt.MapFrom((src, dst, ctx) => FeedType.Node))
             .ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.BannerId, true)))
             .ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.LogoId, true)))

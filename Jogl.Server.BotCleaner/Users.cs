@@ -19,7 +19,7 @@ namespace Jogl.Server.Mailer
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
-        private const decimal AUTO_DELETE_THRESHOLD = 91;
+        private const decimal AUTO_DELETE_THRESHOLD = 85;
 
         public Users(IUserService userService, IAIService aiService, IEmailService emailService, IUserRepository userRepository, IEntityScoreRepository entityScoreRepository, IConfiguration configuration, ILoggerFactory loggerFactory)
         {
@@ -39,6 +39,14 @@ namespace Jogl.Server.Mailer
             var users = _userRepository.List(u => !entityScores.Select(s => s.EntityId).Contains(u.Id.ToString()) && !u.Deleted);
             foreach (var user in users)
             {
+                //exceptions for orcid users
+                if (user.Auth.IsOrcidUser)
+                    continue;
+
+                //exceptions for internal users
+                if(user.Email.EndsWith("@jogl.io"))
+                    continue;
+
                 var score = await _aiService.GetBotScoreAsync(user);
                 await _entityScoreRepository.CreateAsync(new EntityScore
                 {

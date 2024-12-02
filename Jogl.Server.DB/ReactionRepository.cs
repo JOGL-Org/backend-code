@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -6,7 +7,7 @@ namespace Jogl.Server.DB
 {
     public class ReactionRepository : BaseRepository<Reaction>, IReactionRepository
     {
-        public ReactionRepository(IConfiguration configuration) : base(configuration)
+        public ReactionRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

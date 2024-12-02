@@ -10,7 +10,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.URL;
 using Jogl.Server.Data.Util;
-using System.Text.Json.Serialization;
 using Jogl.Server.API.Converters;
 
 namespace Jogl.Server.API.Controllers
@@ -94,25 +93,6 @@ namespace Jogl.Server.API.Controllers
             return _resourceService.ListForNode(CurrentUserId, id, search, page, pageSize);
         }
 
-        protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _paperService.ListForNode(CurrentUserId, id, types, communityEntityIds, type, tags, search, page, pageSize, sortKey, ascending);
-        }
-
-        protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _documentService.ListForNode(CurrentUserId, id, types, communityEntityIds, type, search, page, pageSize, sortKey, ascending);
-        }
-
-        protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _needService.ListForNode(CurrentUserId, id, communityEntityIds, currentUser, search, page, pageSize, sortKey, ascending);
-        }
-
-        protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return _eventService.ListForNode(id, CurrentUserId, types, communityEntityIds, currentUser, tags, from, to, search, page, pageSize, sortKey, ascending);
-        }
 
         [HttpPost]
         [SwaggerOperation($"Create a new node. The current user becomes a member of the node with the {nameof(AccessLevel.Owner)} role")]
@@ -238,22 +218,16 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/needs/aggregate")]
         [SwaggerOperation($"Lists all needs for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query visible to the current user", typeof(ListPage<NeedModel>))]
-        public async Task<IActionResult> GetNeedsAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<string> communityEntityIds, [FromQuery] bool currentUser, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListNeedsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] FeedEntityFilter? filter, [FromQuery] SearchModel model)
         {
-            return await GetNeedsAggregateAsync(id, communityEntityIds, currentUser, model);
-        }
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
 
-        [HttpGet]
-        [Route("{id}/needs/aggregate/count")]
-        [AllowAnonymous]
-        [SwaggerOperation($"Counts needs for the specified node and its ecosystem")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "A count of needs  in the specified node matching the search query visible to the current user", typeof(long))]
-        public async Task<IActionResult> Count([SwaggerParameter("ID of the node")] string id, [FromQuery] SearchModel model)
-        {
-            var count = _needService.CountForNode(CurrentUserId, id, new List<string>(), model.Search);
-            return Ok(count);
+            var needs = _needService.ListForNode(CurrentUserId, id, communityEntityIds, filter, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var needModels = needs.Items.Select(_mapper.Map<NeedModel>);
+            return Ok(new ListPage<NeedModel>(needModels, needs.Total));
         }
 
         [AllowAnonymous]
@@ -282,11 +256,16 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/events/aggregate")]
         [SwaggerOperation($"Lists all events for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "Event data", typeof(ListPage<EventModel>))]
-        public async Task<IActionResult> GetEventsAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] bool currentUser, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListEventsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] FeedEntityFilter? filter, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
         {
-            return await GetEventsAggregateAsync(id, types, communityEntityIds, currentUser, tags, from, to, model);
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+            
+            var events = _eventService.ListForNode(id, CurrentUserId, communityEntityIds, filter, tags, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var eventModels = events.Items.Select(_mapper.Map<EventModel>);
+            return Ok(new ListPage<EventModel>(eventModels, events.Total));
         }
 
         [AllowAnonymous]
@@ -315,11 +294,16 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/documents/aggregate")]
         [SwaggerOperation($"Lists all documents for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<DocumentModel>))]
-        public async Task<IActionResult> GetDocumentsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] DocumentFilter? type, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListDocumentsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] DocumentFilter? type, [FromQuery] FeedEntityFilter? filter, [FromQuery] SearchModel model)
         {
-            return await GetDocumentsAggregateAsync(id, null, communityEntityIds, type, model);
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var documents = _documentService.ListForNode(CurrentUserId, id, communityEntityIds, type, filter, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var documentModels = documents.Items.Select(_mapper.Map<DocumentModel>);
+            return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
         }
 
         [AllowAnonymous]
@@ -348,11 +332,16 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/papers/aggregate")]
         [SwaggerOperation($"Lists all papers for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<PaperModel>))]
-        public async Task<IActionResult> GetPapersAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListPapersAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] PaperType? type, [FromQuery] FeedEntityFilter? filter, [FromQuery] SearchModel model)
         {
-            return await GetPapersAggregateAsync(id, types, communityEntityIds, type, tags, model);
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var papers = _paperService.ListForNode(CurrentUserId, id, communityEntityIds, filter, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var paperModels = papers.Items.Select(_mapper.Map<PaperModel>);
+            return Ok(new ListPage<PaperModel>(paperModels, papers.Total));
         }
 
         [AllowAnonymous]
@@ -371,7 +360,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _paperService.ListCommunityEntitiesForNodePapers(CurrentUserId, id, types, type, tags, model.Search, model.Page, model.PageSize);
+            var communityEntities = _paperService.ListCommunityEntitiesForNodePapers(CurrentUserId, id, model.Search, model.Page, model.PageSize);
             var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
             return Ok(communityEntityModels);
         }
@@ -381,9 +370,8 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/users/aggregate")]
         [SwaggerOperation($"Lists all needs for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query visible to the current user", typeof(ListPage<UserMiniModel>))]
-        public async Task<IActionResult> GetUsersAggregate([SwaggerParameter("ID of the node")] string id, [FromQuery] List<string> communityEntityIds, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetUsersAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] SearchModel model)
         {
             var entity = GetEntity(id);
             if (entity == null)
@@ -401,7 +389,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have rights to view this node's content")]
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<CommunityEntityMiniModel>))]
-        public async Task<IActionResult> GetNeedCommunityEntities([SwaggerParameter("ID of the node")] string id, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetUserCommunityEntities([SwaggerParameter("ID of the node")] string id, [FromQuery] SearchModel model)
         {
             var entity = GetEntity(id);
             if (entity == null)

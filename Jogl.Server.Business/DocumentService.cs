@@ -4,7 +4,6 @@ using Jogl.Server.DB;
 using Jogl.Server.Notifications;
 using Jogl.Server.Storage;
 using MongoDB.Bson;
-using System.Linq.Expressions;
 
 namespace Jogl.Server.Business
 {
@@ -38,19 +37,21 @@ namespace Jogl.Server.Business
 
             //create document
             document.Id = ObjectId.Parse(id);
+            await _documentRepository.CreateAsync(document);
 
             switch (document.Type)
             {
                 case DocumentType.Document:
                     document.FileSize = document.Data.Length;
-                    var documentId = await _documentRepository.CreateAsync(document);
-                    await _storageService.CreateOrReplaceAsync(IStorageService.DOCUMENT_CONTAINER, documentId, document.Data);
-                    await _notificationFacade.NotifyCreatedAsync(document);
-                    return documentId;
-                default:
-                    await _notificationFacade.NotifyCreatedAsync(document);
-                    return await _documentRepository.CreateAsync(document);
+                    await _storageService.CreateOrReplaceAsync(IStorageService.DOCUMENT_CONTAINER, document.Id.ToString(), document.Data);
+                    break;
             }
+
+
+            //process notifications
+            await _notificationFacade.NotifyCreatedAsync(document);
+
+            return id;
         }
 
         [Obsolete]
@@ -126,10 +127,14 @@ namespace Jogl.Server.Business
 
         public List<Document> ListForEntity(string currentUserId, string entityId, string folderId, DocumentFilter? type, string search, int page, int pageSize)
         {
-            var documents = _documentRepository.List(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null && !d.Deleted);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == entityId && d.FolderId == folderId && d.ContentEntityId == null)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, search, type, page, pageSize);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type, page, pageSize);
             EnrichDocumentData(filteredDocuments, entitySet, currentUserId);
             RecordListings(currentUserId, filteredDocuments);
 
@@ -138,27 +143,39 @@ namespace Jogl.Server.Business
 
         public ListPage<Document> ListForChannel(string currentUserId, string channelId, DocumentFilter type, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var documents = _documentRepository.List(d => d.FeedId == channelId && !d.Deleted, sortKey, sortAscending);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == channelId)
+                .WithLastOpenedUTC()
+                .Sort(sortKey, sortAscending)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(channelId);
 
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, search, type);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type);
             EnrichDocumentData(filteredDocuments, entitySet, currentUserId);
             RecordListings(currentUserId, filteredDocuments);
 
             return new ListPage<Document>(GetPage(filteredDocuments, page, pageSize), filteredDocuments.Count);
         }
 
-        public ListPage<Document> ListForNode(string currentUserId, string nodeId, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Document> ListForNode(string currentUserId, string nodeId,  List<string> communityEntityIds, DocumentFilter? type, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var documents = _documentRepository.List(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null && !d.Deleted, sortKey, ascending);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
+                .WithLastOpenedUTC()
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, search, type);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type, filter);
 
             var filteredDocumentPage = GetPage(filteredDocuments, page, pageSize);
             EnrichDocumentData(filteredDocumentPage, entitySet, currentUserId);
@@ -171,19 +188,26 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
-            var documents = _documentRepository.List(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null && !d.Deleted);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, userId, search);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, userId);
 
             return filteredDocuments.Count;
         }
 
         public List<Document> ListAllDocuments(string currentUserId, string entityId, string search, int page, int pageSize)
         {
-            var documents = _documentRepository.List(d => d.FeedId == entityId && d.ContentEntityId == null && !d.Deleted);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == entityId && d.ContentEntityId == null)
+                .ToList();
 
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityId);
-            var filteredDocuments = GetFilteredDocuments(documents, feedEntitySet, currentUserId, search);
+            var filteredDocuments = GetFilteredDocuments(documents, feedEntitySet, currentUserId);
             EnrichDocumentData(filteredDocuments, feedEntitySet, currentUserId);
             RecordListings(currentUserId, filteredDocuments);
 
@@ -192,7 +216,7 @@ namespace Jogl.Server.Business
 
         public List<Document> ListAllDocuments(string currentUserId, string entityId)
         {
-            var documents = _documentRepository.List(d => d.FeedId == entityId && d.ContentEntityId == null && !d.Deleted);
+            var documents = _documentRepository.Query(d => d.FeedId == entityId && d.ContentEntityId == null).ToList();
 
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityId);
             var filteredDocuments = GetFilteredDocuments(documents, feedEntitySet, currentUserId);
@@ -208,8 +232,8 @@ namespace Jogl.Server.Business
             if (existingDocument.Status != ContentEntityStatus.Draft && document.Status == ContentEntityStatus.Draft)
                 throw new Exception($"Can not set document status back into draft");
 
-            await _notificationFacade.NotifyUpdatedAsync(document);
             await _documentRepository.UpdateAsync(document);
+            await _notificationFacade.NotifyUpdatedAsync(document);
         }
 
         public async Task DeleteAsync(string id)
@@ -260,27 +284,6 @@ namespace Jogl.Server.Business
         protected void EnrichFolderData(IEnumerable<Folder> folders)
         {
             var users = _userRepository.Get(folders.Select(d => d.CreatedByUserId).ToList());
-            //var contentEntities = _contentEntityRepository.List(ce => documents.Any(d => d.Id.ToString() == ce.FeedId) && !ce.Deleted);
-            ////var comments = _commentRepository.List(co => documents.Any(d => d.Id.ToString() == co.FeedId) && !co.Deleted);
-            //var documentIds = documents.Select(e => e.Id.ToString());
-            //var userFeedRecords = _userFeedRecordRepository.List(ufr => ufr.UserId == currentUserId && documentIds.Contains(ufr.FeedId));
-            //var userContentEntityRecords = _userContentEntityRecordRepository.List(ucer => ucer.UserId == currentUserId && documentIds.Contains(ucer.FeedId) && !ucer.Deleted);
-            //var mentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.Unread && documentIds.Contains(m.OriginFeedId) && !m.Deleted);
-
-            //foreach (var f in folders)
-            //{
-            //    //var feedRecord = userFeedRecords.SingleOrDefault(ufr => ufr.FeedId == doc.Id.ToString());
-
-            //    doc.FeedEntity = _feedEntityService.GetEntityFromLists(doc.FeedId, feedEntitySet);
-            //    doc.Users = users.Where(u => doc.UserIds?.Contains(u.Id.ToString()) == true).ToList();
-            //    doc.PostCount = contentEntities.Count(ce => ce.FeedId == doc.Id.ToString());
-            //    doc.NewPostCount = contentEntities.Count(ce => ce.FeedId == doc.Id.ToString() && ce.CreatedUTC > (feedRecord?.LastReadUTC ?? DateTime.MinValue));
-            //    doc.NewMentionCount = mentions.Count(m => m.OriginFeedId == doc.Id.ToString());
-            //    doc.NewThreadActivityCount = contentEntities.Count(ce => ce.FeedId == doc.Id.ToString() && ce.LastActivityUTC > (userContentEntityRecords.SingleOrDefault(ucer => ucer.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue));
-            //    doc.IsNew = feedRecord == null;
-            //}
-
-            //EnrichDocumentsWithPermissions(documents, currentUserId);
             EnrichEntitiesWithCreatorData(folders, users);
         }
 
@@ -296,9 +299,11 @@ namespace Jogl.Server.Business
 
         public List<Folder> ListAllFolders(string entityId, string search, int page, int pageSize)
         {
-            var folders = _folderRepository.List(f =>
-                (string.IsNullOrEmpty(search) || (!string.IsNullOrEmpty(f.Name) && f.Name.Contains(search, StringComparison.CurrentCultureIgnoreCase))) &&
-                f.FeedId == entityId && !f.Deleted, page, pageSize);
+            var folders = _folderRepository
+                .Query(search)
+                .Filter(f => f.FeedId == entityId)
+                .Page(page, pageSize)
+                .ToList();
 
             EnrichFolderData(folders);
             return folders;
@@ -306,7 +311,9 @@ namespace Jogl.Server.Business
 
         public List<Folder> ListAllFolders(string entityId)
         {
-            var folders = _folderRepository.List(f => f.FeedId == entityId && !f.Deleted);
+            var folders = _folderRepository
+                .Query(f => f.FeedId == entityId)
+                .ToList();
 
             EnrichFolderData(folders);
             return folders;
@@ -314,10 +321,11 @@ namespace Jogl.Server.Business
 
         public List<Folder> ListFolders(string entityId, string parentFolderId, string search, int page, int pageSize)
         {
-            return _folderRepository.List(f =>
-                f.ParentFolderId == parentFolderId &&
-                (string.IsNullOrEmpty(search) || (!string.IsNullOrEmpty(f.Name) && f.Name.Contains(search, StringComparison.CurrentCultureIgnoreCase))) &&
-                f.FeedId == entityId && !f.Deleted, page, pageSize);
+            return _folderRepository
+                .Query(search)
+                .Filter(f => f.ParentFolderId == parentFolderId && f.FeedId == entityId && !f.Deleted)
+                .Page(page, pageSize)
+                .ToList();
         }
 
         public async Task UpdateFolderAsync(Folder folder)
@@ -329,13 +337,13 @@ namespace Jogl.Server.Business
         {
             var folder = _folderRepository.Get(id);
 
-            var documents = _documentRepository.List(d => d.FeedId == folder.FeedId && d.FolderId == id && !d.Deleted);
+            var documents = _documentRepository.Query(d => d.FeedId == folder.FeedId && d.FolderId == id).ToList();
             foreach (var document in documents)
             {
                 await DeleteAsync(document.Id.ToString());
             }
 
-            var subfolders = _folderRepository.List(f => f.FeedId == folder.FeedId && f.ParentFolderId == id && !f.Deleted);
+            var subfolders = _folderRepository.Query(f => f.FeedId == folder.FeedId && f.ParentFolderId == id).ToList();
             foreach (var subfolder in subfolders)
             {
                 await DeleteFolderAsync(subfolder.Id.ToString());
@@ -348,10 +356,14 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
-            var documents = _documentRepository.List(d => entityIds.Contains(d.FeedId) && !d.Deleted);
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId))
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, search, type);
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, type);
             EnrichDocumentData(filteredDocuments, entitySet, currentUserId);
 
             return GetPage(filteredDocuments.Select(e => e.FeedEntity).DistinctBy(e => e.Id), page, pageSize);
@@ -359,8 +371,16 @@ namespace Jogl.Server.Business
 
         public List<Entity> ListPortfolioForUser(string currentUserId, string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var papers = _paperRepository.SearchList(p => p.FeedIds.Contains(userId), search);
-            var documents = _documentRepository.SearchList(d => d.FeedId == userId && d.Type == DocumentType.JoglDoc && !d.Deleted, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => p.FeedId == userId)
+                .ToList();
+
+            var documents = _documentRepository
+                .Query(search)
+                .Filter(d => d.FeedId == userId && d.Type == DocumentType.JoglDoc)
+                .ToList();
+
             var filteredDocuments = GetFilteredJoglDocs(documents, currentUserId);
 
             EnrichPapersWithPermissions(papers, currentUserId);
@@ -373,23 +393,6 @@ namespace Jogl.Server.Business
             EnrichFeedEntitiesWithFeedStats(entities);
 
             return GetPage(entities.Cast<Entity>().OrderByDescending(e => e.CreatedUTC), page, pageSize);
-        }
-
-        protected Expression<Func<Document, object>> GetDocumentSort(SortKey key)
-        {
-            switch (key)
-            {
-                case SortKey.CreatedDate:
-                    return (e) => e.CreatedUTC;
-                case SortKey.LastActivity:
-                    return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
-                case SortKey.Alphabetical:
-                    return (e) => e.FeedTitle;
-                default:
-                    throw new Exception($"Unknown sort key {key}");
-            }
         }
     }
 }

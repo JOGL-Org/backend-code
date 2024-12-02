@@ -25,7 +25,7 @@ namespace Jogl.Server.API.Model
         public string ExternalId { get; set; }
 
         [JsonPropertyName("tags")]
-        public List<PaperTag> Tags { get; set; }
+        public List<string> Tags { get; set; }
 
         [JsonPropertyName("type")]
         public PaperType Type { get; set; }
@@ -39,15 +39,25 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("created_by")]
         public UserMiniModel? CreatedBy { get; set; }
 
-        [JsonPropertyName("user_in_library")]
-        public bool UserInLibrary { get; set; }
+        [JsonPropertyName("feed_entity")]
+        public EntityMiniModel? FeedEntity { get; set; }
 
         [JsonPropertyName("user_ids")]
         public List<string> UserIds { get; set; }
 
+        [JsonPropertyName("default_visibility")]
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
+
+        [JsonPropertyName("user_visibility")]
+        public List<FeedEntityUserVisibilityModel>? UserVisibility { get; set; }
+
+        [JsonPropertyName("communityentity_visibility")]
+        public List<FeedEntityCommunityEntityVisibilityModel>? CommunityEntityVisibility { get; set; }
+
         [JsonPropertyName("open_access_pdf")]
         public string OpenAccessPdfUrl { get; set; }
 
+        [Obsolete]
         [JsonPropertyName("feed_count")]
         public int FeedCount { get; set; }
 
@@ -59,5 +69,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; set; }
+
+        [JsonPropertyName("path")]
+        public List<EntityMiniModel> Path { get; set; }
     }
 }

@@ -20,17 +20,18 @@ namespace Jogl.Server.API.Controllers
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IFeedEntityService _feedEntityService;
         private readonly IInvitationService _invitationService;
+        private readonly IMembershipService _membershipService;
         private readonly IConfiguration _configuration;
 
-        public CommunityEntityController(IContentService contentService, ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IInvitationService invitationService, IConfiguration configuration, IMapper mapper, ILogger<EntityController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public CommunityEntityController(IContentService contentService, ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IInvitationService invitationService, IMembershipService membershipService, IConfiguration configuration, IMapper mapper, ILogger<EntityController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _contentService = contentService;
             _communityEntityService = communityEntityService;
             _feedEntityService = feedEntityService;
             _invitationService = invitationService;
+            _membershipService = membershipService;
             _configuration = configuration;
         }
-
 
         [HttpPost]
         [Route("{id}/invite/batch")]
@@ -64,6 +65,51 @@ namespace Jogl.Server.API.Controllers
 
             await _invitationService.CreateMultipleAsync(invitations, redirectUrl);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("{id}/join/key")]
+        [SwaggerOperation("Gets an invitation key for a community entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The invitation key", typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        public async Task<IActionResult> GetJoinKey([FromRoute] string id)
+        {
+            var communityEntity = _communityEntityService.Get(id);
+            if (communityEntity == null)
+                return NotFound();
+
+            var key = await _invitationService.GetInvitationKeyForEntityAsync(id);
+            return Ok(key);
+        }
+
+        [HttpPost]
+        [Route("{id}/join/key/{key}")]
+        [SwaggerOperation("Joins a community entity using an invitation key")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The corresponding feed data", typeof(FeedModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No matching invitation key found")]
+        public async Task<IActionResult> JoinWithKey([FromRoute] string id, [FromRoute] string key)
+        {
+            var invitation = _invitationService.GetInvitationKey(id, key);
+            if (invitation == null)
+                return NotFound();
+
+            var feed = _feedEntityService.GetFeed(id);
+            var communityEntity = _communityEntityService.Get(feed.Id.ToString());
+
+            var membership = new Membership
+            {
+                CommunityEntity = communityEntity,
+                CommunityEntityId = id,
+                CommunityEntityType = communityEntity.Type,
+                UserId = CurrentUserId,
+                AccessLevel = AccessLevel.Member,
+            };
+
+            await InitCreationAsync(membership);
+            await _membershipService.AddMembersAsync(new List<Membership> { membership });
+
+            var feedModel = _mapper.Map<FeedModel>(feed);
+            return Ok(feedModel);
         }
     }
 }

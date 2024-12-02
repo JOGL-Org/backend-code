@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System.Security.AccessControl;
@@ -7,7 +8,7 @@ namespace Jogl.Server.DB
 {
     public class RelationRepository : BaseRepository<Relation>, IRelationRepository
     {
-        public RelationRepository(IConfiguration configuration) : base(configuration)
+        public RelationRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

@@ -1,7 +1,5 @@
 using Jogl.Server.Arxiv;
-using Jogl.Server.Business;
 using Jogl.Server.Data;
-using Jogl.Server.DB;
 using Jogl.Server.Notifications;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;

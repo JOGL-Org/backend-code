@@ -578,6 +578,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(skillModels);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("papers")]
         [SwaggerOperation($"Adds a new paper")]
@@ -589,12 +590,14 @@ namespace Jogl.Server.API.Controllers
                 return BadRequest();
 
             var paper = _mapper.Map<Paper>(model);
+            paper.FeedId = CurrentUserId;
             await InitCreationAsync(paper);
-            var paperId = await _paperService.CreateAsync(CurrentUserId, paper);
+            var paperId = await _paperService.CreateAsync(paper);
 
             return Ok(paperId);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("papers/{paperId}")]
         [SwaggerOperation($"Associates a paper to the current user")]
@@ -604,6 +607,7 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/papers/authored")]
@@ -617,6 +621,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(paperModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/papers")]
@@ -625,11 +630,12 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<PaperModel>))]
         public async Task<IActionResult> GetPapers([SwaggerParameter("ID of the user")][FromRoute] string id, [SwaggerParameter("The paper type")][FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
         {
-            var papers = _paperService.ListForEntity(CurrentUserId, id, type, tags, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var papers = _paperService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Select(_mapper.Map<PaperModel>);
             return Ok(paperModels);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("papers/{paperId}")]
@@ -645,6 +651,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(paperModel);
         }
 
+        [Obsolete]
         [HttpDelete]
         [Route("papers/{paperId}")]
         [SwaggerOperation($"Disassociates the specified paper from the current user")]
@@ -750,12 +757,6 @@ namespace Jogl.Server.API.Controllers
 
             var works = await _orcidFacade.GetWorksAsync(user.OrcidId, user.Auth.OrcidAccessToken);
             var paperModels = works.Select(_mapper.Map<PaperModelOrcid>);
-            var existingPapers = _paperService.ListForExternalIds(paperModels.Select(p => p.ExternalId));
-
-            foreach (var paper in paperModels)
-            {
-                paper.OnJogl = existingPapers.Any(p => p.ExternalId == paper.ExternalId);
-            }
 
             return Ok(paperModels);
         }
@@ -768,8 +769,6 @@ namespace Jogl.Server.API.Controllers
         {
             var works = await _s2Facade.ListWorksAsync(model.Search, model.Page, model.PageSize);
             var paperModels = works.Items.Select(_mapper.Map<PaperModelS2>).ToList();
-            EnrichExternalPaperModels(paperModels);
-
             return Ok(new ListPage<PaperModelS2>(paperModels, works.Total));
         }
 
@@ -792,7 +791,6 @@ namespace Jogl.Server.API.Controllers
         {
             var works = await _openAlexFacade.ListWorksAsync(model.Search, model.Page, model.PageSize);
             var paperModels = works.Items.Select(_mapper.Map<PaperModelOA>).ToList();
-            EnrichExternalPaperModels(paperModels);
             return Ok(new ListPage<PaperModelOA>(paperModels, works.Total));
         }
 
@@ -804,7 +802,6 @@ namespace Jogl.Server.API.Controllers
         {
             var articles = await _pubMedFacade.ListArticlesAsync(model.Search, model.Page, model.PageSize);
             var paperModels = articles.Items.Select(_mapper.Map<PaperModelPM>).ToList();
-            EnrichExternalPaperModels(paperModels);
             return Ok(new ListPage<PaperModelPM>(paperModels, articles.Total));
         }
 
@@ -1016,49 +1013,5 @@ namespace Jogl.Server.API.Controllers
             var userModels = users.Select(_mapper.Map<UserMiniModel>);
             return Ok(userModels);
         }
-
-        //[HttpPost]
-        //[Route("testEmail")]
-        //[SwaggerOperation($"Sends a test email to a specific address")]
-        //[SwaggerResponse((int)HttpStatusCode.Forbidden, $"Bad user, bad")]
-        //[SwaggerResponse((int)HttpStatusCode.OK, $"Email sent")]
-        //public async Task<IActionResult> SendEmailAsync([FromBody] EmailMessageModel model)
-        //{
-        //    var user = _userService.Get(CurrentUserId);
-        //    switch (user.Email)
-        //    {
-        //        case "filip@jogl.io":
-        //        case "thomas@jogl.io":
-        //        case "louis@jogl.io":
-        //            await _emailService.SendEmailAsync(model.ToEmail, EmailTemplate.Test, new { body = model.Body, subject = model.Subject }, fromName: model.FromName);
-        //            return Ok();
-        //        default:
-        //            return Forbid();
-        //    }
-        //}
-
-        private void EnrichExternalPaperModels(IEnumerable<ExternalPaperModel> externalPaperModels)
-        {
-            var joglPapers = _paperService.ListForExternalIds(externalPaperModels.Select(p => p.ExternalId).ToList());
-            foreach (var joglPaper in joglPapers)
-            {
-                var externalPaperModel = externalPaperModels.FirstOrDefault(pm => pm.ExternalId == joglPaper.ExternalId);
-                if (externalPaperModel != null)
-                    externalPaperModel.JoglId = joglPaper.Id.ToString();
-            }
-        }
-
-        //[HttpGet]
-        //[AllowAnonymous]
-        //[Route("migrations/bots")]
-        //public async Task<IActionResult> PurgeBotUsers()
-        //{
-        //    foreach (var id in System.IO.File.ReadAllLines("bots.txt"))
-        //    {
-        //        await _userService.DeleteAsync(id);
-        //    }
-
-        //    return Ok();
-        //}
     }
 }

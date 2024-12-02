@@ -56,7 +56,7 @@ namespace Jogl.Server.Notifier
             }
 
             var channel = _channelRepository.Get(agentIntegration.FeedId);
-            var papers = _paperRepository.List(p => p.FeedIds.Contains(channel.CommunityEntityId));
+            var papers = _paperRepository.List(p => p.FeedId == channel.CommunityEntityId);
 
             var messageHistory = new List<InputItem>();
             messageHistory.Add(new InputItem { FromUser = true, Text = contentEntity.Text });

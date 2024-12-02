@@ -10,6 +10,7 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(ContentEntity entity);
         ContentEntity Get(string entityId);
         ContentEntity GetDetail(string entityId, string userId);
+                
         Discussion GetDiscussion(string currentUserId, string feedId, ContentEntityType? type, ContentEntityFilter filter, string search, int page, int pageSize);
         ListPage<ContentEntity> ListPostContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
         ListPage<ContentEntity> ListMentionContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
@@ -36,8 +37,9 @@ namespace Jogl.Server.Business
         ContentEntity GetDraftContentEntity(string userId);
 
         //List<NodeFeedData> ListNodeMetadata(string userId);
-        List<NodeFeedDataNew> ListNodeMetadataNew(string userId);
-        //NodeFeedData GetNodeMetadata(string nodeId, string userId);
+        List<NodeFeedData> ListNodeMetadata(string userId);
+        NodeFeedData GetDefaultNodeMetadata(string userId);
+        NodeFeedData GetNodeMetadata(string nodeId, string userId);
         UserFeedRecord GetFeedRecord(string userId, string feedId);
         Task UpdateFeedRecordAsync(UserFeedRecord record);
 

@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,22 +15,26 @@ namespace Jogl.Server.DB
         protected const string INDEX_AUTOCOMPLETE = "autocomplete_default";
         protected const string INDEX_UNIQUE = "unique_default";
         private readonly IConfiguration _configuration;
+        private readonly IOperationContext _context;
+
         protected abstract string CollectionName { get; }
         protected Collation DefaultCollation { get { return new Collation("en", strength: CollationStrength.Primary); } }
 
         protected virtual UpdateDefinition<T> GetDefaultUpdateDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default update definition");
         protected virtual UpdateDefinition<T> GetDefaultUpsertDefinition(T updatedEntity) => throw new NotImplementedException($"{GetType()} has no default upsert definition");
 
-        protected virtual Expression<Func<T, object>> GetSort(SortKey key)
+        public virtual Expression<Func<T, object>> GetSort(SortKey key)
         {
             switch (key)
             {
                 case SortKey.CreatedDate:
                     return (e) => e.CreatedUTC;
+                case SortKey.UpdatedDate:
+                    return (e) => e.UpdatedUTC;
                 case SortKey.LastActivity:
                     return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
+                case SortKey.RecentlyOpened:
+                    return (e) => e.LastOpenedUTC;
                 default:
                     return null;
             }
@@ -38,9 +43,10 @@ namespace Jogl.Server.DB
         protected virtual Expression<Func<T, string>> AutocompleteField => null;
         protected virtual Expression<Func<T, object>>[] SearchFields => null;
 
-        protected BaseRepository(IConfiguration configuration)
+        protected BaseRepository(IConfiguration configuration, IOperationContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         protected IMongoDatabase GetDatabase(string db)
@@ -51,12 +57,12 @@ namespace Jogl.Server.DB
             return client.GetDatabase(db);
         }
 
-        protected IMongoCollection<T> GetCollection<T>()
+        public IMongoCollection<T> GetCollection<T>()
         {
             return GetCollection<T>(CollectionName);
         }
 
-        protected IMongoCollection<T> GetCollection<T>(string collectionName)
+        public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             var db = GetDatabase(_configuration["MongoDB:DB"]);
             return db.GetCollection<T>(collectionName);
@@ -492,18 +498,20 @@ namespace Jogl.Server.DB
 
         }
 
-        private IAggregateFluent<T> GetSearchQuery(string searchValue)
+        private IAggregateFluent<T> GetSearchQuery(string searchValue, SortKey? sortKey = null)
         {
             var builder = new SearchPathDefinitionBuilder<T>();
             var searchDefinition = builder.Multi(SearchFields);
 
             var coll = GetCollection<T>();
-            return coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+            var query = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
             {
                 MaxEdits = 2,
                 PrefixLength = 1,
                 MaxExpansions = 256,
             }), new SearchOptions<T> { IndexName = INDEX_SEARCH }).Match(itm => !itm.Deleted);
+
+            return query;
         }
 
         private IAggregateFluent<T> GetAutocompleteQuery(string searchValue)
@@ -513,6 +521,38 @@ namespace Jogl.Server.DB
 
             var coll = GetCollection<T>();
             return coll.Aggregate().Search(Builders<T>.Search.Autocomplete(searchDefinition, searchValue), new SearchOptions<T> { IndexName = INDEX_AUTOCOMPLETE }).Match(itm => !itm.Deleted);
+        }
+
+        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null)
+        {
+            var coll = GetCollection<T>();
+            var q = coll.Aggregate().Match(itm => !itm.Deleted);
+            if (filter != null)
+                q = q.Match(filter);
+
+            return new FluentQuery<T>(_configuration, this, _context, q);
+        }
+
+        public IFluentQuery<T> Query(string searchValue)
+        {
+            var coll = GetCollection<T>();
+            var q = coll.Aggregate();
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                var builder = new SearchPathDefinitionBuilder<T>();
+                var searchDefinition = builder.Multi(SearchFields);
+
+                q = q.Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
+                {
+                    MaxEdits = 2,
+                    PrefixLength = 1,
+                    MaxExpansions = 256,
+                }), new SearchOptions<T> { IndexName = INDEX_SEARCH });
+            }
+
+            q = q.Match(itm => !itm.Deleted);
+
+            return new FluentQuery<T>(_configuration, this, _context, q);
         }
     }
 }

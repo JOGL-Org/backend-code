@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -9,8 +10,7 @@ namespace Jogl.Server.DB
 {
     public abstract class CommunityEntityRepository<T> : BaseRepository<T> where T : CommunityEntity
     {
-
-        protected CommunityEntityRepository(IConfiguration configuration) : base(configuration)
+        protected CommunityEntityRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 
@@ -23,20 +23,14 @@ namespace Jogl.Server.DB
             }
         }
 
-        protected override Expression<Func<T, object>> GetSort(SortKey key)
+        public override Expression<Func<T, object>> GetSort(SortKey key)
         {
             switch (key)
             {
-                case SortKey.CreatedDate:
-                    return (e) => e.CreatedUTC;
-                case SortKey.LastActivity:
-                    return (e) => e.LastActivityUTC;
-                case SortKey.Date:
-                    return (e) => e.CreatedUTC;
                 case SortKey.Alphabetical:
                     return (e) => e.Title;
                 default:
-                    return null;
+                    return base.GetSort(key);
             }
         }
 

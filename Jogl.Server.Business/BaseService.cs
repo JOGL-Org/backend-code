@@ -171,30 +171,6 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Need need, CommunityEntity communityEntity, IEnumerable<Membership> memberships, Permission permission, string userId)
-        {
-            if (communityEntity == null)
-                return false;
-
-            var membership = memberships.SingleOrDefault(m => m.CommunityEntityId == communityEntity.Id.ToString());
-            switch (permission)
-            {
-                case Permission.Manage:
-                case Permission.ManageDocuments:
-                case Permission.Delete:
-                case Permission.DeleteContentEntity:
-                case Permission.DeleteComment:
-                    return (membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner))
-                        || need.CreatedByUserId == userId;
-                case Permission.PostContentEntity:
-                case Permission.PostComment:
-                case Permission.Read:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         private FeedEntityVisibility? GetFeedEntityVisibility(FeedEntity feedEntity, IEnumerable<Membership> memberships, string userId)
         {
             if (feedEntity.CreatedByUserId == userId && !string.IsNullOrEmpty(userId))
@@ -271,14 +247,22 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool Can(Paper p, string userId, Permission permission)
+        protected bool Can(FeedEntity e, IEnumerable<Membership> currentUserMemberships, string userId, Permission permission)
         {
+            var docVisibility = GetFeedEntityVisibility(e, currentUserMemberships, userId);
             switch (permission)
             {
+                case Permission.Manage:
+                case Permission.ManageDocuments:
+                case Permission.Delete:
+                case Permission.DeleteContentEntity:
+                case Permission.DeleteComment:
+                    return docVisibility == FeedEntityVisibility.Edit;
                 case Permission.PostContentEntity:
                 case Permission.PostComment:
+                    return docVisibility == FeedEntityVisibility.Edit || docVisibility == FeedEntityVisibility.Comment;
                 case Permission.Read:
-                    return true;
+                    return docVisibility != null;
                 default:
                     return false;
             }
@@ -346,6 +330,19 @@ namespace Jogl.Server.Business
             return allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Node && r.SourceCommunityEntityType == CommunityEntityType.Workspace && communityIds.Contains(r.SourceCommunityEntityId))
                  .Select(r => r.TargetCommunityEntityId)
                  .ToList();
+        }
+
+        protected List<string> GetNodeIdsForMemberships(IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships)
+        {
+            var nodeIds = currentUserMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Node).Select(m => m.CommunityEntityId);
+            var workspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Node && r.SourceCommunityEntityType == CommunityEntityType.Workspace && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId))
+                 .Select(r => r.TargetCommunityEntityId);
+
+            var subWorkspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Workspace && r.SourceCommunityEntityType == CommunityEntityType.Workspace && allRelations.Any(r2 => r2.SourceCommunityEntityId == r.TargetCommunityEntityId && r2.TargetCommunityEntityType == CommunityEntityType.Node) && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId))
+                 .Select(r => r.TargetCommunityEntityId);
+
+
+            return nodeIds.Concat(workspaceNodeIds).Concat(subWorkspaceNodeIds).ToList();
         }
 
         protected List<string> GetCommunityEntityIdsForNode(IEnumerable<Relation> allRelations, string nodeId)
@@ -813,6 +810,18 @@ namespace Jogl.Server.Business
             }
         }
 
+        protected void EnrichChannelsWithPermissions(IEnumerable<Channel> channels, string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+
+            foreach (var c in channels)
+            {
+                var membership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.Id.ToString());
+                var communityEntityMembership = currentUserMemberships.SingleOrDefault(m => m.CommunityEntityId == c.CommunityEntityId);
+                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, membership, communityEntityMembership, p)).ToList();
+            }
+        }
+
         //protected void EnrichProjectData(IEnumerable<Project> projects, IEnumerable<Relation> relations, string userId)
         //{
         //    var needs = _needRepository.ListForEntityIds(projects.Select(p => p.Id.ToString()));
@@ -926,7 +935,7 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForCommunities(relations, communityIds);
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => communityEntityIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
 
@@ -934,8 +943,8 @@ namespace Jogl.Server.Business
             {
                 c.NeedCount = needs.Count(need => c.Id.ToString() == need.EntityId);
                 c.NeedCountAggregate = needs.Count(need => c.Id.ToString() == need.EntityId || relations.Any(r => r.SourceCommunityEntityId == need.EntityId && r.TargetCommunityEntityId == c.Id.ToString()));
-                c.PaperCount = papers.Count(ppr => ppr.FeedIds.Any(id => c.Id.ToString() == id));
-                c.PaperCountAggregate = papers.Count(ppr => ppr.FeedIds.Any(id => c.Id.ToString() == id || relations.Any(r => r.SourceCommunityEntityId == id && r.TargetCommunityEntityId == c.Id.ToString())));
+                c.PaperCount = papers.Count(ppr => c.Id.ToString() == ppr.FeedId);
+                c.PaperCountAggregate = papers.Count(ppr => c.Id.ToString() == ppr.FeedId || relations.Any(r => r.SourceCommunityEntityId == ppr.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.ResourceCount = resources.Count(res => c.Id.ToString() == res.FeedId);
                 c.ResourceCountAggregate = resources.Count(res => c.Id.ToString() == res.FeedId || relations.Any(r => r.SourceCommunityEntityId == res.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.DocumentCount = documents.Count(d => c.Id.ToString() == d.FeedId);
@@ -972,7 +981,7 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForNodes(relations, nodeIds);
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => communityEntityIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
             var cfps = _callForProposalsRepository.List(cfp => communityEntityIds.Contains(cfp.ParentCommunityEntityId) && !cfp.Deleted);
@@ -983,8 +992,8 @@ namespace Jogl.Server.Business
 
                 n.NeedCount = needs.Count(need => n.Id.ToString() == need.EntityId);
                 n.NeedCountAggregate = needs.Count(need => nodeCommunityEntityIds.Contains(need.EntityId));
-                n.PaperCount = papers.Count(ppr => ppr.FeedIds.Any(id => n.Id.ToString() == id));
-                n.PaperCountAggregate = papers.Count(ppr => ppr.FeedIds.Any(id => nodeCommunityEntityIds.Contains(id)));
+                n.PaperCount = papers.Count(ppr => n.Id.ToString() == ppr.FeedId);
+                n.PaperCountAggregate = papers.Count(ppr => nodeCommunityEntityIds.Contains(ppr.FeedId));
                 n.ResourceCount = resources.Count(res => n.Id.ToString() == res.FeedId);
                 n.ResourceCountAggregate = resources.Count(res => nodeCommunityEntityIds.Contains(res.FeedId));
                 n.DocumentCount = documents.Count(d => n.Id.ToString() == d.FeedId);
@@ -1020,13 +1029,13 @@ namespace Jogl.Server.Business
             var orgIds = organizations.Select(c => c.Id.ToString()).ToList();
             var relations = _relationRepository.List(r => (orgIds.Contains(r.SourceCommunityEntityId) || orgIds.Contains(r.TargetCommunityEntityId)) && !r.Deleted);
 
-            var papers = _paperRepository.List(p => p.FeedIds.Any(id => orgIds.Contains(id)) && !p.Deleted);
+            var papers = _paperRepository.List(p => orgIds.Contains(p.FeedId) && !p.Deleted);
             var resources = _resourceRepository.List(r => orgIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => orgIds.Contains(d.FeedId) && !d.Deleted);
 
             foreach (var o in organizations)
             {
-                o.PaperCount = papers.Count(ppr => ppr.FeedIds.Contains(o.Id.ToString()));
+                o.PaperCount = papers.Count(ppr => ppr.FeedId == o.Id.ToString());
                 o.ResourceCount = resources.Count(r => r.FeedId == o.Id.ToString());
                 o.DocumentCount = documents.Count(d => d.FeedId == o.Id.ToString());
             }
@@ -1050,11 +1059,11 @@ namespace Jogl.Server.Business
             EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
         }
 
-        protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
-        {
-            var communityEntityMemberships = _membershipRepository.ListForCommunityEntities(communityEntities.Select(c => c.Id.ToString()));
-            EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
-        }
+        //protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
+        //{
+        //    var communityEntityMemberships = _membershipRepository.ListForCommunityEntities(communityEntities.Select(c => c.Id.ToString()));
+        //    EnrichCommunityEntitiesWithMembershipData(communityEntities, communityEntityMemberships, currentUserMemberships, relations, userId);
+        //}
 
         protected void EnrichCommunityEntitiesWithMembershipData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Membership> communityEntityMemberships, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> relations, string userId)
         {
@@ -1196,12 +1205,19 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, string userId)
+        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, IEnumerable<Membership> currentUserMemberships, string userId)
         {
             foreach (var paper in papers)
             {
-                paper.Permissions = Enum.GetValues<Permission>().Where(p => Can(paper, userId, p)).ToList();
+                paper.Permissions = Enum.GetValues<Permission>().Where(p => Can(paper, currentUserMemberships, userId, p)).ToList();
             }
+        }
+
+        protected void EnrichPapersWithPermissions(IEnumerable<Paper> papers, string userId)
+        {
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == userId && !p.Deleted);
+
+            EnrichPapersWithPermissions(papers, currentUserMemberships, userId);
         }
 
         protected void EnrichDocumentsWithPermissions(IEnumerable<Document> documents, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, IEnumerable<Relation> entityRelations, string userId)
@@ -1226,7 +1242,7 @@ namespace Jogl.Server.Business
         {
             foreach (var n in needs)
             {
-                n.Permissions = Enum.GetValues<Permission>().Where(p => Can(n, n.CommunityEntity, currentUserMemberships, p, userId)).ToList();
+                n.Permissions = Enum.GetValues<Permission>().Where(p => Can(n, currentUserMemberships, userId, p)).ToList();
             }
         }
 
@@ -1248,6 +1264,25 @@ namespace Jogl.Server.Business
         {
             var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
             EnrichEventsWithPermissions(events, eventAttendances, currentUserMemberships, userId);
+        }
+
+        protected void EnrichEventsWithPermissions(IEnumerable<Event> events, string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+            var eventAttendances = _eventAttendanceRepository.List(m => m.UserId == userId && !m.Deleted);
+
+            EnrichEventsWithPermissions(events, eventAttendances, currentUserMemberships, userId);
+        }
+
+        protected void EnrichUsersWithPermissions(IEnumerable<User> users, string userId = null)
+        {
+            foreach (var u in users)
+            {
+                if (u.Id.ToString() == userId)
+                    u.Permissions = new List<Permission> { Permission.Read, Permission.Manage, Permission.ManageLibrary, Permission.ManageDocuments };
+                else
+                    u.Permissions = new List<Permission> { Permission.Read };
+            }
         }
 
         protected void EnrichCommunityEntitiesWithContentEntityData(IEnumerable<CommunityEntity> communityEntities)
@@ -1525,30 +1560,41 @@ namespace Jogl.Server.Business
                                 .Where(n => permissions == null || permissions.All(pm => Can(n, currentUserMemberships, new List<Relation>(), pm)))
                                 .ToList();
         }
-        protected List<Paper> GetFilteredPapers(IEnumerable<Paper> papers, List<PaperTag>? tags)
+
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter, int page, int pageSize) where T : FeedEntity
         {
-            return papers.Where(p => tags == null || !tags.Any() || tags.Any(t => p.OriginTags.Any(pt => pt == t)))
-                .ToList();
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
+
+            var filteredEntities = GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
+            return GetPage(filteredEntities, page, pageSize);
         }
 
-        protected List<Paper> GetFilteredPapers(IEnumerable<Paper> papers)
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
         {
-            return papers.ToList();
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
+
+            return GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search, DocumentFilter? type, int page, int pageSize)
+        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
         {
-            return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, search, type), page, pageSize);
+            return entities.Where(e => CanSeeFeedEntity(e, currentUserMemberships, currentUserId))
+                           .Where(e => IsFeedEntityInFilter(e, filter, currentUserId))
+                           .ToList();
         }
 
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type, int page, int pageSize)
+        {
+            return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, type), page, pageSize);
+        }
 
         protected List<Document> GetFilteredJoglDocs(IEnumerable<Document> documents, string currentUserId)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            return documents.Where(d => CanSeeJoglDoc(d, currentUserMemberships, currentUserId)).ToList();
+            return documents.Where(d => CanSeeFeedEntity(d, currentUserMemberships, currentUserId)).ToList();
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type = null, FeedEntityFilter? filter = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
 
@@ -1556,47 +1602,63 @@ namespace Jogl.Server.Business
             var currentUserAttendances = _eventAttendanceRepository.List(a => a.UserId == currentUserId && !a.Deleted);
             var allRelations = _relationRepository.List(r => (entityIds.Contains(r.SourceCommunityEntityId) || entityIds.Contains(r.TargetCommunityEntityId)) && !r.Deleted);
 
-            return GetFilteredDocuments(documents, feedEntitySet, allRelations, currentUserMemberships, currentUserAttendances, currentUserId, search, type);
+            return GetFilteredDocuments(documents, feedEntitySet, allRelations, currentUserMemberships, currentUserAttendances, currentUserId, type, filter);
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, string currentUserId, DocumentFilter? type = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
-            return GetFilteredDocuments(documents, feedEntitySet, currentUserId, search, type);
+            return GetFilteredDocuments(documents, feedEntitySet, currentUserId, type);
         }
 
-        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, string currentUserId, string search = null, DocumentFilter? type = null)
+        protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> currentUserAttendances, string currentUserId, DocumentFilter? type = null, FeedEntityFilter? filter = null)
         {
             var entityIds = documents.Select(d => d.FeedId).ToList();
             var entityRelations = allRelations.Where(r => (entityIds.Contains(r.TargetCommunityEntityId) || entityIds.Contains(r.SourceCommunityEntityId)) && !r.Deleted);
-            return documents.Where(d => string.IsNullOrEmpty(search) || d.Name.Contains(search, StringComparison.CurrentCultureIgnoreCase))
-                                        .Where(d => !d.Deleted)
-                                        .Where(d => d.Status != ContentEntityStatus.Draft)
-                                        .Where(d =>
-                                        {
-                                            if (type == null)
-                                                return true;
+            return documents.Where(d => IsFeedEntityInFilter(d, filter, currentUserId))
+                            .Where(d => !d.Deleted)
+                            .Where(d => d.Status != ContentEntityStatus.Draft)
+                            .Where(d =>
+                            {
+                                if (type == null)
+                                    return true;
 
-                                            switch (type)
-                                            {
-                                                case DocumentFilter.Document:
-                                                    return d.Type == DocumentType.Document;
-                                                case DocumentFilter.File:
-                                                    return d.Type == DocumentType.Document && !IsMedia(d);
-                                                case DocumentFilter.Media:
-                                                    return d.Type == DocumentType.Document && IsMedia(d);
-                                                case DocumentFilter.Link:
-                                                    return d.Type == DocumentType.Link;
-                                                case DocumentFilter.JoglDoc:
-                                                    return d.Type == DocumentType.JoglDoc;
-                                                default:
-                                                    return false;
-                                            }
-                                        })
-                                        .Where(d => CanSeeDocument(d, _feedEntityService.GetEntityFromLists(d.FeedEntityId, feedEntitySet), currentUserMemberships, currentUserAttendances, entityRelations, currentUserId))
-                                        .ToList();
+                                switch (type)
+                                {
+                                    case DocumentFilter.Document:
+                                        return d.Type == DocumentType.Document;
+                                    case DocumentFilter.File:
+                                        return d.Type == DocumentType.Document && !IsMedia(d);
+                                    case DocumentFilter.Media:
+                                        return d.Type == DocumentType.Document && IsMedia(d);
+                                    case DocumentFilter.Link:
+                                        return d.Type == DocumentType.Link;
+                                    case DocumentFilter.JoglDoc:
+                                        return d.Type == DocumentType.JoglDoc;
+                                    default:
+                                        return false;
+                                }
+                            })
+                            .Where(d => CanSeeDocument(d, _feedEntityService.GetEntityFromLists(d.FeedEntityId, feedEntitySet), currentUserMemberships, currentUserAttendances, entityRelations, currentUserId))
+                            .ToList();
+        }
+
+        private bool IsFeedEntityInFilter(FeedEntity e, FeedEntityFilter? filter, string currentUserId)
+        {
+            if (filter == null)
+                return true;
+
+            switch (filter)
+            {
+                case FeedEntityFilter.CreatedByUser:
+                    return e.CreatedByUserId == currentUserId;
+                case FeedEntityFilter.SharedWithUser:
+                    return e.UserVisibility?.Any(uv => uv.UserId == currentUserId) == true;
+                default:
+                    return true;
+            }
         }
 
         protected bool IsMedia(Document d)
@@ -1624,8 +1686,7 @@ namespace Jogl.Server.Business
             switch (document.Type)
             {
                 case DocumentType.JoglDoc:
-                    var docVisibility = GetFeedEntityVisibility(document, currentUserMemberships, userId);
-                    return docVisibility != null;
+                    return CanSeeFeedEntity(document, currentUserMemberships, userId);
                 default:
                     switch (feedEntity.FeedType)
                     {
@@ -1646,16 +1707,13 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected bool CanSeeJoglDoc(Document document, IEnumerable<Membership> currentUserMemberships, string userId)
+        protected bool CanSeeFeedEntity(FeedEntity entity, IEnumerable<Membership> currentUserMemberships, string userId)
         {
-            switch (document.Type)
-            {
-                case DocumentType.JoglDoc:
-                    var docVisibility = GetFeedEntityVisibility(document, currentUserMemberships, userId);
-                    return docVisibility != null;
-                default:
-                    return false;
-            }
+            if (entity == null)
+                return false;
+
+            var docVisibility = GetFeedEntityVisibility(entity, currentUserMemberships, userId);
+            return docVisibility != null;
         }
 
         protected bool CanSeeEvent(Event ev, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> eventAttendances, string userId)
@@ -1674,60 +1732,55 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected List<Need> GetFilteredNeeds(IEnumerable<Need> needs)
+        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags, FeedEntityFilter? filter, int page, int pageSize)
         {
-            return needs.ToList();
+            return GetPage(GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags, filter), page, pageSize);
         }
 
-        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags, int page, int pageSize)
+        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags, FeedEntityFilter? filter)
         {
-            return GetPage(GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags), page, pageSize);
-        }
-
-        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags = null)
-        {
-            var filteredEvents = events
-                                              .Where(e =>
-                                              {
-                                                  if (tags == null)
-                                                      return true;
-
-                                                  if (tags.Contains(EventTag.Attending))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Invited))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Pending))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Rejected))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.No))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Attendee))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Member))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Organizer))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Admin))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Speaker))
-                                                      if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.Labels?.Contains(LABEL_SPEAKER) == true))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Online))
-                                                      if (string.IsNullOrEmpty(e.MeetingURL) && string.IsNullOrEmpty(e.GeneratedMeetingURL))
-                                                          return false;
-
-                                                  if (tags.Contains(EventTag.Physical))
-                                                      if (e.Location == null)
-                                                          return false;
-
-                                                  return true;
-                                              })
-                                              .Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))
-                                              .ToList();
+            var filteredEvents = events.Where(e=> IsFeedEntityInFilter(e, filter, currentUserId))
+                                       .Where(e =>
+                                       {
+                                           if (tags == null)
+                                               return true;
+                                       
+                                           if (tags.Contains(EventTag.Attending))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Invited))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Pending))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Rejected))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.No))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Attendee))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Member))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Organizer))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Admin))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Speaker))
+                                               if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.Labels?.Contains(LABEL_SPEAKER) == true))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Online))
+                                               if (string.IsNullOrEmpty(e.MeetingURL) && string.IsNullOrEmpty(e.GeneratedMeetingURL))
+                                                   return false;
+                                       
+                                           if (tags.Contains(EventTag.Physical))
+                                               if (e.Location == null)
+                                                   return false;
+                                       
+                                           return true;
+                                       })
+                                       .Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))
+                                       .ToList();
 
             return filteredEvents;
         }

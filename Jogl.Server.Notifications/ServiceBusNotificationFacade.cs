@@ -32,6 +32,11 @@ namespace Jogl.Server.Notifications
             await _serviceBus.SendAsync(need, "need-created");
         }
 
+        public async Task NotifyUpdatedAsync(Need need)
+        {
+            await _serviceBus.SendAsync(need, "need-updated");
+        }
+
         public async Task NotifyCreatedAsync(Document doc)
         {
             await _serviceBus.SendAsync(doc, "document-created");
@@ -42,17 +47,14 @@ namespace Jogl.Server.Notifications
             await _serviceBus.SendAsync(doc, "document-updated");
         }
 
-        public async Task NotifyCreatedAsync(Notification notification)
+        public async Task NotifyCreatedAsync(Paper paper)
         {
-            await _serviceBus.SendAsync(notification, "notification-created");
+            await _serviceBus.SendAsync(paper, "paper-created");
         }
 
-        public async Task NotifyCreatedAsync(IEnumerable<Notification> notifications)
+        public async Task NotifyUpdatedAsync(Paper paper)
         {
-            foreach (var notification in notifications)
-            {
-                await NotifyCreatedAsync(notification);
-            }
+            await _serviceBus.SendAsync(paper, "paper-updated");
         }
 
         public async Task NotifyAddedAsync(Paper paper)

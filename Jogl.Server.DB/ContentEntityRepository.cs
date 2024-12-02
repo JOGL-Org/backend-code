@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -7,7 +8,7 @@ namespace Jogl.Server.DB
 {
     public class ContentEntityRepository : BaseRepository<ContentEntity>, IContentEntityRepository
     {
-        public ContentEntityRepository(IConfiguration configuration) : base(configuration)
+        public ContentEntityRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

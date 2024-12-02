@@ -14,5 +14,11 @@ namespace Jogl.Server.Business
         Task UpdateActivityAsync(string entityId, DateTime updatedUTC, string updatedByUserId);
         List<FeedEntity> GetPath(FeedEntity feedEntity, string currentUserId);
         List<FeedEntity> GetPath(string entityId, string currentUserId);
+
+        public Feed GetFeed(string id);
+        public FeedEntity GetEntity(string id);
+        public FeedEntity GetEntity(string id, string userId);
+        public FeedType GetType(CommunityEntityType type);
+        public CommunityEntityType GetType(FeedType type);
     }
 }

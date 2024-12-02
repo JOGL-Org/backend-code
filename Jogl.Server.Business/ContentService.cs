@@ -7,6 +7,7 @@ using Jogl.Server.Email;
 using Jogl.Server.GitHub;
 using Jogl.Server.HuggingFace;
 using Jogl.Server.Notifications;
+using Jogl.Server.PubMed;
 using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ namespace Jogl.Server.Business
         private readonly IGitHubFacade _githubFacade;
         private readonly IHuggingFaceFacade _huggingfaceFacade;
         private readonly IArxivFacade _arxivFacade;
+        private readonly IPubMedFacade _pubmedFacade;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly ICallForProposalRepository _callForProposalRepository;
         private readonly INodeRepository _nodeRepository;
@@ -38,11 +40,12 @@ namespace Jogl.Server.Business
         private const string MENTION_REGEX = @"<span class=""mention"" data-index=""[0-9]"" data-denotation-char=""[\S]"" data-value=""(?:[^""]+)"" data-link=""\/?([^""]+)\/([^""]+)""";
         private const string MENTION_REGEX_2 = @"data-type=\""mention\"" data-id=\""([^""]+)\"" data-label=\""([^""]+)\""";
 
-        public ContentService(IGitHubFacade githubFacade, IHuggingFaceFacade huggingfaceFacade, IArxivFacade arxivFacade, IOrganizationRepository organizationRepository, ICallForProposalRepository callForProposalRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, IDraftRepository draftRepository, IFeedIntegrationRepository feedIntegrationRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IStorageService storageService, IEmailService emailService, IUrlService urlService, INotificationFacade notificationFacade, IConfiguration configuration, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public ContentService(IGitHubFacade githubFacade, IHuggingFaceFacade huggingfaceFacade, IArxivFacade arxivFacade, IPubMedFacade pubMedFacade, IOrganizationRepository organizationRepository, ICallForProposalRepository callForProposalRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, IDraftRepository draftRepository, IFeedIntegrationRepository feedIntegrationRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IStorageService storageService, IEmailService emailService, IUrlService urlService, INotificationFacade notificationFacade, IConfiguration configuration, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _githubFacade = githubFacade;
             _huggingfaceFacade = huggingfaceFacade;
             _arxivFacade = arxivFacade;
+            _pubmedFacade = pubMedFacade;
             _organizationRepository = organizationRepository;
             _callForProposalRepository = callForProposalRepository;
             _nodeRepository = nodeRepository;
@@ -566,10 +569,10 @@ namespace Jogl.Server.Business
             feedEntitySet.Nodes = GetFilteredNodes(feedEntitySet.Nodes, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
             feedEntitySet.Organizations = GetFilteredOrganizations(feedEntitySet.Organizations, currentUserMemberships, currentUserInvitations, new List<Permission>());
             feedEntitySet.CallsForProposals = GetFilteredCallForProposals(feedEntitySet.CallsForProposals, feedEntitySet.Communities, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.Papers = GetFilteredPapers(feedEntitySet.Papers);
+            feedEntitySet.Papers = GetFilteredFeedEntities(feedEntitySet.Papers, userId);
             feedEntitySet.Documents = GetFilteredDocuments(feedEntitySet.Documents, feedEntitySet, allRelations, currentUserMemberships, currentUserEventAttendances, userId);
-            feedEntitySet.Needs = GetFilteredNeeds(feedEntitySet.Needs);
-            feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId);
+            feedEntitySet.Needs = GetFilteredFeedEntities(feedEntitySet.Needs, userId);
+            feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
 
             EnrichContentEntityData(contentEntities, feedEntitySet, contentEntitiesUsers, userId);
 
@@ -1165,27 +1168,37 @@ namespace Jogl.Server.Business
         //    return nodeIds.Contains(nodeId);
         //}
 
-
-
-
-        public List<NodeFeedDataNew> ListNodeMetadataNew(string userId)
+        public List<NodeFeedData> ListNodeMetadata(string userId)
         {
             var nodes = _nodeRepository.List(n => !n.Deleted);
-            var res = GetNodeMetadataNew(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
-            res.Insert(0, new NodeFeedDataNew { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
+            var res = GetNodeMetadata(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
+            res.Insert(0, new NodeFeedData { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
 
             return res;
         }
 
-        public NodeFeedDataNew GetNodeMetadataNew(string nodeId, string userId)
+        public NodeFeedData GetDefaultNodeMetadata(string userId)
         {
+            var allRelations = _relationRepository.List(r => !r.Deleted);
+            var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
+
+            var nodeId = GetNodeIdsForMemberships(allRelations, currentUserMemberships).FirstOrDefault();
+
+            if (nodeId == null)
+                return null;
+
             var node = _nodeRepository.Get(nodeId);
-            return GetNodeMetadataNew(userId, node).Single();
+            return GetNodeMetadata(userId, node).Single();
         }
 
-        private List<NodeFeedDataNew> GetNodeMetadataNew(string userId, params Node[] nodes)
+        public NodeFeedData GetNodeMetadata(string nodeId, string userId)
         {
+            var node = _nodeRepository.Get(nodeId);
+            return GetNodeMetadata(userId, node).Single();
+        }
 
+        private List<NodeFeedData> GetNodeMetadata(string userId, params Node[] nodes)
+        {
             var allRelations = _relationRepository.List(r => !r.Deleted);
             var currentUserEventAttendances = _eventAttendanceRepository.List(ea => ea.UserId == userId && ea.Status == AttendanceStatus.Yes && !ea.Deleted);
             var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
@@ -1195,14 +1208,14 @@ namespace Jogl.Server.Business
             var communityEntities = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds).CommunityEntities;
 
             var events = _eventRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
-            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId);
+            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
             var feedEntityIds = GetFeedEntityIdsForNodes(allRelations, events, nodeIds);
             var needs = _needRepository.List(n => communityEntityIds.Contains(n.EntityId) && !n.Deleted);
-            needs = GetFilteredNeeds(needs);
+            needs = GetFilteredFeedEntities(needs, userId);
             var documents = _documentRepository.List(d => feedEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
             documents = GetFilteredDocuments(documents, userId);
-            var papers = _paperRepository.List(p => communityEntityIds.Any(eId => p.FeedIds.Contains(eId)) && !p.Deleted);
-            papers = GetFilteredPapers(papers);
+            var papers = _paperRepository.List(p => communityEntityIds.Any(eId => p.FeedId == eId) && !p.Deleted);
+            papers = GetFilteredFeedEntities(papers, userId);
 
             var allUserFeedRecords = _userFeedRecordRepository.List(r => r.UserId == userId && !r.Deleted);
             var activeUserFeedRecords = allUserFeedRecords.Where(ufr => (ufr.LastReadUTC.HasValue || ufr.LastWriteUTC.HasValue || ufr.LastMentionUTC.HasValue) && !ufr.Muted);
@@ -1237,18 +1250,18 @@ namespace Jogl.Server.Business
             }
 
             //calculate results
-            var res = new List<NodeFeedDataNew>();
+            var res = new List<NodeFeedData>();
             foreach (var node in nodes)
             {
-                res.Add(GetNodeMetadataNew(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances, events, needs, documents, papers, allUserFeedRecords, unreadPosts, unreadMentions, unreadThreads));
+                res.Add(GetNodeMetadata(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances, events, needs, documents, papers, allUserFeedRecords, unreadPosts, unreadMentions, unreadThreads));
             }
 
             return res;
         }
 
-        private NodeFeedDataNew GetNodeMetadataNew(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances, List<Event> events, List<Need> needs, List<Document> documents, List<Paper> papers, List<UserFeedRecord> allUserFeedRecords, List<ContentEntity> unreadPosts, List<Mention> unreadMentions, List<ContentEntity> unreadThreads)
+        private NodeFeedData GetNodeMetadata(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances, List<Event> events, List<Need> needs, List<Document> documents, List<Paper> papers, List<UserFeedRecord> allUserFeedRecords, List<ContentEntity> unreadPosts, List<Mention> unreadMentions, List<ContentEntity> unreadThreads)
         {
-            var nfd = new NodeFeedDataNew()
+            var nfd = new NodeFeedData()
             {
                 Id = node.Id,
                 Title = node.Title,
@@ -1274,7 +1287,7 @@ namespace Jogl.Server.Business
             events = events.Where(e => feedEntitiesIdsForNode.Contains(e.CommunityEntityId)).ToList();
             needs = needs.Where(n => feedEntitiesIdsForNode.Contains(n.CommunityEntityId)).ToList();
             documents = documents.Where(d => feedEntitiesIdsForNode.Contains(d.FeedEntityId)).ToList();
-            papers = papers.Where(p => feedEntitiesIdsForNode.Any(id => p.FeedIds.Contains(id))).ToList();
+            papers = papers.Where(p => feedEntitiesIdsForNode.Contains(p.FeedEntityId)).ToList();
 
             nfd.NewEvents = events.Any(e => !allUserFeedRecords.Any(ufr => ufr.FeedId == e.Id.ToString()));
             nfd.NewNeeds = needs.Any(n => (IsNeedForUser(n, userId) || nfd.Permissions.Contains(Permission.Read)) && !allUserFeedRecords.Any(ufr => ufr.FeedId == n.Id.ToString()));
@@ -1449,10 +1462,13 @@ namespace Jogl.Server.Business
                     var hfRepo = await _huggingfaceFacade.GetRepoAsync(feedIntegration.SourceId);
                     return hfRepo != null;
                 case FeedIntegrationType.Arxiv:
-                    var categories = _arxivFacade.ListCategories();
-                    return categories.Contains(feedIntegration.SourceId);
+                    var arxivCategories = _arxivFacade.ListCategories();
+                    return arxivCategories.Contains(feedIntegration.SourceId);
                 case FeedIntegrationType.JOGLAgentPublication:
                     return true;
+                case FeedIntegrationType.PubMed:
+                    var pmCategories = _pubmedFacade.ListCategories();
+                    return pmCategories.Contains(feedIntegration.SourceId);
                 default:
                     throw new Exception($"Unable to validate feed integration for type {feedIntegration.Type}");
             }
@@ -1466,6 +1482,7 @@ namespace Jogl.Server.Business
                     return await _githubFacade.GetAccessTokenAsync(authorizationCode);
                 case FeedIntegrationType.HuggingFace:
                 case FeedIntegrationType.Arxiv:
+                case FeedIntegrationType.PubMed:
                     return null;
                 default:
                     throw new Exception($"Unable to exchange feed integration token for type {type}");
@@ -1481,6 +1498,8 @@ namespace Jogl.Server.Business
                     return new List<string>();
                 case FeedIntegrationType.Arxiv:
                     return _arxivFacade.ListCategories();
+                case FeedIntegrationType.PubMed:
+                    return _pubmedFacade.ListCategories();
                 default:
                     throw new Exception($"Unable to exchange feed integration token for type {feedIntegrationType}");
             }

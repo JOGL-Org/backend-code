@@ -4,37 +4,17 @@ using Jogl.Server.DB;
 
 namespace Jogl.Server.Business
 {
-    public class FeedEntityService : IFeedEntityService
+    public class FeedEntityService : BaseService, IFeedEntityService
     {
         protected readonly IWorkspaceRepository _workspaceRepository;
         protected readonly INodeRepository _nodeRepository;
-        protected readonly ICallForProposalRepository _callForProposalsRepository;
         protected readonly IOrganizationRepository _organizationRepository;
-        protected readonly IRelationRepository _relationRepository;
-        protected readonly IMembershipRepository _membershipRepository;
-        protected readonly INeedRepository _needRepository;
-        protected readonly IDocumentRepository _documentRepository;
-        protected readonly IPaperRepository _paperRepository;
-        protected readonly IEventRepository _eventRepository;
-        protected readonly IUserRepository _userRepository;
-        protected readonly IChannelRepository _channelRepository;
-        protected readonly IFeedRepository _feedRepository;
 
-        public FeedEntityService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, IOrganizationRepository organizationRepository, IRelationRepository relationRepository, IMembershipRepository membershipRepository, ICallForProposalRepository callForProposalsRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IEventRepository eventRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedRepository feedRepository)
+        public FeedEntityService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, IOrganizationRepository organizationRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, null)
         {
-            _workspaceRepository = workspaceRepository;
-            _nodeRepository = nodeRepository;
+            _workspaceRepository= workspaceRepository;
+            _nodeRepository =   nodeRepository;
             _organizationRepository = organizationRepository;
-            _callForProposalsRepository = callForProposalsRepository;
-            _relationRepository = relationRepository;
-            _membershipRepository = membershipRepository;
-            _needRepository = needRepository;
-            _documentRepository = documentRepository;
-            _paperRepository = paperRepository;
-            _eventRepository = eventRepository;
-            _userRepository = userRepository;
-            _channelRepository = channelRepository;
-            _feedRepository = feedRepository;
         }
 
         public string GetPrintName(FeedType feedType)
@@ -297,6 +277,159 @@ namespace Jogl.Server.Business
                 default:
                     return null;
             }
+        }
+
+        public FeedEntity GetEntity(string id)
+        {
+            var feed = _feedRepository.Get(id);
+            if (feed == null)
+                return null;
+
+            return GetEntity(id, feed.Type);
+        }
+
+        private FeedEntity GetEntity(string id, FeedType type)
+        {
+            switch (type)
+            {
+                case FeedType.Workspace:
+                    return _workspaceRepository.Get(id);
+
+                case FeedType.Node:
+                    return _nodeRepository.Get(id);
+
+                case FeedType.Organization:
+                    return _organizationRepository.Get(id);
+
+                case FeedType.CallForProposal:
+                    return _callForProposalsRepository.Get(id);
+
+                case FeedType.Need:
+                    return _needRepository.Get(id);
+
+                case FeedType.Document:
+                    return _documentRepository.Get(id);
+
+                case FeedType.Event:
+                    return _eventRepository.Get(id);
+
+                case FeedType.Paper:
+                    return _paperRepository.Get(id);
+
+                case FeedType.User:
+                    return _userRepository.Get(id);
+
+                case FeedType.Channel:
+                    return _channelRepository.Get(id);
+
+                default:
+                    throw new NotImplementedException($"Cannot load entity for type {type}");
+            }
+        }
+
+        public FeedEntity GetEntity(string id, string userId)
+        {
+            var feed = _feedRepository.Get(id);
+            if (feed == null)
+                return null;
+
+            return GetEntity(id, feed.Type, userId);
+        }
+
+        private FeedEntity GetEntity(string id, FeedType type, string userId)
+        {
+            switch (type)
+            {
+                case FeedType.Workspace:
+                    var workspace = _workspaceRepository.Get(id);
+                    if (workspace == null)
+                        return null;
+
+                    EnrichWorkspaceData(new[] { workspace }, userId);
+                    return workspace;
+                case FeedType.Node:
+                    var node = _nodeRepository.Get(id);
+                    if (node == null)
+                        return null;
+
+                    EnrichNodeData(new[] { node }, userId);
+                    return node;
+
+                case FeedType.Organization:
+                    var organization= _organizationRepository.Get(id);
+                    if (organization == null)
+                        return null;
+
+                    EnrichOrganizationData(new[] { organization }, userId);
+                    return organization;
+                case FeedType.CallForProposal:
+                    var cfp= _callForProposalsRepository.Get(id);
+                    if (cfp == null)
+                        return null;
+
+                    EnrichCallForProposalData(new[] { cfp }, userId);
+                    return cfp;
+                case FeedType.Need:
+                    var need= _needRepository.Get(id);
+                    if (need == null)
+                        return null;
+
+                    EnrichNeedsWithPermissions(new[] { need }, userId);
+                    return need;
+
+                case FeedType.Document:
+                    var doc =  _documentRepository.Get(id);
+                    if (doc == null)
+                        return null;
+
+                    EnrichDocumentsWithPermissions(new[] { doc }, userId);
+                    return doc;
+                case FeedType.Event:
+                    var ev= _eventRepository.Get(id);
+                    if (ev == null)
+                        return null;
+
+                    EnrichEventsWithPermissions(new[] { ev }, userId);
+                    return ev;
+                case FeedType.Paper:
+                    var paper = _paperRepository.Get(id);
+                    if (paper == null)
+                        return null;
+
+                    EnrichPapersWithPermissions(new[] { paper }, userId);
+                    return paper;
+                case FeedType.User:
+                    var user = _userRepository.Get(id);
+                    if (user == null)
+                        return null;
+
+                    EnrichUsersWithPermissions(new[] { user }, userId);
+                    return user;
+                case FeedType.Channel:
+                     var channel= _channelRepository.Get(id);
+                    if (channel == null)
+                        return null;
+
+                    EnrichChannelsWithPermissions(new  [] { channel }, userId);
+                    return channel;
+                default:
+                    throw new NotImplementedException($"Cannot load entity for type {type}");
+            }
+        }
+
+        public FeedType GetType(CommunityEntityType type)
+        {
+            return Enum.Parse<FeedType>(type.ToString());
+        }
+
+        public CommunityEntityType GetType(FeedType type)
+        {
+            return Enum.Parse<CommunityEntityType>(type.ToString());
+        }
+        
+        public Feed GetFeed(string id)
+        {
+            return _feedRepository.Get(id);
         }
     }
 }

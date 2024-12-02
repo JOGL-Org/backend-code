@@ -14,7 +14,7 @@ namespace Jogl.Server.Business
         private readonly ICommunityEntityService _communityEntityService;
         private readonly INotificationFacade _notificationFacade;
 
-        public NeedService( IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, INotificationService notificationService, ICommunityEntityService communityEntityService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public NeedService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, INotificationService notificationService, ICommunityEntityService communityEntityService, INotificationFacade notificationFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _workspaceRepository = workspaceRepository;
             _nodeRepository = nodeRepository;
@@ -43,7 +43,6 @@ namespace Jogl.Server.Business
             await _needRepository.CreateAsync(need);
 
             //process notifications
-            await _notificationService.NotifyNeedCreatedAsync(need);
             await _notificationFacade.NotifyCreatedAsync(need);
 
             //return
@@ -63,7 +62,7 @@ namespace Jogl.Server.Business
         public ListPage<Need> List(string currentUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.SearchSort(search, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
@@ -76,7 +75,7 @@ namespace Jogl.Server.Business
         public long Count(string userId, string search)
         {
             var needs = _needRepository.Search(search);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
 
             return filteredNeeds.Count;
         }
@@ -84,7 +83,7 @@ namespace Jogl.Server.Business
         public List<Need> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.List(n => n.EntityId == entityId && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
             RecordListings(currentUserId, filteredNeeds);
@@ -92,25 +91,7 @@ namespace Jogl.Server.Business
             return filteredNeeds;
         }
 
-        public ListPage<Need> ListForCommunity(string currentUserId, string communityId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
-            if (communityEntityIds != null && communityEntityIds.Any())
-                entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
-
-            var communityEntities = _communityEntityService.List(entityIds);
-            var needs = _needRepository.List(n => entityIds.Contains(n.EntityId) && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
-            var total = filteredNeeds.Count;
-
-            var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
-            EnrichNeedData(filteredNeedPage, communityEntities, currentUserId);
-            RecordListings(currentUserId, filteredNeedPage);
-
-            return new ListPage<Need>(filteredNeedPage, total);
-        }
-
-        public ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Need> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             if (communityEntityIds != null && communityEntityIds.Any())
@@ -118,10 +99,8 @@ namespace Jogl.Server.Business
 
             var communityEntities = _communityEntityService.List(entityIds);
             var needs = _needRepository.SearchListSort(n => entityIds.Contains(n.EntityId), sortKey, ascending, search);
-            if (currentUser)
-                needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId, filter);
             var total = filteredNeeds.Count;
 
             var filteredNeedPage = GetPage(filteredNeeds, page, pageSize);
@@ -138,7 +117,7 @@ namespace Jogl.Server.Business
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
             var needs = _needRepository.SearchList(n => entityIds.Contains(n.EntityId), search);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             return filteredNeeds.Count;
         }
@@ -184,7 +163,7 @@ namespace Jogl.Server.Business
         public List<Need> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var needs = _needRepository.List(n => n.CreatedByUserId == targetUserId && !n.Deleted, sortKey, ascending);
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
 
             EnrichNeedData(filteredNeeds, userId);
             RecordListings(userId, filteredNeeds);
@@ -195,6 +174,7 @@ namespace Jogl.Server.Business
         public async Task UpdateAsync(Need need)
         {
             await _needRepository.UpdateAsync(need);
+            await _notificationFacade.NotifyUpdatedAsync(need);
         }
 
         public async Task DeleteAsync(string id)
@@ -211,24 +191,10 @@ namespace Jogl.Server.Business
             if (currentUser)
                 needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
 
-            var filteredNeeds = GetFilteredNeeds(needs);
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
-            return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
-        }
-
-        public List<CommunityEntity> ListCommunityEntitiesForCommunityNeeds(string communityId, string currentUserId, List<CommunityEntityType> types, bool currentUser, string search, int page, int pageSize)
-        {
-            var entityIds = GetCommunityEntityIdsForCommunity(communityId);
-            var needs = _needRepository.ListForEntityIds(entityIds);
-
-            if (currentUser)
-                needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();
-
-            var filteredNeeds = GetFilteredNeeds(needs);
-
-            EnrichNeedData(filteredNeeds, currentUserId);
-            return GetPage(needs.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);
+            return GetPage(needs.Select(e => e.CommunityEntity).Where(e=>e!=null).DistinctBy(e => e.Id), page, pageSize);
         }
     }
 }

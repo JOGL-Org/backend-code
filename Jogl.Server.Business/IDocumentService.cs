@@ -14,7 +14,7 @@ namespace Jogl.Server.Business
         Document GetDraft(string entityId, string currentUserId);
         List<Document> ListForEntity(string currentUserId, string entityId, string folderId, DocumentFilter? type, string search, int page, int pageSize);
         ListPage<Document> ListForChannel(string currentUserId, string entityId, DocumentFilter type, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
-        ListPage<Document> ListForNode(string currentUserId, string nodeId, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending);
+        ListPage<Document> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, DocumentFilter? type, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         long CountForNode(string userId, string nodeId, string search);
         List<Document> ListAllDocuments(string currentUserId, string entityId, string search, int page, int pageSize);
         List<Document> ListAllDocuments(string currentUserId, string entityId);

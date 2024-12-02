@@ -35,5 +35,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("external_id")]
         public string ExternalId { get; set; }
+
+        [JsonPropertyName("journal")]
+        public string Journal { get; set; }
     }
 }

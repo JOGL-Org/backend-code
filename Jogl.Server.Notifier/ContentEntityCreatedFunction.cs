@@ -37,7 +37,7 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var contentEntity = JsonSerializer.Deserialize<ContentEntity>(message.Body.ToString());
-            var feedEntity = _communityEntityService.GetFeedEntity(contentEntity.FeedId);
+            var feedEntity = _feedEntityService.GetEntity(contentEntity.FeedId);
             var author = _userRepository.Get(contentEntity.CreatedByUserId);
 
             var mentions = contentEntity.Mentions.Where(m => m.EntityType == FeedType.User).ToList();

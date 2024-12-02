@@ -86,26 +86,6 @@ namespace Jogl.Server.API.Controllers
             throw new NotImplementedException();
         }
 
-        protected override ListPage<Paper> ListPapersAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, PaperType? type, List<PaperTag> tags, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ListPage<Document> ListDocumentsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, DocumentFilter? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ListPage<Need> ListNeedsAggregate(string id, List<string> communityEntityIds, bool currentUser, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ListPage<Event> ListEventsAggregate(string id, List<CommunityEntityType> types, List<string> communityEntityIds, bool currentUser, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
-        {
-            return new ListPage<Event>(new List<Event>());// _eventService.ListForOrganization(id, CurrentUserId, types, communityEntityIds, tags, from, to, search, page, pageSize, sortKey, ascending);
-        }
-
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
         {
             return new List<CommunityEntity>();
@@ -222,7 +202,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "Event data", typeof(ListPage<EventModel>))]
         public async Task<IActionResult> GetEventsAggregate([SwaggerParameter("ID of the organization")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
         {
-            return await GetEventsAggregateAsync(id, types, communityEntityIds, false, tags, from, to, model);
+            return Ok(new ListPage<EventModel>(new List<EventModel>()));
         }
 
         [AllowAnonymous]

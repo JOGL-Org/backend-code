@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -6,7 +7,7 @@ namespace Jogl.Server.DB
 {
     public class EntityScoreRepository : BaseRepository<EntityScore>, IEntityScoreRepository
     {
-        public EntityScoreRepository(IConfiguration configuration) : base(configuration)
+        public EntityScoreRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
         {
         }
 

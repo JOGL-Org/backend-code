@@ -27,7 +27,6 @@ namespace Jogl.Server.Business
         private async Task NotifyAsync(Notification notification)
         {
             await _notificationRepository.CreateAsync(notification);
-            await _notificationFacade.NotifyCreatedAsync(notification);
         }
 
         private async Task NotifyAsync(List<Notification> notifications)
@@ -36,7 +35,6 @@ namespace Jogl.Server.Business
                 return;
 
             await _notificationRepository.CreateAsync(notifications);
-            await _notificationFacade.NotifyCreatedAsync(notifications);
         }
 
         public ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
@@ -363,44 +361,6 @@ namespace Jogl.Server.Business
                         new NotificationData{ Key = NotificationDataKey.CommunityEntity, EntityId = communityEntity.Id.ToString(), EntityTitle = communityEntity.Title, CommunityEntityType = communityEntity.Type, EntityBannerId = communityEntity.BannerId, EntityLogoId = communityEntity.LogoId }
                     },
                     Text = GetNotificationText(NotificationType.Need, user, communityEntity)
-                });
-            }
-        }
-
-        public async Task NotifyPaperAssociatedAsync(Paper paper, string feedId)
-        {
-            var authors = _userRepository.Get(paper.UserIds);
-            var libraryUsers = _userRepository.Get(paper.FeedIds);
-            var memberships = _membershipRepository.List(m => m.CommunityEntityId == feedId && !m.Deleted);
-
-            var allUserIds = new List<string>();
-            allUserIds.AddRange(authors.Select(u => u.Id.ToString()));
-            allUserIds.AddRange(libraryUsers.Select(u => u.Id.ToString()));
-            allUserIds.AddRange(memberships.Select(m => m.UserId));
-
-            var communityEntity = _communityEntityService.Get(feedId);
-            var user = _userRepository.Get(paper.CreatedByUserId);
-
-            foreach (var userId in allUserIds.Distinct())
-            {
-                if (userId == paper.CreatedByUserId)
-                    continue;
-
-                var feedEntity = _communityEntityService.GetFeedEntity(feedId);
-
-                await NotifyAsync(new Notification
-                {
-                    CreatedUTC = DateTime.UtcNow,
-                    Type = NotificationType.Paper,
-                    UserId = userId,
-                    OriginFeedId = feedId,
-                    Data = new List<NotificationData>
-                    {
-                        new NotificationData{ Key = NotificationDataKey.User, EntityId = user.Id.ToString(), EntityTitle =user.FirstName + " " + user.LastName},
-                        new NotificationData{ Key = NotificationDataKey.ContentEntity, EntityId = paper.Id.ToString(), EntityTitle = paper.Title },
-                        GetFeedEntityData(feedEntity)
-                    },
-                    Text = GetNotificationText(NotificationType.Paper, user, paper, feedEntity),
                 });
             }
         }
