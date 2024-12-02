@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: jogl-bot-cleaner-prod
+name: Build and deploy dotnet core app to Azure Function App - jogl-bot-cleaner-prod
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './Jogl.Server.BotCleaner' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
 
 jobs:
@@ -18,7 +18,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       id-token: write #This is required for requesting the JWT
-      contents: read #fixes build issue
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -39,9 +38,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_17570C7FC860456FBC514B8C8A617BD2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DA1DD728187142AF815E95540FC889DD }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E9DFB797D7EF4818A0499F64C3FB61CB }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_14F5B079553645CFB09724539FE0CA94 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_031145A0386D4BBC9180165C456BA957 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E84165857B2C42FB81EF42886C4FF470 }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
