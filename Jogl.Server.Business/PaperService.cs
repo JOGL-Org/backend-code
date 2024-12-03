@@ -215,7 +215,8 @@ namespace Jogl.Server.Business
                 paper.NewThreadActivityCount = contentEntities.Count(ce => ce.FeedId == paper.Id.ToString() && ce.LastActivityUTC > (userContentEntityRecords.SingleOrDefault(ucer => ucer.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue));
                 paper.IsNew = feedRecord == null;
             }
-
+          
+            EnrichFeedEntitiesWithVisibilityData(papers);
             EnrichPapersWithPermissions(papers, currentUserId);
             EnrichEntitiesWithCreatorData(papers, users);
         }
