@@ -50,10 +50,6 @@ namespace Jogl.Server.URL
                         default:
                             return $"{_configuration["App:URL"]}/{GetUrlFragment(doc.FeedEntity.FeedType)}/{doc.FeedEntity.Id}?tab=documents";
                     }
-                case FeedType.Need:
-                    var need = (Need)entity;
-
-                    return $"{_configuration["App:URL"]}/{fragment}/{GetUrlFragment(need.CommunityEntity.FeedType)}/{entity.Id}";
                 default:
                     return $"{_configuration["App:URL"]}/{fragment}/{entity.Id}";
             }
