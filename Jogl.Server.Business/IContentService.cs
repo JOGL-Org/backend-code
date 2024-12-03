@@ -43,6 +43,7 @@ namespace Jogl.Server.Business
         UserFeedRecord GetFeedRecord(string userId, string feedId);
         Task UpdateFeedRecordAsync(UserFeedRecord record);
 
+        Task SetFeedOpenedAsync(string feedId, string userId);
         Task<bool> SetFeedReadAsync(string feedId, string userId);
         Task SetCommentsReadAsync(List<string> commentIds, string userId);
         Task<bool> SetContentEntityReadAsync(string contentEntityId, string feedId, string userId);

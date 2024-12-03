@@ -1383,6 +1383,11 @@ namespace Jogl.Server.Business
             await _userFeedRecordRepository.UpdateAsync(record);
         }
 
+        public async Task SetFeedOpenedAsync(string feedId, string userId)
+        {
+            await _userFeedRecordRepository.SetFeedOpenedAsync(userId, feedId, DateTime.UtcNow);
+        }
+
         public async Task<bool> SetFeedReadAsync(string feedId, string userId)
         {
             //quick hack to make call fail if feed id isn't valid user

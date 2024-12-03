@@ -55,7 +55,7 @@ namespace Jogl.Server.DB
                                         nameof(Entity.LastOpenedUTC), new BsonDocument("$cond", new BsonDocument
                                         {
                                             { "if", new BsonDocument("$gt", new BsonArray { new BsonDocument("$size", $"$UserFeedRecords"), 0 }) },
-                                            { "then", new BsonDocument("$arrayElemAt", new BsonArray { $"$UserFeedRecords.LastReadUTC", 0 }) },
+                                            { "then", new BsonDocument("$arrayElemAt", new BsonArray { $"$UserFeedRecords.LastOpenedUTC", 0 }) },
                                             { "else", BsonNull.Value }
                                         })
                                     }

@@ -167,6 +167,16 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpPost]
+        [Route("{feedId}/opened")]
+        [SwaggerOperation($"Records the user having opened the specified feed")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The feed was marked as opened")]
+        public async Task<IActionResult> MarkFeedOpened([FromRoute] string feedId)
+        {
+            await _contentService.SetFeedOpenedAsync(feedId, CurrentUserId);
+            return Ok();
+        }
+
+        [HttpPost]
         [Route("{feedId}/seen")]
         // [Route("{feedId}/mentions/seen")]
         [SwaggerOperation($"Records the user having read the specified feed")]

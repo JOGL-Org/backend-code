@@ -44,10 +44,26 @@ namespace Jogl.Server.DB
             await UpsertAsync(filter, update);
         }
 
+        public async Task SetFeedOpenedAsync(string userId, string feedId, DateTime openedUTC)
+        {
+            var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
+            var update = Builders<UserFeedRecord>.Update.Set(r => r.LastOpenedUTC, openedUTC)
+                                                        .Set(r => r.UpdatedUTC, openedUTC)
+                                                        .Set(r => r.UpdatedByUserId, userId)
+                                                        .SetOnInsert(r => r.FeedId, feedId)
+                                                        .SetOnInsert(r => r.UserId, userId)
+                                                        .SetOnInsert(r => r.Deleted, false)
+                                                        .SetOnInsert(r => r.CreatedUTC, openedUTC)
+                                                        .SetOnInsert(r => r.CreatedByUserId, userId);
+
+            await UpsertAsync(filter, update);
+        }
+
         public async Task SetFeedReadAsync(string userId, string feedId, DateTime readUTC)
         {
             var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserFeedRecord>.Update.Set(r => r.LastReadUTC, readUTC)
+                                                        .Set(r => r.LastOpenedUTC, readUTC)
                                                         .Set(r => r.UpdatedUTC, readUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
                                                         .SetOnInsert(r => r.FeedId, feedId)
@@ -64,6 +80,7 @@ namespace Jogl.Server.DB
             var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserFeedRecord>.Update.Set(r => r.LastWriteUTC, writeUTC)
                                                         .Set(r => r.LastReadUTC, writeUTC)
+                                                        .Set(r => r.LastOpenedUTC, writeUTC)
                                                         .Set(r => r.UpdatedUTC, writeUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
                                                         .SetOnInsert(r => r.FeedId, feedId)
@@ -79,7 +96,6 @@ namespace Jogl.Server.DB
         {
             return Builders<UserFeedRecord>.Update.Set(e => e.Muted, updatedEntity.Muted)
                                                   .Set(e => e.Starred, updatedEntity.Starred)
-                                            .Set(e => e.FeedId, updatedEntity.FeedId)
                                                   .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                                   .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                                   .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
