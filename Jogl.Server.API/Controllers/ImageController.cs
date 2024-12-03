@@ -48,6 +48,9 @@ namespace Jogl.Server.API.Controllers
         public async Task<IActionResult> GetImage(string id)
         {
             var image = await _imageService.GetAsync(id);
+            if (image == null)
+                return NotFound(); 
+            
             return File(image.Data, image.Filetype);
         }
 
@@ -57,6 +60,9 @@ namespace Jogl.Server.API.Controllers
         public async Task<IActionResult> GetImageModel(string id)
         {
             var image = await _imageService.GetAsync(id);
+            if (image == null)
+                return NotFound();
+            
             var imageModel = _mapper.Map<ImageModel>(image);
             return Ok(imageModel);
         }
@@ -66,6 +72,9 @@ namespace Jogl.Server.API.Controllers
         public async Task<IActionResult> GetImageThumbnail(string id)
         {
             var image = await _imageService.GetAsync(id, true);
+            if (image == null)
+                return NotFound();
+
             return File(image.Data, image.Filetype);
         }
 
@@ -75,6 +84,9 @@ namespace Jogl.Server.API.Controllers
         public async Task<IActionResult> GetImageThumbnailModel(string id)
         {
             var image = await _imageService.GetAsync(id, true);
+            if (image == null)
+                return NotFound();
+            
             var imageModel = _mapper.Map<ImageModel>(image);
             return Ok(imageModel);
         }
