@@ -201,7 +201,24 @@ namespace Jogl.Server.Business
             var deletedMemberships = existingMemberships.Where(em => !memberships.Any(m => m.UserId == em.UserId && em.AccessLevel != AccessLevel.Owner)).ToList();
 
             if (newMemberships.Any())
+            {
                 await _membershipRepository.CreateAsync(newMemberships);
+
+                //auto-join channels
+                foreach (var channel in _channelRepository.List(c => c.CommunityEntityId == communityEntityId && c.AutoJoin && !c.Deleted))
+                {
+                    await _membershipRepository.CreateAsync(newMemberships.Select(nm => new Membership
+                    {
+                        AccessLevel = AccessLevel.Member,
+                        CommunityEntityId = channel.Id.ToString(),
+                        CommunityEntityType = CommunityEntityType.Channel,
+                        CreatedUTC = nm.CreatedUTC,
+                        CreatedByUserId = nm.CreatedByUserId,
+                        UserId = nm.UserId,
+                    }).ToList());
+                }
+
+            }
 
             if (deletedMemberships.Any())
                 await _membershipRepository.DeleteAsync(deletedMemberships);
