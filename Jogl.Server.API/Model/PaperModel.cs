@@ -4,7 +4,7 @@ using Jogl.Server.Data.Enum;
 
 namespace Jogl.Server.API.Model
 {
-    public class PaperModel : BaseModel
+    public class PaperModel : FeedEntityModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

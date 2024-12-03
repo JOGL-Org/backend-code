@@ -4,7 +4,6 @@ using Jogl.Server.DB.Context;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Search;
 using System.Linq.Expressions;
 
 namespace Jogl.Server.DB
@@ -33,7 +32,7 @@ namespace Jogl.Server.DB
             public List<UserFeedRecord> UserFeedRecords { get; set; }
         }
 
-        public IFluentQuery<T> WithLastOpenedUTC()
+        public IFluentQuery<T> WithFeedRecordDataUTC()
         {
             var currentUserId = _context.UserId;
             var userFeedRecordCollection = _repository.GetCollection<UserFeedRecord>("userFeedRecords");

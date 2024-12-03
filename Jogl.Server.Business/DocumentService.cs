@@ -146,7 +146,6 @@ namespace Jogl.Server.Business
             var documents = _documentRepository
                 .Query(search)
                 .Filter(d => d.FeedId == channelId)
-                .WithLastOpenedUTC()
                 .Sort(sortKey, sortAscending)
                 .ToList();
 
@@ -169,7 +168,7 @@ namespace Jogl.Server.Business
             var documents = _documentRepository
                 .Query(search)
                 .Filter(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
-                .WithLastOpenedUTC()
+                .WithFeedRecordDataUTC()
                 .Sort(sortKey, ascending)
                 .ToList();
 

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
-    public class DocumentModel : BaseModel
+    public class DocumentModel : FeedEntityModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

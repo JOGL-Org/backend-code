@@ -7,7 +7,7 @@ namespace Jogl.Server.DB
     {
         IFluentQuery<T> Filter(Expression<Func<T, bool>> filter);
         IFluentQuery<T> Sort(SortKey sortKey, bool ascending = true);
-        IFluentQuery<T> WithLastOpenedUTC();
+        IFluentQuery<T> WithFeedRecordDataUTC();
         IFluentQuery<T> Page(int page, int pageSize);
         List<T> ToList();
     }
