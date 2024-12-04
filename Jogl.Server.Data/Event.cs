@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data.Util;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Data
 {
@@ -63,12 +64,14 @@ namespace Jogl.Server.Data
         public CommunityEntity CommunityEntity { get; set; }
 
         [BsonIgnore]
+        [JsonIgnore]
         public FeedEntity FeedEntity { get => CommunityEntity; set { CommunityEntity = value as CommunityEntity; } }
 
         [BsonIgnore]
         public string FeedEntityId { get => CommunityEntityId; }
 
         [BsonIgnore]
+        [JsonIgnore]
         public List<EventAttendance> Attendances { get; set; }
     }
 }

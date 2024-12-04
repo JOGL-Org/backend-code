@@ -55,6 +55,8 @@ namespace Jogl.Server.Business
             ev.CommunityEntity = communityEntity;
             ev.ExternalId = await _calendarService.CreateEventAsync(externalCalendarId, ev, organizers);
             await _eventRepository.CreateAsync(ev);
+
+            //process notifications
             await _notificationFacade.NotifyCreatedAsync(ev);
 
             //ensure invite list initialized
