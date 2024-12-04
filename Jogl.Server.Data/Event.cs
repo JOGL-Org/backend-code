@@ -61,6 +61,7 @@ namespace Jogl.Server.Data
         public bool IsNew { get; set; }
 
         [BsonIgnore]
+        [JsonIgnore]
         public CommunityEntity CommunityEntity { get; set; }
 
         [BsonIgnore]
