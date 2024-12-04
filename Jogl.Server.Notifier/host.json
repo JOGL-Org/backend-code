@@ -5,7 +5,6 @@
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request",
-        "samplingPercentage": 100
       },
       "enableLiveMetricsFilters": true
     }
