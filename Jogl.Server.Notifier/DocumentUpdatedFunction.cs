@@ -24,12 +24,12 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var doc = JsonSerializer.Deserialize<Document>(message.Body.ToString());
-            var parentEntity = _feedEntityService.GetEntity(doc.FeedId);
+            doc.FeedEntity = _feedEntityService.GetEntity(doc.FeedId);
 
             switch (doc.Type)
             {
                 case DocumentType.JoglDoc:
-                    await RunAsync(doc, parentEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
+                    await RunAsync(doc, doc.FeedEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
                     break;
             }
 

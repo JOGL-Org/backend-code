@@ -24,8 +24,8 @@ namespace Jogl.Server.Notifier
             ServiceBusMessageActions messageActions)
         {
             var doc = JsonSerializer.Deserialize<Document>(message.Body.ToString());
-            var parentEntity = _feedEntityService.GetEntity(doc.FeedId);
-            await RunAsync(doc, parentEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
+            doc.FeedEntity= _feedEntityService.GetEntity(doc.FeedId);
+            await RunAsync(doc, doc.FeedEntity, u => u.NotificationSettings?.DocumentMemberContainerEmail == true, u => u.NotificationSettings?.DocumentMemberContainerJogl == true);
 
             // Complete the message
             await messageActions.CompleteMessageAsync(message);

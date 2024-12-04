@@ -240,7 +240,8 @@ namespace Jogl.Server.API.Controllers
         [HttpPost]
         [Route("orcid")]
         [SwaggerOperation($"register or sign-in the user's unique ORCID id from ORCID and stores it in the database")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No ORCID record found or user not found")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "No ORCID record found")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "Login or registration forbidden")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Login or registration successful", typeof(AuthResultExtendedModel))]
         public async Task<IActionResult> LoginOrSignupWithOrcid([FromBody] OrcidRegistrationModel model)
         {
@@ -252,7 +253,7 @@ namespace Jogl.Server.API.Controllers
             if (data.Emails.Count == 0)
                 return BadRequest("Email not found in ORCID data.");
 
-            var existingUser = _userService.GetForEmail(data.Emails[0]);
+            var existingUser = _userService.GetForEmail(data.Emails[0], true);
             if (existingUser == null)
             {
                 var user = new User
@@ -281,6 +282,11 @@ namespace Jogl.Server.API.Controllers
                 });
             }
 
+            if (existingUser.Deleted)
+            {
+                return Forbid();
+            }
+
             existingUser.OrcidId = orcid;
             existingUser.Auth = new UserExternalAuth
             {
@@ -300,8 +306,9 @@ namespace Jogl.Server.API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("google")]
-        [SwaggerOperation($"Register or sign-in the user with google access token")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No google record found or user not found")]
+        [SwaggerOperation($"Register or sign-in the user with a google access token")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "No google record found")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "Login or registration forbidden")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Login or registration successful", typeof(AuthResultExtendedModel))]
         public async Task<IActionResult> LoginOrSignupWithGoogle([FromBody] AccessTokenModel model)
         {
@@ -309,7 +316,7 @@ namespace Jogl.Server.API.Controllers
             if (profile == null)
                 return Unauthorized();
 
-            var existingUser = _userService.GetForEmail(profile.email);
+            var existingUser = _userService.GetForEmail(profile.email, true);
             if (existingUser == null)
             {
                 var user = new User
@@ -336,6 +343,11 @@ namespace Jogl.Server.API.Controllers
                 });
             }
 
+            if (existingUser.Deleted)
+            {
+                return Forbid();
+            }
+
             return Ok(new AuthResultExtendedModel
             {
                 Token = _authService.GetToken(profile.email),
@@ -348,7 +360,8 @@ namespace Jogl.Server.API.Controllers
         [HttpPost]
         [Route("linkedin")]
         [SwaggerOperation($"Register or sign-in the user with a linkedin access token")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No linkedin record found or user not found")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "No linkedin record found")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "Login or registration forbidden")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Login or registration successful", typeof(AuthResultExtendedModel))]
         public async Task<IActionResult> LoginOrSignupWithLinkedIn([FromBody] AuthorizationCodeModel model)
         {
@@ -360,7 +373,7 @@ namespace Jogl.Server.API.Controllers
             if (profile == null)
                 return Unauthorized();
 
-            var existingUser = _userService.GetForEmail(profile.email);
+            var existingUser = _userService.GetForEmail(profile.email, true);
             if (existingUser == null)
             {
                 var user = new User
@@ -385,6 +398,11 @@ namespace Jogl.Server.API.Controllers
                     UserId = userId,
                     Created = true
                 });
+            }
+
+            if (existingUser.Deleted)
+            {
+                return Forbid();
             }
 
             return Ok(new AuthResultExtendedModel
