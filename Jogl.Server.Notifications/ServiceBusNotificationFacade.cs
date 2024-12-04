@@ -57,11 +57,6 @@ namespace Jogl.Server.Notifications
             await _serviceBus.SendAsync(paper, "paper-updated");
         }
 
-        public async Task NotifyAddedAsync(Paper paper)
-        {
-            await _serviceBus.SendAsync(paper, "paper-added");
-        }
-
         public async Task NotifyLoadedAsync(IEnumerable<Publication> publications)
         {
             await _serviceBus.SendAsync(publications, "publication-loaded");
