@@ -744,6 +744,7 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
         [HttpGet]
         [Route("{id}/onboardingResponses/{userId}")]
         [SwaggerOperation("List onboarding responses for a community entity and a user")]
@@ -766,6 +767,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(onboardingInstanceModel);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/onboardingResponses")]
         [SwaggerOperation("Posts onboarding responses for a community entity for the current user")]
@@ -786,6 +788,7 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/onboardingCompletion")]
         [SwaggerOperation("Records the completion of the onboarding workflow for a community entity for the current user")]

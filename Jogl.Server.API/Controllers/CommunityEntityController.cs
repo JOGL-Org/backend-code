@@ -111,5 +111,68 @@ namespace Jogl.Server.API.Controllers
             var feedModel = _mapper.Map<FeedModel>(feed);
             return Ok(feedModel);
         }
+
+        [HttpGet]
+        [Route("{id}/onboarding/{userId}")]
+        [SwaggerOperation("List onboarding responses for a community entity and a user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "onboarding questionnaire responses", typeof(OnboardingQuestionnaireInstanceModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id or no user was found")]
+        public async Task<IActionResult> GetOnboardingData([SwaggerParameter("ID of the entity")][FromRoute] string id, [FromRoute] string userId)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
+
+            if (!communityEntity.Permissions.Contains(Permission.Manage))
+                return Forbid();
+
+            var onboardingData = _membershipService.GetOnboardingInstance(id, userId);
+            if (onboardingData == null)
+                return NotFound();
+
+            var onboardingInstanceModel = _mapper.Map<OnboardingQuestionnaireInstanceModel>(onboardingData);
+            return Ok(onboardingInstanceModel);
+        }
+
+        [HttpPost]
+        [Route("{id}/onboarding")]
+        [SwaggerOperation("Posts onboarding responses for a community entity for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding questionnaire responses were saved successfully")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        public async Task<IActionResult> UploadOnboardingData([SwaggerParameter("ID of the entity")][FromRoute] string id, [FromBody] OnboardingQuestionnaireInstanceUpsertModel model)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
+
+            var onboardingData = _mapper.Map<OnboardingQuestionnaireInstance>(model);
+            onboardingData.CommunityEntityId = id;
+            onboardingData.UserId = CurrentUserId;
+            onboardingData.CompletedUTC = DateTime.UtcNow;
+
+            await _membershipService.UpsertOnboardingInstanceAsync(onboardingData);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("{id}/onboarding/complete")]
+        [SwaggerOperation("Records the completion of the onboarding workflow for a community entity for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding completion was recorded successfully")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        public async Task<IActionResult> UploadOnboardingFinished([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
+
+            var membership = _membershipService.Get(id, CurrentUserId);
+            if (membership == null)
+                return NotFound();
+
+            membership.OnboardedUTC = DateTime.UtcNow;
+            await _membershipService.UpdateAsync(membership);
+
+            return Ok();
+        }
     }
 }
