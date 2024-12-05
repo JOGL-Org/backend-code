@@ -52,6 +52,15 @@ namespace Jogl.Server.API.Controllers
             return Ok(_communityEntityService.HasPermission(id, permission, CurrentUserId));
         }
 
+        [HttpGet]
+        [Route("{id}/permissions")]
+        [SwaggerOperation($"Loads permissions on an object for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"Permission data", typeof(List<Permission>))]
+        public async Task<IActionResult> ListPermissions([FromRoute] string id)
+        {
+            return Ok(_communityEntityService.ListPermissions(id, CurrentUserId));
+        }
+
         //[AllowAnonymous]
         [HttpGet]
         [Route("communityEntities")]
