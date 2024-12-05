@@ -47,6 +47,7 @@ namespace Jogl.Server.DB.Extensions
             serviceCollection.AddTransient<IPublicationRepository, PublicationRepository>();
             serviceCollection.AddTransient<IInvitationKeyRepository, InvitationKeyRepository>();
             serviceCollection.AddTransient<IEmailRecordRepository, EmailRecordRepository>();
+            serviceCollection.AddTransient<ISystemValueRepository, SystemValueRepository>();
         }
     }
 }
