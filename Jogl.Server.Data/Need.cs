@@ -22,8 +22,6 @@ namespace Jogl.Server.Data
         public string Description { get; set; }
         public string EntityId { get; set; }
         public DateTime? EndDate { get; set; }
-        [Obsolete]
-        public string FeedId { get; set; }
         public List<string> Interests { get; set; }
         public List<string> Skills { get; set; }
         public NeedType Type { get; set; }

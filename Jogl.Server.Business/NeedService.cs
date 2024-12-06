@@ -61,7 +61,11 @@ namespace Jogl.Server.Business
 
         public ListPage<Need> List(string currentUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var needs = _needRepository.SearchSort(search, sortKey, ascending);
+            var needs = _needRepository
+                .Query(search)
+                .Sort( sortKey, ascending)
+                .ToList();
+
             var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             var total = filteredNeeds.Count;
 
@@ -74,15 +78,22 @@ namespace Jogl.Server.Business
 
         public long Count(string userId, string search)
         {
-            var needs = _needRepository.Search(search);
-            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
+            var needs = _needRepository
+                .Query(search)
+                .ToList();
 
+            var filteredNeeds = GetFilteredFeedEntities(needs, userId);
             return filteredNeeds.Count;
         }
 
         public List<Need> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var needs = _needRepository.List(n => n.EntityId == entityId && !n.Deleted, sortKey, ascending);
+            var needs = _needRepository
+                .Query(search)
+                .Filter(n => n.EntityId == entityId)
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
 
             EnrichNeedData(filteredNeeds, currentUserId);
@@ -98,7 +109,12 @@ namespace Jogl.Server.Business
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
             var communityEntities = _communityEntityService.List(entityIds);
-            var needs = _needRepository.SearchListSort(n => entityIds.Contains(n.EntityId), sortKey, ascending, search);
+            var needs = _needRepository
+                .Query(search)
+                .Filter(n => entityIds.Contains(n.EntityId))
+                .WithFeedRecordDataUTC()
+                .Sort(sortKey, ascending)
+                .ToList();
 
             var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId, filter);
             var total = filteredNeeds.Count;
@@ -116,9 +132,12 @@ namespace Jogl.Server.Business
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var needs = _needRepository.SearchList(n => entityIds.Contains(n.EntityId), search);
-            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
+            var needs = _needRepository
+                .Query(search)
+                .Filter(n => entityIds.Contains(n.EntityId))
+                .ToList();
 
+            var filteredNeeds = GetFilteredFeedEntities(needs, currentUserId);
             return filteredNeeds.Count;
         }
 
@@ -162,7 +181,11 @@ namespace Jogl.Server.Business
 
         public List<Need> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var needs = _needRepository.List(n => n.CreatedByUserId == targetUserId && !n.Deleted, sortKey, ascending);
+            var needs = _needRepository.Query(search)
+                .Filter(n => n.CreatedByUserId == targetUserId)
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var filteredNeeds = GetFilteredFeedEntities(needs, userId);
 
             EnrichNeedData(filteredNeeds, userId);
@@ -186,7 +209,10 @@ namespace Jogl.Server.Business
         public List<CommunityEntity> ListCommunityEntitiesForNodeNeeds(string nodeId, string currentUserId, List<CommunityEntityType> types, bool currentUser, string search, int page, int pageSize)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
-            var needs = _needRepository.ListForEntityIds(entityIds);
+            var needs = _needRepository
+              .Query(search)
+              .Filter(p => entityIds.Contains(p.EntityId))
+              .ToList();
 
             if (currentUser)
                 needs = needs.Where(n => IsNeedForUser(n, currentUserId)).ToList();

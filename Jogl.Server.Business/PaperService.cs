@@ -86,7 +86,12 @@ namespace Jogl.Server.Business
 
         public List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var papers = _paperRepository.SearchListSort(p => p.FeedId == entityId && !p.Deleted, sortKey, ascending, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => p.FeedId == entityId)
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
             var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, null, page, pageSize);
@@ -98,7 +103,12 @@ namespace Jogl.Server.Business
 
         public List<Paper> ListForAuthor(string currentUserId, string userId, PaperType? type, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var papers = _paperRepository.SearchListSort(p => p.UserIds.Contains(userId) && !p.Deleted, sortKey, ascending, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => p.UserIds.Contains(userId))
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var entityIds = papers.Select(p => p.FeedId).ToList();
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
@@ -116,7 +126,13 @@ namespace Jogl.Server.Business
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var papers = _paperRepository.SearchListSort(p => entityIds.Contains(p.FeedId) && !p.Deleted, sortKey, ascending, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => entityIds.Contains(p.FeedId))
+                .WithFeedRecordDataUTC()
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
             var filteredPapers = GetFilteredFeedEntities(papers, currentUserId, filter);
@@ -132,7 +148,10 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchList(p => entityIds.Contains(p.FeedId) && !p.Deleted, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => entityIds.Contains(p.FeedId))
+                .ToList();
 
             var filteredPapers = GetFilteredFeedEntities(papers, userId);
             return filteredPapers.Count;
@@ -152,7 +171,10 @@ namespace Jogl.Server.Business
 
         public async Task DeleteForExternalSystemAndUserAsync(string userId, ExternalSystem externalSystem)
         {
-            var papers = _paperRepository.List(p => p.FeedId == userId && p.ExternalSystem == externalSystem);
+            var papers = _paperRepository
+                .Query(p => p.FeedId == userId && p.ExternalSystem == externalSystem)
+                .ToList();
+
             await _paperRepository.DeleteAsync(papers);
         }
 
@@ -278,7 +300,10 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
             var entities = _communityEntityService.List(entityIds);
-            var papers = _paperRepository.SearchList(p => entityIds.Contains(p.FeedId) && !p.Deleted, search);
+            var papers = _paperRepository
+                .Query(search)
+                .Filter(p => entityIds.Contains(p.FeedId))
+                .ToList();
 
             var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
