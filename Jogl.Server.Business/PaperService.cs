@@ -70,43 +70,6 @@ namespace Jogl.Server.Business
             return id;
         }
 
-        [Obsolete]
-        public Paper GetDraft(string entityId, string userId)
-        {
-            return null;
-        }
-
-        [Obsolete]
-        public async Task AssociateAsync(string entityId, string paperId, List<string> userIds = null)
-        {
-            var paper = _paperRepository.Get(paperId);
-            if (paper.FeedIds == null)
-                paper.FeedIds = new List<string>();
-            if (paper.FeedIds.Contains(entityId))
-                return;
-
-            if (userIds != null && userIds.Any())
-                paper.UserIds = paper.UserIds.Union(userIds).ToList();
-
-            //process notifications
-            paper.FeedIds.Add(entityId);
-
-            await _paperRepository.UpdateAsync(paper);
-        }
-
-        [Obsolete]
-        public async Task DisassociateAsync(string entityId, string paperId)
-        {
-            var paper = _paperRepository.Get(paperId);
-            if (paper.FeedIds == null)
-                paper.FeedIds = new List<string>();
-            if (!paper.FeedIds.Contains(entityId))
-                return;
-
-            paper.FeedIds.Remove(entityId);
-            await _paperRepository.UpdateAsync(paper);
-        }
-
         public Paper Get(string paperId, string currentUserId)
         {
             var paper = _paperRepository.Get(paperId);
