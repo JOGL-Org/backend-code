@@ -37,7 +37,8 @@ namespace Jogl.Server.API.Controllers
             _organizationService = organizationService;
             _configuration = configuration;
         }
-
+        
+        [Obsolete]
         [HttpGet]
         [Route("permission/{id}/{permission}")]
         [SwaggerOperation($"Determines whether the current user has a given permission on a specified object")]
@@ -50,6 +51,19 @@ namespace Jogl.Server.API.Controllers
                 return NotFound();
 
             return Ok(_communityEntityService.HasPermission(id, permission, CurrentUserId));
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        [SwaggerOperation($"Returns a single entity")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, $"Not entity was found for given id")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"Entity data", typeof(EntityMiniModel))]
+        public async Task<IActionResult> Get([FromRoute] string id)
+        {
+            var data = _feedEntityService.GetEntity(id);
+            if(data == null) return NotFound();
+            var model = _mapper.Map<EntityMiniModel>(data);
+            return Ok(model);
         }
 
         [HttpGet]
