@@ -10,6 +10,6 @@ namespace Jogl.Server.DB
         IFluentQuery<T> WithFeedRecordDataUTC();
         IFluentQuery<T> Page(int page, int pageSize);
         List<T> ToList();
-        int Count();
+        long Count();
     }
 }

@@ -242,7 +242,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<PaperModel>))]
         public async Task<IActionResult> GetPapersAggregate([SwaggerParameter("ID of the workspace")] string id, [FromQuery] List<CommunityEntityType> types, [FromQuery] List<string> communityEntityIds, [FromQuery] PaperType? type, [FromQuery] List<PaperTag> tags, [FromQuery] SearchModel model)
         {
-            return await GetPapers(id, type, tags, model);
+            return Ok(new List<PaperModel>());
         }
 
         [Obsolete]

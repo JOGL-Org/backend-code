@@ -92,5 +92,10 @@ namespace Jogl.Server.DB
         {
             return _query.ToList();
         }
+
+        public long Count()
+        {
+            return _query.Count().SingleOrDefault()?.Count??0;
+        }
     }
 }
