@@ -1,5 +1,6 @@
 ﻿namespace Jogl.Server.Data
 {
+    [BsonIgnoreExtraElements]
     public class UserContentEntityRecord : Entity
     {
         public string UserId { get; set; }
