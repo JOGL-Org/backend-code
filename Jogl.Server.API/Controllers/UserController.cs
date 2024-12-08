@@ -519,16 +519,6 @@ namespace Jogl.Server.API.Controllers
             return Ok(followingModels);
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("{id}/activity")]
-        public async Task<IActionResult> ListActivityContentEntities([FromRoute] string id, [FromQuery] SearchModel model, [FromQuery] bool loadDetails)
-        {
-            var contentObjects = _contentService.ListActivity(id, model.Search, model.Page, model.PageSize, CurrentUserId, loadDetails);
-            var contentObjectModels = contentObjects.Select(_mapper.Map<ActivityRecordModel>);
-            return Ok(contentObjectModels);
-        }
-
         [HttpPost]
         [Route("skills")]
         public async Task<IActionResult> CreateSkill([FromBody] TextValueModel model)

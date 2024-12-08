@@ -10,13 +10,14 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(ContentEntity entity);
         ContentEntity Get(string entityId);
         ContentEntity GetDetail(string entityId, string userId);
-                
+
         Discussion GetDiscussion(string currentUserId, string feedId, ContentEntityType? type, ContentEntityFilter filter, string search, int page, int pageSize);
         ListPage<ContentEntity> ListPostContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
         ListPage<ContentEntity> ListMentionContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
         ListPage<ContentEntity> ListThreadContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize);
-        //List<ContentEntity> ListAggregate(string search, int page, int pageSize, string userId, bool loadDetails);
-        List<Entity> ListActivity(string targetUserId, string search, int page, int pageSize, string userId, bool loadDetails);
+        List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize);
+        List<ContentEntity> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize);
+        List<ContentEntity> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize);
         Task UpdateAsync(ContentEntity contentEntity);
         Task DeleteAsync(string id);
 

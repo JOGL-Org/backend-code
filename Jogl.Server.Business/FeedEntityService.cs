@@ -1,6 +1,7 @@
 ﻿using Jogl.Server.Data.Util;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
+using Jogl.Server.OpenAlex.DTO;
 
 namespace Jogl.Server.Business
 {
@@ -69,6 +70,19 @@ namespace Jogl.Server.Business
                 Users = users,
                 Channels = channels,
             };
+        }
+
+        public FeedEntitySet GetFeedEntitySetExtended(IEnumerable<string> feedIds)
+        {
+            var channels = _channelRepository.Get(feedIds.ToList());
+            var feedIdsPlus = feedIds.Concat(channels.Select(c=>c.CommunityEntityId)).Distinct().ToList();
+            var set= GetFeedEntitySet(feedIdsPlus);
+            foreach (var c in set.Channels)
+            {
+                c.CommunityEntity = GetCommunityEntityFromLists(c.CommunityEntityId, set);
+            }
+
+            return set;
         }
 
         public FeedEntitySet GetFeedEntitySetForCommunities(IEnumerable<string> feedIds)

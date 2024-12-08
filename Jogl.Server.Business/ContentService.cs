@@ -12,6 +12,7 @@ using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Jogl.Server.Business
@@ -305,6 +306,92 @@ namespace Jogl.Server.Business
             return new ListPage<ContentEntity>(filteredContentEntityPage, total);
         }
 
+        public List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
+        {
+            var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
+
+            var userFeedIds = _userFeedRecordRepository
+                .Query(ufr => ufr.UserId == currentUserId && ufr.FollowedUTC.HasValue && feedEntityIds.Contains(ufr.FeedId))
+                .ToList() //TODO only select FeedId
+                .Select(ucer => ucer.FeedId)
+                .ToList();
+
+            var ucerContentEntityIds = _userContentEntityRecordRepository
+                .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
+                .ToList() //TODO only select ContentEntityId
+                .Select(ucer => ucer.ContentEntityId)
+                .ToList();
+
+            //TODO filter for visibility
+            var contentEntities = _contentEntityRepository
+                .Query(ce => userFeedIds.Contains(ce.FeedId) || ucerContentEntityIds.Contains(ce.Id.ToString()))
+                .Filter(ce => ce.CreatedByUserId != currentUserId || ce.LastActivityUTC.HasValue)
+                .Sort(SortKey.LastActivity, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            var contentEntityIds = contentEntities
+                .Select(ce => ce.Id.ToString())
+                .ToList();
+
+            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
+            EnrichContentEntityDataForInbox(contentEntities, comments);
+
+            return contentEntities;
+        }
+
+        public List<ContentEntity> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        {
+            var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
+            var ucerContentEntityIds = _userContentEntityRecordRepository
+                .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
+                .ToList() //TODO only select FeedId
+                .Select(ucer => ucer.ContentEntityId)
+                .ToList();
+
+            //TODO filter for visibility
+            var contentEntities = _contentEntityRepository
+                .Query(ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
+                .Filter(ce => ce.CreatedByUserId != currentUserId || ce.LastActivityUTC.HasValue)
+                .Sort(SortKey.LastActivity, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            var contentEntityIds = contentEntities
+                .Select(ce => ce.Id.ToString())
+                .ToList();
+
+            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
+            EnrichContentEntityDataForInbox(contentEntities, comments);
+
+            return contentEntities;
+        }
+
+        public List<ContentEntity> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        {
+            var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
+            var mentionOriginIds = _mentionRepository
+                .Query(m => m.EntityId == currentUserId)
+                .Sort(SortKey.CreatedDate)
+                .ToList()
+                .Select(m => m.OriginId)
+                .ToList();
+
+            var mentionComments = _commentRepository.Query(c => mentionOriginIds.Contains(c.Id.ToString())).ToList();
+            var mentionCommentContentEntityIds = mentionComments.Select(c => c.ContentEntityId).ToList();
+
+            //TODO filter for visibility
+            var contentEntities = _contentEntityRepository
+                .Query(ce => mentionOriginIds.Contains(ce.Id.ToString()) || mentionCommentContentEntityIds.Contains(ce.Id.ToString()))
+                .Sort(SortKey.LastActivity, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            EnrichContentEntityDataForInbox(contentEntities, mentionComments);
+
+            return contentEntities;
+        }
+
         //private List<string> GetFeedIds(string currentUserId, FeedType type, string nodeId)
         //{
         //    var entities = new List<CommunityEntity>();
@@ -430,6 +517,23 @@ namespace Jogl.Server.Business
             EnrichEntitiesWithCreatorData(contentEntities, users);
         }
 
+        private void EnrichContentEntityDataForInbox(IEnumerable<ContentEntity> contentEntities, IEnumerable<Comment> comments)
+        {
+            var feedIds = contentEntities.Select(ce => ce.FeedId).Distinct().ToList();
+            var feedEntities = _feedEntityService.GetFeedEntitySetExtended(feedIds);
+
+            foreach (var contentEntity in contentEntities)
+            {
+                contentEntity.FeedEntity = _feedEntityService.GetEntityFromLists(contentEntity.FeedId, feedEntities);
+                contentEntity.LastComment = comments.Where(c => c.ContentEntityId == contentEntity.Id.ToString())
+                    .OrderByDescending(c => c.CreatedUTC)
+                    .FirstOrDefault();
+            }
+
+            EnrichEntitiesWithCreatorData(contentEntities);
+            EnrichEntitiesWithCreatorData(comments);
+        }
+
         //public List<ContentEntity> ListNotesForUser(string currentUserId, string targetUserId, string search, int page, int pageSize)
         //{
         //    var user = _userRepository.Get(targetUserId);
@@ -504,138 +608,6 @@ namespace Jogl.Server.Business
 
             EnrichEntitiesWithCreatorData(contentEntities);
             return contentEntities;
-        }
-
-        public List<Entity> ListActivity(string targetUserId, string search, int page, int pageSize, string userId, bool loadDetails)
-        {
-            var entities = new List<Entity>();
-
-            var allRelations = _relationRepository.List(r => !r.Deleted);
-            var currentUserEventAttendances = _eventAttendanceRepository.List(ea => ea.UserId == userId && ea.Status == AttendanceStatus.Yes && !ea.Deleted);
-            var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.InviteeUserId == userId);
-
-            //aggregate memberships
-            var targetUser = _userRepository.Get(targetUserId);
-            //var newMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == targetUserId);
-
-            //var projects = _projectRepository.Get(newMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Project).Select(m => m.CommunityEntityId).ToList());
-            //var filteredProjects = GetFilteredProjects(projects, userId);
-
-            //var communities = _workspaceRepository.Get(newMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Workspace).Select(m => m.CommunityEntityId).ToList());
-            //var filteredCommunities = GetFilteredWorkspaces(communities, userId);
-
-            //var nodes = _nodeRepository.Get(newMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Node).Select(m => m.CommunityEntityId).ToList());
-            //var filteredNodes = GetFilteredNodes(nodes, userId, null);
-
-            //var organizations = _organizationRepository.Get(newMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Organization).Select(m => m.CommunityEntityId).ToList());
-            //var filteredOrganizations = GetFilteredOrganizations(organizations, userId, null);
-
-            //foreach (var membership in newMemberships)
-            //{
-            //    switch (membership.CommunityEntityType)
-            //    {
-            //        case CommunityEntityType.Project:
-            //            membership.CommunityEntity = filteredProjects.SingleOrDefault(p => p.Id.ToString() == membership.CommunityEntityId);
-            //            break;
-            //        case CommunityEntityType.Workspace:
-            //            membership.CommunityEntity = filteredCommunities.SingleOrDefault(p => p.Id.ToString() == membership.CommunityEntityId);
-            //            break;
-            //        case CommunityEntityType.Node:
-            //            membership.CommunityEntity = filteredNodes.SingleOrDefault(p => p.Id.ToString() == membership.CommunityEntityId);
-            //            break;
-            //        case CommunityEntityType.Organization:
-            //            membership.CommunityEntity = filteredOrganizations.SingleOrDefault(p => p.Id.ToString() == membership.CommunityEntityId);
-            //            break;
-            //        case CommunityEntityType.CallForProposal:
-            //            //membership.CommunityEntity = filteredOrganizations.SingleOrDefault(p => p.Id.ToString() == membership.CommunityEntityId);
-            //            break;
-            //    }
-            //}
-
-            //entities.AddRange(newMemberships.Where(m => m.CommunityEntity != null));
-
-            //aggregate content entities
-            var contentEntities = _contentEntityRepository.List(c => c.CreatedByUserId == targetUserId && c.FeedId != null && !c.Deleted && c.Status == ContentEntityStatus.Active);
-            //var contentEntitiesAllComments = _commentRepository.ListForContentEntities(contentEntities.Select(c => c.Id.ToString()).ToList());
-            //var contentEntitiesAllReactions = _reactionRepository.ListForContentEntities(contentEntities.Select(c => c.Id.ToString()).ToList());
-            //var feeds = _feedRepository.Get(contentEntities.Select(e => e.FeedId).ToList());
-            //var feedNeeds = _needRepository.Get(feeds.Select(f => f.Id.ToString()).ToList());
-            //var feedUsers = _userRepository.ListForFeeds(feeds.Select(f => f.Id.ToString()));
-            var contentEntitiesUsers = new[] { targetUser };
-            var feedEntitySet = _feedEntityService.GetFeedEntitySet(contentEntities.Select(ce => ce.FeedId).Distinct());
-
-            feedEntitySet.Communities = GetFilteredWorkspaces(feedEntitySet.Communities, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.Nodes = GetFilteredNodes(feedEntitySet.Nodes, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.Organizations = GetFilteredOrganizations(feedEntitySet.Organizations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.CallsForProposals = GetFilteredCallForProposals(feedEntitySet.CallsForProposals, feedEntitySet.Communities, allRelations, currentUserMemberships, currentUserInvitations, new List<Permission>());
-            feedEntitySet.Papers = GetFilteredFeedEntities(feedEntitySet.Papers, userId);
-            feedEntitySet.Documents = GetFilteredDocuments(feedEntitySet.Documents, feedEntitySet, allRelations, currentUserMemberships, currentUserEventAttendances, userId);
-            feedEntitySet.Needs = GetFilteredFeedEntities(feedEntitySet.Needs, userId);
-            feedEntitySet.Events = GetFilteredEvents(feedEntitySet.Events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
-
-            EnrichContentEntityData(contentEntities, feedEntitySet, contentEntitiesUsers, userId);
-
-            entities.AddRange(contentEntities.Where(e => e.FeedEntity != null));
-
-            //aggregate reactions
-            //var reactions = _reactionRepository.List(r => r.UserId == targetUserId && !r.Deleted);
-            //var reactionContentEntities = _contentEntityRepository.Get(reactions.Select(c => c.ContentEntityId).ToList());
-            //var reactionContentEntitiesAllComments = _commentRepository.ListForContentEntities(reactionContentEntities.Select(c => c.Id.ToString()).ToList());
-            //var reactionContentEntitiesAllReactions = _reactionRepository.ListForContentEntities(reactionContentEntities.Select(c => c.Id.ToString()).ToList());
-            //var reactionFeeds = _feedRepository.Get(reactionContentEntities.Select(e => e.FeedId).ToList());
-            //var reactionFeedNeeds = _needRepository.Get(reactionFeeds.Select(f => f.Id.ToString()).ToList());
-            //var reactionFeedUsers = _userRepository.ListForFeeds(reactionFeeds.Select(f => f.Id.ToString()));
-            //var reactionContentEntitiesUsers = _userRepository.Get(reactionContentEntities.Select(f => f.CreatedByUserId).ToList());
-
-            //foreach (var reaction in reactions)
-            //{
-            //    var contentEntity = reactionContentEntities.SingleOrDefault(e => e.Id.ToString() == reaction.ContentEntityId);
-            //    if (contentEntity == null)
-            //        continue;
-
-            //    EnrichContentEntity(contentEntity, reactionFeeds, reactionFeedNeeds, filteredProjects, filteredCommunities, filteredNodes, filteredOrganizations, reactionFeedUsers, reactionContentEntitiesAllReactions, reactionContentEntitiesAllComments, reactionContentEntitiesUsers, userId);
-            //    reaction.ContentEntity = contentEntity;
-            //}
-
-            //entities.AddRange(reactions.Where(r => r.ContentEntity != null && r.ContentEntity.FeedEntity != null));
-
-            //aggregate comments
-            //var comments = _commentRepository.List(c => c.UserId == targetUserId && !c.Deleted);
-            //var commentContentEntities = _contentEntityRepository.Get(comments.Select(c => c.ContentEntityId).ToList());
-            //var commentContentEntitiesAllComments = _commentRepository.ListForContentEntities(commentContentEntities.Select(c => c.Id.ToString()).ToList());
-            //var commentContentEntitiesAllReactions = _reactionRepository.ListForContentEntities(commentContentEntities.Select(c => c.Id.ToString()).ToList());
-            //var commentFeeds = _feedRepository.Get(commentContentEntities.Select(e => e.FeedId).ToList());
-            //var commentFeedNeeds = _needRepository.Get(reactionFeeds.Select(f => f.Id.ToString()).ToList());
-            //var commentFeedUsers = _userRepository.ListForFeeds(reactionFeeds.Select(f => f.Id.ToString()));
-            //var commentContentEntitiesUsers = _userRepository.Get(reactionContentEntities.Select(f => f.CreatedByUserId).ToList());
-
-            //foreach (var comment in comments)
-            //{
-            //    var contentEntity = commentContentEntities.SingleOrDefault(e => e.Id.ToString() == comment.ContentEntityId);
-            //    if (contentEntity == null)
-            //        continue;
-
-            //    EnrichContentEntity(contentEntity, commentFeeds, commentFeedNeeds, filteredProjects, filteredCommunities, filteredNodes, filteredOrganizations, commentFeedUsers, commentContentEntitiesAllReactions, commentContentEntitiesAllComments, commentContentEntitiesUsers, userId);
-            //    comment.ContentEntity = contentEntity;
-            //}
-
-            //entities.AddRange(comments.Where(r => r.ContentEntity != null && r.ContentEntity.FeedEntity != null));
-
-            //return
-            return entities
-                .OrderByDescending(e => e.CreatedUTC)
-                .ToList();
-        }
-
-        private void EnrichContentEntityData(IEnumerable<ContentEntity> contentEntities, FeedEntitySet feedEntitySet, IEnumerable<User> contentEntityUsers, string currentUserId)
-        {
-            foreach (var ce in contentEntities)
-            {
-                ce.FeedEntity = _feedEntityService.GetEntityFromLists(ce.FeedId, feedEntitySet);
-            }
-
-            EnrichEntitiesWithCreatorData(contentEntities, contentEntityUsers);
         }
 
         protected void EnrichCommentData(IEnumerable<Comment> comments, IEnumerable<User> users, IEnumerable<Mention> mentions, UserContentEntityRecord userContentEntityRecord, string currentUserId)

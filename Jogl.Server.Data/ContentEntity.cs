@@ -64,6 +64,9 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public List<User> Users { get; set; }
+
+        [BsonIgnore]
+        public Comment LastComment { get; set; }
     }
 
     [BsonIgnoreExtraElements]

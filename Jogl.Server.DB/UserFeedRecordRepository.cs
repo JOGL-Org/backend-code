@@ -32,6 +32,7 @@ namespace Jogl.Server.DB
         {
             var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserFeedRecord>.Update.Set(r => r.LastMentionUTC, mentionUTC)
+                                                        .Set(r => r.FollowedUTC, mentionUTC)
                                                         .Set(r => r.UpdatedUTC, mentionUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
                                                         .SetOnInsert(r => r.FeedId, feedId)
@@ -79,6 +80,7 @@ namespace Jogl.Server.DB
         {
             var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserFeedRecord>.Update.Set(r => r.LastWriteUTC, writeUTC)
+                                                        .Set(r => r.FollowedUTC, writeUTC)
                                                         .Set(r => r.LastReadUTC, writeUTC)
                                                         .Set(r => r.LastOpenedUTC, writeUTC)
                                                         .Set(r => r.UpdatedUTC, writeUTC)

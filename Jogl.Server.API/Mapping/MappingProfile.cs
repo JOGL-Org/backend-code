@@ -488,7 +488,8 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<Feed, FeedModel>();
 
-            CreateMap<ContentEntity, ContentEntityModel>();
+            CreateMap<ContentEntity, ContentEntityModel>()
+                .ForMember(dst => dst.ParentFeedEntity, opt => opt.MapFrom((src, dst, ctx) => (src.FeedEntity as Channel)?.CommunityEntity));
             CreateMap<ContentEntityOverrides, ContentEntityOverridesModel>();
 
             CreateMap<ContentEntityUpsertModel, ContentEntity>();
@@ -502,7 +503,7 @@ namespace Jogl.Server.API.Mapping
             CreateMap<Comment, CommentModel>();
             CreateMap<Comment, CommentExtendedModel>();
             CreateMap<CommentOverrides, CommentOverridesModel>();
-           
+
             CreateMap<CommentUpsertModel, Comment>();
             CreateMap<Comment, CommentUpsertModel>();
 

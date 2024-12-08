@@ -30,6 +30,7 @@ namespace Jogl.Server.DB
         {
             var filter = Builders<UserContentEntityRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.ContentEntityId, contentEntityId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserContentEntityRecord>.Update.Set(r => r.LastWriteUTC, writeUTC)
+                                                                 .Set(r => r.FollowedUTC, writeUTC)
                                                                  .Set(r => r.LastReadUTC, writeUTC)
                                                                  .Set(r => r.UpdatedUTC, writeUTC)
                                                                  .SetOnInsert(r => r.FeedId, feedId)
@@ -44,6 +45,7 @@ namespace Jogl.Server.DB
         {
             var filter = Builders<UserContentEntityRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.ContentEntityId, contentEntityId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserContentEntityRecord>.Update.Set(r => r.LastMentionUTC, mentionUTC)
+                                                                 .Set(r => r.FollowedUTC, mentionUTC)
                                                                  .Set(r => r.UpdatedUTC, mentionUTC)
                                                                  .SetOnInsert(r => r.FeedId, feedId)
                                                                  .SetOnInsert(r => r.ContentEntityId, contentEntityId)
@@ -56,8 +58,6 @@ namespace Jogl.Server.DB
         protected override UpdateDefinition<UserContentEntityRecord> GetDefaultUpdateDefinition(UserContentEntityRecord updatedEntity)
         {
             return Builders<UserContentEntityRecord>.Update.Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
-                                            .Set(e => e.FeedId, updatedEntity.FeedId)
-                                                           .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                                            .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }
 

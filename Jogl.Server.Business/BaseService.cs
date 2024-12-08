@@ -378,11 +378,18 @@ namespace Jogl.Server.Business
         {
             var relations = _relationRepository.List(r => !r.Deleted);
             var communityEntityIds = GetCommunityEntityIdsForNode(relations, nodeId);
+            var channels = _channelRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
             var events = _eventRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
-            var eventIds = events.Select(e => e.Id.ToString()).ToList();
+            var documents = _documentRepository.List(e => communityEntityIds.Contains(e.FeedId) && !e.Deleted);
+            var needs = _needRepository.List(e => communityEntityIds.Contains(e.EntityId) && !e.Deleted);
+            var papers = _paperRepository.List(e => communityEntityIds.Contains(e.FeedId) && !e.Deleted);
 
             return communityEntityIds
-              .Concat(eventIds)
+              .Concat(channels.Select(c => c.Id.ToString()))
+              .Concat(events.Select(e => e.Id.ToString()))
+              .Concat(documents.Select(d => d.Id.ToString()))
+              .Concat(needs.Select(n => n.Id.ToString()))
+              .Concat(papers.Select(p => p.Id.ToString()))
               .Distinct()
               .ToList();
         }
@@ -1739,44 +1746,44 @@ namespace Jogl.Server.Business
 
         protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, List<EventTag> tags, FeedEntityFilter? filter)
         {
-            var filteredEvents = events.Where(e=> IsFeedEntityInFilter(e, filter, currentUserId))
+            var filteredEvents = events.Where(e => IsFeedEntityInFilter(e, filter, currentUserId))
                                        .Where(e =>
                                        {
                                            if (tags == null)
                                                return true;
-                                       
+
                                            if (tags.Contains(EventTag.Attending))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Invited))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Pending))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Rejected))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.No))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Attendee))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Member))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Organizer))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.AccessLevel == AttendanceAccessLevel.Admin))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Speaker))
                                                if (!eventAttendances.Any(a => a.EventId == e.Id.ToString() && a.UserId == currentUserId && a.Status == AttendanceStatus.Yes && a.Labels?.Contains(LABEL_SPEAKER) == true))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Online))
                                                if (string.IsNullOrEmpty(e.MeetingURL) && string.IsNullOrEmpty(e.GeneratedMeetingURL))
                                                    return false;
-                                       
+
                                            if (tags.Contains(EventTag.Physical))
                                                if (e.Location == null)
                                                    return false;
-                                       
+
                                            return true;
                                        })
                                        .Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))

@@ -7,6 +7,7 @@ namespace Jogl.Server.Business
     {
         string GetPrintName(FeedType feedType);
         FeedEntitySet GetFeedEntitySet(IEnumerable<string> feedIds);
+        FeedEntitySet GetFeedEntitySetExtended(IEnumerable<string> feedIds);
         FeedEntitySet GetFeedEntitySetForCommunities(IEnumerable<string> feedIds);
         void PopulateFeedEntities(IEnumerable<ICommunityEntityOwned> entities);
         FeedEntitySet GetFeedEntitySet(string feedId);

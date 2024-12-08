@@ -29,6 +29,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("feed_entity")]
         public EntityMiniModel? FeedEntity { get; set; }
 
+        [JsonPropertyName("parent_feed_entity")]
+        public EntityMiniModel? ParentFeedEntity { get; set; }
+
         [JsonPropertyName("documents")]
         public List<DocumentModel> Documents { get; set; }
 
@@ -77,5 +80,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("is_new")]
         public bool IsNew { get; set; }
+
+        [JsonPropertyName("last_comment")]
+        public CommentModel LastComment { get; set; }
     }
 }

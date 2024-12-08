@@ -12,7 +12,8 @@ namespace Jogl.Server.Data
         public DateTime? LastReadUTC { get; set; }
         public DateTime? LastWriteUTC { get; set; }
         public DateTime? LastMentionUTC { get; set; }
-       
+        public DateTime? FollowedUTC { get; set; }
+
         public bool Muted { get; set; }
         public bool Starred { get; set; }
 

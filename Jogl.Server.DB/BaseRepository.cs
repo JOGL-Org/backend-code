@@ -410,7 +410,9 @@ namespace Jogl.Server.DB
 
         public async Task UpdateLastActivityAsync(string id, DateTime lastActivityUTC, string updatedByUserId)
         {
-            var updateDefinition = Builders<T>.Update.Set(e => e.LastActivityUTC, lastActivityUTC);
+            var updateDefinition = Builders<T>.Update.Set(e => e.LastActivityUTC, lastActivityUTC)
+                                                     .Set(e => e.UpdatedUTC, lastActivityUTC)
+                                                     .Set(e => e.UpdatedByUserId, updatedByUserId);
 
             var coll = GetCollection<T>();
             await coll.UpdateOneAsync(e => e.Id.ToString() == id, updateDefinition);
