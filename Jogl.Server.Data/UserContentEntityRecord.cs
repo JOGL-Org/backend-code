@@ -1,4 +1,6 @@
-﻿namespace Jogl.Server.Data
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace Jogl.Server.Data
 {
     [BsonIgnoreExtraElements]
     public class UserContentEntityRecord : Entity
