@@ -14,8 +14,8 @@ namespace Jogl.Server.DB
         protected const string INDEX_SEARCH = "default";
         protected const string INDEX_AUTOCOMPLETE = "autocomplete_default";
         protected const string INDEX_UNIQUE = "unique_default";
-        private readonly IConfiguration _configuration;
-        private readonly IOperationContext _context;
+        protected readonly IConfiguration _configuration;
+        protected readonly IOperationContext _context;
 
         protected abstract string CollectionName { get; }
         protected Collation DefaultCollation { get { return new Collation("en", strength: CollationStrength.Primary); } }

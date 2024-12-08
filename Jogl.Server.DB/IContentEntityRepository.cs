@@ -7,5 +7,7 @@ namespace Jogl.Server.DB
     {
         List<ContentEntity> List(IEnumerable<string> feedIds, Expression<Func<ContentEntity, bool>> filter, int page, int pageSize);
         List<ContentEntity> List(IEnumerable<string> feedIds);
+
+        IFluentQuery<ContentEntity> QueryForActivity(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null);
     }
 }

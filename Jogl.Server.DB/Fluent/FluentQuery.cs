@@ -95,7 +95,7 @@ namespace Jogl.Server.DB
 
         public long Count()
         {
-            return _query.Count().SingleOrDefault()?.Count??0;
+            return _query.Count().SingleOrDefault()?.Count ?? 0;
         }
     }
 }

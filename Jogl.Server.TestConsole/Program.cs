@@ -12,9 +12,11 @@ IConfiguration config = new ConfigurationBuilder()
 
 var ucerRepo = new UserContentEntityRecordRepository(config);
 var ufrRepo = new UserFeedRecordRepository(config);
+var ceRepo = new ContentEntityRepository(config);
 
 var ucers = ucerRepo.List(ucer=>true);
 var ufrs = ufrRepo.List(ufr=>true);
+var ces = ceRepo.List(ufr=>true);
 foreach (var ucer in ucers)
 {
     if(ucer.LastWriteUTC.HasValue)
@@ -32,6 +34,16 @@ foreach (var ufr in ufrs)
     if (ufr.LastMentionUTC.HasValue)
         await ufrRepo.SetFeedMentionAsync(ufr.UserId, ufr.FeedId, ufr.LastMentionUTC.Value);
 }
+
+foreach (var ce in ces)
+{
+    if (ce.LastActivityUTC == null)
+    {
+        ce.LastActivityUTC = ce.CreatedUTC;
+        await ceRepo.UpdateAsync(ce);
+    }
+}
+
 
 Console.WriteLine("Done");
 Console.ReadLine();

@@ -324,8 +324,7 @@ namespace Jogl.Server.Business
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
-                .Query(ce => userFeedIds.Contains(ce.FeedId) || ucerContentEntityIds.Contains(ce.Id.ToString()))
-                .Filter(ce => ce.CreatedByUserId != currentUserId || ce.LastActivityUTC.HasValue)
+                .QueryForActivity(currentUserId, ce => userFeedIds.Contains(ce.FeedId) || ucerContentEntityIds.Contains(ce.Id.ToString()))
                 .Sort(SortKey.LastActivity, false)
                 .Page(page, pageSize)
                 .ToList();
@@ -351,8 +350,7 @@ namespace Jogl.Server.Business
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
-                .Query(ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
-                .Filter(ce => ce.CreatedByUserId != currentUserId || ce.LastActivityUTC.HasValue)
+                .QueryForActivity(currentUserId, ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
                 .Sort(SortKey.LastActivity, false)
                 .Page(page, pageSize)
                 .ToList();

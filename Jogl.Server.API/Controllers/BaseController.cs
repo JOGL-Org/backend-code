@@ -30,6 +30,7 @@ namespace Jogl.Server.API.Controllers
         {
             entity.CreatedByUserId = CurrentUserId;
             entity.CreatedUTC = DateTime.UtcNow;
+            entity.LastActivityUTC = entity.CreatedUTC;
 
             await _entityService.ProcessEmbeddedDataAsync(entity);
         }
