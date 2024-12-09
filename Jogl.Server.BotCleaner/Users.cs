@@ -40,7 +40,7 @@ namespace Jogl.Server.Mailer
             foreach (var user in users)
             {
                 //exceptions for orcid users
-                if (user.Auth.IsOrcidUser)
+                if (user.Auth?.IsOrcidUser==true)
                     continue;
 
                 //exceptions for internal users
