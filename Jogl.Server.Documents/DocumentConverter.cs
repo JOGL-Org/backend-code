@@ -55,6 +55,34 @@ namespace Jogl.Server.Documents
                 }
         }
 
+        public byte[] ConvertDocumentToPNG(FileData file)
+        {
+            using (var stream = new MemoryStream(file.Data))
+                switch (file.Filetype)
+                {
+                    case "xls":
+                    case "xlsx":
+                    case "application/vnd.ms-excel":
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                        using (var excelEngine = new ExcelEngine())
+                        {
+                            IApplication application = excelEngine.Excel;
+                            application.DefaultVersion = ExcelVersion.Xlsx;
+                            IWorkbook workbook = application.Workbooks.Open(stream);
+                            var rendererXlsx = new XlsIORenderer();
+                            using (var outStream = new MemoryStream())
+                            {
+                                var worksheet = workbook.Worksheets[0];
+                                rendererXlsx.ConvertToImage(worksheet, 1, 1, 30, 10, outStream);
+                                return outStream.ToArray();
+                            }
+                        }
+
+                    default:
+                        throw new NotSupportedException($"Cannot convert format {file.Filetype} toJPG PDF");
+                }
+        }
+
         private byte[] SerializePDF(PdfDocument pdf)
         {
             using (var stream = new MemoryStream())

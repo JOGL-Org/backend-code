@@ -5,5 +5,6 @@ namespace Jogl.Server.Documents
     public interface IDocumentConverter
     {
         public byte[] ConvertDocumentToPDF(FileData data);
+        public byte[] ConvertDocumentToPNG(FileData data);
     }
 }

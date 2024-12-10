@@ -276,5 +276,17 @@ namespace Jogl.Server.API.Controllers
             //refactor this into mapping etc
             return Ok($"data:application/pdf;base64,{pdfData}");
         }
+
+        [HttpPost]
+        [Route("convert/png")]
+        public async Task<IActionResult> ConvertToPNG([FromBody] DocumentConversionUpsertModel model)
+        {
+            var conversion = _mapper.Map<FileData>(model);
+            var file = _documentConverter.ConvertDocumentToPNG(conversion);
+            var pngData = _mapper.Map<string>(file);
+
+            //refactor this into mapping etc
+            return Ok($"data:image/png;base64,{pngData}");
+        }
     }
 }
