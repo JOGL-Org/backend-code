@@ -9,10 +9,10 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("position")]
         public string Position { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [JsonPropertyName("date_from")]
-        public string DateFrom { get; set; }
+        public string? DateFrom { get; set; }
         [JsonPropertyName("date_to")]
-        public string DateTo { get; set; }
+        public string? DateTo { get; set; }
     }
 }
