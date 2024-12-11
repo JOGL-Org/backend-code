@@ -14,6 +14,14 @@
       "mention": {
         "title": "{0} in {1}",
         "body": "{0} has {1} in {2}"
+      },
+      "feedEntityCreate": {
+        "title": "New {0}",
+        "body": "{0} added something in {1}"
+      },
+      "feedEntityShare": {
+        "title": "{0} updated",
+        "body": "{0} changed something in {1}"
       }
     }
   }
