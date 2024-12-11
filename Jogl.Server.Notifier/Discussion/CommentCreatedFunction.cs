@@ -4,31 +4,31 @@ using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Jogl.Server.Notifier
+namespace Jogl.Server.Notifier.Discussion
 {
-    public class CommentCreatedFunction : MentionNotificationFunctionBase
+    public class CommentCreatedFunction : DiscussionNotificationFunctionBase
     {
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IMembershipRepository _membershipRepository;
         private readonly IContentEntityRepository _contentEntityRepository;
         private readonly IUserContentEntityRecordRepository _userContentEntityRecordRepository;
 
-        protected override string Origin => "post";
-
-        protected override string OriginAction => "posted";
-
-        public CommentCreatedFunction(ICommunityEntityService communityEntityService, IMembershipRepository membershipRepository, IContentEntityRepository contentEntityRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public CommentCreatedFunction(ICommunityEntityService communityEntityService, IMembershipRepository membershipRepository, IContentEntityRepository contentEntityRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILocalizationService localizationService, ILogger<NotificationFunctionBase> logger) : base(feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, localizationService, logger)
         {
             _communityEntityService = communityEntityService;
             _membershipRepository = membershipRepository;
             _contentEntityRepository = contentEntityRepository;
             _userContentEntityRecordRepository = userContentEntityRecordRepository;
         }
+
+        protected override string GetOrigin(string language) => _localizationService.GetString("reply", language);
+        protected override string GetOriginAction(string language) => _localizationService.GetString("replied", language);
 
         [Function(nameof(CommentCreatedFunction))]
         public async Task RunCommentsAsync(
@@ -114,10 +114,10 @@ namespace Jogl.Server.Notifier
                               AVATAR_URL = _urlService.GetImageUrl(author.AvatarId),
                               REPLY_COUNT = "A new reply",
                               ACTIVITY_TYPE = "your post",
-                              CONTAINER_TYPE = _feedEntityService.GetPrintName(feedEntity.FeedType),
+                              CONTAINER_TYPE = _localizationService.GetString(feedEntity.FeedType, u.Language),
                               CONTAINER_URL = _urlService.GetUrl(feedEntity),
                               CONTAINER_NAME = feedEntity.FeedTitle,
-                              OBJECT_TYPE = _feedEntityService.GetPrintName(feedEntity.FeedType),
+                              OBJECT_TYPE = _localizationService.GetString(feedEntity.FeedType, u.Language),
                               OBJECT_URL = _urlService.GetUrl(feedEntity),
                               OBJECT_NAME = feedEntity.FeedTitle,
                               COMMENT_URL = _urlService.GetContentEntityUrl(contentEntityId),

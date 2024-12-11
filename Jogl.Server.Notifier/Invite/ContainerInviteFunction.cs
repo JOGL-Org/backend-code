@@ -5,44 +5,32 @@ using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SharpCompress.Writers;
 
-namespace Jogl.Server.Notifier
+namespace Jogl.Server.Notifier.Invite
 {
-    public class ContainerInviteFunction
+    public class ContainerInviteFunction : NotificationFunctionBase
     {
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IFeedEntityService _feedEntityService;
         private readonly IMembershipRepository _membershipRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IPushNotificationTokenRepository _pushNotificationTokenRepository;
         private readonly IUserVerificationCodeRepository _userVerificationRepository;
-        private readonly IEmailService _emailService;
-        private readonly IPushNotificationService _pushNotificationService;
         private readonly IConfiguration _configuration;
-        private readonly IUrlService _urlService;
         private readonly IUserVerificationService _userVerificationService;
-        private readonly ILogger<ContainerInviteFunction> _logger;
 
-        public ContainerInviteFunction(ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IMembershipRepository membershipRepository, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IUserVerificationCodeRepository userVerificationRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, IUserVerificationService userVerificationService, IConfiguration configuration, ILogger<ContainerInviteFunction> logger)
+        public ContainerInviteFunction(ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IMembershipRepository membershipRepository, IUserVerificationCodeRepository verificationCodeRepository, IUserVerificationService userVerificationService, IConfiguration configuration, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILocalizationService localizationService, ILogger<NotificationFunctionBase> logger) : base(userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, localizationService, logger)
         {
             _communityEntityService = communityEntityService;
             _feedEntityService = feedEntityService;
             _membershipRepository = membershipRepository;
-            _userRepository = userRepository;
-            _pushNotificationTokenRepository = pushNotificationTokenRepository;
-            _userVerificationRepository = userVerificationRepository;
-            _emailService = emailService;
-            _pushNotificationService = pushNotificationService;
-            _configuration = configuration;
-            _urlService = urlService;
+            _userVerificationRepository = verificationCodeRepository;
             _userVerificationService = userVerificationService;
-            _logger = logger;
+            _configuration = configuration;
         }
 
         [Function(nameof(ContainerInviteFunction))]
@@ -72,7 +60,7 @@ namespace Jogl.Server.Notifier
                 await _emailService.SendEmailAsync(invitee.Email, EmailTemplate.InvitationWithUser, new
                 {
                     NAME = inviter.FeedTitle,
-                    CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
+                    CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType.ToString(), invitee.Language),
                     CONTAINER_NAME = communityEntity.FeedTitle,
                     CTA_URL = _urlService.GetUrl("actions"),
                     LANGUAGE = invitee.Language
@@ -82,15 +70,10 @@ namespace Jogl.Server.Notifier
             if (invitee.NotificationSettings?.ContainerInvitationJogl == true)
             {
                 var pushTokens = _pushNotificationTokenRepository.List(t => t.UserId == invitation.InviteeUserId && !t.Deleted);
-                var pushData = pushTokens
-                  .ToDictionary(u => u.Token, u => (object)new
-                  {
-                      CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
-                      CONTAINER_URL = _urlService.GetUrl(communityEntity),
-                      CONTAINER_NAME = communityEntity.FeedTitle,
-                  });
-
-                await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), $"Invitation to a {_feedEntityService.GetPrintName(communityEntity.FeedType)}", $"{inviter.FullName} invited you to join their {_feedEntityService.GetPrintName(communityEntity.FeedType)}", _urlService.GetUrl("actions"));
+                await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(),
+                    _localizationService.GetString("templates.push.containerInvite.title", invitee.Language, communityEntity.FeedType),
+                    _localizationService.GetString("templates.push.containerInvite.body", invitee.Language, inviter.FullName, communityEntity.FeedType),
+                    _urlService.GetUrl("actions"));
             }
         }
 
@@ -103,7 +86,7 @@ namespace Jogl.Server.Notifier
             await _emailService.SendEmailAsync(invitation.InviteeEmail, EmailTemplate.InvitationWithEmail, new
             {
                 NAME = inviterUser.FeedTitle,
-                CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
+                CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType.ToString()),
                 CONTAINER_NAME = communityEntity.FeedTitle,
                 CTA_URL = redirectUrl + $"?email={WebUtility.UrlEncode(invitation.InviteeEmail)}&verification_code={verificationCode}",
             }, fromName: inviterUser.FirstName);

@@ -1,7 +1,6 @@
 ﻿using Jogl.Server.Data.Util;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
-using Jogl.Server.OpenAlex.DTO;
 
 namespace Jogl.Server.Business
 {
@@ -16,19 +15,6 @@ namespace Jogl.Server.Business
             _workspaceRepository= workspaceRepository;
             _nodeRepository =   nodeRepository;
             _organizationRepository = organizationRepository;
-        }
-
-        public string GetPrintName(FeedType feedType)
-        {
-            switch (feedType)
-            {
-                case FeedType.Node:
-                    return "Hub";
-                case FeedType.CallForProposal:
-                    return "Call for proposals";
-                default:
-                    return feedType.ToString();
-            }
         }
 
         public FeedEntitySet GetFeedEntitySet(IEnumerable<string> feedIds)

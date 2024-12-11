@@ -1,10 +1,10 @@
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace Jogl.Server.Notifier
 {
@@ -15,18 +15,20 @@ namespace Jogl.Server.Notifier
         protected readonly IEmailService _emailService;
         protected readonly IPushNotificationService _pushNotificationService;
         protected readonly IUrlService _urlService;
+        protected readonly ILocalizationService _localizationService;
         protected readonly ILogger<NotificationFunctionBase> _logger;
 
         private List<string> processedUserIdsEmail = new List<string>();
         private List<string> processedUserIdsPush = new List<string>();
 
-        public NotificationFunctionBase(IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger)
+        public NotificationFunctionBase(IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILocalizationService localizationService, ILogger<NotificationFunctionBase> logger)
         {
             _userRepository = userRepository;
             _pushNotificationTokenRepository = pushNotificationTokenRepository;
             _emailService = emailService;
             _pushNotificationService = pushNotificationService;
             _urlService = urlService;
+            _localizationService = localizationService;
             _logger = logger;
         }
 
@@ -59,24 +61,6 @@ namespace Jogl.Server.Notifier
                 .ToDictionary(u => u.Email, u => payloadCreation(u));
 
             await _emailService.SendEmailAsync(emailData, template, fromName: creatorName);
-        }
-
-        //protected async Task SendPushAsync(IEnumerable<User> users, Func<User, string> titleCreation, Func<User, string> textCreation, string url)
-        //{
-        //    await SendPushAsync(users, titleCreation(null), textCreation(null), url);
-        //}
-
-        protected async Task SendPushAsync(IEnumerable<User> users, string title, string text, string url)
-        {
-            if (!users.Any())
-                return;
-
-            var pushUserIds = users.Select(u => u.Id.ToString()).ToList();
-            var pushTokens = _pushNotificationTokenRepository.List(t => pushUserIds.Contains(t.UserId) && !t.Deleted);
-            if (!pushTokens.Any())
-                return;
-
-            await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(), title, text, url);
         }
     }
 }

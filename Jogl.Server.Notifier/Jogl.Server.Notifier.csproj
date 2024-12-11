@@ -42,6 +42,7 @@
     <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
     <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Localization\Jogl.Server.Localization.csproj" />
     <ProjectReference Include="..\Jogl.Server.PushNotifications\Jogl.Server.PushNotifications.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

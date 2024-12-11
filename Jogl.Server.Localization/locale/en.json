@@ -1,0 +1,20 @@
+﻿{
+  "workspace": "Workspace",
+  "node": "Hub",
+  "templates": {
+    "push": {
+      "containerInvite": {
+        "title": "Invitation to a {0}",
+        "body": "{0} has invited you to join their {1}"
+      },
+      "discussion": {
+        "title": "Invitation to a {0}",
+        "body": "{0} has invited you to join their {1}"
+      },
+      "mention": {
+        "title": "{0} in {1}",
+        "body": "{0} has {1} in {2}"
+      }
+    }
+  }
+}

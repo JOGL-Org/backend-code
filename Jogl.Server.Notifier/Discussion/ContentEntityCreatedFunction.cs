@@ -4,21 +4,22 @@ using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Jogl.Server.Notifier
+namespace Jogl.Server.Notifier.Discussion
 {
-    public class ContentEntityCreatedFunction : MentionNotificationFunctionBase
+    public class ContentEntityCreatedFunction : DiscussionNotificationFunctionBase
     {
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IMembershipRepository _membershipRepository;
         private readonly IEventAttendanceRepository _eventAttendanceRepository;
         private readonly IUserFeedRecordRepository _userFeedRecordRepository;
 
-        public ContentEntityCreatedFunction(ICommunityEntityService communityEntityService, IMembershipRepository membershipRepository, IEventAttendanceRepository eventAttendanceRepository, IUserFeedRecordRepository userFeedRecordRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        public ContentEntityCreatedFunction(ICommunityEntityService communityEntityService, IMembershipRepository membershipRepository, IEventAttendanceRepository eventAttendanceRepository, IUserFeedRecordRepository userFeedRecordRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILocalizationService localizationService, ILogger<NotificationFunctionBase> logger) : base(feedEntityService, userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, localizationService, logger)
         {
             _communityEntityService = communityEntityService;
             _membershipRepository = membershipRepository;
@@ -26,9 +27,8 @@ namespace Jogl.Server.Notifier
             _userFeedRecordRepository = userFeedRecordRepository;
         }
 
-        protected override string Origin => "post";
-
-        protected override string OriginAction => "posted";
+        protected override string GetOrigin(string language) => _localizationService.GetString("post", language);
+        protected override string GetOriginAction(string language) => _localizationService.GetString("posted", language);
 
         [Function(nameof(ContentEntityCreatedFunction))]
         public async Task RunPostsAsync(
@@ -137,7 +137,7 @@ namespace Jogl.Server.Notifier
                           {
                               NAME = author.FeedTitle,
                               AVATAR_URL = _urlService.GetImageUrl(author.AvatarId),
-                              CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
+                              CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType, u.Language),
                               CONTAINER_URL = _urlService.GetUrl(communityEntity),
                               CONTAINER_NAME = communityEntity.FeedTitle,
                               CONTENT_ENTITY_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
@@ -159,10 +159,10 @@ namespace Jogl.Server.Notifier
                           {
                               NAME = author.FeedTitle,
                               AVATAR_URL = _urlService.GetImageUrl(author.AvatarId),
-                              CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
+                              CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType, u.Language),
                               CONTAINER_URL = _urlService.GetUrl(communityEntity),
                               CONTAINER_NAME = communityEntity.FeedTitle,
-                              OBJECT_TYPE = _feedEntityService.GetPrintName(feedEntity.FeedType),
+                              OBJECT_TYPE = _localizationService.GetString(feedEntity.FeedType, u.Language),
                               OBJECT_URL = _urlService.GetUrl(feedEntity),
                               OBJECT_NAME = feedEntity.FeedTitle,
                               CONTENT_ENTITY_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),

@@ -81,7 +81,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Loader.PubMed",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.AWS", "Jogl.Server.AWS\Jogl.Server.AWS.csproj", "{ED1E791B-1F3B-4BD3-9168-45025339C3ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.IdentityService", "Jogl.Server.IdentityService\Jogl.Server.IdentityService.csproj", "{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.IdentityService", "Jogl.Server.IdentityService\Jogl.Server.IdentityService.csproj", "{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Localization", "Jogl.Server.Localization\Jogl.Server.Localization.csproj", "{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -245,6 +247,10 @@ Global
 		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E0A4770-BA0F-4942-8BD6-E073AFF331A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

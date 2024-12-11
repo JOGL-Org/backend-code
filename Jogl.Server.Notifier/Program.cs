@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Jogl.Server.DB.Context;
+using Jogl.Server.Localization;
 
 var host = new HostBuilder()
     //  .ConfigureFunctionsWorkerDefaults()
@@ -54,6 +55,9 @@ var host = new HostBuilder()
         services.AddTransient<IEventService, EventService>();
         services.AddTransient<IEntityService, EntityService>();
         services.AddTransient<IFeedEntityService, FeedEntityService>();
+
+        //email
+        services.AddSingleton<ILocalizationService, LocalizationService>();
 
         //email
         services.AddTransient<IEmailService, SendGridEmailService>();

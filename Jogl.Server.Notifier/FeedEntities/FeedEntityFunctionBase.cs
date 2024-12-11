@@ -2,11 +2,12 @@ using Jogl.Server.Business;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Logging;
 
-namespace Jogl.Server.Notifier
+namespace Jogl.Server.Notifier.FeedEntities
 {
     public abstract class FeedEntityFunctionBase<T> : NotificationFunctionBase where T : FeedEntity
     {
@@ -14,7 +15,7 @@ namespace Jogl.Server.Notifier
         protected readonly IMembershipRepository _membershipRepository;
         protected readonly IFeedEntityService _feedEntityService;
 
-        protected FeedEntityFunctionBase( IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILogger<NotificationFunctionBase> logger) : base(userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, logger)
+        protected FeedEntityFunctionBase(IEmailRecordRepository emailRecordRepository, IMembershipRepository membershipRepository, IFeedEntityService feedEntityService, IUserRepository userRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IEmailService emailService, IPushNotificationService pushNotificationService, IUrlService urlService, ILocalizationService localizationService, ILogger<NotificationFunctionBase> logger) : base(userRepository, pushNotificationTokenRepository, emailService, pushNotificationService, urlService, localizationService, logger)
         {
             _emailRecordRepository = emailRecordRepository;
             _membershipRepository = membershipRepository;
@@ -42,10 +43,10 @@ namespace Jogl.Server.Notifier
             return new
             {
                 NAME = creator.FeedTitle,
-                ENTITY_TYPE = _feedEntityService.GetPrintName(entity.FeedType),
+                ENTITY_TYPE = _localizationService.GetString(entity.FeedType, recipient.Language),
                 ENTITY_URL = _urlService.GetUrl(entity),
                 ENTITY_NAME = entity.FeedTitle,
-                CONTAINER_TYPE = _feedEntityService.GetPrintName(feedEntity.FeedType),
+                CONTAINER_TYPE = _localizationService.GetString(feedEntity.FeedType, recipient.Language),
                 CONTAINER_URL = _urlService.GetUrl(feedEntity),
                 CONTAINER_NAME = feedEntity.FeedTitle,
                 CTA_URL = _urlService.GetUrl(entity),
