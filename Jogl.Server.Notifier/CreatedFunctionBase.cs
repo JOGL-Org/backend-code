@@ -25,11 +25,11 @@ namespace Jogl.Server.Notifier
             var users = _userRepository.Get(memberships.Select(m => m.UserId).ToList());
             var creator = _userRepository.Get(entity.UpdatedByUserId ?? entity.CreatedByUserId);
 
-            await SendEmailAsync(users.Where(emailUserFilter), u => GetEmailPayload(entity, feedEntity, creator), EmailTemplate.ObjectAdded, creator.FirstName);
+            await SendEmailAsync(users.Where(emailUserFilter), u => GetEmailPayload(entity, feedEntity, creator, u), EmailTemplate.ObjectAdded, creator.FirstName);
             await SendPushAsync(users.Where(pushUserFilter), $"New {_feedEntityService.GetPrintName(entity.FeedType)} in {feedEntity.FeedTitle}", $"{creator.FullName} added {entity.FeedTitle}", _urlService.GetUrl(entity));
         }
 
-        protected object GetEmailPayload(T entity, FeedEntity feedEntity, User creator)
+        protected object GetEmailPayload(T entity, FeedEntity feedEntity, User creator, User recipient)
         {
             return new
             {
@@ -41,6 +41,7 @@ namespace Jogl.Server.Notifier
                 CONTAINER_URL = _urlService.GetUrl(feedEntity),
                 CONTAINER_NAME = feedEntity.FeedTitle,
                 CTA_URL = _urlService.GetUrl(entity),
+                LANGUAGE = recipient.Language
             };
         }
     }

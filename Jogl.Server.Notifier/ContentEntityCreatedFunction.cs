@@ -144,10 +144,11 @@ namespace Jogl.Server.Notifier
                               //CONTENT_ENTITY_DATE = contentEntity.CreatedUTC.ToString(),
                               CONTENT_ENTITY_TEXT = contentEntity.Text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
+                              LANGUAGE = u.Language
                           });
 
             SetEmailProcessed(users);
-            await _emailService.SendEmailAsync(communityEntityEmailData, EmailTemplate.ContentEntityAddedInContainer, fromName: author.FirstName);
+            await _emailService.SendEmailAsync(communityEntityEmailData, EmailTemplate.ContentEntityAddedInChannel, fromName: author.FirstName);
         }
 
 
@@ -168,6 +169,7 @@ namespace Jogl.Server.Notifier
                               //CONTENT_ENTITY_DATE = contentEntity.CreatedUTC.ToString(),
                               CONTENT_ENTITY_TEXT = contentEntity.Text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
+                              LANGUAGE = u.Language
                           });
 
             SetEmailProcessed(users);

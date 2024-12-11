@@ -46,6 +46,7 @@ namespace Jogl.Server.Business
                 {
                     first_name = user.FirstName,
                     url = _configuration["App:URL"] + $"/confirm?email={HttpUtility.UrlEncode(user.Email)}&verification_code={HttpUtility.UrlEncode(code)}&redirectURL={redirectURL}",
+                    LANGUAGE = user.Language
                 });
             }
 

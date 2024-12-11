@@ -286,6 +286,7 @@ namespace Jogl.Server.Business
                 subject = subject,
                 cfp_title = cfp.Title,
                 cfp_url = url,
+                LANGUAGE = u.Language
             }), EmailTemplate.CFPMessage);
         }
     }

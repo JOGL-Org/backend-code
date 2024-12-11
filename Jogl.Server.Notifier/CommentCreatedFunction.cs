@@ -124,6 +124,7 @@ namespace Jogl.Server.Notifier
                               //COMMENT_DATE = comment.CreatedUTC.ToString(),
                               COMMENT_TEXT = comment.Text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntityId),
+                              LANGUAGE = u.Language
                           });
 
             SetEmailProcessed(users);

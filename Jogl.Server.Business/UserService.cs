@@ -291,7 +291,7 @@ namespace Jogl.Server.Business
         public async Task ResetPasswordAsync(string email, string url)
         {
             var code = GenerateCode();
-            var user = _userRepository.GetForEmail(email);
+            var user = _userRepository.Get(u => u.Email == email);
             if (user == null)
                 return;
 
@@ -299,6 +299,7 @@ namespace Jogl.Server.Business
             {
                 first_name = user.FirstName,
                 url = url + $"?email={email}&token={code}",
+                LANGUAGE = user.Language
             });
             await _verificationCodeRepository.CreateAsync(new UserVerificationCode
             {
@@ -335,14 +336,10 @@ namespace Jogl.Server.Business
             return true;
         }
 
+        [Obsolete]
         public async Task OneTimeLoginAsync(string email, string url)
         {
             var code = GenerateCode();
-
-            await _emailService.SendEmailAsync(email, EmailTemplate.OneTimeLogin, new
-            {
-                url = url + $"?email={email}&code={code}",
-            });
 
             await _verificationCodeRepository.CreateAsync(new UserVerificationCode
             {
@@ -412,6 +409,7 @@ namespace Jogl.Server.Business
                 from_url = appUrl + $"user/{userIdFrom}",
                 subject = subject,
                 text = text,
+                LANGUAGE = userTo.Language
             }, userFrom.Email);
         }
 

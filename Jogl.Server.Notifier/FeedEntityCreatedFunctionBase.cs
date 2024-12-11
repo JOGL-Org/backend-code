@@ -18,7 +18,7 @@ namespace Jogl.Server.Notifier
         {
             var creator = _userRepository.Get(entity.CreatedByUserId);
             var users = GetUsersForFeedEntity(entity);
-            await SendEmailAsync(users.Where(emailFilter), u => GetEmailPayload(entity, parentEntity, creator), EmailTemplate.ObjectAdded, creator.FirstName);
+            await SendEmailAsync(users.Where(emailFilter), u => GetEmailPayload(entity, parentEntity, creator,u ), EmailTemplate.ObjectAdded, creator.FirstName);
             await SendPushAsync(users.Where(pushFilter), $"New {_feedEntityService.GetPrintName(entity.FeedType)} in {parentEntity.FeedTitle}", $"{creator.FullName} added {entity.FeedTitle}", _urlService.GetUrl(entity));
             if (!users.Any())
                 return;

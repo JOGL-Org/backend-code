@@ -37,7 +37,8 @@ namespace Jogl.Server.Notifier
                               ORIGIN_URL = _urlService.GetContentEntityUrl(contentEntityId),
                               ORIGIN_TEXT = text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntityId),
-                              ABOUT_VISIBLE = communityEntity != feedEntity
+                              ABOUT_VISIBLE = communityEntity != feedEntity,
+                              LANGUAGE = u.Language
                           });
 
             SetEmailProcessed(users);

@@ -22,7 +22,7 @@ namespace Jogl.Server.Notifier
             if (!users.Any())
                 return;
 
-            await SendEmailAsync(users.Where(emailFilter), u => GetEmailPayload(entity, parentEntity, updater), EmailTemplate.ObjectShared, updater.FirstName);
+            await SendEmailAsync(users.Where(emailFilter), u => GetEmailPayload(entity, parentEntity, updater, u), EmailTemplate.ObjectShared, updater.FirstName);
             await SendPushAsync(users.Where(pushFilter), $"New {_feedEntityService.GetPrintName(entity.FeedType)} in {parentEntity.FeedTitle}", $"{updater.FullName} shared {entity.FeedTitle} with you", _urlService.GetUrl(entity));
 
             await _emailRecordRepository.CreateAsync(users.Select(u => new EmailRecord

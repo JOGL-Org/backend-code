@@ -69,12 +69,13 @@ namespace Jogl.Server.Notifier
 
             if (invitee.NotificationSettings?.ContainerInvitationEmail == true)
             {
-                await _emailService.SendEmailAsync(invitee.Email, EmailTemplate.UserInvitedToContainer, new
+                await _emailService.SendEmailAsync(invitee.Email, EmailTemplate.InvitationWithUser, new
                 {
                     NAME = inviter.FeedTitle,
                     CONTAINER_TYPE = _feedEntityService.GetPrintName(communityEntity.FeedType),
                     CONTAINER_NAME = communityEntity.FeedTitle,
                     CTA_URL = _urlService.GetUrl("actions"),
+                    LANGUAGE = invitee.Language
                 }, fromName: inviter.FirstName);
             }
 

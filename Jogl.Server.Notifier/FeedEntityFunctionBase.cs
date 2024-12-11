@@ -37,7 +37,7 @@ namespace Jogl.Server.Notifier
             return _userRepository.Get(ids);
         }
 
-        protected object GetEmailPayload(T entity, FeedEntity feedEntity, User creator)
+        protected object GetEmailPayload(T entity, FeedEntity feedEntity, User creator, User recipient)
         {
             return new
             {
@@ -49,6 +49,7 @@ namespace Jogl.Server.Notifier
                 CONTAINER_URL = _urlService.GetUrl(feedEntity),
                 CONTAINER_NAME = feedEntity.FeedTitle,
                 CTA_URL = _urlService.GetUrl(entity),
+                LANGUAGE = recipient.Language
             };
         }
     }

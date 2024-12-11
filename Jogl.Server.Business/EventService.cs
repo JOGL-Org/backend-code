@@ -533,6 +533,7 @@ namespace Jogl.Server.Business
                 subject = subject,
                 event_title = ev.Title,
                 event_url = url,
+                LANGUAGE = u.Language
             }), EmailTemplate.EventMessage);
         }
 
