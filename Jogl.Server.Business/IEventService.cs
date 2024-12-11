@@ -8,8 +8,8 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(Event e);
         ListPage<Event> List(string currentUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         long Count(string userId, string search);
-        List<Event> ListForEntity(string entityId, string currentUserId, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        ListPage<Event> ListForNode(string nodeId, string currentUserId, List<string> communityEntityIds, FeedEntityFilter? filter, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
+        List<Event> ListForEntity(string entityId, string currentUserId, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
+        ListPage<Event> ListForNode(string nodeId, string currentUserId, List<string> communityEntityIds, FeedEntityFilter? filter, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         long CountForNode(string userId, string nodeId, string search);
         List<Event> ListForOrganization(string organizationId, string currentUserId, List<CommunityEntityType> types, List<string> communityEntityIds, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         List<Event> ListForUser(string userId, string currentUserId, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending);

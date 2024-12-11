@@ -22,6 +22,7 @@ namespace Jogl.Server.Data
         public string CommunityEntityId { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        
         public Timezone Timezone { get; set; }
         public string ExternalId { get; set; }
         public List<string> Keywords { get; set; }
@@ -41,8 +42,7 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public int CommentCount { get; set; }
-        [BsonIgnore]
-        public EventAttendance UserAttendance { get; set; }
+
         [BsonIgnore]
         public int AttendeeCount { get; set; }
         [BsonIgnore]
@@ -71,8 +71,10 @@ namespace Jogl.Server.Data
         [BsonIgnore]
         public string FeedEntityId { get => CommunityEntityId; }
 
-        [BsonIgnore]
         [JsonIgnore]
         public List<EventAttendance> Attendances { get; set; }
+
+        [BsonIgnore]
+        public EventAttendance UserAttendance { get; set; }
     }
 }

@@ -1178,7 +1178,7 @@ namespace Jogl.Server.Business
             var communityEntities = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds).CommunityEntities;
 
             var events = _eventRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
-            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
+            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId, null);
             var feedEntityIds = GetFeedEntityIdsForNodes(allRelations, events, nodeIds);
             var needs = _needRepository.List(n => communityEntityIds.Contains(n.EntityId) && !n.Deleted);
             needs = GetFilteredFeedEntities(needs, userId);

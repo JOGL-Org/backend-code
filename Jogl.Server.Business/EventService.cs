@@ -1,5 +1,4 @@
-﻿using Azure;
-using Jogl.Server.Data;
+﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
@@ -117,7 +116,7 @@ namespace Jogl.Server.Business
             var events = _eventRepository.SearchSort(search, sortKey, ascending);
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, new List<EventTag>(), null);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null);
 
             var filteredEventPage = GetPage(filteredEvents, page, pageSize);
             EnrichEventData(filteredEventPage, eventAttendances, currentUserMemberships, currentUserId);
@@ -130,36 +129,46 @@ namespace Jogl.Server.Business
             var events = _eventRepository.Search(search);
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, new List<EventTag>(), null);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null);
 
             return filteredEvents.Count;
         }
 
-        public List<Event> ListForEntity(string entityId, string currentUserId, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public List<Event> ListForEntity(string entityId, string currentUserId, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var events = _eventRepository.SearchListSort(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to) && !e.Deleted, sortKey, ascending, search);
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags ?? new List<EventTag>(), null, page, pageSize);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null, page, pageSize);
             EnrichEventData(filteredEvents, eventAttendances, currentUserMemberships, currentUserId);
             RecordListings(currentUserId, filteredEvents);
 
             return filteredEvents;
         }
 
-        public ListPage<Event> ListForNode(string nodeId, string currentUserId, List<string> communityEntityIds, FeedEntityFilter? filter, List<EventTag> tags, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public ListPage<Event> ListForNode(string nodeId, string currentUserId, List<string> communityEntityIds, FeedEntityFilter? filter, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
 
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
-            var events = _eventRepository.SearchListSort(e => entityIds.Contains(e.CommunityEntityId) && (from == null || e.Start > from) && (to == null || e.Start < to) && !e.Deleted, sortKey, ascending, search);
-            var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
-            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
+            var events = _eventRepository
+                .QueryForInvitationStatus(search, currentUserId, status)
+                .Filter(e => filter== null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .Sort(sortKey, ascending)
+                .ToList();
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags, filter);
+            var eventAttendances = _eventAttendanceRepository
+                .Query(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId))
+                .ToList();
+
+            var currentUserMemberships = _membershipRepository
+                .Query(p => p.UserId == currentUserId)
+                .ToList();
+
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, filter);
             var total = filteredEvents.Count;
 
             var filteredEventPage = GetPage(filteredEvents, page, pageSize);
@@ -177,7 +186,7 @@ namespace Jogl.Server.Business
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == userId && !p.Deleted);
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, userId, new List<EventTag>(), null);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, userId, null);
             return filteredEvents.Count;
         }
 
@@ -189,7 +198,7 @@ namespace Jogl.Server.Business
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags ?? new List<EventTag>(), null, page, pageSize);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null, page, pageSize);
             EnrichEventData(filteredEvents, eventAttendances, currentUserMemberships, currentUserId);
             RecordListings(currentUserId, filteredEvents);
 
@@ -207,7 +216,7 @@ namespace Jogl.Server.Business
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags ?? new List<EventTag>(), null, page, pageSize);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null, page, pageSize);
             EnrichEventData(filteredEvents, eventAttendances, currentUserMemberships, currentUserId);
             RecordListings(currentUserId, filteredEvents);
 
@@ -548,7 +557,7 @@ namespace Jogl.Server.Business
             if (currentUser)
                 events = events.Where(e => eventAttendances.Any(ea => ea.EventId == e.Id.ToString() && ea.UserId == currentUserId && ea.Status == AttendanceStatus.Yes)).ToList();
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, tags ?? new List<EventTag>(), null);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null);
             EnrichEventData(filteredEvents, eventAttendances, currentUserMemberships, currentUserId);
 
             return GetPage(filteredEvents.Select(e => e.CommunityEntity).DistinctBy(e => e.Id), page, pageSize);

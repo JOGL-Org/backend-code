@@ -535,7 +535,22 @@ namespace Jogl.Server.DB
             return new FluentQuery<T>(_configuration, this, _context, q);
         }
 
+        protected IAggregateFluent<T> GetQuery(Expression<Func<T, bool>> filter = null)
+        {
+            var coll = GetCollection<T>();
+            var q = coll.Aggregate().Match(itm => !itm.Deleted);
+            if (filter != null)
+                q = q.Match(filter);
+
+            return q;
+        }
+
         public IFluentQuery<T> Query(string searchValue)
+        {
+            return new FluentQuery<T>(_configuration, this, _context, GetQuery(searchValue));
+        }
+
+        protected IAggregateFluent<T> GetQuery(string searchValue)
         {
             var coll = GetCollection<T>();
             var q = coll.Aggregate();
@@ -552,9 +567,7 @@ namespace Jogl.Server.DB
                 }), new SearchOptions<T> { IndexName = INDEX_SEARCH });
             }
 
-            q = q.Match(itm => !itm.Deleted);
-
-            return new FluentQuery<T>(_configuration, this, _context, q);
+            return q.Match(itm => !itm.Deleted);
         }
     }
 }

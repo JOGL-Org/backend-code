@@ -257,13 +257,13 @@ namespace Jogl.Server.API.Controllers
         [SwaggerOperation($"Lists all events for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Event data", typeof(ListPage<EventModel>))]
-        public async Task<IActionResult> ListEventsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] FeedEntityFilter? filter, [FromQuery] List<EventTag> tags, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListEventsAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] FeedEntityFilter? filter, [FromQuery] AttendanceStatus? status, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
         {
             var entity = GetEntity(id);
             if (entity == null)
                 return NotFound();
             
-            var events = _eventService.ListForNode(id, CurrentUserId, communityEntityIds, filter, tags, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var events = _eventService.ListForNode(id, CurrentUserId, communityEntityIds, filter, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var eventModels = events.Items.Select(_mapper.Map<EventModel>);
             return Ok(new ListPage<EventModel>(eventModels, events.Total));
         }
