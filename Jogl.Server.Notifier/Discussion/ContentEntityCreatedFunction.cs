@@ -53,33 +53,33 @@ namespace Jogl.Server.Notifier.Discussion
                     var users = _userRepository.Get(memberships.Select(m => m.UserId).ToList());
 
                     //send notifications to mentioned users
-                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).Where(u => !IsEmailProcessed(u)), author, channel.CommunityEntity, channel.CommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
-                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).Where(u => !IsPushProcessed(u)), author, channel.CommunityEntity, contentEntity.Id.ToString());
+                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, channel.CommunityEntity, channel.CommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
+                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, channel.CommunityEntity, contentEntity.Id.ToString());
 
                     await SendContainerPostEmailAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerEmail == true).Where(u => !IsEmailProcessed(u)), author, channel.CommunityEntity, contentEntity);
-                    await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerJogl == true).Where(u => !IsPushProcessed(u)), author, channel.CommunityEntity, contentEntity.Id.ToString());
+                    await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, channel.CommunityEntity, contentEntity.Id.ToString());
                     break;
                 case FeedType.Event:
                     var ev = (Event)feedEntity;
                     var eventCommunityEntity = _communityEntityService.Get(ev.CommunityEntityId);
 
                     //send notifications to mentioned users
-                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, eventCommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
-                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, contentEntity.Id.ToString());
+                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, eventCommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
+                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, contentEntity.Id.ToString());
 
                     //send notifications to users attending the event
                     var attendances = _eventAttendanceRepository.List(a => a.EventId == feedEntity.Id.ToString() && a.Status == AttendanceStatus.Yes && !string.IsNullOrEmpty(a.UserId) && a.UserId != contentEntity.CreatedByUserId && !a.Deleted);
                     var eventUsers = _userRepository.Get(attendances.Select(a => a.UserId).ToList());
-                    await SendObjectPostEmailAsync(eventUsers.Where(u => u.NotificationSettings?.PostAttendingEventEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, eventCommunityEntity, contentEntity);
-                    await SendPushNotificationsAsync(eventUsers.Where(u => u.NotificationSettings?.PostAttendingEventJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, contentEntity.Id.ToString());
+                    await SendObjectPostEmailAsync(eventUsers.Where(u => u.NotificationSettings?.PostAttendingEventEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, eventCommunityEntity, contentEntity);
+                    await SendPushNotificationsAsync(eventUsers.Where(u => u.NotificationSettings?.PostAttendingEventJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, contentEntity.Id.ToString());
 
                     //send notifications to the user who created the event
                     var eventCreator = _userRepository.Get(feedEntity.CreatedByUserId);
                     if (eventCreator == null || ev.CreatedByUserId == contentEntity.CreatedByUserId)
                         break;
 
-                    await SendObjectPostEmailAsync(new List<User> { eventCreator }.Where(u => u.NotificationSettings?.PostAuthoredEventEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, eventCommunityEntity, contentEntity);
-                    await SendPushNotificationsAsync(new List<User> { eventCreator }.Where(u => u.NotificationSettings?.PostAuthoredEventJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, contentEntity.Id.ToString());
+                    await SendObjectPostEmailAsync(new List<User> { eventCreator }.Where(u => u.NotificationSettings?.PostAuthoredEventEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, eventCommunityEntity, contentEntity);
+                    await SendPushNotificationsAsync(new List<User> { eventCreator }.Where(u => u.NotificationSettings?.PostAuthoredEventJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, contentEntity.Id.ToString());
                     break;
                 case FeedType.Need:
                     var need = (Need)feedEntity;
@@ -88,16 +88,16 @@ namespace Jogl.Server.Notifier.Discussion
                         break;
 
                     //send notifications to mentioned users
-                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, need.CommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
-                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, contentEntity.Id.ToString());
+                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, need.CommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
+                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, contentEntity.Id.ToString());
 
                     //send notifications to the user who created the need
                     var needCreator = _userRepository.Get(feedEntity.CreatedByUserId);
                     if (needCreator == null || need.CreatedByUserId == contentEntity.CreatedByUserId)
                         break;
 
-                    await SendObjectPostEmailAsync(new List<User> { needCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, need.CommunityEntity, contentEntity);
-                    await SendPushNotificationsAsync(new List<User> { needCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, contentEntity.Id.ToString());
+                    await SendObjectPostEmailAsync(new List<User> { needCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, need.CommunityEntity, contentEntity);
+                    await SendPushNotificationsAsync(new List<User> { needCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, contentEntity.Id.ToString());
                     break;
                 case FeedType.Document:
                     var doc = (Document)feedEntity;
@@ -106,21 +106,21 @@ namespace Jogl.Server.Notifier.Discussion
                         break;
 
                     //send notifications to mentioned users
-                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, docCommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
-                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, contentEntity.Id.ToString());
+                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, docCommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
+                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, contentEntity.Id.ToString());
 
                     //send notifications to the user who created the doc
                     var docCreator = _userRepository.Get(feedEntity.CreatedByUserId);
                     if (docCreator == null || doc.CreatedByUserId == contentEntity.CreatedByUserId)
                         break;
 
-                    await SendObjectPostEmailAsync(new List<User> { docCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, docCommunityEntity, contentEntity);
-                    await SendPushNotificationsAsync(new List<User> { docCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, contentEntity.Id.ToString());
+                    await SendObjectPostEmailAsync(new List<User> { docCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, docCommunityEntity, contentEntity);
+                    await SendPushNotificationsAsync(new List<User> { docCreator }.Where(u => u.NotificationSettings?.PostAuthoredObjectJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, contentEntity.Id.ToString());
                     break;
                 case FeedType.Paper:
                     //send notifications to mentioned users
-                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, null, contentEntity.Text, contentEntity.Id.ToString());
-                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, contentEntity.Id.ToString());
+                    await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, null, contentEntity.Text, contentEntity.Id.ToString());
+                    await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, contentEntity.Id.ToString());
                     break;
                 default:
                     throw new Exception($"Cannot process post for feed type {feedEntity.FeedType}");

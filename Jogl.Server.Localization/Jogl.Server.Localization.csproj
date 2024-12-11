@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <None Remove="locale\en.json" />
+    <None Remove="locale\fr.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="locale\fr.json" />
     <EmbeddedResource Include="locale\en.json" />
   </ItemGroup>
 

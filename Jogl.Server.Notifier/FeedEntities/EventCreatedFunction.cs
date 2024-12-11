@@ -18,7 +18,7 @@ namespace Jogl.Server.Notifier.FeedEntities
         {
         }
 
-        [Function(nameof(DocumentCreatedFunction))]
+        [Function(nameof(EventCreatedFunction))]
         public async Task RunDocumentsAsync(
             [ServiceBusTrigger("event-created", "notifications", Connection = "ConnectionString")]
             ServiceBusReceivedMessage message,

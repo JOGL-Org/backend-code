@@ -21,7 +21,7 @@ namespace Jogl.Server.Notifier.Discussion
         protected abstract string GetOrigin(string language);
         protected abstract string GetOriginAction(string language);
 
-        protected async Task SendMentionEmailAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, CommunityEntity communityEntity, string text, string contentEntityId)
+        protected async Task SendMentionEmailAsync(List<User> users, User author, FeedEntity feedEntity, CommunityEntity communityEntity, string text, string contentEntityId)
         {
             var communityEntityEmailData = users
                           .ToDictionary(u => u.Email, u => (object)new
@@ -46,7 +46,7 @@ namespace Jogl.Server.Notifier.Discussion
             await _emailService.SendEmailAsync(communityEntityEmailData, EmailTemplate.MentionCreated, fromName: author.FirstName);
         }
 
-        protected async Task SendMentionPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, string contentEntityId)
+        protected async Task SendMentionPushNotificationsAsync(List<User> users, User author, FeedEntity feedEntity, string contentEntityId)
         {
             SetPushProcessed(users);
 
@@ -66,7 +66,7 @@ namespace Jogl.Server.Notifier.Discussion
             }
         }
 
-        protected async Task SendPushNotificationsAsync(IEnumerable<User> users, User author, FeedEntity feedEntity, string contentEntityId)
+        protected async Task SendPushNotificationsAsync(List<User> users, User author, FeedEntity feedEntity, string contentEntityId)
         {
             SetPushProcessed(users);
 

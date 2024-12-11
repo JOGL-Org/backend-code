@@ -51,8 +51,8 @@ namespace Jogl.Server.Notifier.Discussion
                     case FeedType.Channel:
                         var channel = (Channel)feedEntity;
                         channel.CommunityEntity = _communityEntityService.Get(channel.CommunityEntityId);
-                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, channel.CommunityEntity, channel.CommunityEntity, comment.Text, comment.ContentEntityId);
-                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, channel.CommunityEntity, comment.ContentEntityId);
+                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, channel.CommunityEntity, channel.CommunityEntity, comment.Text, comment.ContentEntityId);
+                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, channel.CommunityEntity, comment.ContentEntityId);
                         break;
                     case FeedType.Event:
                         var ev = (Event)feedEntity;
@@ -60,8 +60,8 @@ namespace Jogl.Server.Notifier.Discussion
                         if (ev.CommunityEntity == null)
                             break;
 
-                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, ev.CommunityEntity, comment.Text, comment.ContentEntityId);
-                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, comment.ContentEntityId);
+                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, ev.CommunityEntity, comment.Text, comment.ContentEntityId);
+                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, comment.ContentEntityId);
                         break;
                     case FeedType.Need:
                         var need = (Need)feedEntity;
@@ -69,8 +69,8 @@ namespace Jogl.Server.Notifier.Discussion
                         if (need.CommunityEntity == null)
                             break;
 
-                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, need.CommunityEntity, comment.Text, comment.ContentEntityId);
-                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, comment.ContentEntityId);
+                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, need.CommunityEntity, comment.Text, comment.ContentEntityId);
+                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, comment.ContentEntityId);
                         break;
                     case FeedType.Document:
                         var doc = (Document)feedEntity;
@@ -79,14 +79,14 @@ namespace Jogl.Server.Notifier.Discussion
                         if (doc.FeedEntity as CommunityEntity == null)
                             break;
 
-                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, doc.FeedEntity as CommunityEntity, comment.Text, comment.ContentEntityId);
-                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, comment.ContentEntityId);
+                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, doc.FeedEntity as CommunityEntity, comment.Text, comment.ContentEntityId);
+                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, comment.ContentEntityId);
                         break;
                     case FeedType.Paper:
                         var paper = (Paper)feedEntity;
 
-                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true), author, feedEntity, null, comment.Text, comment.ContentEntityId);
-                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true), author, feedEntity, comment.ContentEntityId);
+                        await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).ToList(), author, feedEntity, null, comment.Text, comment.ContentEntityId);
+                        await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).ToList(), author, feedEntity, comment.ContentEntityId);
                         break;
                 }
             }
@@ -97,8 +97,8 @@ namespace Jogl.Server.Notifier.Discussion
                 var contentEntityAuthor = _userRepository.Get(contentEntity.CreatedByUserId);
                 var users = new List<User> { contentEntityAuthor };
 
-                await SendCommentEmailAsync(users.Where(u => u.NotificationSettings?.ThreadActivityEmail == true).Where(u => !IsEmailProcessed(u)), author, feedEntity, comment, comment.ContentEntityId);
-                await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.ThreadActivityJogl == true).Where(u => !IsPushProcessed(u)), author, feedEntity, comment.ContentEntityId);
+                await SendCommentEmailAsync(users.Where(u => u.NotificationSettings?.ThreadActivityEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, comment, comment.ContentEntityId);
+                await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.ThreadActivityJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, comment.ContentEntityId);
             }
 
             // Complete the message

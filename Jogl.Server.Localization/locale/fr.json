@@ -25,6 +25,6 @@
       }
     }
   },
-  "post": "publication",
-  "posted": "publié"
+  "post": "post",
+  "posted": "posted"
 }
