@@ -91,15 +91,14 @@ namespace Jogl.Server.Notifier.Discussion
                 }
             }
 
-            if (comment.CreatedByUserId != contentEntity.CreatedByUserId)
-            {
-                //notify content entity creator
-                var contentEntityAuthor = _userRepository.Get(contentEntity.CreatedByUserId);
-                var users = new List<User> { contentEntityAuthor };
+            //notify users following the post
+            var userIds = _userContentEntityRecordRepository
+                .Query(ucer => ucer.ContentEntityId == contentEntity.Id.ToString() && ucer.FollowedUTC.HasValue)
+                .ToList(ucer => ucer.UserId);
 
-                await SendCommentEmailAsync(users.Where(u => u.NotificationSettings?.ThreadActivityEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, comment, comment.ContentEntityId);
-                await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.ThreadActivityJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, comment.ContentEntityId);
-            }
+            var users = _userRepository.Get(userIds);
+            await SendCommentEmailAsync(users.Where(u => u.NotificationSettings?.ThreadActivityEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, feedEntity, comment, comment.ContentEntityId);
+            await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.ThreadActivityJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, feedEntity, comment.ContentEntityId);
 
             // Complete the message
             await messageActions.CompleteMessageAsync(message);

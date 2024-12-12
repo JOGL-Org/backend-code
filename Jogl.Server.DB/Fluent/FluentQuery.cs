@@ -63,7 +63,6 @@ namespace Jogl.Server.DB
             return this;
         }
 
-
         public IFluentQuery<T> Filter(Expression<Func<T, bool>> filter)
         {
             if (filter != null)
@@ -91,6 +90,14 @@ namespace Jogl.Server.DB
         public List<T> ToList()
         {
             return _query.ToList();
+        }
+
+        public List<TNew> ToList<TNew>(Expression<Func<T, TNew>> selector)
+        {
+            var builder = new ProjectionDefinitionBuilder<T>();
+            var q = _query.Project(builder.Expression(selector));
+
+            return q.ToList();
         }
 
         public long Count()

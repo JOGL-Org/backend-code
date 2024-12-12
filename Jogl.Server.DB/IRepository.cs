@@ -4,7 +4,6 @@ using MongoDB.Bson;
 using MongoDB.Driver.Search;
 using MongoDB.Driver;
 using System.Linq.Expressions;
-using System.Collections;
 
 namespace Jogl.Server.DB
 {
@@ -12,14 +11,14 @@ namespace Jogl.Server.DB
     {
         Task EnsureExistsAsync();
         Task InitializeAsync();
+
+        IMongoCollection<T> GetCollection<T>();
+        IMongoCollection<T> GetCollection<T>(string collectionName);
     }
 
     public interface IRepository<T> : IRepository where T : Entity
     {
         Expression<Func<T, object>> GetSort(SortKey sortKey);
-        IMongoCollection<T> GetCollection<T>();
-        IMongoCollection<T> GetCollection<T>(string collectionName);
-
         Task<string> CreateAsync(T entity);
         Task<List<string>> CreateAsync(List<T> entities);
         Task CreateBulkAsync(List<T> entities);
