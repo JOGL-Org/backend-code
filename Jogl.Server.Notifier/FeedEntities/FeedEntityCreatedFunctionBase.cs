@@ -34,7 +34,7 @@ namespace Jogl.Server.Notifier.FeedEntities
 
                 await _pushNotificationService.PushAsync(pushTokens.Select(t => t.Token).ToList(),
                        _localizationService.GetString("templates.push.feedEntityCreate.title", lang, _localizationService.GetString(entity.FeedType, lang)),
-                       _localizationService.GetString("templates.push.feedEntityCreate.body", lang, creator.FullName, entity.FeedTitle),
+                       _localizationService.GetString("templates.push.feedEntityCreate.body", lang, creator.FullName, parentEntity.FeedTitle),
                        _urlService.GetUrl(entity));
             }
 

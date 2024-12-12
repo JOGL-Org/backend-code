@@ -1,30 +1,32 @@
 ﻿{
   "workspace": "Espace de travail",
-  "node": "Centre",
+  "node": "Hub",
   "templates": {
     "push": {
       "containerInvite": {
         "title": "Invitation à un {0}",
-        "body": "{0} vous a invité à rejoindre son {1}"
+        "body": "{0} vous a invité à rejoindre leur {1}"
       },
       "discussion": {
-        "title": "Invitation à un {0}",
-        "body": "{0} vous a invité à rejoindre son {1}"
+        "title": "{0} dans {1}",
+        "body": "{0} {1} dans {2}"
       },
       "mention": {
         "title": "{0} dans {1}",
-        "body": "{0} a {1} dans {2}"
+        "body": "{0} vous a mentionné dans {2}"
       },
       "feedEntityCreate": {
         "title": "Nouveau {0}",
         "body": "{0} a ajouté quelque chose dans {1}"
       },
       "feedEntityShare": {
-        "title": "{0} mis à jour",
-        "body": "{0} a modifié quelque chose dans {1}"
+        "title": "{0}",
+        "body": "{0} a partagé quelque chose avec vous dans {1}"
       }
     }
   },
   "post": "publication",
-  "posted": "publié"
+  "posted": "publié",
+  "reply": "réponse",
+  "replied": "répondu"
 }
