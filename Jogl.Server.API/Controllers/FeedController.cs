@@ -850,19 +850,12 @@ namespace Jogl.Server.API.Controllers
 
         [HttpGet]
         [Route("nodes")]
-        [Route("nodes/new")]
         [SwaggerOperation("Returns a list of nodes with metadata")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(List<NodeFeedDataModelNew>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(List<NodeFeedDataModel>))]
         public async Task<IActionResult> GetNodeMetadataNew()
         {
             var nodeData = _contentService.ListNodeMetadata(CurrentUserId);
-            var nodeDataModels = nodeData.Select(_mapper.Map<NodeFeedDataModelNew>);
-
-            //var nodeDataModels = new List<NodeFeedDataModelNew>
-            //{
-            //    new NodeFeedDataModelNew { Title = "Node 1", ShortTitle = "N1", Entities = new List<CommunityEntityChannelModel> { new CommunityEntityChannelModel { Title = "Node 1", ShortTitle = "N1", Type= CommunityEntityType.Node, Channels = new List<ChannelExtendedModel> { new ChannelExtendedModel { Title = "General Discussion", IconKey = "key-1", UnreadPostsTotal = 1, UnreadMentionsTotal = 1 }, new ChannelExtendedModel { Title = "Another discussion", IconKey = "key-2" } } } } },
-            //    new NodeFeedDataModelNew { Title = "Node 2", ShortTitle = "N2", Entities = new List<CommunityEntityChannelModel> { new CommunityEntityChannelModel { Title = "Space A", ShortTitle = "A", Type = CommunityEntityType.Project, Channels = new List<ChannelExtendedModel> { new ChannelExtendedModel { Title = "General Discussion", IconKey = "key-2", UnreadPostsTotal = 1, UnreadMentionsTotal = 0 } } }, new CommunityEntityChannelModel { Title = "Space B", ShortTitle = "B", Type = CommunityEntityType.Workspace, Channels = new List<ChannelExtendedModel> { new ChannelExtendedModel { Title = "General Discussion", IconKey="key-2", UnreadMentionsTotal = 4, UnreadPostsTotal = 5, UnreadThreadsTotal = 1 } } }, new CommunityEntityChannelModel { Title="Subspace" , ShortTitle="B2", Type= CommunityEntityType.Project, Level=1, Channels= new List<ChannelExtendedModel> { new ChannelExtendedModel { Title="General Discussion", IconKey="key-1"} } } } }
-            //};
+            var nodeDataModels = nodeData.Select(_mapper.Map<NodeFeedDataModel>);
 
             return Ok(nodeDataModels);
         }
@@ -870,24 +863,12 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [Route("nodes/{id}")]
         [SwaggerOperation("Returns a node with metadata")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModelNew))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModel))]
         public async Task<IActionResult> GetNodeMetadata(string id)
         {
             var nodeData = _contentService.GetNodeMetadata(id, CurrentUserId);
-            var nodeDataModel = _mapper.Map<NodeFeedDataModelNew>(nodeData);
+            var nodeDataModel = _mapper.Map<NodeFeedDataModel>(nodeData);
             
-            return Ok(nodeDataModel);
-        }
-
-        [Obsolete]
-        [HttpGet]
-        [Route("nodes/default")]
-        [SwaggerOperation("Returns metadata for the user's default node and the currently logged in user")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModelNew))]
-        public async Task<IActionResult> GetDefaultNodeMetadata()
-        {
-            var defaultNode = _contentService.GetDefaultNodeMetadata(CurrentUserId);
-            var nodeDataModel = _mapper.Map<NodeFeedDataModelNew>(defaultNode);
             return Ok(nodeDataModel);
         }
 

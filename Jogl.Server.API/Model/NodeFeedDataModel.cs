@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.API.Model
 {
-    public class NodeFeedDataModelNew : CommunityEntityMiniModel
+    public class NodeFeedDataModel : CommunityEntityMiniModel
     {
         [JsonPropertyName("entities")]
         public List<CommunityEntityChannelModel> Entities { get; set; }
