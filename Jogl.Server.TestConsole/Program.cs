@@ -1,7 +1,6 @@
 ﻿using Jogl.Server.Configuration;
 using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -9,6 +8,15 @@ IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("Environment")}.json")
     .AddKeyVault()
     .Build();
+
+
+var membershipRepo = new MembershipRepository(config);
+var channelMembershipsWithOwner= membershipRepo.Query(m=> m.CommunityEntityType== Jogl.Server.Data.CommunityEntityType.Channel && m.AccessLevel== Jogl.Server.Data.AccessLevel.Owner).ToList();
+foreach (var channelMembership in channelMembershipsWithOwner)
+{
+    channelMembership.AccessLevel = Jogl.Server.Data.AccessLevel.Admin;
+    await membershipRepo.UpdateAsync(channelMembership);
+}
 
 var ucerRepo = new UserContentEntityRecordRepository(config);
 var ufrRepo = new UserFeedRecordRepository(config);

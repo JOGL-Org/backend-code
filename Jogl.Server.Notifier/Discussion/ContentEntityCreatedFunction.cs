@@ -56,7 +56,7 @@ namespace Jogl.Server.Notifier.Discussion
                     await SendMentionEmailAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionEmail == true).Where(u => !IsEmailProcessed(u)).ToList(), author, channel.CommunityEntity, channel.CommunityEntity, contentEntity.Text, contentEntity.Id.ToString());
                     await SendMentionPushNotificationsAsync(mentionUsers.Where(u => u.NotificationSettings?.MentionJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, channel.CommunityEntity, contentEntity.Id.ToString());
 
-                    await SendContainerPostEmailAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerEmail == true).Where(u => !IsEmailProcessed(u)), author, channel.CommunityEntity, contentEntity);
+                    await SendContainerPostEmailAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerEmail == true).Where(u => !IsEmailProcessed(u)), author, channel.CommunityEntity,channel, contentEntity);
                     await SendPushNotificationsAsync(users.Where(u => u.NotificationSettings?.PostMemberContainerJogl == true).Where(u => !IsPushProcessed(u)).ToList(), author, channel.CommunityEntity, contentEntity.Id.ToString());
                     break;
                 case FeedType.Event:
@@ -130,18 +130,18 @@ namespace Jogl.Server.Notifier.Discussion
             await messageActions.CompleteMessageAsync(message);
         }
 
-        private async Task SendContainerPostEmailAsync(IEnumerable<User> users, User author, CommunityEntity communityEntity, ContentEntity contentEntity)
+        private async Task SendContainerPostEmailAsync(IEnumerable<User> users, User author, CommunityEntity communityEntity, Channel channel, ContentEntity contentEntity)
         {
             var communityEntityEmailData = users
                           .ToDictionary(u => u.Email, u => (object)new
                           {
                               NAME = author.FeedTitle,
-                              AVATAR_URL = _urlService.GetImageUrl(author.AvatarId),
                               CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType, u.Language),
                               CONTAINER_URL = _urlService.GetUrl(communityEntity),
                               CONTAINER_NAME = communityEntity.FeedTitle,
+                              CHANNEL_NAME = channel.Title,
+                              CHANNEL_URL = _urlService.GetUrl(channel),
                               CONTENT_ENTITY_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
-                              //CONTENT_ENTITY_DATE = contentEntity.CreatedUTC.ToString(),
                               CONTENT_ENTITY_TEXT = contentEntity.Text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
                               LANGUAGE = u.Language
@@ -158,15 +158,10 @@ namespace Jogl.Server.Notifier.Discussion
                           .ToDictionary(u => u.Email, u => (object)new
                           {
                               NAME = author.FeedTitle,
-                              AVATAR_URL = _urlService.GetImageUrl(author.AvatarId),
-                              CONTAINER_TYPE = _localizationService.GetString(communityEntity.FeedType, u.Language),
-                              CONTAINER_URL = _urlService.GetUrl(communityEntity),
-                              CONTAINER_NAME = communityEntity.FeedTitle,
                               OBJECT_TYPE = _localizationService.GetString(feedEntity.FeedType, u.Language),
                               OBJECT_URL = _urlService.GetUrl(feedEntity),
                               OBJECT_NAME = feedEntity.FeedTitle,
                               CONTENT_ENTITY_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
-                              //CONTENT_ENTITY_DATE = contentEntity.CreatedUTC.ToString(),
                               CONTENT_ENTITY_TEXT = contentEntity.Text,
                               CTA_URL = _urlService.GetContentEntityUrl(contentEntity.Id.ToString()),
                               LANGUAGE = u.Language
