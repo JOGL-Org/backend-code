@@ -868,6 +868,19 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpGet]
+        [Route("nodes/{id}")]
+        [SwaggerOperation("Returns a node with metadata")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModelNew))]
+        public async Task<IActionResult> GetNodeMetadata(string id)
+        {
+            var nodeData = _contentService.GetNodeMetadata(id, CurrentUserId);
+            var nodeDataModel = _mapper.Map<NodeFeedDataModelNew>(nodeData);
+            
+            return Ok(nodeDataModel);
+        }
+
+        [Obsolete]
+        [HttpGet]
         [Route("nodes/default")]
         [SwaggerOperation("Returns metadata for the user's default node and the currently logged in user")]
         [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModelNew))]
@@ -877,18 +890,6 @@ namespace Jogl.Server.API.Controllers
             var nodeDataModel = _mapper.Map<NodeFeedDataModelNew>(defaultNode);
             return Ok(nodeDataModel);
         }
-
-        [HttpGet]
-        [Route("nodes/{id}")]
-        [SwaggerOperation("Returns metadata for a given node and the currently logged in user")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "Node metadata", typeof(NodeFeedDataModel))]
-        public async Task<IActionResult> GetNodeMetadata([FromRoute] string id)
-        {
-            var nodeData = _contentService.GetNodeMetadata(id, CurrentUserId);
-            var nodeDataModel = _mapper.Map<NodeFeedDataModel>(nodeData);
-            return Ok(nodeDataModel);
-        }
-
 
         [HttpGet]
         [Route("{feedId}/users")]

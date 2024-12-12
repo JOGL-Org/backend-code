@@ -652,18 +652,6 @@ namespace Jogl.Server.API.Mapping
             CreateMap<UserFeedRecord, UserFeedRecordModel>();
             CreateMap<UserFeedRecordModel, UserFeedRecord>();
 
-            CreateMap<NodeFeedData, NodeFeedDataModel>()
-                .ForMember(dst => dst.Type, opt => opt.MapFrom((src, dst, ctx) => FeedType.Node))
-                .ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.BannerId, true)))
-                .ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.LogoId, true)))
-                .ForMember(dst => dst.Access, opt => opt.MapFrom((src, dst, ctx) =>
-                 {
-                     return new CommunityEntityPermissionModel
-                     {
-                         Permissions = src.Permissions
-                     };
-                 }));
-
             CreateMap<NodeFeedData, NodeFeedDataModelNew>()
             .ForMember(dst => dst.Type, opt => opt.MapFrom((src, dst, ctx) => FeedType.Node))
             .ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.BannerId, true)))
