@@ -98,12 +98,12 @@ namespace Jogl.Server.API.Controllers
         [SwaggerOperation($"Lists all events for the specified entity")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view events for the entity")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The event data", typeof(List<EventModel>))]
-        public async Task<IActionResult> GetEvents([FromRoute] string entityId, [FromQuery]AttendanceStatus? status, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
+        public async Task<IActionResult> GetEvents([FromRoute] string entityId, [FromQuery] AttendanceStatus? status, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] SearchModel model)
         {
             if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
                 return Forbid();
 
-            var events = _eventService.ListForEntity(CurrentUserId, entityId, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var events = _eventService.ListForEntity(entityId, CurrentUserId, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var eventModels = events.Select(_mapper.Map<EventModel>);
             return Ok(eventModels);
         }

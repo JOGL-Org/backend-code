@@ -136,7 +136,12 @@ namespace Jogl.Server.Business
 
         public List<Event> ListForEntity(string entityId, string currentUserId, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
-            var events = _eventRepository.SearchListSort(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to) && !e.Deleted, sortKey, ascending, search);
+            var events = _eventRepository
+                .Query(search)
+                .Filter(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .Sort(sortKey, ascending)
+                .ToList();
+
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
@@ -156,7 +161,7 @@ namespace Jogl.Server.Business
 
             var events = _eventRepository
                 .QueryForInvitationStatus(search, currentUserId, status)
-                .Filter(e => filter== null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .Filter(e => filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId) && (from == null || e.Start > from) && (to == null || e.Start < to))
                 .Sort(sortKey, ascending)
                 .ToList();
 
