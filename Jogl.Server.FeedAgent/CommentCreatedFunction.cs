@@ -75,7 +75,8 @@ namespace Jogl.Server.Notifier
                     UserName = "AI Agent",
                     UserURL = "/",
                     UserAvatarURL = "/images/discussionApps/ai-logo.svg"
-                }
+                },
+                Mentions = new List<Mention>()
             };
 
             await _commentRepository.CreateAsync(replyComment);
