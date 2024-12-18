@@ -3,8 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Jogl.Server.Data
 {
-    public enum UserStatus { Pending, Verified }
-    
+    public enum UserStatus { Pending, Verified, Archived }
+
     [BsonIgnoreExtraElements]
     public class User : FeedEntity
     {

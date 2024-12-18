@@ -368,6 +368,58 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("archive")]
+        [SwaggerOperation($"Archives the current user")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, "The user cannot be archived")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "The user is already archived")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user was archived successfully")]
+        public async Task<IActionResult> ArchiveCurrentUser()
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user.Status == UserStatus.Pending)
+                return BadRequest();
+
+            if (user.Status == UserStatus.Archived)
+                return Conflict();
+
+            user.Status = UserStatus.Archived;
+            await InitUpdateAsync(user);
+            await _userService.UpdateAsync(user);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("unarchive")]
+        [SwaggerOperation($"Unarchives the current user")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, "The user isn't archived")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user was unarchived successfully")]
+        public async Task<IActionResult> UnarchiveCurrentUser()
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user.Status != UserStatus.Archived)
+                return BadRequest();
+
+            user.Status = UserStatus.Verified;
+            await InitUpdateAsync(user);
+            await _userService.UpdateAsync(user);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [SwaggerOperation($"Deletes the current user")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, "The user cannot be deleted")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "The user is already archived")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user was deleted successfully")]
+        public async Task<IActionResult> DeleteCurrentUser()
+        {
+            var user = _userService.Get(CurrentUserId);
+
+            await InitUpdateAsync(user);
+            await _userService.DeleteAsync(user);
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpGet]
         [Route("exists/username/{username}")]

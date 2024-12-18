@@ -57,7 +57,7 @@ namespace Jogl.Server.Mailer
 
                 if (score >= AUTO_DELETE_THRESHOLD)
                 {
-                    await _userService.DeleteAsync(user.Id.ToString());
+                    await _userService.DeleteAsync(user);
                     await _emailService.SendEmailAsync(_configuration["UserDeleteNotificationEmail"], EmailTemplate.ObjectDeleted, new
                     {
                         ENTITY_TYPE = "user",

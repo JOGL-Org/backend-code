@@ -20,7 +20,7 @@ namespace Jogl.Server.Business
         List<User> Autocomplete(string search, int page, int pageSize);
 
         Task UpdateAsync(User user);
-        Task DeleteAsync(string id);
+        Task DeleteAsync(User user);
 
         Task ResetPasswordAsync(string email, string url);
         Task<bool> ResetPasswordConfirmAsync(string email, string code, string newPassword);

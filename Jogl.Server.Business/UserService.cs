@@ -271,8 +271,11 @@ namespace Jogl.Server.Business
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task DeleteAsync(string id)
+
+        public async Task DeleteAsync(User user)
         {
+            var id = user.Id.ToString();
+
             //delete feed
             await DeleteFeedAsync(id);
 
