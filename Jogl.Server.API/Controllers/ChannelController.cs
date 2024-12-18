@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
-using Jogl.Server.DB;
-using static SkiaSharp.HarfBuzz.SKShaper;
 using Jogl.Server.Data.Util;
-using Syncfusion.XlsIO.Implementation.XmlSerialization;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -24,16 +21,53 @@ namespace Jogl.Server.API.Controllers
         private readonly IDocumentService _documentService;
         private readonly IMembershipService _membershipService;
         private readonly IUserService _userService;
+        private readonly ICommunityEntityService _communityEntityService;
         private readonly IConfiguration _configuration;
 
-        public ChannelController(IChannelService channelService, IDocumentService documentService, IMembershipService membershipService, IUserService userService, IConfiguration configuration, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public ChannelController(IChannelService channelService, IDocumentService documentService, IMembershipService membershipService, IUserService userService, ICommunityEntityService communityEntityService, IConfiguration configuration, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _channelService = channelService;
             _documentService = documentService;
             _membershipService = membershipService;
             _userService = userService;
+            _communityEntityService = communityEntityService;
             _configuration = configuration;
         }
+
+        [HttpPost]
+        [Route("{entityId}/channels")]
+        [SwaggerOperation($"Adds a new channel for the specified entity.")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to add discussion channels for the entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The channel was created", typeof(string))]
+        public async Task<IActionResult> AddChannel([FromRoute] string entityId, [FromBody] ChannelUpsertModel model)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.CreateChannels, CurrentUserId))
+                return Forbid();
+
+            var e = _mapper.Map<Channel>(model);
+            e.CommunityEntityId = entityId;
+            await InitCreationAsync(e);
+            var channelId = await _channelService.CreateAsync(e);
+
+            return Ok(channelId);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{entityId}/channels")]
+        [SwaggerOperation($"Lists channels for the specified entity.")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view channels for the entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"channel data", typeof(List<ChannelModel>))]
+        public async Task<IActionResult> GetChannels([FromRoute] string entityId, [FromQuery] SearchModel model)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var channels = _channelService.ListForEntity(CurrentUserId, entityId, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var channelModels = channels.Select(_mapper.Map<ChannelModel>);
+            return Ok(channelModels);
+        }
+
 
         [AllowAnonymous]
         [HttpGet]
@@ -332,222 +366,5 @@ namespace Jogl.Server.API.Controllers
             var documentModels = documents.Items.Select(d => _mapper.Map<DocumentModel>(d)).ToList();
             return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
         }
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("migration/channels")]
-        //public async Task<IActionResult> RunChannelMigrations()
-        //{
-        //    var projectRepo = new ProjectRepository(_configuration);
-        //    var communityRepo = new WorkspaceRepository(_configuration);
-        //    var nodeRepo = new NodeRepository(_configuration);
-
-        //    var channelRepo = new ChannelRepository(_configuration);
-
-        //    foreach (var e in projectRepo.List(p => !p.Deleted))
-        //    {
-        //        if (!string.IsNullOrEmpty(e.HomeChannelId))
-        //            continue;
-
-        //        e.HomeChannelId = channelRepo.Get(c => c.CommunityEntityId == e.Id.ToString() && c.Title == "General")?.Id.ToString();
-        //        await projectRepo.UpdateAsync(e);
-        //    }
-
-        //    foreach (var e in communityRepo.List(p => !p.Deleted))
-        //    {
-        //        if (!string.IsNullOrEmpty(e.HomeChannelId))
-        //            continue;
-
-        //        e.HomeChannelId = channelRepo.Get(c => c.CommunityEntityId == e.Id.ToString() && c.Title == "General")?.Id.ToString();
-        //        await communityRepo.UpdateAsync(e);
-        //    }
-
-        //    foreach (var e in nodeRepo.List(p => !p.Deleted))
-        //    {
-        //        if (!string.IsNullOrEmpty(e.HomeChannelId))
-        //            continue;
-
-        //        e.HomeChannelId = channelRepo.Get(c => c.CommunityEntityId == e.Id.ToString() && c.Title == "General")?.Id.ToString();
-        //        await nodeRepo.UpdateAsync(e);
-        //    }
-
-        //    return Ok();
-        //}
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("migration/tabs")]
-        //public async Task<IActionResult> RunTabMigration()
-        //{
-        //    var projectRepo = new ProjectRepository(_configuration);
-        //    var communityRepo = new WorkspaceRepository(_configuration);
-        //    var nodeRepo = new NodeRepository(_configuration);
-
-        //    foreach (var e in projectRepo.List(p => !p.Deleted))
-        //    {
-        //        e.Tabs = new List<string> { "documents", "papers", "needs", "events" };
-        //        await projectRepo.UpdateAsync(e);
-        //    }
-
-        //    foreach (var e in communityRepo.List(p => !p.Deleted))
-        //    {
-        //        e.Tabs = new List<string> { "documents", "papers", "needs", "events" };
-        //        await communityRepo.UpdateAsync(e);
-        //    }
-
-        //    foreach (var e in nodeRepo.List(p => !p.Deleted))
-        //    {
-        //        e.Tabs = new List<string> { "documents", "papers", "needs", "events" };
-        //        await nodeRepo.UpdateAsync(e);
-        //    }
-
-        //    return Ok();
-        //}
-
-        //[AllowAnonymous]
-        //[HttpGet]
-        //[Route("migration/workspaces")]
-        //public async Task<IActionResult> RunWorkspaceMigration()
-        //{
-        //    var projectRepo = new ProjectRepository(_configuration);
-        //    var communityRepo = new WorkspaceRepository(_configuration);
-
-        //    var feedRepo = new FeedRepository(_configuration);
-        //    var membershipRepo = new MembershipRepository(_configuration);
-        //    var relationRepo = new RelationRepository(_configuration);
-        //    var invitationRepo = new InvitationRepository(_configuration);
-        //    var ceInvitationRepo = new CommunityEntityInvitationRepository(_configuration);
-
-        //    foreach (var comm in communityRepo.List(p => true))
-        //    {
-        //        if (string.IsNullOrEmpty(comm.Label))
-        //        {
-        //            comm.Label = "Workspace";
-        //            await communityRepo.UpdateAsync(comm);
-        //        }
-        //    }
-
-        //    foreach (var proj in projectRepo.List(p => true))
-        //    {
-        //        var comm = new Workspace
-        //        {
-        //            Id = proj.Id,
-        //            BannerId = proj.BannerId,
-        //            AccessLevel = proj.AccessLevel,
-        //            CFPCount = proj.CFPCount,
-        //            Channels = proj.Channels,
-        //            WorkspaceCount = proj.WorkspaceCount,
-        //            ContentAccessOrigin = proj.ContentAccessOrigin,
-        //            ContentEntityCount = proj.ContentEntityCount,
-        //            ContentPrivacy = proj.ContentPrivacy,
-        //            ContentPrivacyCustomSettings = proj.ContentPrivacyCustomSettings,
-        //            Contribution = proj.Contribution,
-        //            CreatedBy = proj.CreatedBy,
-        //            CreatedByUserId = proj.CreatedByUserId,
-        //            CreatedUTC = proj.CreatedUTC,
-        //            Deleted = proj.Deleted,
-        //            Description = proj.Description,
-        //            DocumentCount = proj.DocumentCount,
-        //            DocumentCountAggregate = proj.DocumentCountAggregate,
-        //            FeedId = proj.FeedId,
-        //            //FeedLogoId = proj.FeedLogoId,
-        //            //FeedTitle = proj.FeedTitle,
-        //            //FeedType = proj.FeedType,
-        //            HomeChannelId = proj.HomeChannelId,
-        //            Interests = proj.Interests,
-        //            JoiningRestrictionLevel = proj.JoiningRestrictionLevel,
-        //            JoiningRestrictionLevelCustomSettings = proj.JoiningRestrictionLevelCustomSettings,
-        //            Keywords = proj.Keywords,
-        //            Label = "Project",
-        //            LastActivityUTC = proj.LastActivityUTC,
-        //            Level = proj.Level,
-        //            Links = proj.Links,
-        //            ListingAccessOrigin = proj.ListingAccessOrigin,
-        //            ListingPrivacy = proj.ListingPrivacy,
-        //            LogoId = proj.LogoId,
-        //            MemberCount = proj.MemberCount,
-        //            NeedCount = proj.NeedCount,
-        //            NeedCountAggregate = proj.NeedCountAggregate,
-        //            NodeCount = proj.NodeCount,
-        //            OnboardedUTC = proj.OnboardedUTC,
-        //            Onboarding = proj.Onboarding ?? new OnboardingConfiguration
-        //            {
-        //                Presentation = new OnboardingPresentation { Items = new List<OnboardingPresentationItem> { } },
-        //                Questionnaire = new OnboardingQuestionnaire { Items = new List<OnboardingQuestionnaireItem> { } },
-        //                Rules = new OnboardingRules { Text = string.Empty }
-        //            },
-        //            OrganizationCount = proj.OrganizationCount,
-        //            PaperCount = proj.PaperCount,
-        //            PaperCountAggregate = proj.PaperCountAggregate,
-        //            ParticipantCount = proj.ParticipantCount,
-        //            Path = proj.Path,
-        //            Permissions = proj.Permissions,
-        //            PostCount = proj.PostCount,
-        //            ResourceCount = proj.ResourceCount,
-        //            ResourceCountAggregate = proj.ResourceCountAggregate,
-        //            Settings = proj.Settings,
-        //            ShortDescription = proj.ShortDescription,
-        //            ShortTitle = proj.ShortTitle,
-        //            Status = proj.Status,
-        //            Tabs = proj.Tabs,
-        //            Title = proj.Title,
-        //            //Type= CommunityEntityType.Workspace,
-        //            UpdatedByUserId = proj.UpdatedByUserId,
-        //            UpdatedUTC = proj.UpdatedUTC,
-        //        };
-
-        //        await communityRepo.CreateAsync(comm);
-        //    }
-
-        //    foreach (var feed in feedRepo.List(f => f.Type == FeedType.Project))
-        //    {
-        //        feed.Type = FeedType.Workspace;
-        //        await feedRepo.UpdateAsync(feed);
-        //    }
-
-        //    foreach (var membership in membershipRepo.List(m => m.CommunityEntityType == CommunityEntityType.Project))
-        //    {
-        //        membership.CommunityEntityType = CommunityEntityType.Workspace;
-        //        await membershipRepo.UpdateAsync(membership);
-        //    }
-
-        //    foreach (var relation in relationRepo.List(r => r.SourceCommunityEntityType == CommunityEntityType.Project))
-        //    {
-        //        relation.SourceCommunityEntityType = CommunityEntityType.Workspace;
-        //        await relationRepo.UpdateAsync(relation);
-        //    }
-
-        //    foreach (var invitation in invitationRepo.List(i => i.CommunityEntityType == CommunityEntityType.Project))
-        //    {
-        //        invitation.CommunityEntityType = CommunityEntityType.Workspace;
-        //        await invitationRepo.UpdateAsync(invitation);
-        //    }
-
-        //    foreach (var ceInvitation in ceInvitationRepo.List(i => i.SourceCommunityEntityType == CommunityEntityType.Project))
-        //    {
-        //        ceInvitation.SourceCommunityEntityType = CommunityEntityType.Workspace;
-        //        await ceInvitationRepo.UpdateAsync(ceInvitation);
-        //    }
-
-        //    foreach (var ceInvitation in ceInvitationRepo.List(i => i.TargetCommunityEntityType == CommunityEntityType.Project))
-        //    {
-        //        ceInvitation.TargetCommunityEntityType = CommunityEntityType.Workspace;
-        //        await ceInvitationRepo.UpdateAsync(ceInvitation);
-        //    }
-
-        //    //ensure no public workspaces
-        //    foreach (var community in communityRepo.List(i => true))
-        //    {
-        //        if (community.ListingPrivacy == PrivacyLevel.Public)
-        //            community.ListingPrivacy = PrivacyLevel.Ecosystem;
-
-        //        if (community.ContentPrivacy == PrivacyLevel.Public)
-        //            community.ContentPrivacy = PrivacyLevel.Ecosystem;
-
-        //        await communityRepo.UpdateAsync(community);
-        //    }
-
-        //    return Ok();
-        //}
     }
 }

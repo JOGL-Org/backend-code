@@ -1571,6 +1571,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(eventModels);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/channels")]
         [SwaggerOperation($"Adds a new channel for the specified entity.")]
@@ -1594,6 +1595,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(channelId);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/channels")]
