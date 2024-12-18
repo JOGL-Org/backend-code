@@ -192,6 +192,9 @@ namespace Jogl.Server.API.Controllers
             if (user == null)
                 return NotFound();
 
+            if (user.Status != UserStatus.Verified && id != CurrentUserId)
+                return NotFound();
+
             if (user.Id.ToString() != CurrentUserId)
                 user.Email = null;
 
