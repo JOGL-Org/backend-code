@@ -27,6 +27,8 @@ namespace Jogl.Server.Business
         Task OneTimeLoginAsync(string email, string url);
         Task<bool> VerifyOneTimeLoginAsync(string email, string code);
         Task SetPasswordAsync(string userId, string password);
+        Task SetActiveAsync(User user);
+        Task SetArchivedAsync(User user);
 
         Task SendMessageAsync(string userIdFrom, string userIdTo, string appUrl, string subject, string text);
 

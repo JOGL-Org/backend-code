@@ -49,9 +49,9 @@ namespace Jogl.Server.DB
                                                            .Set(e => e.UpdatedByUserId, userId));
         }
 
-        public async Task SetVerifiedAsync(string userId)
+        public async Task SetStatusAsync(string userId, UserStatus status)
         {
-            await UpdateAsync(userId, Builders<User>.Update.Set(e => e.Status, UserStatus.Verified)
+            await UpdateAsync(userId, Builders<User>.Update.Set(e => e.Status, status)
                                                            .Set(e => e.UpdatedUTC, DateTime.UtcNow)
                                                            .Set(e => e.UpdatedByUserId, userId));
         }

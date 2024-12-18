@@ -73,7 +73,7 @@ namespace Jogl.Server.Business
                 return new VerificationResult { Status = VerificationStatus.Invalid };
 
             await _verificationCodeRepository.DeleteAsync(existingVerification.Id.ToString());
-            await _userRepository.SetVerifiedAsync(user.Id.ToString());
+            await _userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);
 
             return new VerificationResult { Status = VerificationStatus.OK, RedirectURL = existingVerification.RedirectURL };
         }

@@ -45,6 +45,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("status")]
         public string StatusText { get; set; }
 
+        [JsonPropertyName("user_status")]
+        public UserStatus Status { get; set; }
+
         [JsonPropertyName("bio")]
         public string Bio { get; set; }
 

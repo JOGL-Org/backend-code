@@ -7,7 +7,7 @@ namespace Jogl.Server.DB
         [Obsolete]
         User GetForEmail(string email);
 
-        Task SetVerifiedAsync(string userId);
+        Task SetStatusAsync(string userId, UserStatus status);
         Task SetPasswordAsync(string userId, string passwordHash, byte[] salt);
     }
 }

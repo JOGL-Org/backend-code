@@ -383,9 +383,8 @@ namespace Jogl.Server.API.Controllers
             if (user.Status == UserStatus.Archived)
                 return Conflict();
 
-            user.Status = UserStatus.Archived;
             await InitUpdateAsync(user);
-            await _userService.UpdateAsync(user);
+            await _userService.SetArchivedAsync(user);
             return Ok();
         }
 
@@ -402,7 +401,7 @@ namespace Jogl.Server.API.Controllers
 
             user.Status = UserStatus.Verified;
             await InitUpdateAsync(user);
-            await _userService.UpdateAsync(user);
+            await _userService.SetActiveAsync(user);
             return Ok();
         }
 

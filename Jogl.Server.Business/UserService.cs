@@ -271,6 +271,15 @@ namespace Jogl.Server.Business
             await _userRepository.UpdateAsync(user);
         }
 
+        public async Task SetActiveAsync(User user)
+        {
+            await _userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);
+        }
+
+        public async Task SetArchivedAsync(User user)
+        {
+            await _userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Archived);
+        }
 
         public async Task DeleteAsync(User user)
         {
