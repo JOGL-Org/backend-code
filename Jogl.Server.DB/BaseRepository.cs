@@ -499,7 +499,6 @@ namespace Jogl.Server.DB
         {
 
         }
-
         private IAggregateFluent<T> GetSearchQuery(string searchValue, SortKey? sortKey = null)
         {
             var builder = new SearchPathDefinitionBuilder<T>();
@@ -535,19 +534,14 @@ namespace Jogl.Server.DB
             return new FluentQuery<T>(_configuration, this, _context, q);
         }
 
-        protected IAggregateFluent<T> GetQuery(Expression<Func<T, bool>> filter = null)
-        {
-            var coll = GetCollection<T>();
-            var q = coll.Aggregate().Match(itm => !itm.Deleted);
-            if (filter != null)
-                q = q.Match(filter);
-
-            return q;
-        }
-
         public IFluentQuery<T> Query(string searchValue)
         {
             return new FluentQuery<T>(_configuration, this, _context, GetQuery(searchValue));
+        }
+
+        public IFluentQuery<T> QueryAutocomplete(string searchValue)
+        {
+            return new FluentQuery<T>(_configuration, this, _context, GetQueryAutocomplete(searchValue));
         }
 
         protected IAggregateFluent<T> GetQuery(string searchValue)
@@ -565,6 +559,21 @@ namespace Jogl.Server.DB
                     PrefixLength = 1,
                     MaxExpansions = 256,
                 }), new SearchOptions<T> { IndexName = INDEX_SEARCH });
+            }
+
+            return q.Match(itm => !itm.Deleted);
+        }
+
+        protected IAggregateFluent<T> GetQueryAutocomplete(string searchValue)
+        {
+            var coll = GetCollection<T>();
+            var q = coll.Aggregate();
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                var builder = new SearchPathDefinitionBuilder<T>();
+                var searchDefinition = builder.Single(AutocompleteField);
+
+                q = q.Search(Builders<T>.Search.Autocomplete(searchDefinition, searchValue), new SearchOptions<T> { IndexName = INDEX_AUTOCOMPLETE });
             }
 
             return q.Match(itm => !itm.Deleted);

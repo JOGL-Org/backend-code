@@ -58,5 +58,6 @@ namespace Jogl.Server.DB
 
         public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null);
         public IFluentQuery<T> Query(string searchValue);
+        public IFluentQuery<T> QueryAutocomplete(string searchValue);
     }
 }

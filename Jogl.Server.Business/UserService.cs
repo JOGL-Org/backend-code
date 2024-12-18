@@ -161,8 +161,11 @@ namespace Jogl.Server.Business
 
         public ListPage<User> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            // .Where(u => !u.Deleted && u.Status == UserStatus.Verified)
-            var users = _userRepository.SearchSort(search, sortKey, sortAscending);
+            var users = _userRepository
+                .Query(search)
+                .Filter(u => u.Status == UserStatus.Verified)
+                .Sort(sortKey, sortAscending)
+                .ToList();
             var total = users.Count;
 
             var userPage = GetPage(users, page, pageSize);
@@ -173,7 +176,10 @@ namespace Jogl.Server.Business
 
         public long Count(string currentUserId, string search)
         {
-            return _userRepository.SearchCount(search);
+            return _userRepository
+                 .Query(search)
+                 .Filter(u => u.Status == UserStatus.Verified)
+                 .Count();
         }
 
         public ListPage<User> ListForNode(string userId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
@@ -184,7 +190,12 @@ namespace Jogl.Server.Business
 
             var memberships = _membershipRepository.List(m => entityIds.Contains(m.CommunityEntityId) && !m.Deleted);
             var userIds = memberships.Select(m => m.UserId).Distinct().ToList();
-            var users = _userRepository.SearchGetSort(userIds, sortKey, sortAscending, search);
+            var users = _userRepository
+                .Query(search)
+                .Filter(u => userIds.Contains(u.Id.ToString()))
+                .Filter(u => u.Status == UserStatus.Verified)
+                .Sort(sortKey, sortAscending)
+                .ToList();
 
             var userPage = GetPage(users, page, pageSize);
             EnrichUserData(_organizationRepository, userPage, userId);
@@ -198,9 +209,11 @@ namespace Jogl.Server.Business
 
             var memberships = _membershipRepository.List(m => entityIds.Contains(m.CommunityEntityId) && !m.Deleted);
             var userIds = memberships.Select(m => m.UserId).Distinct().ToList();
-            var users = _userRepository.SearchGet(userIds, search);
 
-            return users.Count;
+            return _userRepository
+               .Query(search)
+               .Filter(u => userIds.Contains(u.Id.ToString()))
+               .Count();
         }
 
         public List<User> ListEcosystem(string currentUserId, string entityId, string search, int page, int pageSize)
@@ -212,7 +225,12 @@ namespace Jogl.Server.Business
 
             var memberships = _membershipRepository.List(m => communityEntityIds.Contains(m.CommunityEntityId) && !m.Deleted);
             var userIds = memberships.Select(m => m.UserId).Except(new string[] { currentUserId }).Distinct().ToList();
-            var users = _userRepository.SearchGet(userIds, search);
+            var users = _userRepository
+                 .Query(search)
+                 .Filter(u => userIds.Contains(u.Id.ToString()))
+                 .Filter(u => u.Status == UserStatus.Verified)
+                 .ToList();
+
             var userPage = GetPage(users, page, pageSize);
 
             EnrichUserData(_organizationRepository, userPage, currentUserId);
@@ -235,11 +253,15 @@ namespace Jogl.Server.Business
                 case FeedType.Channel:
                     var memberships = _membershipRepository.List(m => m.CommunityEntityId == entityId && !m.Deleted);
                     var communityEntityUserIds = memberships.Select(m => m.UserId).ToList();
-                    return _userRepository.AutocompleteGet(communityEntityUserIds, search);
+                    return _userRepository.QueryAutocomplete(search)
+                        .Filter(u => communityEntityUserIds.Contains(u.Id.ToString()))
+                        .ToList();
                 case FeedType.Event:
                     var eventAttendances = _eventAttendanceRepository.List(ea => ea.EventId == entityId && !string.IsNullOrEmpty(ea.UserId) && !ea.Deleted);
                     var eventUserIds = eventAttendances.Select(ea => ea.UserId).ToList();
-                    return _userRepository.AutocompleteGet(eventUserIds, search);
+                    return _userRepository.QueryAutocomplete(search)
+                        .Filter(u => eventUserIds.Contains(u.Id.ToString()))
+                        .ToList();
                 case FeedType.User:
                     return new List<User>() { _userRepository.Get(entityId) };
                 case FeedType.Need:
@@ -255,7 +277,11 @@ namespace Jogl.Server.Business
 
                     return AutocompleteForEntity(doc.FeedEntityId, search, page, pageSize);
                 case FeedType.Paper:
-                    return _userRepository.Autocomplete(search);
+                    var pap = _paperRepository.Get(entityId);
+                    if (pap == null)
+                        return new List<User>();
+
+                    return AutocompleteForEntity(pap.FeedEntityId, search, page, pageSize);
                 default:
                     throw new Exception($"Cannot return users for feed type {feed.Type}");
             }
@@ -263,7 +289,11 @@ namespace Jogl.Server.Business
 
         public List<User> Autocomplete(string search, int page, int pageSize)
         {
-            return _userRepository.Autocomplete(search, page, pageSize);
+            return _userRepository
+                  .QueryAutocomplete(search)
+                  .Filter(u => u.Status == UserStatus.Verified)
+                  .Page(page, pageSize)
+                  .ToList();
         }
 
         public async Task UpdateAsync(User user)
