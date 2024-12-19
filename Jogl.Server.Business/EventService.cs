@@ -161,7 +161,7 @@ namespace Jogl.Server.Business
 
             var events = _eventRepository
                 .QueryForInvitationStatus(search, currentUserId, status)
-                .Filter(e => filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .Filter(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)) && (from == null || e.Start > from) && (to == null || e.Start < to))
                 .Sort(sortKey, ascending)
                 .ToList();
 
