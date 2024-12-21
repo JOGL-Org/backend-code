@@ -1711,8 +1711,7 @@ namespace Jogl.Server.Business
 
         protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter)
         {
-            var filteredEvents = events.Where(e => IsFeedEntityInFilter(e, filter, currentUserId))
-                                       .Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))
+            var filteredEvents = events.Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))
                                        .ToList();
 
             return filteredEvents;

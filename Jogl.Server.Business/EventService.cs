@@ -137,7 +137,8 @@ namespace Jogl.Server.Business
         public List<Event> ListForEntity(string entityId, string currentUserId, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var events = _eventRepository
-                .Query(search)
+                .QueryWithAttendanceData(search, currentUserId)
+                .Filter(e => status == null || e.Attendances.Any(ea => ea.Status == status))
                 .Filter(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to))
                 .WithFeedRecordData()
                 .Sort(sortKey, ascending)
@@ -158,7 +159,6 @@ namespace Jogl.Server.Business
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
             return _eventRepository
                    .Query(e => e.CommunityEntityId == entityId)
-                   //.Query(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to))
                    .WithFeedRecordData()
                    .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
                    .Any();
@@ -173,8 +173,11 @@ namespace Jogl.Server.Business
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
             var events = _eventRepository
-                .QueryForInvitationStatus(search, currentUserId, status)
-                .Filter(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .QueryWithAttendanceData(search, currentUserId)
+                .Filter(e => status == null || e.Attendances.Any(ea => ea.Status == status))
+                .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
+                .Filter(e => entityIds.Contains(e.CommunityEntityId))
+                .Filter(e => (from == null || e.Start > from) && (to == null || e.Start < to))
                 .WithFeedRecordData()
                 .Sort(sortKey, ascending)
                 .ToList();
@@ -198,12 +201,15 @@ namespace Jogl.Server.Business
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            return _eventRepository
-                   .Query(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)))
-                   //.Query(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)) && (from == null || e.Start > from) && (to == null || e.Start < to))
+            var events = _eventRepository
+                   .QueryWithAttendanceData(null, currentUserId)
+                   .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
+                   .Filter(e => entityIds.Contains(e.CommunityEntityId))
                    .WithFeedRecordData()
                    .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
-                   .Any();
+                   .ToList();
+
+            return events.Any();
         }
 
         public long CountForNode(string currentUserId, string nodeId, string search)

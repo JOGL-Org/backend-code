@@ -33,7 +33,7 @@ namespace Jogl.Server.DB
                 case SortKey.Date:
                     return e => e.Start;
                 case SortKey.InvitationDate:
-                    return e => e.UserAttendance != null ? e.UserAttendance.CreatedUTC : DateTime.MinValue;
+                    return e => e.UserInvitedUTC;
                 default:
                     return base.GetSort(key);
             }
@@ -68,11 +68,9 @@ namespace Jogl.Server.DB
                 await coll.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(INDEX_SEARCH, new BsonDocument(new BsonDocument { { "storedSource", true }, { "mappings", new BsonDocument { { "dynamic", true } } } })));
         }
 
-        public IFluentQuery<Event> QueryForInvitationStatus(string searchValue, string currentUserId, AttendanceStatus? status)
+        public IFluentQuery<Event> QueryWithAttendanceData(string searchValue, string currentUserId)
         {
             var q = GetQuery(searchValue);
-            if (string.IsNullOrEmpty(currentUserId) || status == null)
-                return new FluentQuery<Event>(_configuration, this, _context, q);
 
             var attendanceCollection = GetCollection<EventAttendance>("eventAttendance");
 
@@ -82,12 +80,21 @@ namespace Jogl.Server.DB
                 lookupPipeline: new EmptyPipelineDefinition<EventAttendance>()
                     .Match(new BsonDocument("$expr", new BsonDocument("$and", new BsonArray
                     {
-                        new BsonDocument("$eq", new BsonArray { $"${nameof(EventAttendance.EventId)}", "eventId" }),
-                        new BsonDocument("eq", new BsonArray { $"${nameof(EventAttendance.UserId)}", $"{currentUserId}" })
-                    })))
-                    .Limit(1),
+                        new BsonDocument("$eq", new BsonArray { $"${nameof(EventAttendance.EventId)}", "$$eventId" }),
+                        new BsonDocument("$eq", new BsonArray { $"${nameof(EventAttendance.UserId)}", $"{currentUserId}" })
+                    }))),
                      @as: e => e.Attendances)
-                .Match(e => e.Attendances.Any(a => a.Status == status));
+                .AppendStage<Event>(new BsonDocument("$addFields", new BsonDocument
+                                {
+                                    {
+                                        nameof(Event.UserInvitedUTC), new BsonDocument("$cond", new BsonDocument
+                                        {
+                                            { "if", new BsonDocument("$gt", new BsonArray { new BsonDocument("$size", $"$Attendances"), 0 }) },
+                                            { "then", new BsonDocument("$arrayElemAt", new BsonArray { $"$Attendances.CreatedUTC", 0 }) },
+                                            { "else", BsonNull.Value }
+                                        })
+                                    }
+                                }));
 
             return new FluentQuery<Event>(_configuration, this, _context, q);
         }

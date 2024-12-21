@@ -73,5 +73,7 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public EventAttendance UserAttendance { get; set; }
+
+        public DateTime? UserInvitedUTC { get; set; }
     }
 }

@@ -278,7 +278,7 @@ namespace Jogl.Server.API.Controllers
             if (entity == null)
                 return NotFound();
 
-            var events = _eventService.ListForNode(id, CurrentUserId, communityEntityIds, filter, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var events = _eventService.ListForNode(CurrentUserId, id, communityEntityIds, filter, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var eventModels = events.Items.Select(_mapper.Map<EventModel>);
             return Ok(new ListPage<EventModel>(eventModels, events.Total));
         }
