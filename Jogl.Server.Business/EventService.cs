@@ -201,15 +201,13 @@ namespace Jogl.Server.Business
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            var events = _eventRepository
-                   .QueryWithAttendanceData(null, currentUserId)
-                   .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
-                   .Filter(e => entityIds.Contains(e.CommunityEntityId))
-                   .WithFeedRecordData()
-                   .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
-                   .ToList();
-
-            return events.Any();
+            return _eventRepository
+                    .QueryWithAttendanceData(null, currentUserId)
+                    .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
+                    .Filter(e => entityIds.Contains(e.CommunityEntityId))
+                    .WithFeedRecordData()
+                    .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
+                    .Any();
         }
 
         public long CountForNode(string currentUserId, string nodeId, string search)
