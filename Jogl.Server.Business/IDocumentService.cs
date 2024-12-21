@@ -13,10 +13,13 @@ namespace Jogl.Server.Business
         Task<Document> GetDataAsync(string documentId, string currentUserId);
         Document GetDraft(string entityId, string currentUserId);
         List<Document> ListForEntity(string currentUserId, string entityId, string folderId, DocumentFilter? type, string search, int page, int pageSize);
+        bool ListForEntityHasNew(string currentUserId, string entityId);
         ListPage<Document> ListForChannel(string currentUserId, string entityId, DocumentFilter type, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         ListPage<Document> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, DocumentFilter? type, FeedEntityFilter? filter, string search, int page, int pageSize, SortKey sortKey, bool ascending);
-        long CountForNode(string userId, string nodeId, string search);
+        bool ListForNodeHasNew(string currentUserId, string nodeId, FeedEntityFilter? filter);
+        long CountForNode(string currentUserId, string nodeId, string search);
         List<Document> ListAllDocuments(string currentUserId, string entityId, string search, int page, int pageSize);
+        bool ListAllDocumentsHasNew(string currentUserId, string entityId);
         List<Document> ListAllDocuments(string currentUserId, string entityId);
         Task UpdateAsync(Document document);
         Task DeleteAsync(string id);

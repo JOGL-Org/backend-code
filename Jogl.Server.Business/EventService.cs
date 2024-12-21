@@ -139,6 +139,7 @@ namespace Jogl.Server.Business
             var events = _eventRepository
                 .Query(search)
                 .Filter(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .WithFeedRecordData()
                 .Sort(sortKey, ascending)
                 .ToList();
 
@@ -152,25 +153,34 @@ namespace Jogl.Server.Business
             return filteredEvents;
         }
 
-        public ListPage<Event> ListForNode(string nodeId, string currentUserId, List<string> communityEntityIds, FeedEntityFilter? filter, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public bool ListForEntityHasNew(string currentUserId, string entityId)
+        {
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
+            return _eventRepository
+                   .Query(e => e.CommunityEntityId == entityId)
+                   //.Query(e => e.CommunityEntityId == entityId && (from == null || e.Start > from) && (to == null || e.Start < to))
+                   .WithFeedRecordData()
+                   .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
+                   .Any();
+        }
+
+        public ListPage<Event> ListForNode(string currentUserId, string nodeId, List<string> communityEntityIds, FeedEntityFilter? filter, AttendanceStatus? status, DateTime? from, DateTime? to, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
 
             if (communityEntityIds != null && communityEntityIds.Any())
                 entityIds = entityIds.Where(communityEntityIds.Contains).ToList();
 
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
             var events = _eventRepository
                 .QueryForInvitationStatus(search, currentUserId, status)
                 .Filter(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                .WithFeedRecordData()
                 .Sort(sortKey, ascending)
                 .ToList();
 
             var eventAttendances = _eventAttendanceRepository
                 .Query(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId))
-                .ToList();
-
-            var currentUserMemberships = _membershipRepository
-                .Query(p => p.UserId == currentUserId)
                 .ToList();
 
             var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, filter);
@@ -183,15 +193,28 @@ namespace Jogl.Server.Business
             return new ListPage<Event>(filteredEventPage, total);
         }
 
-        public long CountForNode(string userId, string nodeId, string search)
+        public bool ListForNodeHasNew(string currentUserId, string nodeId, FeedEntityFilter? filter)
+        {
+            var entityIds = GetFeedEntityIdsForNode(nodeId);
+
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
+            return _eventRepository
+                   .Query(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)))
+                   //.Query(e => (filter == null || e.Attendances.Any() && entityIds.Contains(e.CommunityEntityId)) && (from == null || e.Start > from) && (to == null || e.Start < to))
+                   .WithFeedRecordData()
+                   .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
+                   .Any();
+        }
+
+        public long CountForNode(string currentUserId, string nodeId, string search)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
 
             var events = _eventRepository.SearchList(e => entityIds.Contains(e.CommunityEntityId) && !e.Deleted, search);
             var eventAttendances = _eventAttendanceRepository.List(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId) && !a.Deleted);
-            var currentUserMemberships = _membershipRepository.List(p => p.UserId == userId && !p.Deleted);
+            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
 
-            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, userId, null);
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, null);
             return filteredEvents.Count;
         }
 
@@ -595,7 +618,6 @@ namespace Jogl.Server.Business
                 ev.NewPostCount = contentEntities.Count(ce => ce.FeedId == ev.Id.ToString() && ce.CreatedUTC > (feedRecord?.LastReadUTC ?? DateTime.MaxValue));
                 ev.NewMentionCount = mentions.Count(m => m.OriginFeedId == ev.Id.ToString());
                 ev.NewThreadActivityCount = contentEntities.Count(ce => ce.FeedId == ev.Id.ToString() && ce.LastActivityUTC > (userContentEntityRecords.SingleOrDefault(ucer => ucer.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue));
-                ev.IsNew = feedRecord == null;
             }
 
             EnrichEventsWithPermissions(events, eventAttendances, currentUserMemberships, currentUserId);

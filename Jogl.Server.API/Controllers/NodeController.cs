@@ -232,6 +232,21 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("{id}/needs/aggregate/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new needs for a given node")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> ListNeedsAggregateHasNew([SwaggerParameter("ID of the node")] string id, [FromQuery] FeedEntityFilter? filter)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var res = _needService.ListForNodeHasNew(CurrentUserId, id, filter);
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
         [Route("{id}/needs/aggregate/communityEntities")]
         [SwaggerOperation($"Lists all community entities for needs for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
@@ -246,7 +261,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _needService.ListCommunityEntitiesForNodeNeeds(id, CurrentUserId, types, currentUser, model.Search, model.Page, model.PageSize);
+            var communityEntities = _needService.ListCommunityEntitiesForNodeNeeds(CurrentUserId, id, model.Search, model.Page, model.PageSize);
             var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
             return Ok(communityEntityModels);
         }
@@ -262,10 +277,25 @@ namespace Jogl.Server.API.Controllers
             var entity = GetEntity(id);
             if (entity == null)
                 return NotFound();
-            
+
             var events = _eventService.ListForNode(id, CurrentUserId, communityEntityIds, filter, status, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var eventModels = events.Items.Select(_mapper.Map<EventModel>);
             return Ok(new ListPage<EventModel>(eventModels, events.Total));
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{id}/events/aggregate/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new events for a given node")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> ListEventsAggregateHasNew([SwaggerParameter("ID of the node")] string id, [FromQuery] FeedEntityFilter? filter)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var res = _eventService.ListForNodeHasNew(CurrentUserId, id, filter);
+            return Ok(res);
         }
 
         [AllowAnonymous]
@@ -308,6 +338,21 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("{id}/documents/aggregate/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new documents for a given node")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> ListDocumentsAggregateHasNew([SwaggerParameter("ID of the node")] string id, [FromQuery] FeedEntityFilter? filter)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var res = _documentService.ListForNodeHasNew(CurrentUserId, id, filter);
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
         [Route("{id}/documents/aggregate/communityEntities")]
         [SwaggerOperation($"Lists all community entities for documents for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
@@ -342,6 +387,21 @@ namespace Jogl.Server.API.Controllers
             var papers = _paperService.ListForNode(CurrentUserId, id, communityEntityIds, filter, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var paperModels = papers.Items.Select(_mapper.Map<PaperModel>);
             return Ok(new ListPage<PaperModel>(paperModels, papers.Total));
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{id}/papers/aggregate/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new papers for a given node")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> ListPapersAggregateHasNew([SwaggerParameter("ID of the node")] string id, [FromQuery] FeedEntityFilter? filter)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var res = _paperService.ListForNodeHasNew(CurrentUserId, id, filter);
+            return Ok(res);
         }
 
         [AllowAnonymous]
@@ -413,7 +473,7 @@ namespace Jogl.Server.API.Controllers
         {
             var userTask = Task.Run(() => _userService.CountForNode(CurrentUserId, id, model.Search));
             var eventTask = Task.Run(() => _eventService.CountForNode(CurrentUserId, id, model.Search));
-            var needTask = Task.Run(() => _needService.CountForNode(CurrentUserId, id, new List<string>(), model.Search));
+            var needTask = Task.Run(() => _needService.CountForNode(CurrentUserId, id, model.Search));
             var workspaceTask = Task.Run(() => _workspaceService.CountForNode(CurrentUserId, id, model.Search));
             var docTask = Task.Run(() => _documentService.CountForNode(CurrentUserId, id, model.Search));
             var paperTask = Task.Run(() => _paperService.CountForNode(CurrentUserId, id, model.Search));

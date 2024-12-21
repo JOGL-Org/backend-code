@@ -32,7 +32,7 @@ namespace Jogl.Server.DB
             public List<UserFeedRecord> UserFeedRecords { get; set; }
         }
 
-        public IFluentQuery<T> WithFeedRecordDataUTC()
+        public IFluentQuery<T> WithFeedRecordData()
         {
             var currentUserId = _context.UserId;
             var userFeedRecordCollection = _repository.GetCollection<UserFeedRecord>("userFeedRecords");
@@ -71,6 +71,30 @@ namespace Jogl.Server.DB
             return this;
         }
 
+        public IFluentQuery<T> FilterFeedEntities(string currentUserId, IEnumerable<Membership> currentUserMemberships, FeedEntityFilter? filter = null)
+        {
+            switch (filter)
+            {
+                case FeedEntityFilter.CreatedByUser:
+                    _query = _query.Match(e => e.CreatedByUserId == currentUserId);
+                    break;
+                case FeedEntityFilter.SharedWithUser:
+                    _query = _query.Match(e => (e as FeedEntity).UserVisibility.Any(u => u.UserId == currentUserId));
+                    break;
+                case FeedEntityFilter.OpenedByUser:
+                    _query = _query.Match(e => e.LastOpenedUTC != null);
+                    break;
+                default:
+                    _query = _query.Match(e => e.CreatedByUserId == currentUserId ||
+                                         (e as FeedEntity).DefaultVisibility != null ||
+                                         ((e as FeedEntity).UserVisibility != null & (e as FeedEntity).UserVisibility.Any(uv => uv.UserId == currentUserId)) ||
+                                         ((e as FeedEntity).CommunityEntityVisibility != null && (e as FeedEntity).CommunityEntityVisibility.Any(cev => currentUserMemberships.Any(m => m.CommunityEntityId == cev.CommunityEntityId))));
+                    break;
+            }
+
+            return this;
+        }
+
         public IFluentQuery<T> Sort(SortKey sortKey, bool ascending = true)
         {
             var sort = _repository.GetSort(sortKey);
@@ -103,6 +127,11 @@ namespace Jogl.Server.DB
         public long Count()
         {
             return _query.Count().SingleOrDefault()?.Count ?? 0;
+        }
+
+        public bool Any()
+        {
+            return _query.Any();
         }
     }
 }

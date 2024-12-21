@@ -1177,16 +1177,6 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForNodes(allRelations, nodeIds).Where(id => currentUserMemberships.Any(m => m.CommunityEntityId == id)).ToList();
             var communityEntities = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds).CommunityEntities;
 
-            var events = _eventRepository.List(e => communityEntityIds.Contains(e.CommunityEntityId) && !e.Deleted);
-            events = GetFilteredEvents(events, currentUserEventAttendances, currentUserMemberships, userId, null);
-            var feedEntityIds = GetFeedEntityIdsForNodes(allRelations, events, nodeIds);
-            var needs = _needRepository.List(n => communityEntityIds.Contains(n.EntityId) && !n.Deleted);
-            needs = GetFilteredFeedEntities(needs, userId);
-            var documents = _documentRepository.List(d => feedEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
-            documents = GetFilteredDocuments(documents, userId);
-            var papers = _paperRepository.List(p => communityEntityIds.Any(eId => p.FeedId == eId) && !p.Deleted);
-            papers = GetFilteredFeedEntities(papers, userId);
-
             var allUserFeedRecords = _userFeedRecordRepository.List(r => r.UserId == userId && !r.Deleted);
             var activeUserFeedRecords = allUserFeedRecords.Where(ufr => (ufr.LastReadUTC.HasValue || ufr.LastWriteUTC.HasValue || ufr.LastMentionUTC.HasValue) && !ufr.Muted);
             var activeFeedIds = activeUserFeedRecords.Select(ufr => ufr.FeedId).ToList();
@@ -1223,13 +1213,13 @@ namespace Jogl.Server.Business
             var res = new List<NodeFeedData>();
             foreach (var node in nodes)
             {
-                res.Add(GetNodeMetadata(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances, events, needs, documents, papers, allUserFeedRecords, unreadPosts, unreadMentions, unreadThreads));
+                res.Add(GetNodeMetadata(node, userId, communityEntities, allRelations, currentUserMemberships, currentUserEventAttendances));
             }
 
             return res;
         }
 
-        private NodeFeedData GetNodeMetadata(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances, List<Event> events, List<Need> needs, List<Document> documents, List<Paper> papers, List<UserFeedRecord> allUserFeedRecords, List<ContentEntity> unreadPosts, List<Mention> unreadMentions, List<ContentEntity> unreadThreads)
+        private NodeFeedData GetNodeMetadata(Node node, string userId, List<CommunityEntity> communityEntities, List<Relation> allRelations, List<Membership> currentUserMemberships, List<EventAttendance> eventAttendances)
         {
             var nfd = new NodeFeedData()
             {
@@ -1252,33 +1242,6 @@ namespace Jogl.Server.Business
                 Entities = new List<CommunityEntity>()
             };
 
-            var feedEntitiesIdsForNode = GetFeedEntityIdsForNode(allRelations, events, nfd.Id.ToString());
-
-            events = events.Where(e => feedEntitiesIdsForNode.Contains(e.CommunityEntityId)).ToList();
-            needs = needs.Where(n => feedEntitiesIdsForNode.Contains(n.CommunityEntityId)).ToList();
-            documents = documents.Where(d => feedEntitiesIdsForNode.Contains(d.FeedEntityId)).ToList();
-            papers = papers.Where(p => feedEntitiesIdsForNode.Contains(p.FeedEntityId)).ToList();
-
-            nfd.NewEvents = events.Any(e => !allUserFeedRecords.Any(ufr => ufr.FeedId == e.Id.ToString()));
-            nfd.NewNeeds = needs.Any(n => (IsNeedForUser(n, userId) || nfd.Permissions.Contains(Permission.Read)) && !allUserFeedRecords.Any(ufr => ufr.FeedId == n.Id.ToString()));
-            nfd.NewDocuments = documents.Any(d => !allUserFeedRecords.Any(ufr => ufr.FeedId == d.Id.ToString()));
-            nfd.NewPapers = papers.Any(p => nfd.Permissions.Contains(Permission.Read) && !allUserFeedRecords.Any(ufr => ufr.FeedId == p.Id.ToString()));
-
-            nfd.UnreadPostsInEvents = unreadPosts.Count(ce => events.Any(e => e.Id.ToString() == ce.FeedId));
-            nfd.UnreadPostsInNeeds = unreadPosts.Count(ce => needs.Any(n => n.Id.ToString() == ce.FeedId));
-            nfd.UnreadPostsInDocuments = unreadPosts.Count(ce => documents.Any(d => d.Id.ToString() == ce.FeedId));
-            nfd.UnreadPostsInPapers = unreadPosts.Count(ce => papers.Any(p => p.Id.ToString() == ce.FeedId));
-
-            nfd.UnreadMentionsInEvents = unreadMentions.Count(m => events.Any(e => IsEventForUser(e, eventAttendances, userId) && e.Id.ToString() == m.OriginFeedId));
-            nfd.UnreadMentionsInNeeds = unreadMentions.Count(m => needs.Any(n => IsNeedForUser(n, userId) && n.Id.ToString() == m.OriginFeedId));
-            nfd.UnreadMentionsInDocuments = unreadMentions.Count(m => documents.Any(d => d.Id.ToString() == m.OriginFeedId));
-            nfd.UnreadMentionsInPapers = unreadMentions.Count(m => papers.Any(p => p.Id.ToString() == m.OriginFeedId));
-
-            nfd.UnreadThreadsInEvents = unreadThreads.Count(ce => events.Any(e => IsEventForUser(e, eventAttendances, userId) && e.Id.ToString() == ce.FeedId));
-            nfd.UnreadThreadsInNeeds = unreadThreads.Count(ce => needs.Any(n => IsNeedForUser(n, userId) && n.Id.ToString() == ce.FeedId));
-            nfd.UnreadThreadsInDocuments = unreadThreads.Count(ce => documents.Any(d => d.Id.ToString() == ce.FeedId));
-            nfd.UnreadThreadsInPapers = unreadThreads.Count(ce => papers.Any(p => p.Id.ToString() == ce.FeedId));
-
             foreach (var valuePair in GetNodeHierarchy(allRelations, communityEntities, nfd.Id.ToString()))
             {
                 var communityEntity = communityEntities.SingleOrDefault(ce => ce.Id.ToString() == valuePair.Key);
@@ -1288,20 +1251,6 @@ namespace Jogl.Server.Business
                 nfd.Entities.Add(communityEntity);
                 communityEntity.Level = valuePair.Value;
             }
-
-            //foreach (var communityEntity in communityEntities.Where(ce => feedEntitiesIdsForNode.Contains(ce.Id.ToString())))
-            //{
-            //    nfd.Entities.Add(communityEntity);
-            //}
-
-            var unreadPostsInChannels = unreadPosts.Count(ce => nfd.Entities.Any(e => e.Channels.Any(c => c.Id.ToString() == ce.FeedId)));
-            nfd.UnreadPostsTotal = unreadPostsInChannels + nfd.UnreadPostsInEvents + nfd.UnreadPostsInNeeds + nfd.UnreadPostsInDocuments + nfd.UnreadPostsInPapers;
-
-            var unreadMentionsInChannels = unreadMentions.Count(m => nfd.Entities.Any(e => e.Channels.Any(c => c.Id.ToString() == m.OriginFeedId)));
-            nfd.UnreadMentionsTotal = unreadMentionsInChannels + nfd.UnreadMentionsInEvents + nfd.UnreadMentionsInNeeds + nfd.UnreadMentionsInDocuments + nfd.UnreadMentionsInPapers;
-
-            var unreadThreadsInChannels = unreadThreads.Count(ce => nfd.Entities.Any(e => e.Channels.Any(c => c.Id.ToString() == ce.FeedId)));
-            nfd.UnreadThreadsTotal = unreadThreadsInChannels + nfd.UnreadThreadsInEvents + nfd.UnreadThreadsInNeeds + nfd.UnreadThreadsInDocuments + nfd.UnreadThreadsInPapers;
 
             return nfd;
         }

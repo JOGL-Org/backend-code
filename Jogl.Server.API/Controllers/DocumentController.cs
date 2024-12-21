@@ -68,6 +68,19 @@ namespace Jogl.Server.API.Controllers
             return Ok(documentModels);
         }
 
+        [HttpGet]
+        [Route("{entityId}/documents/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new documents for a particular entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> GetDocumentsHasNew([FromRoute] string entityId)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var res = _documentService.ListForEntityHasNew(CurrentUserId, entityId);
+            return Ok(res);
+        }
+
         [AllowAnonymous]
         [HttpGet]
         [Route("{entityId}/documents/all")]
@@ -90,6 +103,19 @@ namespace Jogl.Server.API.Controllers
             models.AddRange(documentModels);
 
             return Ok(models);
+        }
+
+        [HttpGet]
+        [Route("{entityId}/documents/all/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new documents for a particular entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> GetDocumentsAndFoldersHasNew([FromRoute] string entityId)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var res = _documentService.ListAllDocumentsHasNew(CurrentUserId, entityId);
+            return Ok(res);
         }
 
         [AllowAnonymous]

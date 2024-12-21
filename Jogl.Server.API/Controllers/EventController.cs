@@ -108,6 +108,19 @@ namespace Jogl.Server.API.Controllers
             return Ok(eventModels);
         }
 
+        [HttpGet]
+        [Route("{entityId}/events/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new events for a particular entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> GetEventsHasNew([FromRoute] string entityId)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var res = _eventService.ListForEntityHasNew(CurrentUserId, entityId);
+            return Ok(res);
+        }
+
         [HttpPut]
         [Route("{id}")]
         [SwaggerOperation($"Updates the event")]

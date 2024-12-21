@@ -34,6 +34,9 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("is_folder")]
         public bool IsFolder { get; set; }
+        
+        [JsonPropertyName("is_new")]
+        public bool IsNew { get; set; }
 
         [JsonPropertyName("parent_folder_id")]
         public string? ParentFolderId { get; set; }

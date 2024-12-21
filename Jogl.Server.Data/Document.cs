@@ -58,10 +58,6 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         [JsonIgnore]
-        public bool IsNew { get; set; }
-
-        [BsonIgnore]
-        [JsonIgnore]
         [Obsolete]
         public int CommentCount { get; set; }
 

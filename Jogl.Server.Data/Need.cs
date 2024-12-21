@@ -49,9 +49,6 @@ namespace Jogl.Server.Data
         public override string FeedTitle => Title;
 
         [BsonIgnore]
-        public bool IsNew { get; set; }
-
-        [BsonIgnore]
         public CommunityEntity CommunityEntity { get; set; }
 
         [BsonIgnore]

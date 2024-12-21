@@ -316,6 +316,7 @@ namespace Jogl.Server.API.Mapping
                         .ForMember(dst => dst.DocumentUrl, opt => opt.MapFrom((src, dst, ctx) => GetDocumentUrl(src.Id.ToString())))
                         .ForMember(dst => dst.ImageUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.ImageId)))
                         .ForMember(dst => dst.ImageUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.ImageId, true)))
+                        .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
                         .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                         {
                             PostCount = src.PostCount,
@@ -326,6 +327,7 @@ namespace Jogl.Server.API.Mapping
                         }));
 
             CreateMap<Document, DocumentOrFolderModel>()
+                        .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
                         .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                         {
                             PostCount = src.PostCount,
@@ -357,6 +359,7 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.End, opt => opt.MapFrom((src, dst, ctx) => GetEventDateTimeLocal(src.End, src.Timezone)))
                 .ForMember(dst => dst.BannerUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.BannerId)))
                 .ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.BannerId, true)))
+                .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
                 .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                 {
                     PostCount = src.PostCount,
@@ -410,6 +413,7 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.LogoUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId)))
                 .ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId, true)));
             CreateMap<Need, NeedModel>()
+                 .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
                  .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                  {
                      PostCount = src.PostCount,
@@ -565,6 +569,7 @@ namespace Jogl.Server.API.Mapping
             CreateMap<Paper, EntityMiniModel>()
                 .ForMember(dst => dst.EntityType, opt => opt.MapFrom((src, dst, ctx) => FeedType.Paper));
             CreateMap<Paper, PaperModel>()
+                .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
                 .ForMember(dst => dst.FeedCount, opt => opt.MapFrom((src, dst, ctx) => { return src.FeedIds?.Count() ?? 0; }))
                 .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                 {

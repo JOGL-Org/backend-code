@@ -78,6 +78,19 @@ namespace Jogl.Server.API.Controllers
             return Ok(paperModels);
         }
 
+        [HttpGet]
+        [Route("{entityId}/papers/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new papers for a particular entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> GetPapersHasNew([FromRoute] string entityId)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.Read, CurrentUserId))
+                return Forbid();
+
+            var res = _paperService.ListForEntityHasNew(CurrentUserId, entityId);
+            return Ok(res);
+        }
+
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}")]

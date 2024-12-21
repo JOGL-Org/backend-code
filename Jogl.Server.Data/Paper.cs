@@ -54,9 +54,6 @@ namespace Jogl.Server.Data
         public int NewThreadActivityCount { get; set; }
 
         [BsonIgnore]
-        public bool IsNew { get; set; }
-
-        [BsonIgnore]
         public int CommentCount { get; set; }
 
         [BsonIgnore]

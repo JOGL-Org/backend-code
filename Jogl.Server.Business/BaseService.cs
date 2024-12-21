@@ -1568,37 +1568,9 @@ namespace Jogl.Server.Business
                                 .ToList();
         }
 
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter, int page, int pageSize) where T : FeedEntity
-        {
-            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-
-            var filteredEntities = GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
-            return GetPage(filteredEntities, page, pageSize);
-        }
-
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
-        {
-            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-
-            return GetFilteredFeedEntities(entities, currentUserMemberships, currentUserId, filter);
-        }
-
-        protected List<T> GetFilteredFeedEntities<T>(IEnumerable<T> entities, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter = null) where T : FeedEntity
-        {
-            return entities.Where(e => CanSeeFeedEntity(e, currentUserMemberships, currentUserId))
-                           .Where(e => IsFeedEntityInFilter(e, filter, currentUserId))
-                           .ToList();
-        }
-
         protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type, int page, int pageSize)
         {
             return GetPage(GetFilteredDocuments(documents, feedEntitySet, currentUserId, type), page, pageSize);
-        }
-
-        protected List<Document> GetFilteredJoglDocs(IEnumerable<Document> documents, string currentUserId)
-        {
-            var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            return documents.Where(d => CanSeeFeedEntity(d, currentUserMemberships, currentUserId)).ToList();
         }
 
         protected List<Document> GetFilteredDocuments(IEnumerable<Document> documents, FeedEntitySet feedEntitySet, string currentUserId, DocumentFilter? type = null, FeedEntityFilter? filter = null)
@@ -1663,6 +1635,8 @@ namespace Jogl.Server.Business
                     return e.CreatedByUserId == currentUserId;
                 case FeedEntityFilter.SharedWithUser:
                     return e.UserVisibility?.Any(uv => uv.UserId == currentUserId) == true;
+                case FeedEntityFilter.OpenedByUser:
+                    return e.LastOpenedUTC.HasValue;
                 default:
                     return true;
             }
@@ -1693,7 +1667,7 @@ namespace Jogl.Server.Business
             switch (document.Type)
             {
                 case DocumentType.JoglDoc:
-                    return CanSeeFeedEntity(document, currentUserMemberships, userId);
+                    return true;
                 default:
                     switch (feedEntity.FeedType)
                     {
@@ -1712,15 +1686,6 @@ namespace Jogl.Server.Business
                             return Can(feedEntity as CommunityEntity, currentUserMemberships, entityRelations, Permission.Read);
                     }
             }
-        }
-
-        protected bool CanSeeFeedEntity(FeedEntity entity, IEnumerable<Membership> currentUserMemberships, string userId)
-        {
-            if (entity == null)
-                return false;
-
-            var docVisibility = GetFeedEntityVisibility(entity, currentUserMemberships, userId);
-            return docVisibility != null;
         }
 
         protected bool CanSeeEvent(Event ev, IEnumerable<Membership> currentUserMemberships, IEnumerable<EventAttendance> eventAttendances, string userId)

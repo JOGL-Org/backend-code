@@ -58,9 +58,6 @@ namespace Jogl.Server.Data
         public override string FeedLogoId => BannerId;
 
         [BsonIgnore]
-        public bool IsNew { get; set; }
-
-        [BsonIgnore]
         [JsonIgnore]
         public CommunityEntity CommunityEntity { get; set; }
 
