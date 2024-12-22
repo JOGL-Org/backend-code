@@ -85,10 +85,18 @@ namespace Jogl.Server.DB
                     _query = _query.Match(e => e.LastOpenedUTC != null);
                     break;
                 default:
-                    _query = _query.Match(e => e.CreatedByUserId == currentUserId ||
-                                         (e as FeedEntity).DefaultVisibility != null ||
-                                         ((e as FeedEntity).UserVisibility != null & (e as FeedEntity).UserVisibility.Any(uv => uv.UserId == currentUserId)) ||
-                                         ((e as FeedEntity).CommunityEntityVisibility != null && (e as FeedEntity).CommunityEntityVisibility.Any(cev => currentUserMemberships.Any(m => m.CommunityEntityId == cev.CommunityEntityId))));
+                    //TODO this is a monstrosity, remove when file and link visibility is reworked
+                    if (typeof(T) == typeof(Document))
+                        _query = _query.Match(e => (e as Document).Type == DocumentType.Document || (e as Document).Type == DocumentType.Link ||
+                                             e.CreatedByUserId == currentUserId ||
+                                            (e as FeedEntity).DefaultVisibility != null ||
+                                           ((e as FeedEntity).UserVisibility != null & (e as FeedEntity).UserVisibility.Any(uv => uv.UserId == currentUserId)) ||
+                                           ((e as FeedEntity).CommunityEntityVisibility != null && (e as FeedEntity).CommunityEntityVisibility.Any(cev => currentUserMemberships.Any(m => m.CommunityEntityId == cev.CommunityEntityId))));
+                    else
+                        _query = _query.Match(e => e.CreatedByUserId == currentUserId ||
+                                             (e as FeedEntity).DefaultVisibility != null ||
+                                            ((e as FeedEntity).UserVisibility != null & (e as FeedEntity).UserVisibility.Any(uv => uv.UserId == currentUserId)) ||
+                                            ((e as FeedEntity).CommunityEntityVisibility != null && (e as FeedEntity).CommunityEntityVisibility.Any(cev => currentUserMemberships.Any(m => m.CommunityEntityId == cev.CommunityEntityId))));
                     break;
             }
 

@@ -202,14 +202,18 @@ namespace Jogl.Server.Business
         public bool ListForNodeHasNew(string currentUserId, string nodeId, FeedEntityFilter? filter)
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
+            var entitySet = _feedEntityService.GetFeedEntitySet(entityIds);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            return _documentRepository
+            var documents = _documentRepository
                    .Query(d => entityIds.Contains(d.FeedId) && d.ContentEntityId == null)
                    .WithFeedRecordData()
                    .FilterFeedEntities(currentUserId, currentUserMemberships, filter)
                    .Filter(d => d.LastOpenedUTC == null)
-                   .Any();
+                   .ToList();
+
+            var filteredDocuments = GetFilteredDocuments(documents, entitySet, currentUserId, null, filter);
+            return filteredDocuments.Any();
         }
 
         public long CountForNode(string currentUserId, string nodeId, string search)
