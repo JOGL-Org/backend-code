@@ -65,7 +65,7 @@ namespace Jogl.Server.Business
                         prop.SetValue(obj, listValue.Select(async itemValue => await ProcessEmbeddedDataInField(parentEntity, itemValue)).ToList());
                     }
                 }
-                else if (prop.PropertyType.IsClass && prop.PropertyType != typeof(string) && !prop.PropertyType.IsAssignableTo(typeof(IEnumerable<string>)))
+                else if (prop.PropertyType.IsClass && prop.PropertyType != typeof(string) && !prop.PropertyType.IsAssignableTo(typeof(IEnumerable<string>)) && !prop.PropertyType.IsAssignableTo(typeof(IEnumerable<byte>)))
                 {
                     if (prop.PropertyType.IsAssignableTo(typeof(IEnumerable<object>)))
                     {
