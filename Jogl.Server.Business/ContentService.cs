@@ -1141,10 +1141,7 @@ namespace Jogl.Server.Business
         public List<NodeFeedData> ListNodeMetadata(string userId)
         {
             var nodes = _nodeRepository.List(n => !n.Deleted);
-            var res = GetNodeMetadata(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
-            res.Insert(0, new NodeFeedData { Id = ObjectId.Empty, Title = "JOGL Global", Entities = new List<CommunityEntity>() });
-
-            return res;
+            return GetNodeMetadata(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
         }
 
         public NodeFeedData GetDefaultNodeMetadata(string userId)
