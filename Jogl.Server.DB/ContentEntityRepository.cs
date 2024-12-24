@@ -54,7 +54,7 @@ namespace Jogl.Server.DB
                 lookupPipeline: new EmptyPipelineDefinition<Comment>()
                     .Match(new BsonDocument("$expr", new BsonDocument("$and", new BsonArray
                     {
-                        new BsonDocument("$eq", new BsonArray { $"${nameof(Comment.ContentEntityId)}", "contentEntityId" }),
+                        new BsonDocument("$eq", new BsonArray { $"${nameof(Comment.ContentEntityId)}", "$$contentEntityId" }),
                         new BsonDocument("$ne", new BsonArray { $"${nameof(UserFeedRecord.CreatedByUserId)}", $"{currentUserId}" })
                     }))),
                 @as: o => o.Comments)
