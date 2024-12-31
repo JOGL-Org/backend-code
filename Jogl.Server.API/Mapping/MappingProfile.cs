@@ -693,6 +693,9 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<AccessLevel, SimpleAccessLevel>();
             CreateMap<SimpleAccessLevel, AccessLevel>();
+
+            CreateMap<GitHub.DTO.Repo, RepositoryModel>();
+            CreateMap<HuggingFace.DTO.Repo, RepositoryModel>();
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

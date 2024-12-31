@@ -7,6 +7,8 @@ using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.Email;
+using Jogl.Server.GitHub;
+using Jogl.Server.HuggingFace;
 using Jogl.Server.OpenAlex;
 using Jogl.Server.Orcid;
 using Jogl.Server.PubMed;
@@ -45,9 +47,11 @@ namespace Jogl.Server.API.Controllers
         private readonly IVerificationService _verificationService;
         private readonly IAuthService _authService;
         private readonly ISemanticScholarFacade _s2Facade;
+        private readonly IGitHubFacade _githubFacade;
+        private readonly IHuggingFaceFacade _huggingFaceFacade;
         private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public UserController(IUserService userService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _userVerificationService = userVerificationService;
@@ -71,6 +75,8 @@ namespace Jogl.Server.API.Controllers
             _verificationService = verificationService;
             _authService = authService;
             _s2Facade = s2Facade;
+            _githubFacade = gitHubFacade;
+            _huggingFaceFacade = huggingFaceFacade;
             _configuration = configuration;
         }
 
@@ -962,6 +968,28 @@ namespace Jogl.Server.API.Controllers
             };
 
             return Ok(data);
+        }
+
+        [HttpGet]
+        [Route("github/repos")]
+        [SwaggerOperation($"Gets GitHub repositories for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The repository data", typeof(List<RepositoryModel>))]
+        public async Task<IActionResult> GetGithubRepos([FromQuery]string accessToken)
+        {
+            var repos = await _githubFacade.GetReposAsync(accessToken);
+            var repoModels = repos.Select(r => _mapper.Map<RepositoryModel>(r));
+            return Ok(repoModels);
+        }
+
+        [HttpGet]
+        [Route("huggingface/repos")]
+        [SwaggerOperation($"Gets Hugging Face repositories for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The repository data", typeof(List<RepositoryModel>))]
+        public async Task<IActionResult> GetHuggingFaceRepos([FromQuery] string accessToken)
+        {
+            var repos = await _huggingFaceFacade.GetReposAsync(accessToken);
+            var repoModels = repos.Select(r => _mapper.Map<RepositoryModel>(r));
+            return Ok(repoModels);
         }
 
         [HttpPost]
