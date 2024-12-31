@@ -1402,6 +1402,7 @@ namespace Jogl.Server.Business
                 case FeedIntegrationType.GitHub:
                     return await _githubFacade.GetAccessTokenAsync(authorizationCode);
                 case FeedIntegrationType.HuggingFace:
+                    return await _huggingfaceFacade.GetAccessTokenAsync(authorizationCode);
                 case FeedIntegrationType.Arxiv:
                 case FeedIntegrationType.PubMed:
                     return null;

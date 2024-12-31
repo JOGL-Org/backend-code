@@ -4,7 +4,9 @@ namespace Jogl.Server.HuggingFace
 {
     public interface IHuggingFaceFacade
     {
+        Task<string> GetAccessTokenAsync(string authorizationCode);
         Task<List<Discussion>> ListPRsAsync(string repo);
         Task<Repo> GetRepoAsync(string repo);
+        Task<List<Repo>> GetReposAsync(string accessToken);
     }
 }
