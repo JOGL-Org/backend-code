@@ -4,6 +4,7 @@ using Jogl.Server.API.Model;
 using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
 using Jogl.Server.Images;
+using Jogl.Server.LinkedIn.DTO;
 using Jogl.Server.Orcid;
 using MongoDB.Bson;
 
@@ -700,6 +701,23 @@ namespace Jogl.Server.API.Mapping
             CreateMap<HuggingFace.DTO.Repo, RepositoryModel>()
                 .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dst => dst.Url, opt => opt.MapFrom(src => src.Url));
+
+            CreateMap<Lix.DTO.Profile, ProfileModel>()
+                .ForMember(dst => dst.Experience, opt => opt.MapFrom(src => src.Experience))
+                .ForMember(dst => dst.Education, opt => opt.MapFrom(src => src.Education));
+
+            CreateMap<Lix.DTO.Education, EducationModel>()
+                .ForMember(dst => dst.Organization, opt => opt.MapFrom(src => src.InstitutionName))
+                .ForMember(dst => dst.Program, opt => opt.MapFrom(src => src.FieldOfStudy))
+                .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
+                .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
+
+            CreateMap<Lix.DTO.Experience, ExperienceModel>()
+                .ForMember(dst => dst.Organization, opt => opt.MapFrom((src, ctx, dst) => src.Organisation?.Name))
+                .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
+                .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

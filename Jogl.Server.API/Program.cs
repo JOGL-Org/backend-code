@@ -35,6 +35,7 @@ using Azure.Security.KeyVault.Certificates;
 using System.Security.Cryptography.X509Certificates;
 using Jogl.Server.DB.Context;
 using Jogl.Server.DB.Extensions;
+using Jogl.Server.Lix;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -118,6 +119,7 @@ builder.Services.AddTransient<ISemanticScholarFacade, SemanticScholarFacade>();
 builder.Services.AddTransient<IPubMedFacade, PubMedFacade>();
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
+builder.Services.AddTransient<ILixFacade, LixFacade>();
 builder.Services.AddTransient<IGitHubFacade, GitHubFacade>();
 builder.Services.AddTransient<IArxivFacade, ArxivFacade>();
 builder.Services.AddTransient<IHuggingFaceFacade, HuggingFaceFacade>();

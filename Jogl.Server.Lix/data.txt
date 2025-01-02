@@ -1,0 +1,228 @@
+﻿{
+    "description": "Solution architect, development lead",
+    "location": "Kingston Upon Thames, England, United Kingdom",
+    "name": "Filip Vostatek",
+    "img": "https://media.licdn.com/dms/image/v2/C4D03AQEyPIgxqpwzXA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1560968008295?e=1741219200&v=beta&t=y2MGeSX3X57-AqLijoU9_0l5wMeroPiWS4bFr8gB-Zs",
+    "aboutSummaryText": ".NET architect and development lead. Driven by a passion for building software. Proven track record of meeting deadlines and delivering working solutions. Fascinated by distributed systems and scalable architectures.",
+    "salesNavLink": "https://www.linkedin.com/sales/people/ACoAABWAaSABDlqGQi5ja_texu1D-sOQsVN-KrQ,NAME",
+    "link": "https://www.linkedin.com/in/filip-vostatek",
+    "experience": [
+        {
+            "description": "Led technical architecture and development of Christie's NFT marketplace platform, enabling digital art\ntransactions for the prestigious auction house. Engineered robust Web3 integration and C# backend.\nThe project won two Webby Awards: https://winners.webbyawards.com/2023/websitesand-mobile-sites/features-design/best-user-experience/238958/christies-30",
+            "title": "Blockchain Architect",
+            "dateStarted": "April 2022",
+            "dateEnded": "Present",
+            "location": "London Area, United Kingdom",
+            "organisation": {
+                "name": "Christie's",
+                "salesNavLink": "https://linkedin.com/sales/company/163032"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 4,
+                    "year": 2022
+                },
+                "endedOn": {}
+            }
+        },
+        {
+            "description": "Led an enterprise-wide tech transformation, architecting mission-critical integration solutions across\ninternational markets. Designed and implemented a scalable .NET and Dell Boomi software suite that\nsupercharged the software development process for over 1,000 engineers. Successfully unified disparate systems\nacross multiple continents, significantly improving operational efficiency.",
+            "title": "Integration Architect",
+            "dateStarted": "March 2020",
+            "dateEnded": "March 2022",
+            "location": "London Area, United Kingdom",
+            "organisation": {
+                "name": "Operative",
+                "salesNavLink": "https://linkedin.com/sales/company/17979"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 3,
+                    "year": 2020
+                },
+                "endedOn": {
+                    "month": 3,
+                    "year": 2022
+                }
+            }
+        },
+        {
+            "description": "Architected and implemented landmark integration with Amadeus global flight booking platform - the\nfirst non-airline organization to achieve enterprise-scale data access. Successfully delivered complete\ntechnical solution from PoC to production, setting new industry precedent for private sector access to\nairline booking systems",
+            "title": "Software Engineer",
+            "dateStarted": "June 2019",
+            "dateEnded": "March 2020",
+            "location": "London Area, United Kingdom",
+            "organisation": {
+                "name": "Airportr Technologies",
+                "salesNavLink": "https://linkedin.com/sales/company/3156396"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 6,
+                    "year": 2019
+                },
+                "endedOn": {
+                    "month": 3,
+                    "year": 2020
+                }
+            }
+        },
+        {
+            "description": "Led and nurtured two dynamic teams of C# developers (4 members each), including one local and one remote. Spearheaded the creation of a local development team from the ground up, recruiting, training, and mentoring junior engineers while providing technical guidance to senior developers. Introduced and implemented Scrum methodology to streamline workflows, enhancing efficiency and collaboration. Personally developed key system modules while overseeing the broader development lifecycle, ensuring seamless integration and delivery.",
+            "title": "Solution architect, development lead",
+            "dateStarted": "September 2016",
+            "dateEnded": "June 2019",
+            "location": "London, United Kingdom",
+            "organisation": {
+                "name": "iForce Limited",
+                "salesNavLink": "https://linkedin.com/sales/company/1003411"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 9,
+                    "year": 2016
+                },
+                "endedOn": {
+                    "month": 6,
+                    "year": 2019
+                }
+            }
+        },
+        {
+            "description": "Designed and developed innovative B2B and B2C systems, across diverse industries.\n\nNotable projects include:\n\n- A backend system for a UK fintech startup, delivering robust functionality tailored to financial innovation.\n- An API for the global leader in the furniture retail market, enabling seamless integration and scalability.\n- A touch-based customer-facing system for an international retail chain, now deployed across European stores.\n- A sales and pricing optimization platform, utilized by multiple Fortune 500 companies to drive business efficiency.\n\nContributed at various stages of these projects, from team formation to technical delivery. Built teams from scratch where necessary and managed critical aspects, such as client requirement analysis, technical leadership, and mentoring junior developers. Additionally, provided strategic business insights acquired through years of industry experience, ensuring solutions aligned with organizational goals.",
+            "title": "Contract team lead/architect",
+            "dateStarted": "January 2015",
+            "dateEnded": "August 2016",
+            "organisation": {
+                "name": "various clients"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 1,
+                    "year": 2015
+                },
+                "endedOn": {
+                    "month": 8,
+                    "year": 2016
+                }
+            }
+        },
+        {
+            "description": "Designed and delivered mission-critical regulatory projects, aligning with evolving industry standards. Modernized legacy architecture by integrating distributed systems and service-oriented architecture (SOA) elements, improving scalability and maintainability. Demonstrated expertise in balancing regulatory demands with technical innovation to deliver value-driven outcomes.",
+            "title": "Senior Developer",
+            "dateStarted": "July 2013",
+            "dateEnded": "December 2014",
+            "organisation": {
+                "name": "Barclays Investment Bank",
+                "salesNavLink": "https://linkedin.com/sales/company/1421"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 7,
+                    "year": 2013
+                },
+                "endedOn": {
+                    "month": 12,
+                    "year": 2014
+                }
+            }
+        },
+        {
+            "description": "Designed and developed a key component of a CRM project. Transformed the application from a rudimentary program to a mature distributed system that supported thousands of users in various roles across multiple regions. Liaised with the customers on a daily basis and led junior members of the team.",
+            "title": "Developer",
+            "dateStarted": "February 2008",
+            "dateEnded": "June 2013",
+            "organisation": {
+                "name": "Data3s",
+                "salesNavLink": "https://linkedin.com/sales/company/233203"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 2,
+                    "year": 2008
+                },
+                "endedOn": {
+                    "month": 6,
+                    "year": 2013
+                }
+            }
+        },
+        {
+            "description": "Worked on a web front-end of a BI system.",
+            "title": "Junior Developer",
+            "dateStarted": "June 2007",
+            "dateEnded": "January 2008",
+            "organisation": {
+                "name": "Unicorn",
+                "salesNavLink": "https://linkedin.com/sales/company/7388"
+            },
+            "timePeriod": {
+                "startedOn": {
+                    "month": 6,
+                    "year": 2007
+                },
+                "endedOn": {
+                    "month": 1,
+                    "year": 2008
+                }
+            }
+        }
+    ],
+    "education": [
+        {
+            "institutionName": "Technische Universität Dresden",
+            "degree": "Master of Science (MSc)",
+            "fieldOfStudy": "Distributed Systems Engineering",
+            "dateStarted": "2010",
+            "dateEnded": "2013",
+            "timePeriod": {
+                "startedOn": {
+                    "year": 2010
+                },
+                "endedOn": {
+                    "year": 2013
+                }
+            }
+        },
+        {
+            "institutionName": "University of Economics, Prague",
+            "degree": "Bachelor's degree",
+            "fieldOfStudy": "Information Technology",
+            "dateStarted": "2006",
+            "dateEnded": "2010",
+            "timePeriod": {
+                "startedOn": {
+                    "year": 2006
+                },
+                "endedOn": {
+                    "year": 2010
+                }
+            }
+        },
+        {
+            "institutionName": "GJKT",
+            "dateStarted": "0",
+            "dateEnded": "Present",
+            "timePeriod": {
+                "startedOn": {},
+                "endedOn": {}
+            }
+        }
+    ],
+    "numOfConnections": "223",
+    "pronoun": "He/Him",
+    "languages": [
+        {
+            "name": "English",
+            "proficiency": "NATIVE_OR_BILINGUAL"
+        },
+        {
+            "name": "Russian",
+            "proficiency": "LIMITED_WORKING"
+        },
+        {
+            "name": "German",
+            "proficiency": "PROFESSIONAL_WORKING"
+        }
+    ]
+}

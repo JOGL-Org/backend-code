@@ -36,7 +36,6 @@ namespace Jogl.Server.LinkedIn
 
         public async Task<UserInfo> GetUserInfoAsync(string accessToken)
         {
-
             try
             {
                 var client = new RestClient($"{_configuration["LinkedIn:InfoURL"]}");
