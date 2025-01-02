@@ -2,12 +2,14 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.HuggingFace.DTO
 {
-    public class Repo
+    public abstract class Repo
     {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
 
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("private")]
+        public bool Private { get; set; }
+
+        public abstract string Url { get; }
     }
 }

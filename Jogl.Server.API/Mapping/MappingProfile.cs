@@ -694,8 +694,12 @@ namespace Jogl.Server.API.Mapping
             CreateMap<AccessLevel, SimpleAccessLevel>();
             CreateMap<SimpleAccessLevel, AccessLevel>();
 
-            CreateMap<GitHub.DTO.Repo, RepositoryModel>();
-            CreateMap<HuggingFace.DTO.Repo, RepositoryModel>();
+            CreateMap<GitHub.DTO.Repo, RepositoryModel>()
+                .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dst => dst.Url, opt => opt.MapFrom(src => src.HtmlUrl));
+            CreateMap<HuggingFace.DTO.Repo, RepositoryModel>()
+                .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dst => dst.Url, opt => opt.MapFrom(src => src.Url));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

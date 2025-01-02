@@ -53,15 +53,34 @@ namespace Jogl.Server.HuggingFace
         public async Task<List<Repo>> GetReposAsync(string accessToken)
         {
             var client = new RestClient($"https://huggingface.co/api/");
-            var request = new RestRequest($"user/repos");
-            if (!string.IsNullOrEmpty(accessToken))
-                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            client.AddDefaultHeader("Authorization", $"Bearer {accessToken}");
 
-            var response = await client.ExecuteGetAsync<List<Repo>>(request);
-            if (!response.IsSuccessStatusCode)
-                return new List<Repo>();
+            var userRequest = new RestRequest($"whoami-v2");
+            var userResponse = await client.ExecuteGetAsync<User>(userRequest);
 
-            return response.Data;
+            var modelRequest = new RestRequest($"models");
+            modelRequest.AddQueryParameter("author", userResponse.Data.Name);
+            var datasetRequest = new RestRequest($"datasets");
+            datasetRequest.AddQueryParameter("author", userResponse.Data.Name);
+            var spaceRequest = new RestRequest($"spaces");
+            spaceRequest.AddQueryParameter("author", userResponse.Data.Name);
+
+            var res = new List<Repo>();
+
+            var modelResponse = await client.ExecuteGetAsync<List<ModelRepo>>(modelRequest);
+            var datasetResponse = await client.ExecuteGetAsync<List<DataSetRepo>>(datasetRequest);
+            var spaceResponse = await client.ExecuteGetAsync<List<SpaceRepo>>(spaceRequest);
+
+            if (modelResponse.IsSuccessStatusCode)
+                res.AddRange(modelResponse.Data);
+
+            if (datasetResponse.IsSuccessStatusCode)
+                res.AddRange(datasetResponse.Data);
+
+            if (spaceResponse.IsSuccessStatusCode)
+                res.AddRange(spaceResponse.Data);
+
+            return res;
         }
 
         public async Task<List<Discussion>> ListPRsAsync(string repo)
