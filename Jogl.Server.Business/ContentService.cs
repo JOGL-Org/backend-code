@@ -336,6 +336,15 @@ namespace Jogl.Server.Business
             var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
             EnrichContentEntityDataForInbox(contentEntities, comments);
 
+            foreach (var contentEntity in contentEntities)
+            {
+                if (ucerContentEntityIds.Contains(contentEntity.Id.ToString()))
+                    contentEntity.UserSource = ContentEntitySource.Reply;
+
+                if (userFeedIds.Contains(contentEntity.Id.ToString()))
+                    contentEntity.UserSource = ContentEntitySource.Post;
+            }
+
             return contentEntities;
         }
 
@@ -362,6 +371,11 @@ namespace Jogl.Server.Business
             var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
             EnrichContentEntityDataForInbox(contentEntities, comments);
 
+            foreach (var contentEntity in contentEntities)
+            {
+                contentEntity.UserSource = ContentEntitySource.Reply;
+            }
+
             return contentEntities;
         }
 
@@ -386,6 +400,11 @@ namespace Jogl.Server.Business
                 .ToList();
 
             EnrichContentEntityDataForInbox(contentEntities, mentionComments);
+
+            foreach (var contentEntity in contentEntities)
+            {
+                contentEntity.UserSource = ContentEntitySource.Mention;
+            }
 
             return contentEntities;
         }

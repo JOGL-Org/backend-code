@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
@@ -83,5 +84,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("last_comment")]
         public CommentModel LastComment { get; set; }
+
+        [BsonIgnore]
+        public ContentEntitySource UserSource { get; set; }
     }
 }
