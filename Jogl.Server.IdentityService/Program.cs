@@ -8,6 +8,7 @@ using Jogl.Server.Auth;
 using Jogl.Server.DB;
 using Jogl.Server.Configuration;
 using Jogl.Server.Auth.OAuth;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,13 +41,13 @@ builder.Services.AddIdentityServer(options =>
         .AddInMemoryClients([
         new Client
         {
-            ClientId = "citizen-science-dev",
-            ClientName = "Citizen Science Dev",
-            ClientSecrets = { new Secret("secret".Sha256()) },
+            ClientId = builder.Configuration["OAuth:CitizenScience:Id"],
+            ClientSecrets = { new Secret (builder.Configuration["OAuth:CitizenScience:Secret"]) },
+            ClientName = builder.Configuration["OAuth:CitizenScience:Name"],
             RequirePkce = false,
             AllowedGrantTypes = GrantTypes.Code,
-            RedirectUris = { "https://localhost:7056/signin-oidc" },
-            PostLogoutRedirectUris = { "https://localhost:7056/signout-callback-oidc" },
+            RedirectUris = {  "https://citizenscience.nl:10003/oauth2/callback/" },
+            PostLogoutRedirectUris = { "https://citizenscience.nl:10003/logout/" },
             AllowedScopes =
             {
                 IdentityServerConstants.StandardScopes.OpenId,
