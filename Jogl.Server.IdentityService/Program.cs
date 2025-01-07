@@ -46,7 +46,7 @@ builder.Services.AddIdentityServer(options =>
             ClientName = builder.Configuration["OAuth:CitizenScience:Name"],
             RequirePkce = false,
             AllowedGrantTypes = GrantTypes.Code,
-            RedirectUris = {  "https://citizenscience.nl:10003/oauth2/callback/" },
+            RedirectUris = {  "https://citizenscience.nl:10003/oauth2/complete/jogl/" },
             PostLogoutRedirectUris = { "https://citizenscience.nl:10003/logout/" },
             AllowedScopes =
             {
