@@ -308,23 +308,36 @@ namespace Jogl.Server.Business
 
         public List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
+            var posts = ListPostsForNode(currentUserId, nodeId, page, pageSize);
+            var threads = ListThreadsForNode(currentUserId, nodeId, page, pageSize);
+            var mentions = ListMentionsForNode(currentUserId, nodeId, page, pageSize);
+
+            var res = new List<ContentEntity>();
+            res.AddRange(posts);
+            res.AddRange(threads);
+            res.AddRange(mentions);
+
+            res = res
+                .DistinctBy(ce => $"{ce.Id}-{ce.LastComment?.Id}")
+                .OrderByDescending(ce => ce.LastActivityUTC)
+                .ToList();
+            return GetPage(res, page, pageSize);
+        }
+
+        public List<ContentEntity> ListPostsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
 
+            //followed feeds 
             var userFeedIds = _userFeedRecordRepository
                 .Query(ufr => ufr.UserId == currentUserId && ufr.FollowedUTC.HasValue && feedEntityIds.Contains(ufr.FeedId))
                 .ToList() //TODO only select FeedId
                 .Select(ucer => ucer.FeedId)
                 .ToList();
 
-            var ucerContentEntityIds = _userContentEntityRecordRepository
-                .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
-                .ToList() //TODO only select ContentEntityId
-                .Select(ucer => ucer.ContentEntityId)
-                .ToList();
-
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
-                .QueryForActivity(currentUserId, ce => userFeedIds.Contains(ce.FeedId) || ucerContentEntityIds.Contains(ce.Id.ToString()))
+                .QueryForPosts(currentUserId, ce => userFeedIds.Contains(ce.FeedId))
                 .Sort(SortKey.LastActivity, false)
                 .Page(page, pageSize)
                 .ToList();
@@ -338,11 +351,7 @@ namespace Jogl.Server.Business
 
             foreach (var contentEntity in contentEntities)
             {
-                if (ucerContentEntityIds.Contains(contentEntity.Id.ToString()))
-                    contentEntity.UserSource = ContentEntitySource.Reply;
-
-                if (userFeedIds.Contains(contentEntity.Id.ToString()))
-                    contentEntity.UserSource = ContentEntitySource.Post;
+                contentEntity.UserSource = ContentEntitySource.Post;
             }
 
             return contentEntities;
@@ -359,7 +368,7 @@ namespace Jogl.Server.Business
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
-                .QueryForActivity(currentUserId, ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
+                .QueryForReplies(currentUserId, ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
                 .Sort(SortKey.LastActivity, false)
                 .Page(page, pageSize)
                 .ToList();

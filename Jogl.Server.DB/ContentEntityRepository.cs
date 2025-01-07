@@ -9,7 +9,7 @@ namespace Jogl.Server.DB
 {
     public class ContentEntityRepository : BaseRepository<ContentEntity>, IContentEntityRepository
     {
-        public ContentEntityRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public ContentEntityRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
@@ -39,7 +39,19 @@ namespace Jogl.Server.DB
             public List<Comment> Comments { get; set; }
         }
 
-        public IFluentQuery<ContentEntity> QueryForActivity(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
+        public IFluentQuery<ContentEntity> QueryForPosts(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
+        {
+            var coll = GetCollection<ContentEntity>();
+            var q = coll.Aggregate().Match(itm => !itm.Deleted);
+            if (filter != null)
+                q = q.Match(filter);
+
+            q = q.Match(ce => ce.CreatedByUserId != currentUserId);
+
+            return new FluentQuery<ContentEntity>(_configuration, this, _context, q);
+        }
+
+        public IFluentQuery<ContentEntity> QueryForReplies(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
         {
             var coll = GetCollection<ContentEntity>();
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
@@ -61,7 +73,6 @@ namespace Jogl.Server.DB
                 .As<ContentEntity>()
                 .Match(new BsonDocument("$or", new BsonArray
                     {
-                        new BsonDocument(nameof(UserFeedRecord.CreatedByUserId), new BsonDocument("$ne", currentUserId)),
                         new BsonDocument("Comments", new BsonDocument("$ne", new BsonArray()))
                     }));
 
@@ -73,7 +84,7 @@ namespace Jogl.Server.DB
             return Builders<ContentEntity>.Update.Set(e => e.Text, updatedEntity.Text)
                                                  .Set(e => e.Status, updatedEntity.Status)
                                                  .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
-                                                 .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId) 
+                                                 .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                                  .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }
     }
