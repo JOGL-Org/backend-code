@@ -6,6 +6,14 @@ using Jogl.Server.Data;
 using System.Globalization;
 using MoreLinq;
 using Jogl.Server.Arxiv;
+using System.ComponentModel;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
+using Jogl.Server.Cryptography;
+using System.Net.Http.Json;
+using System.Text;
+using Azure.Search.Documents;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -16,14 +24,29 @@ IConfiguration config = new ConfigurationBuilder()
 
 var publicationRepository = new PublicationRepository(config);
 
-////initial load
-//var i = 0;
-//foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
-//{
-//    var publicationBatch = new List<Publication>();
+var serviceClient = new BlobServiceClient(new Uri($"https://jogldatastore.blob.core.windows.net"), new DefaultAzureCredential());
+var blobContainer = serviceClient.GetBlobContainerClient("publications");
+await blobContainer.CreateIfNotExistsAsync();
 
-//    foreach (var line in lineBatch)
-//    {
+var hashService = new HashService();
+var i = 0;
+foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
+{
+    Console.WriteLine(i++);
+    await Parallel.ForEachAsync(lineBatch, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (line, cancellationToken) =>
+    {
+        var id = hashService.ComputeHash(line);
+        var folder = "arxiv";
+
+        string blobPath = string.IsNullOrEmpty(folder) ? id : $"{folder.TrimEnd('/')}/{id}.json";
+        var client = blobContainer.GetBlobClient(blobPath);
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(line));
+        await client.UploadAsync(stream, overwrite: true);
+    });
+}
+
+
 //        var ap = System.Text.Json.JsonSerializer.Deserialize<ArxivPublication>(line);
 //        DateTime published;
 //        var publishDateParsed = DateTime.TryParseExact(ap.Versions.FirstOrDefault()?.Created, "ddd, d MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out published);
@@ -55,43 +78,46 @@ var publicationRepository = new PublicationRepository(config);
 //    Console.WriteLine(++i);
 //}
 
-//load new papers from arxiv
-var arxivFacade = new ArxivFacade(config, null);
-var entries = await arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
+////load new papers from arxiv
+//var arxivFacade = new ArxivFacade(config, null);
+//var entries = await arxivFacade.ListNewPapersAsync(DateTime.UtcNow.AddDays(-2));
 
-//transform to publication object
-var publications = entries.Select(entry =>
-{
-    var id = entry.Id.Replace("http://arxiv.org/abs/", string.Empty);
-    var idWithoutVersion = id.Substring(0, id.IndexOf("v"));
 
-    return new Publication
-    {
-        Authors = entry.Author.Select(a => a.Name).ToList(),
-        CreatedUTC = DateTime.UtcNow,
-        DOI = entry.Doi?.Text,
-        Journal = entry.JournalRef?.Text,
-        //LicenseURL = entry.
-        Published = entry.Published,
-        ExternalID = idWithoutVersion,
-        //Submitter =entry.
-        ExternalSystem = "ARXIV",
-        ExternalURL = $"https://arxiv.org/abs/{idWithoutVersion}",
-        ExternalFileURL = $"https://arxiv.org/pdf/{idWithoutVersion}",
-        Summary = entry.Summary,
-        Tags = entry.Category.Select(c => c.Term).ToList(),
-        Title = entry.Title
-    };
-});
 
-//store papers
-await Parallel.ForEachAsync(publications, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (publication, cancellationToken) =>
-{
-    await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
-    Console.WriteLine(publication.Published);
-});
 
-Console.ReadLine();
+////transform to publication object
+//var publications = entries.Select(entry =>
+//{
+//    var id = entry.Id.Replace("http://arxiv.org/abs/", string.Empty);
+//    var idWithoutVersion = id.Substring(0, id.IndexOf("v"));
+
+//    return new Publication
+//    {
+//        Authors = entry.Author.Select(a => a.Name).ToList(),
+//        CreatedUTC = DateTime.UtcNow,
+//        DOI = entry.Doi?.Text,
+//        Journal = entry.JournalRef?.Text,
+//        //LicenseURL = entry.
+//        Published = entry.Published,
+//        ExternalID = idWithoutVersion,
+//        //Submitter =entry.
+//        ExternalSystem = "ARXIV",
+//        ExternalURL = $"https://arxiv.org/abs/{idWithoutVersion}",
+//        ExternalFileURL = $"https://arxiv.org/pdf/{idWithoutVersion}",
+//        Summary = entry.Summary,
+//        Tags = entry.Category.Select(c => c.Term).ToList(),
+//        Title = entry.Title
+//    };
+//});
+
+////store papers
+//await Parallel.ForEachAsync(publications, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (publication, cancellationToken) =>
+//{
+//    await publicationRepository.UpsertAsync(publication, p => p.ExternalID);
+//    Console.WriteLine(publication.Published);
+//});
+
+//Console.ReadLine();
 
 public class ArxivPublication
 {

@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -32,6 +32,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Azure.Search.Documents" Version="11.6.0" />
+		<PackageReference Include="Azure.Storage.Blobs.Batch" Version="12.20.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 		<PackageReference Include="morelinq" Version="4.3.0" />
@@ -41,6 +43,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Cryptography\Jogl.Server.Cryptography.csproj" />
 		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
 	</ItemGroup>
 

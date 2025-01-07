@@ -85,7 +85,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.IdentityService
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Localization", "Jogl.Server.Localization\Jogl.Server.Localization.csproj", "{A4328B77-AB3C-48BE-A110-90C27ACE8C5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Lix", "Jogl.Server.Lix\Jogl.Server.Lix.csproj", "{7EDF56CA-2C32-4773-BD8F-BC32DF1BD1BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Lix", "Jogl.Server.Lix\Jogl.Server.Lix.csproj", "{7EDF56CA-2C32-4773-BD8F-BC32DF1BD1BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jogl.Server.Cryptography", "Jogl.Server.Cryptography\Jogl.Server.Cryptography.csproj", "{412F7324-432E-49C5-81AA-A4C62A9E8C5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -257,6 +259,10 @@ Global
 		{7EDF56CA-2C32-4773-BD8F-BC32DF1BD1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EDF56CA-2C32-4773-BD8F-BC32DF1BD1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EDF56CA-2C32-4773-BD8F-BC32DF1BD1BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{412F7324-432E-49C5-81AA-A4C62A9E8C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{412F7324-432E-49C5-81AA-A4C62A9E8C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{412F7324-432E-49C5-81AA-A4C62A9E8C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{412F7324-432E-49C5-81AA-A4C62A9E8C5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
