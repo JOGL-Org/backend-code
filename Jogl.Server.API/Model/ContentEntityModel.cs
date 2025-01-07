@@ -85,7 +85,7 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("last_comment")]
         public CommentModel LastComment { get; set; }
 
-        [BsonIgnore]
+        [JsonPropertyName("user_source")]
         public ContentEntitySource UserSource { get; set; }
     }
 }
