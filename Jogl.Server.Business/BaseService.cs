@@ -1704,12 +1704,12 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter, int page, int pageSize)
+        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, int page, int pageSize)
         {
-            return GetPage(GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId, filter), page, pageSize);
+            return GetPage(GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId), page, pageSize);
         }
 
-        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId, FeedEntityFilter? filter)
+        protected List<Event> GetFilteredEvents(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string currentUserId)
         {
             var filteredEvents = events.Where(e => CanSeeEvent(e, currentUserMemberships, eventAttendances.Where(ea => ea.EventId == e.Id.ToString()), currentUserId))
                                        .ToList();
