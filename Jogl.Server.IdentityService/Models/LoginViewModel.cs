@@ -11,6 +11,6 @@ namespace Jogl.Server.IdentityService.Models
         [Required]
         public string Password { get; set; }
 
-        public string Redirect_uri { get; set; }
+        public string Redirect_url { get; set; }
     }
 }
