@@ -23,8 +23,9 @@ namespace Jogl.Server.Email
             if (string.IsNullOrEmpty(to))
                 throw new ArgumentNullException(nameof(to));
 
+            var whitelist = new string[] { "@ibercivis.es", "@jogl.io" };
             var suppressExternalEmails = bool.Parse(_configuration["App:SuppressExternalEmails"]);
-            if (suppressExternalEmails && !to.EndsWith("@jogl.io", StringComparison.InvariantCultureIgnoreCase))
+            if (suppressExternalEmails && !whitelist.Any(domain => to.EndsWith(domain, StringComparison.InvariantCultureIgnoreCase)))
                 return;
 
             var apiKey = _configuration["Email:Key"];
@@ -47,12 +48,13 @@ namespace Jogl.Server.Email
 
         public async Task SendEmailAsync(Dictionary<string, object> toAndData, EmailTemplate template, string replyTo = null, string fromName = null)
         {
+            var whitelist = new string[] { "@ibercivis.es", "@jogl.io" };
             var suppressExternalEmails = bool.Parse(_configuration["App:SuppressExternalEmails"]);
             if (suppressExternalEmails)
             {
                 foreach (var email in toAndData.Keys.ToList())
                 {
-                    if (!email.EndsWith("@jogl.io", StringComparison.InvariantCultureIgnoreCase))
+                    if (!whitelist.Any(domain => email.EndsWith(domain, StringComparison.InvariantCultureIgnoreCase)))
                         toAndData.Remove(email);
                 }
             }
