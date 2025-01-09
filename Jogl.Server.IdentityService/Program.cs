@@ -52,7 +52,12 @@ builder.Services.AddIdentityServer(options =>
             {
                 IdentityServerConstants.StandardScopes.OpenId,
                 IdentityServerConstants.StandardScopes.Profile,
-            }
+            },
+            // Add these settings
+            RequireConsent = false,
+            AllowOfflineAccess = true,  // If you need refresh tokens
+            AccessTokenLifetime = 3600,  // 1 hour
+            AuthorizationCodeLifetime = 300  // 5 minutes
         }
         ])
          .AddInMemoryIdentityResources(new List<IdentityResource>
