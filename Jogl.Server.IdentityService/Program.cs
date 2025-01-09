@@ -8,7 +8,6 @@ using Jogl.Server.Auth;
 using Jogl.Server.DB;
 using Jogl.Server.Configuration;
 using Jogl.Server.Auth.OAuth;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,8 +27,7 @@ var certClient = new CertificateClient(
     new DefaultAzureCredential()
 );
 
-var cert = await certClient.GetCertificateAsync(builder.Configuration["JWT:Cert-Name"]);
-
+var cert = certClient.DownloadCertificate(builder.Configuration["JWT:Cert-Name"]);
 builder.Services.AddIdentityServer(options =>
 {
     //options.Events.RaiseErrorEvents = true;
@@ -53,11 +51,10 @@ builder.Services.AddIdentityServer(options =>
                 IdentityServerConstants.StandardScopes.OpenId,
                 IdentityServerConstants.StandardScopes.Profile,
             },
-            // Add these settings
             RequireConsent = false,
-            AllowOfflineAccess = true,  // If you need refresh tokens
-            AccessTokenLifetime = 3600,  // 1 hour
-            AuthorizationCodeLifetime = 300  // 5 minutes
+            AllowOfflineAccess = true,
+            AccessTokenLifetime = 3600,  
+            AuthorizationCodeLifetime = 300
         }
         ])
          .AddInMemoryIdentityResources(new List<IdentityResource>
@@ -65,7 +62,7 @@ builder.Services.AddIdentityServer(options =>
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile()
             })
-    .AddSigningCredential(new X509SigningCredentials(new X509Certificate2(cert.Value.Cer)))
+    .AddSigningCredential(new X509SigningCredentials(new X509Certificate2(cert.Value)))
     .AddDeveloperSigningCredential()
     .AddProfileService<OAuthProfileService>();
 
