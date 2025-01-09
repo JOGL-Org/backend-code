@@ -42,7 +42,7 @@ builder.Services.AddIdentityServer(options =>
         new Client
         {
             ClientId = builder.Configuration["OAuth:CitizenScience:Id"],
-            ClientSecrets = { new Secret (builder.Configuration["OAuth:CitizenScience:Secret"]) },
+            ClientSecrets = { new Secret (builder.Configuration["OAuth:CitizenScience:Secret"].Sha256()) },
             ClientName = builder.Configuration["OAuth:CitizenScience:Name"],
             RequirePkce = false,
             AllowedGrantTypes = GrantTypes.Code,
