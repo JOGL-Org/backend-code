@@ -9,9 +9,8 @@ IConfiguration config = new ConfigurationBuilder()
     .AddKeyVault()
     .Build();
 
-
 var membershipRepo = new MembershipRepository(config);
-var channelMembershipsWithOwner= membershipRepo.Query(m=> m.CommunityEntityType== Jogl.Server.Data.CommunityEntityType.Channel && m.AccessLevel== Jogl.Server.Data.AccessLevel.Owner).ToList();
+var channelMembershipsWithOwner = membershipRepo.Query(m => m.CommunityEntityType == Jogl.Server.Data.CommunityEntityType.Channel && m.AccessLevel == Jogl.Server.Data.AccessLevel.Owner).ToList();
 foreach (var channelMembership in channelMembershipsWithOwner)
 {
     channelMembership.AccessLevel = Jogl.Server.Data.AccessLevel.Admin;
@@ -22,13 +21,13 @@ var ucerRepo = new UserContentEntityRecordRepository(config);
 var ufrRepo = new UserFeedRecordRepository(config);
 var ceRepo = new ContentEntityRepository(config);
 
-var ucers = ucerRepo.List(ucer=>true);
-var ufrs = ufrRepo.List(ufr=>true);
-var ces = ceRepo.List(ufr=>true);
+var ucers = ucerRepo.List(ucer => true);
+var ufrs = ufrRepo.List(ufr => true);
+var ces = ceRepo.List(ufr => true);
 foreach (var ucer in ucers)
 {
-    if(ucer.LastWriteUTC.HasValue)
-        await ucerRepo.SetContentEntityWrittenAsync(ucer.UserId,ucer.FeedId, ucer.ContentEntityId, ucer.LastWriteUTC.Value);
+    if (ucer.LastWriteUTC.HasValue)
+        await ucerRepo.SetContentEntityWrittenAsync(ucer.UserId, ucer.FeedId, ucer.ContentEntityId, ucer.LastWriteUTC.Value);
 
     if (ucer.LastMentionUTC.HasValue)
         await ucerRepo.SetContentEntityMentionAsync(ucer.UserId, ucer.FeedId, ucer.ContentEntityId, ucer.LastMentionUTC.Value);
@@ -52,6 +51,51 @@ foreach (var ce in ces)
     }
 }
 
+var docRepo = new DocumentRepository(config);
+var evRepo = new EventRepository(config);
+var paperRepo = new PaperRepository(config);
+var needRepo = new NeedRepository(config);
+
+var documents = docRepo.Query().ToList();
+var events = evRepo.Query().ToList();
+var papers = paperRepo.Query().ToList();
+var needs = needRepo.Query().ToList();
+
+foreach (var doc in documents)
+{
+    if (doc.UpdatedUTC == null)
+    {
+        doc.UpdatedUTC = doc.CreatedUTC;
+        await docRepo.UpdateAsync(doc);
+    }
+}
+
+foreach (var ev in events)
+{
+    if (ev.UpdatedUTC == null)
+    {
+        ev.UpdatedUTC = ev.CreatedUTC;
+        await evRepo.UpdateAsync(ev);
+    }
+}
+
+foreach (var paper in papers)
+{
+    if (paper.UpdatedUTC == null)
+    {
+        paper.UpdatedUTC = paper.CreatedUTC;
+        await paperRepo.UpdateAsync(paper);
+    }
+}
+
+foreach (var need in needs)
+{
+    if (need.UpdatedUTC == null)
+    {
+        need.UpdatedUTC = need.CreatedUTC;
+        await needRepo.UpdateAsync(need);
+    }
+}
 
 Console.WriteLine("Done");
 Console.ReadLine();
