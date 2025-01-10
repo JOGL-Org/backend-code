@@ -44,8 +44,8 @@ builder.Services.AddIdentityServer(options =>
             ClientName = builder.Configuration["OAuth:CitizenScience:Name"],
             RequirePkce = false,
             AllowedGrantTypes = GrantTypes.Code,
-            RedirectUris = {  "https://citizenscience.nl:10003/oauth2/complete/jogl/" },
-            PostLogoutRedirectUris = { "https://citizenscience.nl:10003/logout/" },
+            RedirectUris = { builder.Configuration["OAuth:CitizenScience:RedirectUriLogin"] },
+            PostLogoutRedirectUris ={ builder.Configuration["OAuth:CitizenScience:RedirectUriLogout"] },
             AllowedScopes =
             {
                 IdentityServerConstants.StandardScopes.OpenId,
@@ -53,7 +53,7 @@ builder.Services.AddIdentityServer(options =>
             },
             RequireConsent = false,
             AllowOfflineAccess = true,
-            AccessTokenLifetime = 3600,  
+            AccessTokenLifetime = 3600,
             AuthorizationCodeLifetime = 300
         }
         ])
