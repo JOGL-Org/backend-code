@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data;
-using Syncfusion.DocIO.DLS;
 using MongoDB.Bson;
 
 namespace Jogl.Server.API.Controllers

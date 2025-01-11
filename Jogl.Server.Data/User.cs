@@ -60,10 +60,12 @@ namespace Jogl.Server.Data
         [BsonIgnore]
         public int NeedCount { get; set; }
         [BsonIgnore]
-        public List<Organization> Organizations { get; set; }
+        public List<CommunityEntity> Spaces { get; set; }
 
         public override string FeedTitle => FullName;
 
         public override FeedType FeedType => FeedType.User;
+
+        public List<Membership> Memberships { get; set; }
     }
 }

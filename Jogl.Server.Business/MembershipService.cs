@@ -72,7 +72,7 @@ namespace Jogl.Server.Business
             if (!loadDetails)
                 return memberPage;
 
-            EnrichUserData(_organizationRepository, memberPage.Select(m => m.User).ToList(), currentUserId);
+            EnrichUserData( memberPage.Select(m => m.User).ToList(), currentUserId);
             return memberPage;
         }
 

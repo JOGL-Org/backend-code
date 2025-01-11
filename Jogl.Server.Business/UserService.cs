@@ -140,7 +140,7 @@ namespace Jogl.Server.Business
             if (user == null)
                 return null;
 
-            EnrichUserData(_organizationRepository, new User[] { user }, currentUserId);
+            EnrichUserData(new User[] { user }, currentUserId);
             return user;
         }
 
@@ -169,7 +169,7 @@ namespace Jogl.Server.Business
             var total = users.Count;
 
             var userPage = GetPage(users, page, pageSize);
-            EnrichUserData(_organizationRepository, userPage, userId);
+            EnrichUserData(userPage, userId);
 
             return new ListPage<User>(userPage, total);
         }
@@ -182,6 +182,24 @@ namespace Jogl.Server.Business
                  .Count();
         }
 
+        public List<User> ListForEntity(string userId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
+        {
+            var memberships = _membershipRepository.Query(m => m.CommunityEntityId == entityId).ToList();
+            var userIds = memberships.Select(m => m.UserId).Distinct().ToList();
+            var users = _userRepository
+                .QueryWithMembershipData(search, new List<string> { entityId })
+                .Filter(u => userIds.Contains(u.Id.ToString()))
+                .Filter(u => u.Status == UserStatus.Verified)
+                .Sort(sortKey, sortAscending)
+                .ToList();
+
+            var userPage = GetPage(users, page, pageSize);
+            EnrichUserData(userPage, userId);
+            //EnrichUserDataWithCommonSpaces(users, nodeId, userId);
+
+            return userPage;
+        }
+
         public ListPage<User> ListForNode(string userId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
@@ -191,14 +209,15 @@ namespace Jogl.Server.Business
             var memberships = _membershipRepository.List(m => entityIds.Contains(m.CommunityEntityId) && !m.Deleted);
             var userIds = memberships.Select(m => m.UserId).Distinct().ToList();
             var users = _userRepository
-                .Query(search)
+                .QueryWithMembershipData(search, entityIds)
                 .Filter(u => userIds.Contains(u.Id.ToString()))
                 .Filter(u => u.Status == UserStatus.Verified)
                 .Sort(sortKey, sortAscending)
                 .ToList();
 
             var userPage = GetPage(users, page, pageSize);
-            EnrichUserData(_organizationRepository, userPage, userId);
+            EnrichUserData(userPage, userId);
+            EnrichUserDataWithCommonSpaces(users, nodeId, userId);
 
             return new ListPage<User>(userPage, users.Count);
         }
@@ -233,7 +252,7 @@ namespace Jogl.Server.Business
 
             var userPage = GetPage(users, page, pageSize);
 
-            EnrichUserData(_organizationRepository, userPage, currentUserId);
+            EnrichUserData(userPage, currentUserId);
             return userPage;
         }
 
@@ -486,7 +505,7 @@ namespace Jogl.Server.Business
             if (!loadDetails)
                 return userPage;
 
-            EnrichUserData(_organizationRepository, userPage, currentUserId);
+            EnrichUserData(userPage, currentUserId);
             return userPage;
         }
 
@@ -499,7 +518,7 @@ namespace Jogl.Server.Business
             if (!loadDetails)
                 return userPage;
 
-            EnrichUserData(_organizationRepository, userPage, currentUserId);
+            EnrichUserData(userPage, currentUserId);
             return userPage;
         }
 
@@ -561,14 +580,13 @@ namespace Jogl.Server.Business
             await _pushNotificationTokenRepository.UpsertTokenAsync(userId, token, DateTime.UtcNow);
         }
 
-        public List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string nodeId, string search, int page, int pageSize)
+        public List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string currentUserId, string nodeId, string search)
         {
             var entityIds = GetCommunityEntityIdsForNode(nodeId);
+            var memberships = _membershipRepository.Query(m => m.UserId == currentUserId && entityIds.Contains(m.CommunityEntityId)).ToList();
+            var currentUserEntityIds = memberships.Select(m => m.CommunityEntityId);
 
-            var memberships = _membershipRepository.List(m => entityIds.Contains(m.CommunityEntityId) && !m.Deleted);
-
-            var communityEntityIds = memberships.Select(m => m.CommunityEntityId).Distinct().ToList();
-            return _communityEntityService.List(communityEntityIds);
+            return _communityEntityService.List(currentUserEntityIds);
         }
 
         private string ToAlphaNum(string username)

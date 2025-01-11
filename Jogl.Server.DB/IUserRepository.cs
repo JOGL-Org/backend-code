@@ -9,5 +9,7 @@ namespace Jogl.Server.DB
 
         Task SetStatusAsync(string userId, UserStatus status);
         Task SetPasswordAsync(string userId, string passwordHash, byte[] salt);
+
+        IFluentQuery<User> QueryWithMembershipData(string searchValue, List<string> communityEntityIds);
     }
 }

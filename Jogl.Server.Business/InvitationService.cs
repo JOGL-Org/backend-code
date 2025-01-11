@@ -241,7 +241,7 @@ namespace Jogl.Server.Business
             if (!loadDetails)
                 return invitationPage;
 
-            EnrichUserData(_organizationRepository, invitationPage.Where(i => i.User != null).Select(i => i.User).ToList(), currentUserId);
+            EnrichUserData(invitationPage.Where(i => i.User != null).Select(i => i.User).ToList(), currentUserId);
             return invitationPage;
         }
 

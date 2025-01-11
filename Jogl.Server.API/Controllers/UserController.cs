@@ -28,6 +28,7 @@ namespace Jogl.Server.API.Controllers
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
+        private readonly IFeedEntityService _feedEntityService;
         private readonly IUserVerificationService _userVerificationService;
         private readonly IProposalService _proposalService;
         private readonly IWorkspaceService _workspaceService;
@@ -54,9 +55,10 @@ namespace Jogl.Server.API.Controllers
         private readonly ILixFacade _lixFacade;
         private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
+        public UserController(IUserService userService, IFeedEntityService feedEntityService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
+            _feedEntityService = feedEntityService;
             _userVerificationService = userVerificationService;
             _proposalService = proposalService;
             _workspaceService = workspaceService;
@@ -210,6 +212,28 @@ namespace Jogl.Server.API.Controllers
 
             var userModel = _mapper.Map<UserModel>(user);
             return Ok(userModel);
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{entityId}/users")]
+        [SwaggerOperation($"Lists all users for the specified entity")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to list users for the entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The users data", typeof(List<UserMiniModel>))]
+        public async Task<IActionResult> GetUsers([SwaggerParameter("ID of the entity")][FromRoute] string entityId, [FromQuery] SearchModel model)
+        {
+            var entity = _feedEntityService.GetEntity(entityId, CurrentUserId);
+            if (entity == null)
+                return NotFound();
+
+            if (!entity.Permissions.Contains(Permission.Read))
+                return Forbid();
+
+            var papers = _userService.ListForEntity(CurrentUserId, entityId, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var paperModels = papers.Select(_mapper.Map<UserMiniModel>);
+            return Ok(paperModels);
         }
 
         [AllowAnonymous]

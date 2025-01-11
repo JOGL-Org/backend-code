@@ -13,6 +13,7 @@ namespace Jogl.Server.Business
         User GetForUsername(string username, bool includeDeleted = false);
         ListPage<User> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         long Count(string userId, string search);
+        List<User> ListForEntity(string userId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         ListPage<User> ListForNode(string userId, string nodeId, List<string> communityEntityIds, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         long CountForNode(string userId, string nodeId, string search);
         List<User> ListEcosystem(string currentUserId, string entityId, string search, int page, int pageSize);
@@ -49,6 +50,6 @@ namespace Jogl.Server.Business
 
         Task UpsertPushNotificationTokenAsync(string token, string userId);
 
-        List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string nodeId, string search, int page, int pageSize);
+        List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string currentUserId, string nodeId, string search);
     }
 }

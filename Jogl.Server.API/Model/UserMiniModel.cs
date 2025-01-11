@@ -51,5 +51,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("organizations")]
         public List<EntityMiniModel> Organizations { get; set; }
+
+        [JsonPropertyName("spaces")]
+        public List<CommunityEntityMiniModel> Spaces { get; set; }
     }
 }

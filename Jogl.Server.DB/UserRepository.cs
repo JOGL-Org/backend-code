@@ -10,7 +10,7 @@ namespace Jogl.Server.DB
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        public UserRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public UserRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
@@ -30,6 +30,8 @@ namespace Jogl.Server.DB
             {
                 case SortKey.Alphabetical:
                     return e => e.FullName;
+                case SortKey.Date:
+                    return e => e.Memberships[0].CreatedUTC;
                 default:
                     return base.GetSort(key);
             }
@@ -103,6 +105,32 @@ namespace Jogl.Server.DB
 
             if (!searchIndexes.Contains(INDEX_AUTOCOMPLETE))
                 await coll.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(INDEX_AUTOCOMPLETE, new BsonDocument(new BsonDocument { { "storedSource", true }, { "mappings", new BsonDocument { { "dynamic", false }, { "fields", new BsonDocument { { nameof(User.FullName), new BsonDocument { { "tokenization", "nGram" }, { "type", "autocomplete" } } } } } } } })));
+        }
+
+        public IFluentQuery<User> QueryWithMembershipData(string searchValue, List<string> communityEntityIds)
+        {
+            var q = GetQuery(searchValue);
+
+            var membershipCollection = GetCollection<Membership>("memberships");
+
+            q = q.Lookup<User, Membership, Membership, List<Membership>, User>(
+                foreignCollection: membershipCollection,
+                let: new BsonDocument("userId", new BsonDocument("$toString", "$_id")),
+                lookupPipeline: new EmptyPipelineDefinition<Membership>()
+                    .Match(new BsonDocument("$expr", new BsonDocument("$and", new BsonArray
+                    {
+                        new BsonDocument("$eq", new BsonArray { $"${nameof(Membership.UserId)}", "$$userId" }),
+                        new BsonDocument("$in", new BsonArray
+                        {
+                            $"${nameof(Membership.CommunityEntityId)}",
+                            new BsonArray(communityEntityIds)
+                        })
+                    })))
+                    .Sort(new BsonDocument(nameof(Membership.CreatedUTC), 1)),
+                     @as: e => e.Memberships);
+              
+
+            return new FluentQuery<User>(_configuration, this, _context, q);
         }
     }
 }

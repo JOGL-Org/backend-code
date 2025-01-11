@@ -739,12 +739,10 @@ namespace Jogl.Server.Business
             }
         }
 
-        protected void EnrichUserData(IOrganizationRepository organizationRepository, IEnumerable<User> users, string currentUserId)
+        protected void EnrichUserData(IEnumerable<User> users, string currentUserId)
         {
             var memberships = _membershipRepository.ListForUsers(users.Select(u => u.Id.ToString()));
             var needs = _needRepository.ListForUsers(users.Select(u => u.Id.ToString()));
-            var organizations = organizationRepository.Get(memberships.Where(m => m.CommunityEntityType == CommunityEntityType.Organization).Select(m => m.CommunityEntityId).ToList());
-            var filteredOrgs = GetFilteredOrganizations(organizations, currentUserId);
             foreach (var user in users)
             {
                 user.ProjectCount = memberships.Count(m => m.UserId == user.Id.ToString() && !m.Deleted && m.CommunityEntityType == CommunityEntityType.Project);
@@ -752,7 +750,6 @@ namespace Jogl.Server.Business
                 user.NodeCount = memberships.Count(m => m.UserId == user.Id.ToString() && !m.Deleted && m.CommunityEntityType == CommunityEntityType.Node);
                 user.OrganizationCount = memberships.Count(m => m.UserId == user.Id.ToString() && !m.Deleted && m.CommunityEntityType == CommunityEntityType.Organization);
                 user.NeedCount = needs.Count(n => n.CreatedByUserId == user.Id.ToString() && !n.Deleted && n.EndDate > DateTime.UtcNow);
-                user.Organizations = filteredOrgs.Where(o => memberships.Any(m => m.UserId == user.Id.ToString() && m.CommunityEntityId == o.Id.ToString())).ToList();
             }
 
             var followed = _followingRepository.ListForFollowers(users.Select(u => u.Id.ToString()));
@@ -768,6 +765,31 @@ namespace Jogl.Server.Business
 
                 user.UserFollows = followers.Any(f => f.UserIdFrom == currentUserId && f.UserIdTo == user.Id.ToString());
             }
+        }
+
+        protected void EnrichUserDataWithCommonSpaces(IEnumerable<User> users, string nodeId, string currentUserId)
+        {
+            var userIds = users.Select(u => u.Id.ToString());
+            var memberships = _membershipRepository
+                .Query(m => userIds.Contains(m.UserId))
+                .ToList();
+
+            var communityEntityIds = memberships.Select(m => m.CommunityEntityId).ToList();
+
+            var feedEntitySet = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds);
+            feedEntitySet.Nodes = GetFilteredNodes(feedEntitySet.Nodes, currentUserId);
+            feedEntitySet.Communities = GetFilteredWorkspaces(feedEntitySet.Communities, currentUserId);
+            feedEntitySet.CallsForProposals = new List<CallForProposal>();
+            feedEntitySet.Organizations = new List<Organization>();
+
+            foreach (var user in users)
+            {
+                user.Spaces = feedEntitySet
+                    .CommunityEntities
+                    .Where(ce => memberships.Any(m => m.CommunityEntityId == ce.Id.ToString() && m.UserId == user.Id.ToString()))
+                    .ToList();
+            }
+
         }
 
         protected void EnrichChannelData(IEnumerable<Channel> channels, string userId)

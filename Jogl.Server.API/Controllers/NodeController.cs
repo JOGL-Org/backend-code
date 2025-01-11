@@ -430,7 +430,7 @@ namespace Jogl.Server.API.Controllers
         [Route("{id}/users/aggregate")]
         [SwaggerOperation($"Lists all needs for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query visible to the current user", typeof(ListPage<UserMiniModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "A list of needs in the specified node matching the search query", typeof(ListPage<UserMiniModel>))]
         public async Task<IActionResult> GetUsersAggregate([SwaggerParameter("ID of the node")] string id, [ModelBinder(typeof(ListBinder))][FromQuery] List<string>? communityEntityIds, [FromQuery] SearchModel model)
         {
             var entity = GetEntity(id);
@@ -458,7 +458,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var communityEntities = _userService.ListCommunityEntitiesForNodeUsers(id, model.Search, model.Page, model.PageSize);
+            var communityEntities = _userService.ListCommunityEntitiesForNodeUsers(CurrentUserId, id, model.Search);
             var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
             return Ok(communityEntityModels);
         }
