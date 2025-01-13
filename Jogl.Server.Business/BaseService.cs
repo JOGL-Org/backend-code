@@ -774,7 +774,10 @@ namespace Jogl.Server.Business
                 .Query(m => userIds.Contains(m.UserId))
                 .ToList();
 
-            var communityEntityIds = memberships.Select(m => m.CommunityEntityId).ToList();
+            var entityIds = GetCommunityEntityIdsForNode(nodeId);
+            var communityEntityIds = memberships
+                .Where(m => entityIds.Contains(m.CommunityEntityId))
+                .Select(m => m.CommunityEntityId).ToList();
 
             var feedEntitySet = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds);
             feedEntitySet.Nodes = GetFilteredNodes(feedEntitySet.Nodes, currentUserId);
