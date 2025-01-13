@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using System.Security.Claims;
 
 namespace Jogl.Server.Auth
 {
@@ -11,5 +12,7 @@ namespace Jogl.Server.Auth
 
         string GetTokenWithSignature(User user, WalletType walletType, string wallet, string signature);
         bool VerifySignature(WalletType walletType, string wallet, string signature);
+
+        IEnumerable<Claim> GetClaimsFromUser(User user);
     }
 }

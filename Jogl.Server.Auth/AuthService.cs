@@ -77,6 +77,14 @@ namespace Jogl.Server.Auth
             return hashToCompare.SequenceEqual(Convert.FromHexString(hash));
         }
 
+        public IEnumerable<Claim> GetClaimsFromUser(User user)
+        {
+            yield return new Claim(ClaimTypes.Email, user.Email);
+            yield return new Claim(ClaimTypes.Sid, user.Id.ToString());
+            yield return new Claim(ClaimTypes.GivenName, user.FirstName);
+            yield return new Claim(ClaimTypes.Surname, user.LastName);
+        }
+
         public string GetTokenWithSignature(User user, WalletType walletType, string wallet, string signature)
         {
             if (user == null)
@@ -205,11 +213,7 @@ namespace Jogl.Server.Auth
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(
-                [
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Sid, user.Id.ToString())
-                ]),
+                Subject = new ClaimsIdentity(GetClaimsFromUser(user)),
                 Expires = DateTime.UtcNow.AddMonths(1),
                 SigningCredentials = new X509SigningCredentials(new X509Certificate2(cert.Value))
             };

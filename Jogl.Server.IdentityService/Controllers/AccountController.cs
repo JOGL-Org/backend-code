@@ -51,15 +51,10 @@ namespace Jogl.Server.IdentityService.Controllers
 
                 if (validationResult)
                 {
-                    var claims = new List<Claim>
-                    {
-                            new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Sid, user.Id.ToString())
-                    };
-
+                    var claims = _authService.GetClaimsFromUser(user);
                     await HttpContext.SignInAsync(new Duende.IdentityServer.IdentityServerUser(user.Id.ToString())
                     {
-                        AdditionalClaims = claims,
+                        AdditionalClaims = claims.ToList(),
                         DisplayName = user.Username,
                     });
 
