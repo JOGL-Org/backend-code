@@ -41,48 +41,39 @@ namespace Jogl.Server.Business
             var feed = _feedRepository.Get(id);
             var allRelations = _relationRepository.List(r => !r.Deleted);
             var currentUserMemberships = _membershipRepository.List(m => m.UserId == currentUserId && !m.Deleted);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.Status == InvitationStatus.Pending && i.InviteeUserId == currentUserId);
 
             switch (feed?.Type)
             {
-                case FeedType.Node:
-                    {
-                        var communityEntityIds = GetCommunityEntityIdsForNode(allRelations, id);
-                        var nodes = _nodeRepository.AutocompleteGet(communityEntityIds, search);
-                        var communities = _workspaceRepository.AutocompleteGet(communityEntityIds, search);
-
-                        var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
-                        var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
-
-                        var res = new List<CommunityEntity>();
-                        res.AddRange(filteredNodes);
-                        res.AddRange(filteredCommunities);
-
-                        return GetPage(res, page, pageSize);
-                    }
                 case FeedType.Workspace:
                     {
-                        var nodeIds = GetNodeIdsForCommunity(allRelations, id);
-                        var communityEntityIds = GetCommunityEntityIdsForNodes(allRelations, nodeIds);
-                        var nodes = _nodeRepository.AutocompleteGet(nodeIds, search);
-                        var communities = _workspaceRepository.AutocompleteGet(communityEntityIds, search);
+                        var entityIds = GetCommunityEntityIdsForCommunity(allRelations, id);
 
-                        var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
-                        var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
+                        var communities = _workspaceRepository
+                            .Query(search)
+                            .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .ToList();
 
+                        var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
                         var res = new List<CommunityEntity>();
-                        res.AddRange(filteredNodes);
                         res.AddRange(filteredCommunities);
-
                         return GetPage(res, page, pageSize);
                     }
+                case FeedType.Node:
                 default:
                     {
-                        var nodes = _nodeRepository.AutocompleteList(n => !n.Deleted, search);
-                        var communities = _workspaceRepository.AutocompleteList(c => !c.Deleted, search);
+                        var entityIds = GetCommunityEntityIdsForNode(allRelations, id);
 
-                        var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
-                        var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, currentUserInvitations, permission.HasValue ? new List<Permission> { permission.Value } : null);
+                        var nodes = _nodeRepository
+                            .Query(search)
+                            .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .ToList();
+                        var communities = _workspaceRepository
+                            .Query(search)
+                            .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .ToList();
+
+                        var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
+                        var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
 
                         var res = new List<CommunityEntity>();
                         res.AddRange(filteredNodes);
@@ -92,7 +83,7 @@ namespace Jogl.Server.Business
                     }
             }
         }
-    
+
         private CommunityEntityType? GetType(FeedType type)
         {
             CommunityEntityType t;

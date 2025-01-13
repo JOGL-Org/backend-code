@@ -638,7 +638,7 @@ namespace Jogl.Server.Business
             Task.WhenAll(feedEntities.Select(entity => _userFeedRecordRepository.SetFeedListedAsync(userId, entity.Id.ToString(), DateTime.UtcNow))).Wait();
         }
 
-        public bool IsVisible(CommunityEntity c, IEnumerable<Membership> currentUserMemberships, IEnumerable<Invitation> invitations, IEnumerable<Relation> allRelations)
+        public bool IsVisible(CommunityEntity c, IEnumerable<Membership> currentUserMemberships, IEnumerable<Relation> allRelations)
         {
             if (c == null)
                 return false;
@@ -1462,17 +1462,16 @@ namespace Jogl.Server.Business
         protected List<CallForProposal> GetFilteredCallForProposals(IEnumerable<CallForProposal> callForProposals, IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, string currentUserId, List<Permission> permissions)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.Status == InvitationStatus.Pending && i.InviteeUserId == currentUserId);
 
-            return GetFilteredCallForProposals(callForProposals, communities, allRelations, currentUserMemberships, currentUserInvitations, permissions);
+            return GetFilteredCallForProposals(callForProposals, communities, allRelations, currentUserMemberships, permissions);
         }
 
-        protected List<CallForProposal> GetFilteredCallForProposals(IEnumerable<CallForProposal> callForProposals, IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<Invitation> currentUserInvitations, List<Permission> permissions)
+        protected List<CallForProposal> GetFilteredCallForProposals(IEnumerable<CallForProposal> callForProposals, IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, List<Permission> permissions)
         {
             var filteredCallForProposals = callForProposals
                                            .Where(p => p.Status != "draft" || currentUserMemberships.Any(m => m.CommunityEntityId == p.Id.ToString())) // is user a member?
                                            .Where(p => !p.Deleted)
-                                           .Where(p => IsVisible(communities.SingleOrDefault(c => c.Id.ToString() == p.ParentCommunityEntityId), currentUserMemberships, currentUserInvitations, allRelations.Where(r => r.SourceCommunityEntityId == p.ParentCommunityEntityId || r.TargetCommunityEntityId == p.ParentCommunityEntityId)))
+                                           .Where(p => IsVisible(communities.SingleOrDefault(c => c.Id.ToString() == p.ParentCommunityEntityId), currentUserMemberships, allRelations.Where(r => r.SourceCommunityEntityId == p.ParentCommunityEntityId || r.TargetCommunityEntityId == p.ParentCommunityEntityId)))
                                            .Where(p => permissions == null || permissions.All(pm => Can(p, currentUserMemberships, allRelations, pm)))
                                            .ToList();
 
@@ -1506,16 +1505,15 @@ namespace Jogl.Server.Business
         protected List<Workspace> GetFilteredWorkspaces(IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, string currentUserId, List<Permission> permissions)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.Status == InvitationStatus.Pending && i.InviteeUserId == currentUserId);
 
-            return GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, currentUserInvitations, permissions);
+            return GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permissions);
         }
 
-        protected List<Workspace> GetFilteredWorkspaces(IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<Invitation> currentUserInvitations, List<Permission> permissions)
+        protected List<Workspace> GetFilteredWorkspaces(IEnumerable<Workspace> communities, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, List<Permission> permissions)
         {
             return communities.Where(c => !c.Deleted)
                               .Where(c => c.Status != "draft" || currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString())) // is user a member?
-                              .Where(c => IsVisible(c, currentUserMemberships, currentUserInvitations, allRelations.Where(r => r.SourceCommunityEntityId == c.Id.ToString() || r.TargetCommunityEntityId == c.Id.ToString())))
+                              .Where(c => IsVisible(c, currentUserMemberships, allRelations.Where(r => r.SourceCommunityEntityId == c.Id.ToString() || r.TargetCommunityEntityId == c.Id.ToString())))
                               .Where(c => permissions == null || permissions.All(pm => Can(c, currentUserMemberships, allRelations, pm)))
                               .ToList();
 
@@ -1546,16 +1544,15 @@ namespace Jogl.Server.Business
         protected List<Node> GetFilteredNodes(IEnumerable<Node> nodes, IEnumerable<Relation> allRelations, string currentUserId, List<Permission> permissions)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.Status == InvitationStatus.Pending && i.InviteeUserId == currentUserId);
 
-            return GetFilteredNodes(nodes, allRelations, currentUserMemberships, currentUserInvitations, permissions);
+            return GetFilteredNodes(nodes, allRelations, currentUserMemberships, permissions);
         }
 
-        protected List<Node> GetFilteredNodes(IEnumerable<Node> nodes, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, IEnumerable<Invitation> currentUserInvitations, List<Permission> permissions)
+        protected List<Node> GetFilteredNodes(IEnumerable<Node> nodes, IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships, List<Permission> permissions)
         {
             return nodes.Where(c => !c.Deleted)
                         .Where(c => c.Status != "draft" || currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString())) // is user a member?
-                        .Where(c => IsVisible(c, currentUserMemberships, currentUserInvitations, allRelations.Where(r => r.SourceCommunityEntityId == c.Id.ToString() || r.TargetCommunityEntityId == c.Id.ToString())))
+                        .Where(c => IsVisible(c, currentUserMemberships, allRelations.Where(r => r.SourceCommunityEntityId == c.Id.ToString() || r.TargetCommunityEntityId == c.Id.ToString())))
                         .Where(n => permissions == null || permissions.All(pm => Can(n, currentUserMemberships, allRelations, pm)))
                         .ToList();
         }
@@ -1576,16 +1573,15 @@ namespace Jogl.Server.Business
         protected List<Organization> GetFilteredOrganizations(IEnumerable<Organization> organizations, string currentUserId, List<Permission> permissions)
         {
             var currentUserMemberships = _membershipRepository.List(p => p.UserId == currentUserId && !p.Deleted);
-            var currentUserInvitations = _invitationRepository.List(i => !i.Deleted && i.Status == InvitationStatus.Pending && i.InviteeUserId == currentUserId);
 
-            return GetFilteredOrganizations(organizations, currentUserMemberships, currentUserInvitations, permissions);
+            return GetFilteredOrganizations(organizations, currentUserMemberships, permissions);
         }
 
-        protected List<Organization> GetFilteredOrganizations(IEnumerable<Organization> organizations, IEnumerable<Membership> currentUserMemberships, IEnumerable<Invitation> currentUserInvitations, List<Permission> permissions)
+        protected List<Organization> GetFilteredOrganizations(IEnumerable<Organization> organizations, IEnumerable<Membership> currentUserMemberships, List<Permission> permissions)
         {
             return organizations.Where(c => !c.Deleted)
                                 .Where(c => c.Status != "draft" || currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString())) // is user a member?
-                                .Where(c => IsVisible(c, currentUserMemberships, currentUserInvitations, new List<Relation>()))
+                                .Where(c => IsVisible(c, currentUserMemberships, new List<Relation>()))
                                 .Where(n => permissions == null || permissions.All(pm => Can(n, currentUserMemberships, new List<Relation>(), pm)))
                                 .ToList();
         }
