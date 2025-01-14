@@ -7,7 +7,7 @@ namespace Jogl.Server.Business
     {
         Task<string> CreateAsync(Membership membership);
         Membership Get(string entityId, string userId);
-        List<Membership> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, bool loadDetails = false);
+        List<Membership> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         List<Membership> ListForEntities(string currentUserId, List<string> entityIds);
 
         int CountForEntity(string currentUserId, string entityId, string search);

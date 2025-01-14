@@ -33,6 +33,47 @@ namespace Jogl.Server.API.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{id}")]
+        [SwaggerOperation("Gets community entity")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to see the entity")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The community entity data", typeof(CommunityEntityMiniModel))]
+        public async Task<IActionResult> Get([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        {
+            var entity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (entity == null)
+                return NotFound();
+
+            if (!entity.Permissions.Contains(Permission.Read))
+                return Forbid();
+
+            var model = _mapper.Map<CommunityEntityMiniModel>(entity);
+            return Ok(model);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{id}/members")]
+        [SwaggerOperation("List all members for an entity")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to see the entity's members")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "A list of members", typeof(List<MemberModel>))]
+        public async Task<IActionResult> GetMembers([SwaggerParameter("ID of the entity")][FromRoute] string id, [FromQuery] SearchModel model)
+        {
+            var entity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (entity == null)
+                return NotFound();
+
+            if (!entity.Permissions.Contains(Permission.Read))
+                return Forbid();
+
+            var members = _membershipService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var memberModels = members.Select(_mapper.Map<MemberModel>);
+            return Ok(memberModels);
+        }
+
         [HttpPost]
         [Route("{id}/invite/batch")]
         [SwaggerOperation("Invite a batch of users to an entity")]

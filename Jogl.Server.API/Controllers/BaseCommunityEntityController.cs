@@ -826,7 +826,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var members = _membershipService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, true);
+            var members = _membershipService.ListForEntity(CurrentUserId, id, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var memberModels = members.Select(_mapper.Map<MemberModel>);
             return Ok(memberModels);
         }
@@ -1566,7 +1566,7 @@ namespace Jogl.Server.API.Controllers
             if (!entity.Permissions.Contains(Permission.Read))
                 return Forbid();
 
-            var events = _eventService.ListForEntity(id, CurrentUserId, null,from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
+            var events = _eventService.ListForEntity(id, CurrentUserId, null, from, to, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var eventModels = events.Select(_mapper.Map<EventModel>);
             return Ok(eventModels);
         }

@@ -49,7 +49,7 @@ namespace Jogl.Server.Business
                         var entityIds = GetCommunityEntityIdsForCommunity(allRelations, id);
 
                         var communities = _workspaceRepository
-                            .Query(search)
+                            .QueryAutocomplete(search)
                             .Filter(n => entityIds.Contains(n.Id.ToString()))
                             .ToList();
 
@@ -64,11 +64,11 @@ namespace Jogl.Server.Business
                         var entityIds = GetCommunityEntityIdsForNode(allRelations, id);
 
                         var nodes = _nodeRepository
-                            .Query(search)
+                            .QueryAutocomplete(search)
                             .Filter(n => entityIds.Contains(n.Id.ToString()))
                             .ToList();
                         var communities = _workspaceRepository
-                            .Query(search)
+                            .QueryAutocomplete(search)
                             .Filter(n => entityIds.Contains(n.Id.ToString()))
                             .ToList();
 

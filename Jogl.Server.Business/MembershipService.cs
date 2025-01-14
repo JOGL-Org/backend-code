@@ -50,9 +50,13 @@ namespace Jogl.Server.Business
             return _membershipRepository.Get(entityId, userId);
         }
 
-        public List<Membership> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, bool loadDetails = false)
+        public List<Membership> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
-            var members = _membershipRepository.List(m => m.CommunityEntityId == entityId && !m.Deleted);
+            var members = _membershipRepository
+                .Query(search) //TODO convert to queryWithUserData
+                .Filter(m => m.CommunityEntityId == entityId)
+                .ToList();
+
             var memberUserIds = members.Select(m => m.UserId).ToList();
             var users = _userRepository.Get(memberUserIds);
 
@@ -61,19 +65,7 @@ namespace Jogl.Server.Business
                 member.User = users.SingleOrDefault(u => u.Id == ObjectId.Parse(member.UserId));
             }
 
-            var memberPage = members
-                .Where(m => m.User != null)
-                .Where(m => (string.IsNullOrEmpty(search) || (m.User != null && (m.User.FirstName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || m.User.LastName.Contains(search, StringComparison.CurrentCultureIgnoreCase) || m.User.Username.Contains(search, StringComparison.CurrentCultureIgnoreCase))))
-                       && !m.Deleted)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            if (!loadDetails)
-                return memberPage;
-
-            EnrichUserData( memberPage.Select(m => m.User).ToList(), currentUserId);
-            return memberPage;
+            return GetPage(members.Where(m => m.User != null), page, pageSize).ToList();
         }
 
         public List<Membership> ListForEntities(string currentUserId, List<string> entityIds)

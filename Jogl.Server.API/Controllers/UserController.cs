@@ -214,28 +214,6 @@ namespace Jogl.Server.API.Controllers
             return Ok(userModel);
         }
 
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("{entityId}/users")]
-        [SwaggerOperation($"Lists all users for the specified entity")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to list users for the entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "The users data", typeof(List<UserMiniModel>))]
-        public async Task<IActionResult> GetUsers([SwaggerParameter("ID of the entity")][FromRoute] string entityId, [FromQuery] SearchModel model)
-        {
-            var entity = _feedEntityService.GetEntity(entityId, CurrentUserId);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Permission.Read))
-                return Forbid();
-
-            var papers = _userService.ListForEntity(CurrentUserId, entityId, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var paperModels = papers.Select(_mapper.Map<UserMiniModel>);
-            return Ok(paperModels);
-        }
-
         [AllowAnonymous]
         [HttpGet]
         [Route("{id}/portfolio")]
