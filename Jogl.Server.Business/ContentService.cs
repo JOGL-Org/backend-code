@@ -308,14 +308,14 @@ namespace Jogl.Server.Business
 
         public List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
-            var posts = ListPostsForNode(currentUserId, nodeId, page, pageSize);
-            var threads = ListThreadsForNode(currentUserId, nodeId, page, pageSize);
             var mentions = ListMentionsForNode(currentUserId, nodeId, page, pageSize);
+            var threads = ListThreadsForNode(currentUserId, nodeId, page, pageSize);
+            var posts = ListPostsForNode(currentUserId, nodeId, page, pageSize);
 
             var res = new List<ContentEntity>();
-            res.AddRange(posts);
-            res.AddRange(threads);
             res.AddRange(mentions);
+            res.AddRange(threads);
+            res.AddRange(posts);
 
             res = res
                 .DistinctBy(ce => $"{ce.Id}-{ce.LastComment?.Id}")

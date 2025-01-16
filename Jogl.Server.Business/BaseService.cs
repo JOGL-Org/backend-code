@@ -347,6 +347,9 @@ namespace Jogl.Server.Business
 
         protected List<string> GetCommunityEntityIdsForNode(IEnumerable<Relation> allRelations, string nodeId)
         {
+            if (string.IsNullOrEmpty(nodeId))
+                return new List<string>();
+
             return GetCommunityEntityIdsForNodes(allRelations, new List<string> { nodeId });
         }
 

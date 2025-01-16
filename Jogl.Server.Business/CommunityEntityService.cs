@@ -65,11 +65,11 @@ namespace Jogl.Server.Business
 
                         var nodes = _nodeRepository
                             .QueryAutocomplete(search)
-                            .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .Filter(n => !entityIds.Any() || entityIds.Contains(n.Id.ToString()))
                             .ToList();
                         var communities = _workspaceRepository
                             .QueryAutocomplete(search)
-                            .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .Filter(n => !entityIds.Any() || entityIds.Contains(n.Id.ToString()))
                             .ToList();
 
                         var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
