@@ -1,0 +1,36 @@
+﻿{
+  "workspace": "Werkruimte",
+  "node": "Hub",
+  "templates": {
+    "push": {
+      "containerInvite": {
+        "title": "Uitnodiging voor een {0}",
+        "body": "{0} heeft je uitgenodigd om deel te nemen aan hun {1}"
+      },
+      "discussion": {
+        "title": "{0} in {1}",
+        "body": "{0} {1} in {2}"
+      },
+      "mention": {
+        "title": "{0} in {1}",
+        "body": "{0} heeft je genoemd in {2}"
+      },
+      "feedEntityCreate": {
+        "title": "Nieuwe {0}",
+        "body": "{0} heeft iets toegevoegd in {1}"
+      },
+      "feedEntityShare": {
+        "title": "{0}",
+        "body": "{0} heeft iets met je gedeeld in {1}"
+      }
+    }
+  },
+  "post": "bericht",
+  "posted": "geplaatst",
+  "reply": "reactie",
+  "replied": "gereageerd",
+  "paper": "paper",
+  "need": "behoefte",
+  "document": "document",
+  "event": "evenement"
+}
