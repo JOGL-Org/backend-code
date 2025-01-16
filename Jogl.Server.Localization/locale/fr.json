@@ -28,5 +28,9 @@
   "post": "publication",
   "posted": "publié",
   "reply": "réponse",
-  "replied": "répondu"
+  "replied": "répondu",
+  "paper": "papier",
+  "need": "besoin",
+  "document": "document",
+  "event": "événement"
 }

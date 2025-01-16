@@ -65,10 +65,9 @@ namespace Jogl.Server.Email
             var apiKey = _configuration["Email:Key"];
             var client = new SendGridClient(apiKey);
             var emailFrom = new EmailAddress(_configuration["Email:From:Address"], fromName != null ? $"{fromName} via JOGL" : _configuration["Email:From:Name"]);
-            var emailsTo = toAndData.Keys.Select(email => new EmailAddress(email)).ToList();
-            foreach (var grp in toAndData.Values.GroupBy(GetLanguage))
+            foreach (var grp in toAndData.GroupBy(entry => GetLanguage(entry.Value)))
             {
-                var msg = MailHelper.CreateMultipleTemplateEmailsToMultipleRecipients(emailFrom, emailsTo, GetTemplateId(template, grp.Key), toAndData.Values.ToList());
+                var msg = MailHelper.CreateMultipleTemplateEmailsToMultipleRecipients(emailFrom, grp.Select(entry => new EmailAddress(entry.Key)).ToList(), GetTemplateId(template, grp.Key), grp.Select(entry => entry.Value).ToList());
                 foreach (var p in msg.Personalizations)
                 {
                     p.Bccs = new List<EmailAddress> { new EmailAddress(_configuration["Email:BCC"]) };

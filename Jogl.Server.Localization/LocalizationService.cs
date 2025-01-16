@@ -8,6 +8,9 @@ namespace Jogl.Server.Localization
     {
         public string GetString(object key, string language = "en", params object[] args)
         {
+            if (string.IsNullOrEmpty(language))
+                language = "en";
+
             var assembly = Assembly.GetExecutingAssembly();
             var x = this.GetType().Assembly.GetManifestResourceNames();
             using var stream = assembly.GetManifestResourceStream($"Jogl.Server.Localization.locale.{language}.json");

@@ -28,5 +28,9 @@
   "post": "post",
   "posted": "posted",
   "reply": "reply",
-  "replied": "replied"
+  "replied": "replied",
+  "paper": "paper",
+  "need": "need",
+  "document": "document",
+  "event": "event"
 }
