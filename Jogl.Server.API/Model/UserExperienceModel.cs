@@ -14,5 +14,7 @@ namespace Jogl.Server.API.Model
         public string? DateFrom { get; set; }
         [JsonPropertyName("date_to")]
         public string? DateTo { get; set; }
+        [JsonPropertyName("current")]
+        public bool Current { get; set; }
     }
 }
