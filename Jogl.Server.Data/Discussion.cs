@@ -13,5 +13,8 @@ namespace Jogl.Server.Data
         }
 
         public DiscussionStats DiscussionStats { get; set; }
+
+        public FeedEntity FeedEntity { get; set; }
+        public FeedEntity ParentFeedEntity { get; set; }
     }
 }

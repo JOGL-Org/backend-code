@@ -37,6 +37,7 @@ namespace Jogl.Server.Business
 
             //create document
             document.Id = ObjectId.Parse(id);
+            document.UpdatedUTC = document.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
             await _documentRepository.CreateAsync(document);
 
             switch (document.Type)

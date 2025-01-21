@@ -17,6 +17,7 @@ namespace Jogl.Server.Business
 
         public Feed GetFeed(string id);
         public FeedEntity GetEntity(string id);
+        public FeedEntity GetParentEntity(string id);
         public FeedEntity GetEntity(string id, string userId);
         public FeedType GetType(CommunityEntityType type);
         public CommunityEntityType GetType(FeedType type);

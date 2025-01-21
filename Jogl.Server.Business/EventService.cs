@@ -44,6 +44,7 @@ namespace Jogl.Server.Business
 
             //create document
             ev.Id = ObjectId.Parse(id);
+            ev.UpdatedUTC = ev.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
 
             var externalCalendarId = await _calendarService.GetJoglCalendarAsync();
             var communityEntity = _communityEntityService.Get(ev.CommunityEntityId);

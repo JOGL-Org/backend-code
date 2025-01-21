@@ -12,8 +12,8 @@ namespace Jogl.Server.Business
 
         public FeedEntityService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, IOrganizationRepository organizationRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, null)
         {
-            _workspaceRepository= workspaceRepository;
-            _nodeRepository =   nodeRepository;
+            _workspaceRepository = workspaceRepository;
+            _nodeRepository = nodeRepository;
             _organizationRepository = organizationRepository;
         }
 
@@ -61,8 +61,8 @@ namespace Jogl.Server.Business
         public FeedEntitySet GetFeedEntitySetExtended(IEnumerable<string> feedIds)
         {
             var channels = _channelRepository.Get(feedIds.ToList());
-            var feedIdsPlus = feedIds.Concat(channels.Select(c=>c.CommunityEntityId)).Distinct().ToList();
-            var set= GetFeedEntitySet(feedIdsPlus);
+            var feedIdsPlus = feedIds.Concat(channels.Select(c => c.CommunityEntityId)).Distinct().ToList();
+            var set = GetFeedEntitySet(feedIdsPlus);
             foreach (var c in set.Channels)
             {
                 c.CommunityEntity = GetCommunityEntityFromLists(c.CommunityEntityId, set);
@@ -356,21 +356,21 @@ namespace Jogl.Server.Business
                     return node;
 
                 case FeedType.Organization:
-                    var organization= _organizationRepository.Get(id);
+                    var organization = _organizationRepository.Get(id);
                     if (organization == null)
                         return null;
 
                     EnrichOrganizationData(new[] { organization }, userId);
                     return organization;
                 case FeedType.CallForProposal:
-                    var cfp= _callForProposalsRepository.Get(id);
+                    var cfp = _callForProposalsRepository.Get(id);
                     if (cfp == null)
                         return null;
 
                     EnrichCallForProposalData(new[] { cfp }, userId);
                     return cfp;
                 case FeedType.Need:
-                    var need= _needRepository.Get(id);
+                    var need = _needRepository.Get(id);
                     if (need == null)
                         return null;
 
@@ -378,14 +378,14 @@ namespace Jogl.Server.Business
                     return need;
 
                 case FeedType.Document:
-                    var doc =  _documentRepository.Get(id);
+                    var doc = _documentRepository.Get(id);
                     if (doc == null)
                         return null;
 
                     EnrichDocumentsWithPermissions(new[] { doc }, userId);
                     return doc;
                 case FeedType.Event:
-                    var ev= _eventRepository.Get(id);
+                    var ev = _eventRepository.Get(id);
                     if (ev == null)
                         return null;
 
@@ -406,14 +406,47 @@ namespace Jogl.Server.Business
                     EnrichUsersWithPermissions(new[] { user }, userId);
                     return user;
                 case FeedType.Channel:
-                     var channel= _channelRepository.Get(id);
+                    var channel = _channelRepository.Get(id);
                     if (channel == null)
                         return null;
 
-                    EnrichChannelsWithPermissions(new  [] { channel }, userId);
+                    EnrichChannelsWithPermissions(new[] { channel }, userId);
                     return channel;
                 default:
                     throw new NotImplementedException($"Cannot load entity for type {type}");
+            }
+        }
+
+        public FeedEntity GetParentEntity(string id)
+        {
+            var feed = _feedRepository.Get(id);
+            if (feed == null)
+                return null;
+
+            switch (feed.Type)
+            {
+                case FeedType.Need:
+                    var need = _needRepository.Get(id);
+                    return GetEntity(need.FeedEntityId);
+
+                case FeedType.Document:
+                    var doc = _documentRepository.Get(id);
+                    return GetEntity(doc.FeedEntityId);
+
+                case FeedType.Event:
+                    var ev = _eventRepository.Get(id);
+                    return GetEntity(ev.FeedEntityId);
+
+                case FeedType.Paper:
+                    var paper = _paperRepository.Get(id);
+                    return GetEntity(paper.FeedEntityId);
+
+                case FeedType.Channel:
+                    var channel = _channelRepository.Get(id);
+                    return GetEntity(channel.CommunityEntityId);
+
+                default:
+                    return null;
             }
         }
 
@@ -426,7 +459,7 @@ namespace Jogl.Server.Business
         {
             return Enum.Parse<CommunityEntityType>(type.ToString());
         }
-        
+
         public Feed GetFeed(string id)
         {
             return _feedRepository.Get(id);

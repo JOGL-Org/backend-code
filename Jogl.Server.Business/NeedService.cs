@@ -40,6 +40,7 @@ namespace Jogl.Server.Business
 
             //create need
             need.Id = ObjectId.Parse(id);
+            need.UpdatedUTC = need.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
             await _needRepository.CreateAsync(need);
 
             //process notifications

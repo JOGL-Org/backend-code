@@ -29,9 +29,7 @@ namespace Jogl.Server.API.Controllers
         protected async Task InitCreationAsync(Entity entity)
         {
             entity.CreatedByUserId = CurrentUserId;
-            entity.UpdatedByUserId = CurrentUserId;
             entity.CreatedUTC = DateTime.UtcNow;
-            entity.UpdatedUTC = DateTime.UtcNow;
             entity.LastActivityUTC = entity.CreatedUTC;
 
             await _entityService.ProcessEmbeddedDataAsync(entity);

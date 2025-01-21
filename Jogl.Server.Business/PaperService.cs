@@ -62,6 +62,7 @@ namespace Jogl.Server.Business
 
             //create paper
             paper.Id = ObjectId.Parse(id);
+            paper.UpdatedUTC = paper.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
             await _paperRepository.CreateAsync(paper);
 
             //process notifications

@@ -212,8 +212,13 @@ namespace Jogl.Server.Business
             var filteredContentEntityPage = GetPage(filteredContentEntities, page, pageSize);
             EnrichContentEntityData(filteredContentEntityPage, currentUserMentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), currentUserId);
 
+            var feedEntity = _feedEntityService.GetEntity(feedId);
+            var parentFeedEntity = _feedEntityService.GetParentEntity(feedId);
+
             return new Discussion(filteredContentEntityPage, total)
             {
+                FeedEntity = feedEntity,
+                ParentFeedEntity = parentFeedEntity,
                 DiscussionStats = new DiscussionStats
                 {
                     UnreadPosts = unreadPosts,

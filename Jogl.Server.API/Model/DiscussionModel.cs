@@ -21,5 +21,11 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; set; }
+
+        [JsonPropertyName("feed_entity")]
+        public EntityMiniModel? FeedEntity { get; set; }
+
+        [JsonPropertyName("parent_feed_entity")]
+        public EntityMiniModel? ParentFeedEntity { get; set; }
     }
 }
