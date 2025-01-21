@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Jogl.Server.Data;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
@@ -49,8 +50,11 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("stats")]
         public CommunityEntityStatModel Stats { get; set; }
 
-        [JsonPropertyName("organizations")]
-        public List<EntityMiniModel> Organizations { get; set; }
+        [JsonPropertyName("experience")]
+        public List<UserExperienceModel> Experience { get; set; }
+
+        [JsonPropertyName("education")]
+        public List<UserEducation> Education { get; set; }
 
         [JsonPropertyName("spaces")]
         public List<CommunityEntityMiniModel> Spaces { get; set; }
