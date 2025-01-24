@@ -14,11 +14,13 @@ namespace Jogl.Server.DB
         {
         }
 
-        protected override Expression<Func<Paper, object>>[] SearchFields
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<Paper, object>>[] { e => e.Title, e => e.Summary, e => e.Authors };
+                yield return nameof(Paper.Title);
+                yield return nameof(Paper.Summary);
+                yield return nameof(Paper.Authors);
             }
         }
 

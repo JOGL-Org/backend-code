@@ -10,21 +10,22 @@ namespace Jogl.Server.DB
 {
     public class ChannelRepository : BaseRepository<Channel>, IChannelRepository
     {
-        public ChannelRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public ChannelRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
         protected override string CollectionName => "channels";
 
         protected override Expression<Func<Channel, string>> AutocompleteField => e => e.Title;
-        protected override Expression<Func<Channel, object>>[] SearchFields
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<Channel, object>>[] { e => e.Title, e => e.Description };
+                yield return nameof(Channel.Title);
+                yield return nameof(Channel.Description);
             }
         }
-
+   
         public override Expression<Func<Channel, object>> GetSort(SortKey key)
         {
             switch (key)

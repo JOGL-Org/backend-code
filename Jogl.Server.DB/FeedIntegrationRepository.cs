@@ -13,11 +13,12 @@ namespace Jogl.Server.DB
         {
         }
 
-        protected override Expression<Func<FeedIntegration, object>>[] SearchFields
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<FeedIntegration, object>>[] { e => e.SourceId, e => e.SourceUrl };
+                yield return nameof(FeedIntegration.SourceId);
+                yield return nameof(FeedIntegration.SourceUrl);
             }
         }
 

@@ -15,11 +15,15 @@ namespace Jogl.Server.DB
         }
 
         protected override Expression<Func<T, string>> AutocompleteField => e => e.Title;
-        protected override Expression<Func<T, object>>[] SearchFields
+        
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<T, object>>[] { e => e.Title, e => e.ShortDescription, e => e.Description, e => e.Keywords };
+                yield return nameof(CommunityEntity.Title);
+                yield return nameof(CommunityEntity.ShortDescription);
+                yield return nameof(CommunityEntity.Description);
+                yield return nameof(CommunityEntity.Keywords);
             }
         }
 

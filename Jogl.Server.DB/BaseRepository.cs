@@ -41,7 +41,7 @@ namespace Jogl.Server.DB
         }
 
         protected virtual Expression<Func<T, string>> AutocompleteField => null;
-        protected virtual Expression<Func<T, object>>[] SearchFields => null;
+        protected virtual IEnumerable<string> SearchFields => null;
 
         protected BaseRepository(IConfiguration configuration, IOperationContext context)
         {
@@ -500,7 +500,7 @@ namespace Jogl.Server.DB
         private IAggregateFluent<T> GetSearchQuery(string searchValue, SortKey? sortKey = null)
         {
             var builder = new SearchPathDefinitionBuilder<T>();
-            var searchDefinition = builder.Multi(SearchFields);
+            var searchDefinition = builder.Multi(SearchFields.Select(fieldName => new StringFieldDefinition<T>(fieldName)));
 
             var coll = GetCollection<T>();
             var query = coll.Aggregate().Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
@@ -549,7 +549,7 @@ namespace Jogl.Server.DB
             if (!string.IsNullOrEmpty(searchValue))
             {
                 var builder = new SearchPathDefinitionBuilder<T>();
-                var searchDefinition = builder.Multi(SearchFields);
+                var searchDefinition = builder.Multi(SearchFields.Select(fieldName => new StringFieldDefinition<T>(fieldName)));
 
                 q = q.Search(Builders<T>.Search.Text(searchDefinition, searchValue, new SearchFuzzyOptions
                 {

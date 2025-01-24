@@ -16,11 +16,15 @@ namespace Jogl.Server.DB
 
         protected override string CollectionName => "users";
         protected override Expression<Func<User, string>> AutocompleteField => u => u.FullName;
-        protected override Expression<Func<User, object>>[] SearchFields
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<User, object>>[] { u => u.FirstName, u => u.LastName, u => u.Username };
+                yield return nameof(User.FirstName);
+                yield return nameof(User.LastName);
+                yield return nameof(User.Username);
+                yield return nameof(User.Experience) + "." + nameof(UserExperience.Company);
+                yield return nameof(User.Education) + "." + nameof(UserEducation.School);
             }
         }
 
@@ -128,7 +132,7 @@ namespace Jogl.Server.DB
                     })))
                     .Sort(new BsonDocument(nameof(Membership.CreatedUTC), 1)),
                      @as: e => e.Memberships);
-              
+
 
             return new FluentQuery<User>(_configuration, this, _context, q);
         }

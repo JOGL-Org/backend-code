@@ -15,11 +15,15 @@ namespace Jogl.Server.DB
         }
 
         protected override string CollectionName => "documents";
-        protected override Expression<Func<Document, object>>[] SearchFields
+   
+        protected override IEnumerable<string> SearchFields
         {
             get
             {
-                return new Expression<Func<Document, object>>[] { e => e.Name, e => e.Filename, e => e.Description, e => e.URL };
+                yield return nameof(Document.Name);
+                yield return nameof(Document.Filename);
+                yield return nameof(Document.Description);
+                yield return nameof(Document.URL);
             }
         }
 
