@@ -23,8 +23,14 @@ namespace Jogl.Server.DB
                 yield return nameof(User.FirstName);
                 yield return nameof(User.LastName);
                 yield return nameof(User.Username);
+                yield return nameof(User.StatusText);
+                yield return nameof(User.Skills);
+                yield return nameof(User.Interests);
                 yield return nameof(User.Experience) + "." + nameof(UserExperience.Company);
+                yield return nameof(User.Experience) + "." + nameof(UserExperience.Description);
+                yield return nameof(User.Experience) + "." + nameof(UserExperience.Position);
                 yield return nameof(User.Education) + "." + nameof(UserEducation.School);
+                yield return nameof(User.Education) + "." + nameof(UserEducation.Description);
             }
         }
 
