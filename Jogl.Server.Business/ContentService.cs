@@ -359,7 +359,7 @@ namespace Jogl.Server.Business
                 contentEntity.UserSource = ContentEntitySource.Post;
             }
 
-            return contentEntities.DistinctBy(ce => ce.Id).ToList();
+            return contentEntities.DistinctBy(ce => ce.FeedId).ToList();
         }
 
         public List<ContentEntity> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize)
