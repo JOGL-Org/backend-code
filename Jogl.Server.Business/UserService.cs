@@ -4,6 +4,7 @@ using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
 using MongoDB.Bson;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -215,7 +216,25 @@ namespace Jogl.Server.Business
                 .Sort(sortKey, sortAscending)
                 .ToList();
 
-            var userPage = GetPage(users, page, pageSize);
+            var docs = _documentRepository.Query(search)
+                .Filter(d => entityIds.Contains(d.FeedId))
+                .Filter(d => userIds.Contains(d.CreatedByUserId))
+                .ToList();
+
+            var documentUserIds = docs.Select(u => u.CreatedByUserId).Distinct().ToList();
+            var documentUsers = _userRepository.Get(documentUserIds);
+
+            var papers = _paperRepository.Query(search)
+                .Filter(p => entityIds.Contains(p.FeedId))
+                .Filter(p => userIds.Contains(p.CreatedByUserId))
+                .ToList();
+
+            var paperUserIds = papers.Select(p => p.CreatedByUserId).Distinct().ToList();
+            var paperUsers = _userRepository.Get(paperUserIds);
+
+            var allUsers = users.Concat(documentUsers).Concat(paperUsers).DistinctBy(u => u.Id).ToList();
+
+            var userPage = GetPage(allUsers, page, pageSize);
             EnrichUserData(userPage, userId);
             EnrichUserDataWithCommonSpaces(users, nodeId, userId);
 
