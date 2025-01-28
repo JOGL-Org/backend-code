@@ -47,7 +47,7 @@ namespace Jogl.Server.API.Model
         public string City { get; set; }
 
         [JsonPropertyName("links")]
-        public List<Link>? Links { get; set; }
+        public List<LinkModel>? Links { get; set; }
 
         [JsonPropertyName("skills")]
         public List<string>? Skills { get; set; }
