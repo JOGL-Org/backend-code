@@ -22,6 +22,10 @@
       "feedEntityShare": {
         "title": "{0}",
         "body": "{0} heeft iets met je gedeeld in {1}"
+      },
+      "eventInvite": {
+        "title": "Uitnodiging voor evenement",
+        "body": "{0} heeft je uitgenodigd voor {1}"
       }
     }
   },

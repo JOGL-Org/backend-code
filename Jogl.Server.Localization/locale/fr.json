@@ -22,6 +22,10 @@
       "feedEntityShare": {
         "title": "{0}",
         "body": "{0} a partagé quelque chose avec vous dans {1}"
+      },
+      "eventInvite": {
+        "title": "Invitation à un événement",
+        "body": "{0} vous a invité(e) à {1}"
       }
     }
   },
