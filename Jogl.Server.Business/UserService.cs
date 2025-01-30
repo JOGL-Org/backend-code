@@ -216,17 +216,16 @@ namespace Jogl.Server.Business
                 .Sort(sortKey, sortAscending)
                 .ToList();
 
+
             var docs = _documentRepository.Query(search)
-                .Filter(d => entityIds.Contains(d.FeedId))
-                .Filter(d => userIds.Contains(d.CreatedByUserId))
+                .Filter(d => userIds.Contains(d.FeedId))
                 .ToList();
 
             var documentUserIds = docs.Select(u => u.CreatedByUserId).Distinct().ToList();
             var documentUsers = _userRepository.Get(documentUserIds);
 
             var papers = _paperRepository.Query(search)
-                .Filter(p => entityIds.Contains(p.FeedId))
-                .Filter(p => userIds.Contains(p.CreatedByUserId))
+                .Filter(p => userIds.Contains(p.FeedId))
                 .ToList();
 
             var paperUserIds = papers.Select(p => p.CreatedByUserId).Distinct().ToList();
