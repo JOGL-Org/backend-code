@@ -75,9 +75,11 @@ namespace Jogl.Server.Business
                         var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
                         var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
 
+
                         var res = new List<CommunityEntity>();
                         res.AddRange(filteredNodes);
                         res.AddRange(filteredCommunities);
+                        EnrichCommunityEntitiesWithMembershipData(res, currentUserId);
 
                         return GetPage(res, page, pageSize);
                     }
