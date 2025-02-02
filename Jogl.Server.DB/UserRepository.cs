@@ -25,6 +25,8 @@ namespace Jogl.Server.DB
                 yield return nameof(User.Username);
                 yield return nameof(User.StatusText);
                 yield return nameof(User.Skills);
+                yield return nameof(User.ShortBio);
+                yield return nameof(User.Bio);
                 yield return nameof(User.Interests);
                 yield return nameof(User.Experience) + "." + nameof(UserExperience.Company);
                 yield return nameof(User.Experience) + "." + nameof(UserExperience.Description);
