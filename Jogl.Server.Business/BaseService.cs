@@ -130,7 +130,8 @@ namespace Jogl.Server.Business
                     };
                 case Permission.DeleteContentEntity:
                 case Permission.DeleteComment:
-                    return membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner);
+                case Permission.Membership:
+                    return membership != null;
                 case Permission.Join:
                     if (entity.JoiningRestrictionLevel != JoiningRestrictionLevel.Open)
                         return false;
@@ -289,6 +290,8 @@ namespace Jogl.Server.Business
                     return membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner);
                 case Permission.Delete:
                     return membership != null && membership.AccessLevel == AccessLevel.Admin;
+                case Permission.Membership:
+                    return membership != null;
                 case Permission.Join:
                     return communityEntityMembership != null;
                 default:
