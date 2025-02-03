@@ -26,6 +26,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("feed_stats")]
         public FeedStatModel? FeedStats { get; set; }
 
+        [JsonPropertyName("feed_entity")]
+        public EntityMiniModel? FeedEntity { get; set; }
+
         [JsonPropertyName("image_id")]
         public string? ImageId { get; set; }
 
