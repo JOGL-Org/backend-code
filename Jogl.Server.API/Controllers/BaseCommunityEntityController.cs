@@ -377,6 +377,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(models);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/join")]
         [SwaggerOperation("Joins an entity on behalf of the currently logged in user. Only works for community entities with the Open membership access level. Creates a membership record immediately, no invitation is created.")]
@@ -725,6 +726,7 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/leave")]
         [SwaggerOperation("Leaves an entity on behalf of the currently logged in user")]

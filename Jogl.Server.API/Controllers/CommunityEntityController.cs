@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.API.Model;
 using Jogl.Server.Data;
+using Syncfusion.DocIO.DLS;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -214,6 +215,65 @@ namespace Jogl.Server.API.Controllers
             await _membershipService.UpdateAsync(membership);
 
             return Ok();
+        }
+
+
+        [HttpPost]
+        [Route("{id}/leave")]
+        [SwaggerOperation("Leaves an entity on behalf of the currently logged in user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The user has successfully left the entity")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "The entity does not exist or the user is not a member")]
+        public async Task<IActionResult> Leave([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
+
+            var membership = _membershipService.Get(id, CurrentUserId);
+            if (membership == null)
+                return NotFound();
+
+            await _membershipService.DeleteAsync(membership);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("{id}/join")]
+        [SwaggerOperation("Joins an entity on behalf of the currently logged in user. Only works for community entities with the Open membership access level. Creates a membership record immediately, no invitation is created.")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new membership object", typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "The entity does not exist")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "A membership record already exists for the entity and user")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The entity is not open to members joining")]
+        public async Task<IActionResult> Join([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
+
+            var membership = _membershipService.Get(id, CurrentUserId);
+            if (membership != null)
+                return Conflict();
+
+            if (!communityEntity.Permissions.Contains(Permission.Join))
+                return Forbid();
+
+            var existingInvitation = _invitationService.GetForUserAndEntity(CurrentUserId, id);
+            if (existingInvitation != null)
+                return Conflict();
+
+            membership = new Membership
+            {
+                AccessLevel = AccessLevel.Member,
+                UserId = CurrentUserId,
+                CommunityEntityId = id,
+                CommunityEntityType = communityEntity.Type,
+                CommunityEntity = communityEntity
+            };
+
+            await InitCreationAsync(membership);
+
+            var membershipId = await _membershipService.CreateAsync(membership);
+            return Ok(membershipId);
         }
     }
 }
