@@ -84,8 +84,7 @@ namespace Jogl.Server.DB
             return Builders<ContentEntity>.Update.Set(e => e.Text, updatedEntity.Text)
                                                  .Set(e => e.Status, updatedEntity.Status)
                                                  .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
-                                                 .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
-                                                 .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC); //TODO remove after deployment
+                                                 .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId);
         }
     }
 }
