@@ -157,13 +157,9 @@ namespace Jogl.Server.API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("node/{nodeId}/posts/list")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view the feed")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"Posts", typeof(List<ContentEntityModel>))]
         public async Task<IActionResult> GetNodePosts([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
-            if (!_communityEntityService.HasPermission(nodeId, Permission.Read, CurrentUserId))
-                return Forbid();
-
             var contentEntities = _contentService.ListContentEntitiesForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
             var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
             return Ok(contentEntityModels);
@@ -171,13 +167,9 @@ namespace Jogl.Server.API.Controllers
 
         [HttpGet]
         [Route("node/{nodeId}/mentions/list")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view the feed")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with mentions", typeof(List<ContentEntityModel>))]
         public async Task<IActionResult> GetNodeMentions([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
-            if (!_communityEntityService.HasPermission(nodeId, Permission.Read, CurrentUserId))
-                return Forbid();
-
             var contentEntities = _contentService.ListMentionsForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
             var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
             return Ok(contentEntityModels);
@@ -185,13 +177,9 @@ namespace Jogl.Server.API.Controllers
 
         [HttpGet]
         [Route("node/{nodeId}/threads/list")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to view the feed")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with unread threads", typeof(List<ContentEntityModel>))]
         public async Task<IActionResult> GetNodeThreads([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
-            if (!_communityEntityService.HasPermission(nodeId, Permission.Read, CurrentUserId))
-                return Forbid();
-
             var contentEntities = _contentService.ListThreadsForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
             var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
             return Ok(contentEntityModels);
