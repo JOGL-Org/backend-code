@@ -15,7 +15,7 @@ namespace Jogl.Server.API.Model
         public List<string>? Locations { get; set; }
 
         [JsonPropertyName("label")]
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         [JsonPropertyName("parent_id")]
         public string ParentId { get; set; }
