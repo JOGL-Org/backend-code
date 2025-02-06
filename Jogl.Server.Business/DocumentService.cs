@@ -242,6 +242,7 @@ namespace Jogl.Server.Business
                 .Filter(d => d.FeedId == entityId && d.ContentEntityId == null)
                 .WithFeedRecordData()
                 .FilterFeedEntities(currentUserId, currentUserMemberships)
+                .Sort(SortKey.UpdatedDate, false)
                 .ToList();
 
             var feedEntitySet = _feedEntityService.GetFeedEntitySet(entityId);
@@ -342,6 +343,7 @@ namespace Jogl.Server.Business
 
         public async Task<string> CreateFolderAsync(Folder folder)
         {
+            folder.UpdatedUTC = folder.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
             return await _folderRepository.CreateAsync(folder);
         }
 
@@ -355,6 +357,7 @@ namespace Jogl.Server.Business
             var folders = _folderRepository
                 .Query(search)
                 .Filter(f => f.FeedId == entityId)
+                .Sort(SortKey.UpdatedDate, false)
                 .Page(page, pageSize)
                 .ToList();
 
