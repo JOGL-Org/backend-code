@@ -53,12 +53,14 @@ namespace Jogl.Server.Business
         public List<Membership> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
             var members = _membershipRepository
-                .Query(search) //TODO convert to queryWithUserData
-                .Filter(m => m.CommunityEntityId == entityId)
+                .Query(m => m.CommunityEntityId == entityId)
                 .ToList();
 
             var memberUserIds = members.Select(m => m.UserId).ToList();
-            var users = _userRepository.Get(memberUserIds);
+            var users = _userRepository
+                .Query(search)
+                .Filter(u => memberUserIds.Contains(u.Id.ToString()))
+                .ToList();
 
             foreach (var member in members)
             {
