@@ -343,7 +343,7 @@ namespace Jogl.Server.Business
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
                 .QueryForPosts(currentUserId, ce => userFeedIds.Contains(ce.FeedId))
-                .Sort(SortKey.LastActivity, false)
+                .Sort(SortKey.CreatedDate, false)
                 .Page(page, pageSize)
                 .ToList();
 
@@ -357,6 +357,7 @@ namespace Jogl.Server.Business
             foreach (var contentEntity in contentEntities)
             {
                 contentEntity.UserSource = ContentEntitySource.Post;
+                contentEntity.LastActivityUTC = contentEntity.CreatedUTC; //TODO remove this when front end is fixed
             }
 
             return contentEntities.DistinctBy(ce => ce.FeedId).ToList();
@@ -396,32 +397,55 @@ namespace Jogl.Server.Business
         public List<ContentEntity> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
-            var mentionOriginIds = _mentionRepository
+            var mentions = _mentionRepository
                 .Query(m => m.EntityId == currentUserId)
                 .Filter(m => feedEntityIds.Contains(m.OriginFeedId))
-                .Sort(SortKey.CreatedDate)
-                .ToList()
-                .Select(m => m.OriginId)
+                .Sort(SortKey.CreatedDate, false)
+                .Page(page, pageSize)
                 .ToList();
 
-            var mentionComments = _commentRepository.Query(c => mentionOriginIds.Contains(c.Id.ToString())).ToList();
-            var mentionCommentContentEntityIds = mentionComments.Select(c => c.ContentEntityId).ToList();
+            var mentionOriginIds = mentions.Select(m => m.OriginId).ToList();
+            var comments = _commentRepository.Query(c => mentionOriginIds.Contains(c.Id.ToString())).ToList();
+            var mentionCommentContentEntityIds = comments.Select(c => c.ContentEntityId).ToList();
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
                 .Query(ce => mentionOriginIds.Contains(ce.Id.ToString()) || mentionCommentContentEntityIds.Contains(ce.Id.ToString()))
-                .Sort(SortKey.LastActivity, false)
-                .Page(page, pageSize)
                 .ToList();
 
-            EnrichContentEntityDataForInbox(contentEntities, mentionComments);
-
-            foreach (var contentEntity in contentEntities)
+            var res = new List<ContentEntity>();
+            foreach (var m in mentions)
             {
-                contentEntity.UserSource = ContentEntitySource.Mention;
+                if (m.OriginType == MentionOrigin.ContentEntity)
+                {
+                    var ce = contentEntities.SingleOrDefault(ce => ce.Id.ToString() == m.OriginId);
+                    if (ce == null)
+                        continue;
+
+                    ce.UserSource = ContentEntitySource.Mention;
+                    ce.LastActivityUTC = ce.CreatedUTC; //TODO remove this when front end is fixed
+                    res.Add(ce);
+                }
+
+                if (m.OriginType == MentionOrigin.Comment)
+                {
+                    var comment = comments.SingleOrDefault(c => c.Id.ToString() == m.OriginId);
+                    if (comment == null)
+                        continue;
+
+                    var ce = contentEntities.SingleOrDefault(ce => ce.Id.ToString() == comment.ContentEntityId);
+                    if (ce == null)
+                        continue;
+
+                    ce.UserSource = ContentEntitySource.Mention;
+                    ce.LastActivityUTC = comment.CreatedUTC; //TODO remove this when front end is fixed
+                    res.Add(ce);
+                }
             }
 
-            return contentEntities;
+            EnrichContentEntityDataForInbox(contentEntities, comments);
+
+            return res;
         }
 
         //private List<string> GetFeedIds(string currentUserId, FeedType type, string nodeId)
