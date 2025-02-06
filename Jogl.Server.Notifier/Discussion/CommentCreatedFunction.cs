@@ -94,7 +94,7 @@ namespace Jogl.Server.Notifier.Discussion
             //notify users following the post
             var userIds = _userContentEntityRecordRepository
                 .Query(ucer => ucer.ContentEntityId == contentEntity.Id.ToString() && ucer.FollowedUTC.HasValue)
-                .Filter(u => u.Id.ToString() != comment.CreatedByUserId)
+                .Filter(u => u.UserId != comment.CreatedByUserId)
                 .ToList(ucer => ucer.UserId);
 
             var users = _userRepository.Get(userIds);
