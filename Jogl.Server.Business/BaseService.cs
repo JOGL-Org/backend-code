@@ -1699,7 +1699,8 @@ namespace Jogl.Server.Business
                     switch (feedEntity.FeedType)
                     {
                         case FeedType.Document:
-                            var parentDocVisibility = GetFeedEntityVisibility(feedEntity as Document, currentUserMemberships, userId);
+                        case FeedType.Paper:
+                            var parentDocVisibility = GetFeedEntityVisibility(feedEntity, currentUserMemberships, userId);
                             return parentDocVisibility != null;
                         case FeedType.Event:
                             return CanSeeEvent(feedEntity as Event, currentUserMemberships, currentUserAttendances, userId);
