@@ -181,23 +181,12 @@ namespace Jogl.Server.Business
                     var currentUserMentionCommentContentEntityIds = currentUserMentionComments.Select(c => c.ContentEntityId).Distinct();
 
                     var mentionContentEntitiesFromContentEntities = contentEntities.Where(c => currentUserMentionContentEntityIds.Contains(c.Id.ToString())).ToList();
-                    foreach (var contentEntity in mentionContentEntitiesFromContentEntities)
-                    {
-                        contentEntity.MentionDate = contentEntity.CreatedUTC;
-                    }
-
                     var mentionContentEntitiesFromComments = contentEntities.Where(c => currentUserMentionCommentContentEntityIds.Contains(c.Id.ToString())).ToList();
-                    foreach (var contentEntity in mentionContentEntitiesFromComments)
-                    {
-                        var mentionComment = currentUserMentionComments.Where(c => c.ContentEntityId == contentEntity.Id.ToString()).OrderByDescending(c => c.CreatedUTC).FirstOrDefault();
-                        if (mentionComment != null)
-                            contentEntity.MentionDate = mentionComment.CreatedUTC;
-                    }
 
                     contentEntities = new List<ContentEntity>();
                     contentEntities.AddRange(mentionContentEntitiesFromContentEntities);
                     contentEntities.AddRange(mentionContentEntitiesFromComments);
-                    contentEntities = contentEntities.DistinctBy(ce => ce.Id).OrderByDescending(ce => ce.MentionDate).ToList();
+                    contentEntities = contentEntities.DistinctBy(ce => ce.Id).OrderByDescending(ce => ce.CreatedUTC).ToList();
 
                     break;
 
@@ -233,22 +222,22 @@ namespace Jogl.Server.Business
 
         public ListPage<ContentEntity> ListPostContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize)
         {
-            var contentEntities = _contentEntityRepository.List(p => !p.Deleted
-                && (type == null || p.Type == type)
-                && p.FeedId == feedId)
-               .OrderByDescending(c => c.CreatedUTC)
-               .ToList();
+            var contentEntityCount = _contentEntityRepository.Query(ce => ce.FeedId == feedId)
+                .Sort(SortKey.CreatedDate, false)
+                .Count();
 
+            var contentEntities = _contentEntityRepository.Query(ce => ce.FeedId == feedId)
+                .Sort(SortKey.CreatedDate, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            var currentUserMentions = _mentionRepository.Query(m => m.EntityId == currentUserId && m.OriginFeedId == feedId).ToList();
             var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId && !ufr.Deleted);
-            var currentUserMentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
+            var currentUserContentEntityRecords = _userContentEntityRecordRepository.List(r => r.UserId == currentUserId && r.FeedId == feedId && !r.Deleted);
 
-            var filteredContentEntities = GetFilteredContentEntities(contentEntities, currentUserId, search, type);
-            var total = filteredContentEntities.Count;
+            EnrichContentEntityData(contentEntities, currentUserMentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), currentUserId);
 
-            var filteredContentEntityPage = GetPage(filteredContentEntities, page, pageSize);
-            EnrichContentEntityData(filteredContentEntityPage, currentUserMentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), currentUserId);
-
-            return new ListPage<ContentEntity>(filteredContentEntityPage, total);
+            return new ListPage<ContentEntity>(contentEntities, (int)contentEntityCount);
         }
 
         public ListPage<ContentEntity> ListMentionContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize)
@@ -256,62 +245,47 @@ namespace Jogl.Server.Business
             var mentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
             var mentionOriginIds = mentions.Select(m => m.OriginId).ToList();
             var mentionComments = _commentRepository.List(c => mentionOriginIds.Contains(c.Id.ToString()) && !c.Deleted);
-            var mentionContentEntityIds = mentions.Where(m => m.OriginType == MentionOrigin.ContentEntity).Select(m => m.OriginId).Concat(mentionComments.Select(c => c.ContentEntityId)).Distinct().ToList();
-            //var contentEntities =_contentEntityRepository.SearchGet(mentionContentEntityIds,search,)
-            var contentEntities = _contentEntityRepository.Get(mentionContentEntityIds);
+         
+            var contentEntityIds = mentions.Where(m => m.OriginType == MentionOrigin.ContentEntity).Select(m => m.OriginId).Concat(mentionComments.Select(c => c.ContentEntityId)).Distinct().ToList();
+            var contentEntityCount = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
+                .Sort(SortKey.CreatedDate, false)
+                .Count();
 
+            var contentEntities = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
+                .Sort(SortKey.CreatedDate, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            var currentUserMentions = _mentionRepository.Query(m => m.EntityId == currentUserId && m.OriginFeedId == feedId).ToList();
             var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId && !ufr.Deleted);
             var currentUserContentEntityRecords = _userContentEntityRecordRepository.List(r => r.UserId == currentUserId && r.FeedId == feedId && !r.Deleted);
 
-            foreach (var contentEntity in contentEntities)
-            {
-                var contentEntityMentionComments = mentionComments.Where(c => c.ContentEntityId == contentEntity.Id.ToString());
-                var contentEntityMentions = mentions.Where(m => m.OriginId == contentEntity.Id.ToString() || contentEntityMentionComments.Any(cemc => cemc.Id.ToString() == m.OriginId));
+            EnrichContentEntityData(contentEntities, currentUserMentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), currentUserId);
 
-                if (!contentEntityMentions.Any())
-                    continue;
-
-                contentEntity.MentionUnread = contentEntityMentions.Any(m => m.Unread);
-                contentEntity.MentionDate = contentEntityMentions.Max(m => m.CreatedUTC);
-            }
-
-            var filteredContentEntities = GetFilteredContentEntities(contentEntities, currentUserId, search, type).OrderByDescending(ce => ce.MentionUnread).ThenByDescending(ce => ce.MentionDate).ToList();
-            var total = filteredContentEntities.Count;
-
-            var filteredContentEntityPage = GetPage(filteredContentEntities, page, pageSize);
-            EnrichContentEntityData(filteredContentEntityPage, mentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), currentUserId);
-
-            return new ListPage<ContentEntity>(filteredContentEntityPage, total);
+            return new ListPage<ContentEntity>(contentEntities, (int)contentEntityCount);
         }
 
         public ListPage<ContentEntity> ListThreadContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize)
         {
-            var mentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
             var comments = _commentRepository.List(c => c.FeedId == feedId && !c.Deleted);
+          
             var contentEntityIds = comments.Select(c => c.ContentEntityId).Distinct().ToList();
-            //var contentEntities =_contentEntityRepository.SearchGet(mentionContentEntityIds,search,)
-            var contentEntities = _contentEntityRepository.Get(contentEntityIds);
+            var contentEntityCount = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
+                .Sort(SortKey.CreatedDate, false)
+                .Count();
 
+            var contentEntities = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
+                .Sort(SortKey.CreatedDate, false)
+                .Page(page, pageSize)
+                .ToList();
+
+            var currentUserMentions = _mentionRepository.Query(m => m.EntityId == currentUserId && m.OriginFeedId == feedId).ToList();
             var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId && !ufr.Deleted);
             var currentUserContentEntityRecords = _userContentEntityRecordRepository.List(r => r.UserId == currentUserId && r.FeedId == feedId && !r.Deleted);
 
-            foreach (var contentEntity in contentEntities)
-            {
-                var userContentEntityRecord = currentUserContentEntityRecords.SingleOrDefault(ucer => ucer.ContentEntityId == contentEntity.Id.ToString());
-                if (userContentEntityRecord == null)
-                    continue;
+            EnrichContentEntityData(contentEntities, currentUserMentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), comments, currentUserId);
 
-                contentEntity.LastReplyDate = comments.Where(c => c.ContentEntityId == contentEntity.Id.ToString()).OrderByDescending(c => c.CreatedUTC).FirstOrDefault()?.CreatedUTC;
-                contentEntity.LastReplyUnread = contentEntity.LastReplyDate > (userContentEntityRecord.LastReadUTC ?? DateTime.MinValue);
-            }
-
-            var filteredContentEntities = GetFilteredContentEntities(contentEntities, currentUserId, search, type).OrderByDescending(ce => ce.LastReplyUnread).ThenByDescending(ce => ce.LastReplyDate).ToList();
-            var total = filteredContentEntities.Count;
-
-            var filteredContentEntityPage = GetPage(filteredContentEntities, page, pageSize);
-            EnrichContentEntityData(filteredContentEntityPage, mentions, currentUserFeedRecord != null ? new List<UserFeedRecord> { currentUserFeedRecord } : new List<UserFeedRecord>(), comments, currentUserId);
-
-            return new ListPage<ContentEntity>(filteredContentEntityPage, total);
+            return new ListPage<ContentEntity>(contentEntities, (int)contentEntityCount);
         }
 
         public List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)

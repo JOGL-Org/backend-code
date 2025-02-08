@@ -40,18 +40,6 @@ namespace Jogl.Server.Data
         public int UserMentionsInComments { get; set; }
 
         [BsonIgnore]
-        public DateTime? MentionDate { get; set; }
-
-        [BsonIgnore]
-        public bool MentionUnread { get; set; }
-
-        [BsonIgnore]
-        public DateTime? LastReplyDate { get; set; }
-
-        [BsonIgnore]
-        public bool LastReplyUnread { get; set; }
-
-        [BsonIgnore]
         public bool IsNew { get; set; }
 
         [BsonIgnore]

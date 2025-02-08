@@ -51,6 +51,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(contentEntityId);
         }
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpGet]
         [Route("{feedId}")]
