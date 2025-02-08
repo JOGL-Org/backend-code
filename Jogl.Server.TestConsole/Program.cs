@@ -9,7 +9,19 @@ IConfiguration config = new ConfigurationBuilder()
     .AddKeyVault()
     .Build();
 
+var userFeedRecordRepository = new UserFeedRecordRepository(config);
 var membershipRepo = new MembershipRepository(config);
+
+
+var ufrs = userFeedRecordRepository.Query(ufr => true).ToList();
+var memberships = membershipRepo.Query(m => m.CommunityEntityType == Jogl.Server.Data.CommunityEntityType.Channel).ToList();
+foreach (var membership in memberships)
+{
+    if (ufrs.SingleOrDefault(ufr => ufr.FeedId == membership.CommunityEntityId && ufr.UserId == membership.UserId)?.FollowedUTC == null)
+    {
+        await userFeedRecordRepository.SetFeedFollowedAsync(membership.UserId, membership.CommunityEntityId, DateTime.UtcNow);
+    }
+}
 
 Console.WriteLine("Done");
 Console.ReadLine();

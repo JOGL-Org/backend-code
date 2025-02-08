@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data;
+﻿using Duende.IdentityServer.Validation;
+using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using MongoDB.Bson;
@@ -25,11 +26,12 @@ namespace Jogl.Server.Business
             var id = await _membershipRepository.CreateAsync(membership);
 
             //create user feed record
-            await _userFeedRecordRepository.SetFeedReadAsync(membership.UserId, membership.CommunityEntityId, DateTime.UtcNow);
+            await _userFeedRecordRepository.SetFeedFollowedAsync(membership.UserId, membership.CommunityEntityId, DateTime.UtcNow);
 
             //auto-join channels
             foreach (var channel in _channelRepository.List(c => c.CommunityEntityId == membership.CommunityEntityId && c.AutoJoin && !c.Deleted))
             {
+                //create membership for channel
                 await _membershipRepository.CreateAsync(new Membership
                 {
                     AccessLevel = AccessLevel.Member,
@@ -39,6 +41,9 @@ namespace Jogl.Server.Business
                     CreatedByUserId = membership.CreatedByUserId,
                     UserId = membership.UserId,
                 });
+
+                //create user feed records for channel
+                await _userFeedRecordRepository.SetFeedFollowedAsync(membership.UserId, channel.Id.ToString(), DateTime.UtcNow);
             }
 
             //return
@@ -160,6 +165,13 @@ namespace Jogl.Server.Business
                     CreatedByUserId = nm.CreatedByUserId,
                     UserId = nm.UserId,
                 }).ToList());
+
+                //for every new member
+                foreach (var newMembership in newMemberships)
+                {
+                    //create user feed records for channel
+                    await _userFeedRecordRepository.SetFeedFollowedAsync(newMembership.UserId, channel.Id.ToString(), DateTime.UtcNow);
+                }
             }
         }
 
@@ -210,8 +222,14 @@ namespace Jogl.Server.Business
                         CreatedByUserId = nm.CreatedByUserId,
                         UserId = nm.UserId,
                     }).ToList());
-                }
 
+                    //for every new member
+                    foreach (var newMembership in newMemberships)
+                    {
+                        //create user feed records for channel
+                        await _userFeedRecordRepository.SetFeedFollowedAsync(newMembership.UserId, channel.Id.ToString(), DateTime.UtcNow);
+                    }
+                }
             }
 
             if (deletedMemberships.Any())

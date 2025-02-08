@@ -2,7 +2,6 @@
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using MongoDB.Bson;
-using System.Linq.Expressions;
 
 namespace Jogl.Server.Business
 {
@@ -32,8 +31,7 @@ namespace Jogl.Server.Business
 
             var channelId = await _channelRepository.CreateAsync(channel);
 
-            //create community membership record
-            var membership = new Membership
+            await _membershipService.CreateAsync(new Membership
             {
                 UserId = channel.CreatedByUserId,
                 CreatedByUserId = channel.CreatedByUserId,
@@ -41,12 +39,7 @@ namespace Jogl.Server.Business
                 AccessLevel = AccessLevel.Admin,
                 CommunityEntityId = channelId,
                 CommunityEntityType = CommunityEntityType.Channel,
-            };
-
-            await _membershipRepository.CreateAsync(membership);
-
-            //create user feed record
-            await _userFeedRecordRepository.SetFeedReadAsync(membership.UserId, membership.CommunityEntityId, DateTime.UtcNow);
+            });
 
             //auto-add all members if autojoin toggled on
             if (channel.AutoJoin)

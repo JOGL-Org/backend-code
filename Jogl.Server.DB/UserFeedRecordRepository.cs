@@ -75,6 +75,22 @@ namespace Jogl.Server.DB
 
             await UpsertAsync(filter, update);
         }
+        public async Task SetFeedFollowedAsync(string userId, string feedId, DateTime followUTC)
+        {
+            var filter = Builders<UserFeedRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserFeedRecord>.Filter.Eq(r => r.FeedId, feedId);
+            var update = Builders<UserFeedRecord>.Update.Set(r => r.FollowedUTC, followUTC)
+                                                        .Set(r => r.LastReadUTC, followUTC)
+                                                        .Set(r => r.LastOpenedUTC, followUTC)
+                                                        .Set(r => r.UpdatedUTC, followUTC)
+                                                        .Set(r => r.UpdatedByUserId, userId)
+                                                        .SetOnInsert(r => r.FeedId, feedId)
+                                                        .SetOnInsert(r => r.UserId, userId)
+                                                        .SetOnInsert(r => r.Deleted, false)
+                                                        .SetOnInsert(r => r.CreatedUTC, followUTC)
+                                                        .SetOnInsert(r => r.CreatedByUserId, userId);
+
+            await UpsertAsync(filter, update);
+        }
 
         public async Task SetFeedWrittenAsync(string userId, string feedId, DateTime writeUTC)
         {
@@ -94,6 +110,7 @@ namespace Jogl.Server.DB
             await UpsertAsync(filter, update);
         }
 
+       
         protected override UpdateDefinition<UserFeedRecord> GetDefaultUpdateDefinition(UserFeedRecord updatedEntity)
         {
             return Builders<UserFeedRecord>.Update.Set(e => e.Muted, updatedEntity.Muted)
