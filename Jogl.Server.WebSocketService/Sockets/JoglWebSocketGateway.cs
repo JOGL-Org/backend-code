@@ -28,7 +28,7 @@ namespace Jogl.Server.WebSocketService.Sockets
             }
             catch (Exception ex)
             {
-                await SendMessageAsync(socketId, "Invalid message received");
+                await SendMessageAsync(socketId, $"Invalid message received: {message}");
                 return;
             }
 
