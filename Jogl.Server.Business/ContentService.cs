@@ -245,7 +245,7 @@ namespace Jogl.Server.Business
             var mentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
             var mentionOriginIds = mentions.Select(m => m.OriginId).ToList();
             var mentionComments = _commentRepository.List(c => mentionOriginIds.Contains(c.Id.ToString()) && !c.Deleted);
-         
+
             var contentEntityIds = mentions.Where(m => m.OriginType == MentionOrigin.ContentEntity).Select(m => m.OriginId).Concat(mentionComments.Select(c => c.ContentEntityId)).Distinct().ToList();
             var contentEntityCount = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
                 .Sort(SortKey.CreatedDate, false)
@@ -268,7 +268,7 @@ namespace Jogl.Server.Business
         public ListPage<ContentEntity> ListThreadContentEntities(string currentUserId, string feedId, ContentEntityType? type, string search, int page, int pageSize)
         {
             var comments = _commentRepository.List(c => c.FeedId == feedId && !c.Deleted);
-          
+
             var contentEntityIds = comments.Select(c => c.ContentEntityId).Distinct().ToList();
             var contentEntityCount = _contentEntityRepository.Query(c => contentEntityIds.Contains(c.Id.ToString()))
                 .Sort(SortKey.CreatedDate, false)
@@ -288,25 +288,79 @@ namespace Jogl.Server.Business
             return new ListPage<ContentEntity>(contentEntities, (int)contentEntityCount);
         }
 
-        public List<ContentEntity> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
+        public List<DiscussionItem> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var mentions = ListMentionsForNode(currentUserId, nodeId, page, pageSize);
             var threads = ListThreadsForNode(currentUserId, nodeId, page, pageSize);
             var posts = ListPostsForNode(currentUserId, nodeId, page, pageSize);
 
-            var res = new List<ContentEntity>();
+            var res = new List<DiscussionItem>();
             res.AddRange(mentions);
             res.AddRange(threads);
             res.AddRange(posts);
 
             res = res
-                .DistinctBy(ce => $"{ce.Id}-{ce.LastComment?.Id}")
+                .DistinctBy(ce => $"{ce.Id}")
                 .OrderByDescending(ce => ce.LastActivityUTC)
                 .ToList();
             return GetPage(res, page, pageSize);
         }
 
-        public List<ContentEntity> ListPostsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        private DiscussionItem GetDiscussionItem(ContentEntity contentEntity, DiscussionItemSource source)
+        {
+            return new DiscussionItem
+            {
+                ContentEntityId = contentEntity.Id.ToString(),
+                Id = contentEntity.Id,
+                CreatedBy = contentEntity.CreatedBy,
+                CreatedByUserId = contentEntity.CreatedByUserId,
+                CreatedUTC = contentEntity.CreatedUTC,
+                Deleted = contentEntity.Deleted,
+                FeedEntity = contentEntity.FeedEntity,
+                FeedId = contentEntity.FeedId,
+                IsNew = contentEntity.IsNew,
+                IsReply = false,
+                LastActivityUTC = contentEntity.LastActivityUTC ?? contentEntity.CreatedUTC,
+                LastOpenedUTC = contentEntity.LastOpenedUTC,
+                Overrides = contentEntity.Overrides,
+                Path = contentEntity.Path,
+                Permissions = contentEntity.Permissions,
+                Source = source,
+                Text = contentEntity.Text,
+                ReplyToText = string.Empty,
+                UpdatedByUserId = contentEntity.UpdatedByUserId,
+                UpdatedUTC = contentEntity.UpdatedUTC,
+            };
+        }
+
+        private DiscussionItem GetDiscussionItem(Comment comment, DiscussionItemSource source)
+        {
+            return new DiscussionItem
+            {
+                ContentEntityId = comment.ContentEntityId,
+                Id = comment.Id,
+                CreatedBy = comment.CreatedBy,
+                CreatedByUserId = comment.CreatedByUserId,
+                CreatedUTC = comment.CreatedUTC,
+                Deleted = comment.Deleted,
+                FeedEntity = comment.FeedEntity,
+                FeedId = comment.FeedId,
+                IsNew = comment.IsNew,
+                IsReply = true,
+                LastActivityUTC = comment.LastActivityUTC ?? comment.CreatedUTC,
+                LastOpenedUTC = comment.LastOpenedUTC,
+                Overrides = comment.Overrides,
+                Path = comment.Path,
+                Permissions = comment.Permissions,
+                Source = source,
+                Text = comment.Text,
+                ReplyToText = comment.ContentEntity?.Text ?? string.Empty,
+                UpdatedByUserId = comment.UpdatedByUserId,
+                UpdatedUTC = comment.UpdatedUTC,
+            };
+        }
+
+        public List<DiscussionItem> ListPostsForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
 
@@ -324,23 +378,16 @@ namespace Jogl.Server.Business
                 .Page(page, pageSize)
                 .ToList();
 
-            var contentEntityIds = contentEntities
-                .Select(ce => ce.Id.ToString())
+            EnrichContentEntityDataWithFeedEntity(contentEntities);
+            EnrichEntitiesWithCreatorData(contentEntities);
+            EnrichContentEntityDataWithNewness(contentEntities);
+
+            return contentEntities.DistinctBy(ce => ce.FeedId)
+                .Select(ce => GetDiscussionItem(ce, DiscussionItemSource.Post))
                 .ToList();
-
-            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
-            EnrichContentEntityDataForInbox(contentEntities, comments);
-
-            foreach (var contentEntity in contentEntities)
-            {
-                contentEntity.UserSource = ContentEntitySource.Post;
-                contentEntity.LastActivityUTC = contentEntity.CreatedUTC; //TODO remove this when front end is fixed
-            }
-
-            return contentEntities.DistinctBy(ce => ce.FeedId).ToList();
         }
 
-        public List<ContentEntity> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        public List<DiscussionItem> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
             var ucerContentEntityIds = _userContentEntityRecordRepository
@@ -360,18 +407,20 @@ namespace Jogl.Server.Business
                 .Select(ce => ce.Id.ToString())
                 .ToList();
 
-            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId).ToList(); //TODO only select one newest comment for every content entity
-            EnrichContentEntityDataForInbox(contentEntities, comments);
+            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId)
+                .Sort(SortKey.CreatedDate, false)
+                .ToList(); //TODO only select one newest comment for every content entity
+            EnrichCommentDataWithFeedEntity(comments);
+            EnrichEntitiesWithCreatorData(comments);
+            EnrichCommentDataWithNewness(comments);
+            EnrichCommentsWithContentEntityData(comments, contentEntities);
 
-            foreach (var contentEntity in contentEntities)
-            {
-                contentEntity.UserSource = ContentEntitySource.Reply;
-            }
-
-            return contentEntities;
+            return comments.DistinctBy(c => c.ContentEntityId)
+                .Select(c => GetDiscussionItem(c, DiscussionItemSource.Reply))
+                .ToList();
         }
 
-        public List<ContentEntity> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize)
+        public List<DiscussionItem> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
             var mentions = _mentionRepository
@@ -390,7 +439,18 @@ namespace Jogl.Server.Business
                 .Query(ce => mentionOriginIds.Contains(ce.Id.ToString()) || mentionCommentContentEntityIds.Contains(ce.Id.ToString()))
                 .ToList();
 
-            var res = new List<ContentEntity>();
+            EnrichContentEntityDataWithFeedEntity(contentEntities);
+            EnrichCommentDataWithFeedEntity(comments);
+
+            EnrichEntitiesWithCreatorData(contentEntities);
+            EnrichEntitiesWithCreatorData(comments);
+
+            EnrichContentEntityDataWithNewness(contentEntities);
+            EnrichCommentDataWithNewness(comments);
+
+            EnrichCommentsWithContentEntityData(comments, contentEntities);
+
+            var res = new List<DiscussionItem>();
             foreach (var m in mentions)
             {
                 if (m.OriginType == MentionOrigin.ContentEntity)
@@ -399,9 +459,7 @@ namespace Jogl.Server.Business
                     if (ce == null)
                         continue;
 
-                    ce.UserSource = ContentEntitySource.Mention;
-                    ce.LastActivityUTC = ce.CreatedUTC; //TODO remove this when front end is fixed
-                    res.Add(ce);
+                    res.Add(GetDiscussionItem(ce, DiscussionItemSource.Mention));
                 }
 
                 if (m.OriginType == MentionOrigin.Comment)
@@ -414,85 +472,12 @@ namespace Jogl.Server.Business
                     if (ce == null)
                         continue;
 
-                    ce.UserSource = ContentEntitySource.Mention;
-                    ce.LastActivityUTC = comment.CreatedUTC; //TODO remove this when front end is fixed
-                    res.Add(ce);
+                    res.Add(GetDiscussionItem(comment, DiscussionItemSource.Mention));
                 }
             }
 
-            EnrichContentEntityDataForInbox(contentEntities, comments);
-
             return res;
         }
-
-        //private List<string> GetFeedIds(string currentUserId, FeedType type, string nodeId)
-        //{
-        //    var entities = new List<CommunityEntity>();
-        //    if (string.IsNullOrEmpty(nodeId))
-        //        entities = GetGlobalEcosystem(_projectRepository, _workspaceRepository, _nodeRepository, currentUserId, new CommunityEntityType[] { });
-        //    else
-        //        entities = GetEcosystemForNodes(_projectRepository, _workspaceRepository, _nodeRepository, currentUserId, new CommunityEntityType[] { }, nodeId);
-
-        //    var entityIds = entities.Select(e => e.Id.ToString()).ToList();
-
-        //    switch (type)
-        //    {
-        //        case FeedType.Event:
-        //            var eventAttendances = _eventAttendanceRepository.List(ea => ea.UserId == currentUserId && !ea.Deleted);
-        //            var eventIds = eventAttendances.Select(ea => ea.EventId).Distinct().ToList();
-        //            var eventsForNode = _eventRepository.List(e => eventIds.Contains(e.Id.ToString()) && entityIds.Contains(e.CommunityEntityId) && !e.Deleted).ToList();
-        //            var eventsForNodeIds = eventsForNode.Select(e => e.Id.ToString()).Distinct().ToList();
-        //            return eventsForNodeIds;
-        //        case FeedType.Need:
-        //            var needs = _needRepository.ListForEntityIds(entityIds);
-
-        //            return needs.Select(n => n.Id.ToString()).ToList();
-        //        case FeedType.Paper:
-        //            var papers = _paperRepository.ListForFeeds(entityIds);
-        //            var filteredPapers = GetFilteredPapers(papers, currentUserId);
-
-        //            return filteredPapers.Select(p => p.Id.ToString()).ToList();
-        //        case FeedType.Document:
-        //            var documents = _documentRepository.ListForFeeds(entityIds);
-        //            var filteredDocuments = GetFilteredDocuments(documents, currentUserId);
-
-        //            return filteredDocuments.Select(p => p.Id.ToString()).ToList();
-        //        default:
-        //            return new List<string>();
-        //    }
-        //}
-
-        //public DiscussionStats GetAggregateData(string currentUserId, FeedType type, string nodeId, bool mention, string search, int page, int pageSize)
-        //{
-        //    var feedIds = GetFeedIds(currentUserId, type, nodeId);
-        //    var contentEntities = _contentEntityRepository.List(p => (p.Type != ContentEntityType.Article && p.Type != ContentEntityType.Preprint)
-        //    && feedIds.Contains(p.FeedId))
-        //        .OrderByDescending(c => c.CreatedUTC)
-        //        .ToList();
-
-        //    var currentUserMentions = _mentionRepository.List(m => m.EntityId == currentUserId && feedIds.Contains(m.OriginFeedId) && !m.Deleted);
-        //    if (mention)
-        //    {
-        //        var currentUserMentionContentEntityIds = currentUserMentions.Where(m => m.OriginType == MentionOrigin.ContentEntity).Select(m => m.OriginId);
-        //        var currentUserMentionCommentIds = currentUserMentions.Where(m => m.OriginType == MentionOrigin.Comment).Select(m => m.OriginId);
-        //        var currentUserMentionCommentContentEntityIds = _commentRepository.List(c => currentUserMentionCommentIds.Contains(c.Id.ToString()) && !c.Deleted).Select(c => c.ContentEntityId);
-
-        //        var contentEntityIds = currentUserMentionContentEntityIds.Union(currentUserMentionCommentContentEntityIds);
-        //        contentEntities = contentEntities.Where(c => contentEntityIds.Contains(c.Id.ToString())).ToList();
-        //    }
-
-        //    var filteredContentEntities = GetFilteredContentEntities(contentEntities, currentUserId, search, null);
-        //    var total = filteredContentEntities.Count;
-
-        //    var filteredContentEntityPage = GetPage(filteredContentEntities, page, pageSize);
-        //    EnrichContentEntityData(filteredContentEntityPage, currentUserMentions, new List<UserFeedRecord> { }, currentUserId);
-
-        //    return new DiscussionData(filteredContentEntityPage, total)
-        //    {
-        //        UnreadMentions = currentUserMentions.Count(m => m.Unread)
-        //    };
-        //}
-
         private void EnrichContentEntityData(IEnumerable<ContentEntity> contentEntities, IEnumerable<Mention> currentUserMentions, IEnumerable<UserFeedRecord> currentUserFeedRecords, string currentUserId)
         {
             var comments = _commentRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
@@ -550,107 +535,56 @@ namespace Jogl.Server.Business
             EnrichEntitiesWithCreatorData(contentEntities, users);
         }
 
-        private void EnrichContentEntityDataForInbox(IEnumerable<ContentEntity> contentEntities, IEnumerable<Comment> comments)
+        private void EnrichContentEntityDataWithFeedEntity(IEnumerable<ContentEntity> contentEntities)
         {
             var feedIds = contentEntities.Select(ce => ce.FeedId).Distinct().ToList();
             var feedEntities = _feedEntityService.GetFeedEntitySetExtended(feedIds);
 
-            var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.UserId == _operationContext.UserId).ToList();
-            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
-
             foreach (var contentEntity in contentEntities)
             {
                 contentEntity.FeedEntity = _feedEntityService.GetEntityFromLists(contentEntity.FeedId, feedEntities);
-                contentEntity.LastComment = comments.Where(c => c.ContentEntityId == contentEntity.Id.ToString())
-                    .OrderByDescending(c => c.CreatedUTC)
-                    .FirstOrDefault();
-
-                var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
-                var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == contentEntity.Id.ToString())?.LastReadUTC ?? DateTime.MinValue;
-
-                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;
-                if (contentEntity.LastComment != null)
-                    contentEntity.LastComment.IsNew = contentEntity.LastComment.CreatedUTC > lastReadPost;
             }
-
-            EnrichEntitiesWithCreatorData(contentEntities);
-            EnrichEntitiesWithCreatorData(comments);
         }
 
-        //public List<ContentEntity> ListNotesForUser(string currentUserId, string targetUserId, string search, int page, int pageSize)
-        //{
-        //    var user = _userRepository.Get(targetUserId);
-        //    var contentEntities = _contentEntityRepository.List((p) =>
-        //        (string.IsNullOrEmpty(search) || p.Title.Contains(search, StringComparison.CurrentCultureIgnoreCase) || p.Summary.Contains(search, StringComparison.CurrentCultureIgnoreCase) || p.Text.Contains(search, StringComparison.CurrentCultureIgnoreCase))
-        //        && (p.FeedId == user.FeedId)
-        //        && (p.Status == ContentEntityStatus.Active || currentUserId == targetUserId)
-        //        && (p.Type == ContentEntityType.JoglDoc)
-        //        && (!p.Deleted),
-        //        page, pageSize)
-        //        .OrderByDescending(c => c.CreatedUTC)
-        //        .ToList();
-
-        //    var documents = _documentRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
-        //    var reactions = _reactionRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
-        //    var comments = _commentRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
-        //    var users = _userRepository.Get(contentEntities.Select(e => e.CreatedByUserId).Union(comments.Select(c => c.CreatedByUserId)).ToList());
-
-        //    foreach (var contentEntity in contentEntities)
-        //    {
-        //        contentEntity.Documents = documents.Where(d => d.ContentEntityId == contentEntity.Id.ToString()).ToList();
-        //        contentEntity.Reactions = reactions.Where(r => r.ContentEntityId == contentEntity.Id.ToString()).ToList();
-        //        if (!string.IsNullOrEmpty(currentUserId))
-        //            contentEntity.UserReactions = contentEntity.Reactions.Where(r => r.UserId == currentUserId).ToList();
-
-        //        contentEntity.CreatedBy = user;
-        //    }
-
-        //    return contentEntities;
-        //}
-
-        public List<ContentEntity> ListAggregate(string search, int page, int pageSize, string userId, bool loadDetails)
+        private void EnrichCommentDataWithFeedEntity(IEnumerable<Comment> comments)
         {
-            var feedIds = new List<string>();
+            var feedIds = comments.Select(ce => ce.FeedId).Distinct().ToList();
+            var feedEntities = _feedEntityService.GetFeedEntitySetExtended(feedIds);
 
-            //aggregate feed ids from followed objects
-            var memberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
-            var communities = _workspaceRepository.Get(memberships.Where(m => m.CommunityEntityType == CommunityEntityType.Workspace).Select(m => m.CommunityEntityId).ToList());
-            var nodes = _nodeRepository.Get(memberships.Where(m => m.CommunityEntityType == CommunityEntityType.Node).Select(m => m.CommunityEntityId).ToList());
+            foreach (var comment in comments)
+            {
+                comment.FeedEntity = _feedEntityService.GetEntityFromLists(comment.FeedId, feedEntities);
+            }
+        }
 
-            feedIds.AddRange(communities.Select(c => c.FeedId));
-            feedIds.AddRange(nodes.Select(n => n.FeedId));
+        private void EnrichCommentsWithContentEntityData(IEnumerable<Comment> comments, IEnumerable<ContentEntity> contentEntities)
+        {
+            foreach (var comment in comments)
+            {
+                comment.ContentEntity = contentEntities.SingleOrDefault(ce => ce.Id.ToString() == comment.ContentEntityId);
+            }
+        }
 
-            //aggregate feed ids from followed users
-            var followings = _followingRepository.List(f => f.UserIdFrom == userId);
-            var followedUsers = _userRepository.Get(followings.Select(f => f.UserIdTo).ToList());
+        private void EnrichContentEntityDataWithNewness(IEnumerable<ContentEntity> contentEntities)
+        {
+            var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.UserId == _operationContext.UserId).ToList();
 
-            feedIds.AddRange(followedUsers.Select(u => u.FeedId));
+            foreach (var contentEntity in contentEntities)
+            {
+                var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
+                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;
+            }
+        }
 
-            //list content entities for those feeds
-            var contentEntities = _contentEntityRepository.List(feedIds, (p) =>
-                (string.IsNullOrEmpty(search) || p.Text.Contains(search, StringComparison.CurrentCultureIgnoreCase))
-                && (p.Status == ContentEntityStatus.Active)
-                && (!p.Deleted),
-                page, pageSize)
-                .OrderByDescending(c => c.CreatedUTC)
-                .ToList();
+        private void EnrichCommentDataWithNewness(IEnumerable<Comment> comments)
+        {
+            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
 
-            if (!loadDetails)
-                return contentEntities;
-
-            //var reactions = _reactionRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
-            var comments = _commentRepository.ListForContentEntities(contentEntities.Select(e => e.Id.ToString()));
-
-            //foreach (var contentEntity in contentEntities)
-            //{
-            //    contentEntity.Reactions = reactions.Where(r => r.OriginId == contentEntity.Id.ToString()).ToList();
-            //    if (!string.IsNullOrEmpty(userId))
-            //        contentEntity.UserReaction = contentEntity.Reactions.SingleOrDefault(r => r.UserId == userId);
-
-            //}
-
-            EnrichEntitiesWithCreatorData(contentEntities);
-            return contentEntities;
+            foreach (var comment in comments)
+            {
+                var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == comment.ContentEntityId)?.LastReadUTC ?? DateTime.MinValue;
+                comment.IsNew = comment.CreatedUTC > lastReadPost;
+            }
         }
 
         protected void EnrichCommentData(IEnumerable<Comment> comments, IEnumerable<User> users, IEnumerable<Mention> mentions, UserContentEntityRecord userContentEntityRecord, string currentUserId)
@@ -680,6 +614,7 @@ namespace Jogl.Server.Business
 
             EnrichEntitiesWithCreatorData(comments, users);
         }
+
 
         public async Task UpdateAsync(ContentEntity contentEntity)
         {

@@ -7,7 +7,6 @@ namespace Jogl.Server.Data
     public enum ContentEntityType { Announcement, JoglDoc, Preprint, Article, Protocol, Need, Paper }
     public enum ContentEntityStatus { Active, Draft }
     public enum ContentEntityVisibility { Public, Entity, Event, Ecosystem, Authors }
-    public enum ContentEntitySource { Post, Reply, Mention }
 
     [BsonIgnoreExtraElements]
     public class ContentEntity : Entity
@@ -19,7 +18,7 @@ namespace Jogl.Server.Data
         public string Text { get; set; }
         public string? ExternalID { get; set; }
         public string? ExternalSourceID { get; set; }
-        public ContentEntityOverrides Overrides { get; set; }
+        public DiscussionItemOverrides Overrides { get; set; }
 
         [BsonIgnore]
         public FeedEntity FeedEntity { get; set; }
@@ -53,19 +52,5 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public List<User> Users { get; set; }
-
-        [BsonIgnore]
-        public Comment LastComment { get; set; }
-
-        [BsonIgnore]
-        public ContentEntitySource UserSource { get; set; }
-    }
-
-    [BsonIgnoreExtraElements]
-    public class ContentEntityOverrides
-    {
-        public string UserAvatarURL { get; set; }
-        public string UserURL { get; set; }
-        public string UserName { get; set; }
     }
 }

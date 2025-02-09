@@ -1,5 +1,4 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Data
 {
@@ -12,14 +11,14 @@ namespace Jogl.Server.Data
         public string ReplyToId { get; set; }
         public string? ExternalID { get; set; }
         public string? ExternalSourceID { get; set; }
-        public CommentOverrides Overrides { get; set; }
+        public DiscussionItemOverrides Overrides { get; set; }
+       
+        [BsonIgnore]
+        public FeedEntity FeedEntity { get; set; }
 
         [BsonIgnore]
         public ContentEntity ContentEntity { get; set; }
-       
-        [BsonIgnore]
-        public ContentEntity FeedEntity { get; set; }
-      
+
         [BsonIgnore]
         public List<Document> Documents { get; set; }
 
@@ -40,16 +39,8 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public List<Reaction> Reactions { get; set; }
+
         [BsonIgnore]
         public Reaction UserReaction { get; set; }
-    }
-
-
-    [BsonIgnoreExtraElements]
-    public class CommentOverrides
-    {
-        public string UserAvatarURL { get; set; }
-        public string UserURL { get; set; }
-        public string UserName { get; set; }
     }
 }

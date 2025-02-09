@@ -1,5 +1,4 @@
 ﻿using Jogl.Server.Data;
-using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
@@ -25,7 +24,7 @@ namespace Jogl.Server.API.Model
         public UserMiniModel? CreatedBy { get; set; }
 
         [JsonPropertyName("overrides")]
-        public ContentEntityOverridesModel? Overrides { get; set; }
+        public DiscussionItemOverridesModel? Overrides { get; set; }
 
         [JsonPropertyName("feed_entity")]
         public EntityMiniModel? FeedEntity { get; set; }
@@ -81,11 +80,5 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("is_new")]
         public bool IsNew { get; set; }
-
-        [JsonPropertyName("last_comment")]
-        public CommentModel LastComment { get; set; }
-
-        [JsonPropertyName("user_source")]
-        public ContentEntitySource UserSource { get; set; }
     }
 }

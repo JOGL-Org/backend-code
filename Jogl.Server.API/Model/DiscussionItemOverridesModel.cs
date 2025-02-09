@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.API.Model
 {
-    public class ContentEntityOverridesModel
+    public class DiscussionItemOverridesModel
     {
         [JsonPropertyName("user_image_url")]
         public string UserAvatarURL { get; set; }

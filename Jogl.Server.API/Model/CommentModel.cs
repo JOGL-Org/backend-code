@@ -20,7 +20,7 @@ namespace Jogl.Server.API.Model
         public UserMiniModel? CreatedBy { get; set; }
 
         [JsonPropertyName("overrides")]
-        public CommentOverridesModel? Overrides { get; set; }
+        public DiscussionItemOverridesModel? Overrides { get; set; }
 
         [JsonPropertyName("user_mentions")]
         public int UserMentions { get; set; }

@@ -493,9 +493,9 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<Feed, FeedModel>();
 
+
             CreateMap<ContentEntity, ContentEntityModel>()
                 .ForMember(dst => dst.ParentFeedEntity, opt => opt.MapFrom((src, dst, ctx) => (src.FeedEntity as Channel)?.CommunityEntity));
-            CreateMap<ContentEntityOverrides, ContentEntityOverridesModel>();
 
             CreateMap<ContentEntityUpsertModel, ContentEntity>();
             CreateMap<ContentEntity, ContentEntityUpsertModel>();
@@ -507,40 +507,12 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<Comment, CommentModel>();
             CreateMap<Comment, CommentExtendedModel>();
-            CreateMap<CommentOverrides, CommentOverridesModel>();
 
             CreateMap<CommentUpsertModel, Comment>();
             CreateMap<Comment, CommentUpsertModel>();
 
-            CreateMap<Entity, ActivityRecordModel>()
-                .ForMember(dst => dst.Comment, opt => opt.MapFrom((src, dst, obj, ctx) =>
-                {
-                    if (src is Comment)
-                        return src;
-
-                    else return null;
-                }))
-                .ForMember(dst => dst.Reaction, opt => opt.MapFrom((src, dst, obj, ctx) =>
-                {
-                    if (src is Reaction)
-                        return src;
-
-                    else return null;
-                }))
-               .ForMember(dst => dst.ContentEntity, opt => opt.MapFrom((src, dst, obj, ctx) =>
-                {
-                    if (src is ContentEntity)
-                        return src;
-
-                    else return null;
-                }))
-               .ForMember(dst => dst.CommunityEntity, opt => opt.MapFrom((src, dst, obj, ctx) =>
-                {
-                    if (src is Membership)
-                        return (src as Membership).CommunityEntity;
-
-                    else return null;
-                }));
+            CreateMap<DiscussionItem, DiscussionItemModel>();
+            CreateMap<DiscussionItemOverrides, DiscussionItemOverridesModel>();
 
             CreateMap<TextValue, TextValueModel>();
             CreateMap<TextValueModel, TextValue>();

@@ -158,31 +158,31 @@ namespace Jogl.Server.API.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("node/{nodeId}/posts/list")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts", typeof(List<ContentEntityModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts", typeof(List<DiscussionItemModel>))]
         public async Task<IActionResult> GetNodePosts([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
             var contentEntities = _contentService.ListContentEntitiesForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
-            var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
+            var contentEntityModels = contentEntities.Select(_mapper.Map<DiscussionItemModel>);
             return Ok(contentEntityModels);
         }
 
         [HttpGet]
         [Route("node/{nodeId}/mentions/list")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with mentions", typeof(List<ContentEntityModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with mentions", typeof(List<DiscussionItemModel>))]
         public async Task<IActionResult> GetNodeMentions([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
             var contentEntities = _contentService.ListMentionsForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
-            var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
+            var contentEntityModels = contentEntities.Select(_mapper.Map<DiscussionItemModel>);
             return Ok(contentEntityModels);
         }
 
         [HttpGet]
         [Route("node/{nodeId}/threads/list")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with unread threads", typeof(List<ContentEntityModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"Posts with unread threads", typeof(List<DiscussionItemModel>))]
         public async Task<IActionResult> GetNodeThreads([FromRoute] string nodeId, [FromQuery] SearchModel model)
         {
             var contentEntities = _contentService.ListThreadsForNode(CurrentUserId, nodeId, model.Page, model.PageSize);
-            var contentEntityModels = contentEntities.Select(_mapper.Map<ContentEntityModel>);
+            var contentEntityModels = contentEntities.Select(_mapper.Map<DiscussionItemModel>);
             return Ok(contentEntityModels);
         }
 
