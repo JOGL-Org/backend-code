@@ -70,7 +70,7 @@ namespace Jogl.Server.Notifier
                 FeedId = comment.FeedId,
                 ExternalSourceID = agentIntegration.Id.ToString(),
                 CreatedUTC = DateTime.UtcNow,
-                Overrides = new CommentOverrides
+                Overrides = new DiscussionItemOverrides
                 {
                     UserName = "AI Agent",
                     UserURL = "/",
