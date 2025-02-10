@@ -45,7 +45,7 @@ namespace Jogl.Server.Mailer
                 Text = $"A new PR was opened: <a href=\"{pr.HtmlUrl}\">{pr.Title}</a> in <a href=\"{pr.Base.Repo.HtmlUrl}\">{pr.Base.Repo.FullName}</a>",
                 Type = ContentEntityType.Announcement,
                 Status = ContentEntityStatus.Active,
-                Overrides = new ContentEntityOverrides
+                Overrides = new DiscussionItemOverrides
                 {
                     UserAvatarURL = pr.User?.AvatarUrl,
                     UserName = $"{pr.User?.Login} (github.com)",

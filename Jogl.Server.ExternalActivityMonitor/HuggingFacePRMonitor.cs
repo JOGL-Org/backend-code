@@ -45,7 +45,7 @@ namespace Jogl.Server.Mailer
                 Text = $"A new PR was opened: <a href=\"https://huggingface.co/{integration.SourceId}/discussions/{pr.Num}\">{pr.Title}</a> in <a href=\"https://huggingface.co/{integration.SourceId}\">{integration.SourceId}</a>",
                 Type = ContentEntityType.Announcement,
                 Status = ContentEntityStatus.Active,
-                Overrides = new ContentEntityOverrides
+                Overrides = new DiscussionItemOverrides
                 {
                     UserAvatarURL = pr.Author?.AvatarUrl,
                     UserName = $"{pr.Author?.Name} (huggingface.co)",

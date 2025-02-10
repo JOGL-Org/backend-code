@@ -75,19 +75,19 @@ namespace Jogl.Server.ExternalActivityMonitor
             };
         }
 
-        ContentEntityOverrides GetOverrides(Publication publication, FeedIntegration integration)
+        DiscussionItemOverrides GetOverrides(Publication publication, FeedIntegration integration)
         {
             switch (integration.Type)
             {
                 case FeedIntegrationType.Arxiv:
-                    return new ContentEntityOverrides
+                    return new DiscussionItemOverrides
                     {
                         UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/arxiv-logomark-small.svg",
                         UserName = $"Arxiv",
                         UserURL = publication.ExternalURL
                     };
                 case FeedIntegrationType.PubMed:
-                    return new ContentEntityOverrides
+                    return new DiscussionItemOverrides
                     {
                         UserAvatarURL = _configuration["App:URL"] + "/images/discussionApps/US-NLM-PubMed-Logo.svg",
                         UserName = $"PubMed",
