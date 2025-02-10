@@ -152,6 +152,13 @@ namespace Jogl.Server.Business
 
             //create membership records
             await _membershipRepository.CreateAsync(newMemberships);
+        
+            //for every new member
+            foreach (var newMembership in newMemberships)
+            {
+                //create user feed records for entity
+                await _userFeedRecordRepository.SetFeedFollowedAsync(newMembership.UserId, newMembership.CommunityEntityId, DateTime.UtcNow);
+            }
 
             //auto-join channels
             foreach (var channel in _channelRepository.List(c => c.CommunityEntityId == communityEntityId && c.AutoJoin && !c.Deleted))
@@ -209,6 +216,13 @@ namespace Jogl.Server.Business
             if (newMemberships.Any())
             {
                 await _membershipRepository.CreateAsync(newMemberships);
+
+                //for every new member
+                foreach (var newMembership in newMemberships)
+                {
+                    //create user feed records for entity
+                    await _userFeedRecordRepository.SetFeedFollowedAsync(newMembership.UserId, newMembership.CommunityEntityId, DateTime.UtcNow);
+                }
 
                 //auto-join channels
                 foreach (var channel in _channelRepository.List(c => c.CommunityEntityId == communityEntityId && c.AutoJoin && !c.Deleted))
