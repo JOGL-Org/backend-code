@@ -1127,20 +1127,6 @@ namespace Jogl.Server.Business
             return GetNodeMetadata(userId, nodes.ToArray()).Where(f => f.Entities.Any()).ToList();
         }
 
-        public NodeFeedData GetDefaultNodeMetadata(string userId)
-        {
-            var allRelations = _relationRepository.List(r => !r.Deleted);
-            var currentUserMemberships = _membershipRepository.List(m => !m.Deleted && m.UserId == userId);
-
-            var nodeId = GetNodeIdsForMemberships(allRelations, currentUserMemberships).FirstOrDefault();
-
-            if (nodeId == null)
-                return null;
-
-            var node = _nodeRepository.Get(nodeId);
-            return GetNodeMetadata(userId, node).Single();
-        }
-
         public NodeFeedData GetNodeMetadata(string nodeId, string userId)
         {
             var node = _nodeRepository.Get(nodeId);

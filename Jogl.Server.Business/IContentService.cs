@@ -39,7 +39,6 @@ namespace Jogl.Server.Business
 
         //List<NodeFeedData> ListNodeMetadata(string userId);
         List<NodeFeedData> ListNodeMetadata(string userId);
-        NodeFeedData GetDefaultNodeMetadata(string userId);
         NodeFeedData GetNodeMetadata(string nodeId, string userId);
         UserFeedRecord GetFeedRecord(string userId, string feedId);
         Task UpdateFeedRecordAsync(UserFeedRecord record);
