@@ -410,6 +410,7 @@ namespace Jogl.Server.Business
             var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId)
                 .Sort(SortKey.CreatedDate, false)
                 .ToList(); //TODO only select one newest comment for every content entity
+
             EnrichCommentDataWithFeedEntity(comments);
             EnrichEntitiesWithCreatorData(comments);
             EnrichCommentDataWithNewness(comments);
@@ -568,11 +569,13 @@ namespace Jogl.Server.Business
         private void EnrichContentEntityDataWithNewness(IEnumerable<ContentEntity> contentEntities)
         {
             var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.UserId == _operationContext.UserId).ToList();
+            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
 
             foreach (var contentEntity in contentEntities)
             {
                 var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
-                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;
+                var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == contentEntity.Id.ToString())?.LastReadUTC;
+                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed && lastReadPost == null;
             }
         }
 
