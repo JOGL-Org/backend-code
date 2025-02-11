@@ -42,6 +42,7 @@ namespace Jogl.Server.Business
         NodeFeedData GetNodeMetadata(string nodeId, string userId);
         UserFeedRecord GetFeedRecord(string userId, string feedId);
         Task UpdateFeedRecordAsync(UserFeedRecord record);
+        bool DoesFeedHaveUnreadDiscussion(string userId, string feedId);
 
         Task SetFeedOpenedAsync(string feedId, string userId);
         Task<bool> SetFeedReadAsync(string feedId, string userId);

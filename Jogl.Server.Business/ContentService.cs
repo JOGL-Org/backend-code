@@ -1429,5 +1429,37 @@ namespace Jogl.Server.Business
         {
             await _feedIntegrationRepository.DeleteAsync(feedIntegration);
         }
+
+        public bool DoesFeedHaveUnreadDiscussion(string userId, string feedId)
+        {
+            var userFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == userId && feedId == ufr.FeedId && !ufr.Deleted);
+            var lastRead = userFeedRecord?.LastReadUTC ?? DateTime.MinValue;
+
+            //posts
+            var contentEntities = _contentEntityRepository.Query(ce => ce.FeedId == feedId && ce.CreatedUTC > lastRead)
+                .ToList();
+
+            if (contentEntities.Any())
+                return true;
+
+            //threads
+            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == userId && ucer.FeedId == feedId)
+                .ToList();
+
+            var comments = _commentRepository.Query(c => userContentEntityRecords.Select(ucer => ucer.ContentEntityId).Contains(c.ContentEntityId) && c.CreatedUTC > (userContentEntityRecords.Single(r => r.ContentEntityId == c.ContentEntityId).LastReadUTC))
+                .ToList();
+
+            if (comments.Any())
+                return true;
+
+            //mentions
+            var mentions = _mentionRepository.Query(m => m.EntityId == userId && m.Unread && m.OriginFeedId == feedId)
+            .ToList();
+
+            if (mentions.Any())
+                return true;
+
+            return false;
+        }
     }
 }
