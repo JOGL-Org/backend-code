@@ -82,7 +82,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<CommunityEntityMiniModel>))]
         public async Task<IActionResult> GetEcosystemCommunityEntities([SwaggerParameter("ID of a given community entity")][FromQuery] string? id, [SwaggerParameter("Target permission")][FromQuery] Permission? permission, [FromQuery] SearchModel model)
         {
-            var communityEntities = _communityEntityService.List(id, CurrentUserId, permission, model.Search, model.Page, model.PageSize);
+            var communityEntities = _communityEntityService.List(id, CurrentUserId, permission, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var communityEntityModels = communityEntities.Select(_mapper.Map<CommunityEntityMiniModel>);
             return Ok(communityEntityModels);
         }

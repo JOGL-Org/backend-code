@@ -1,12 +1,13 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
+using Jogl.Server.Data.Util;
 
 namespace Jogl.Server.Business
 {
     public interface ICommunityEntityService
     {
         List<CommunityEntity> List(IEnumerable<string> ids);
-        List<CommunityEntity> List(string id, string currentUserId, Permission? permission, string search, int page, int pageSize);
+        List<CommunityEntity> List(string id, string currentUserId, Permission? permission, string search, int page, int pageSize, SortKey sortKey, bool sortAscending);
         CommunityEntity Get(string id);
         CommunityEntity GetEnriched(string id, string userId);
         CommunityEntity Get(string id, CommunityEntityType type);

@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Enum;
+using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 
 namespace Jogl.Server.Business
@@ -36,7 +37,7 @@ namespace Jogl.Server.Business
             return res;
         }
 
-        public List<CommunityEntity> List(string id, string currentUserId, Permission? permission, string search, int page, int pageSize)
+        public List<CommunityEntity> List(string id, string currentUserId, Permission? permission, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
             var feed = _feedRepository.Get(id);
             var allRelations = _relationRepository.List(r => !r.Deleted);
@@ -51,6 +52,7 @@ namespace Jogl.Server.Business
                         var communities = _workspaceRepository
                             .QueryAutocomplete(search)
                             .Filter(n => entityIds.Contains(n.Id.ToString()))
+                            .Sort(sortKey, sortAscending)
                             .ToList();
 
                         var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
@@ -66,15 +68,16 @@ namespace Jogl.Server.Business
                         var nodes = _nodeRepository
                             .QueryAutocomplete(search)
                             .Filter(n => !entityIds.Any() || entityIds.Contains(n.Id.ToString()))
+                            .Sort(sortKey, sortAscending)
                             .ToList();
                         var communities = _workspaceRepository
                             .QueryAutocomplete(search)
                             .Filter(n => !entityIds.Any() || entityIds.Contains(n.Id.ToString()))
+                            .Sort(sortKey, sortAscending)
                             .ToList();
 
                         var filteredNodes = GetFilteredNodes(nodes, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
                         var filteredCommunities = GetFilteredWorkspaces(communities, allRelations, currentUserMemberships, permission.HasValue ? new List<Permission> { permission.Value } : null);
-
 
                         var res = new List<CommunityEntity>();
                         res.AddRange(filteredNodes);
