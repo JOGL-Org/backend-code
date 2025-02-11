@@ -297,11 +297,11 @@ namespace Jogl.Server.Business
             var res = new List<DiscussionItem>();
             res.AddRange(mentions);
             res.AddRange(threads);
-            res.AddRange(posts);
+            res.AddRange(posts.Where(postItem => !threads.Any(threadItem => threadItem.ContentEntityId == postItem.Id.ToString())));
 
             res = res
                 .DistinctBy(ce => $"{ce.Id}")
-                .OrderByDescending(ce => ce.LastActivityUTC)
+                .OrderByDescending(ce => ce.CreatedUTC)
                 .ToList();
             return GetPage(res, page, pageSize);
         }
