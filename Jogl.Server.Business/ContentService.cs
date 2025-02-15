@@ -1141,29 +1141,9 @@ namespace Jogl.Server.Business
             var communityEntityIds = GetCommunityEntityIdsForNodes(allRelations, nodeIds).Where(id => currentUserMemberships.Any(m => m.CommunityEntityId == id)).ToList();
             var communityEntities = _feedEntityService.GetFeedEntitySetForCommunities(communityEntityIds).CommunityEntities;
 
-            var allUserFeedRecords = _userFeedRecordRepository.List(r => r.UserId == userId && !r.Deleted);
-            var activeUserFeedRecords = allUserFeedRecords.Where(ufr => (ufr.LastReadUTC.HasValue || ufr.LastWriteUTC.HasValue || ufr.LastMentionUTC.HasValue) && !ufr.Muted);
-            var activeFeedIds = activeUserFeedRecords.Select(ufr => ufr.FeedId).ToList();
-
-            var mentions = _mentionRepository.List(m => m.EntityId == userId && m.Unread && !m.Deleted);
-            var contentEntities = _contentEntityRepository.List(ce => activeFeedIds.Contains(ce.FeedId) && !ce.Deleted);
-            var userContentEntityRecords = _userContentEntityRecordRepository.List(ucer => ucer.UserId == userId && activeFeedIds.Contains(ucer.FeedId) && !ucer.Deleted);
-            var userContentEntityRecordsEntityIds = userContentEntityRecords.Select(ucer => ucer.ContentEntityId);
-            var userContentEntityRecordsComments = _commentRepository.List(c => userContentEntityRecordsEntityIds.Contains(c.ContentEntityId) && !c.Deleted);
-
-            var unreadPosts = contentEntities.Where(ce => ce.CreatedUTC > (activeUserFeedRecords.SingleOrDefault(ufr => ce.FeedId == ufr.FeedId)?.LastReadUTC ?? DateTime.MaxValue)).ToList();
-            var unreadMentions = mentions.ToList();
-            var unreadThreads = contentEntities.Where(ce => userContentEntityRecordsComments.Any(c => c.ContentEntityId == ce.Id.ToString() && c.CreatedUTC > (userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue))).ToList();
-
             //initialize channels
             var channels = _channelRepository.List(c => communityEntityIds.Contains(c.CommunityEntityId) && currentUserMemberships.Any(m => m.CommunityEntityId == c.Id.ToString()) && !c.Deleted, SortKey.CreatedDate);
             EnrichChannelsWithMembershipData(channels, currentUserMemberships);
-            foreach (var channel in channels)
-            {
-                channel.UnreadPosts = unreadPosts.Count(ce => ce.FeedId == channel.Id.ToString());
-                channel.UnreadMentions = unreadMentions.Count(m => m.OriginFeedId == channel.Id.ToString());
-                channel.UnreadThreads = unreadThreads.Count(ce => ce.FeedId == channel.Id.ToString());
-            }
 
             //initialize community entities
             EnrichCommunityEntitiesWithMembershipData(communityEntities, new List<Membership>(), currentUserMemberships, allRelations, userId);
