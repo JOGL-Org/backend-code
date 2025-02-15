@@ -111,23 +111,6 @@ namespace Jogl.Server.API.Controllers
             return Ok(channelModel);
         }
 
-        [HttpGet]
-        [Route("{id}/new")]
-        [SwaggerOperation($"Returns information on whether there is a new post, thread or mention on a feed")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
-        public async Task<IActionResult> GetChannelHasNew([FromRoute] string id)
-        {
-            var channel = _channelService.GetDetail(id, CurrentUserId);
-            if (channel == null)
-                return NotFound();
-
-            if (!channel.Permissions.Contains(Permission.Read))
-                return Forbid();
-
-            var res = _contentService.DoesFeedHaveUnreadDiscussion(CurrentUserId, id);
-            return Ok(res);
-        }
-
         [HttpPut]
         [Route("{id}")]
         [SwaggerOperation($"Updates the channel")]

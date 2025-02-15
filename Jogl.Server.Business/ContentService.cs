@@ -1,6 +1,5 @@
 ﻿using Jogl.Server.Arxiv;
 using Jogl.Server.Data;
-using Jogl.Server.Data.Enum;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using Jogl.Server.DB.Context;
@@ -13,7 +12,6 @@ using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Jogl.Server.Business
@@ -1275,9 +1273,6 @@ namespace Jogl.Server.Business
 
         public async Task<bool> SetFeedReadAsync(string feedId, string userId)
         {
-            //quick hack to make call fail if feed id isn't valid user
-            ObjectId.Parse(feedId);
-
             var existingUfr = _userFeedRecordRepository.Get(ufr => ufr.FeedId == feedId && ufr.UserId == userId);
             var newestContentEntity = _contentEntityRepository.GetNewest(ce => ce.FeedId == feedId);
 
@@ -1430,36 +1425,10 @@ namespace Jogl.Server.Business
             await _feedIntegrationRepository.DeleteAsync(feedIntegration);
         }
 
-        public bool DoesFeedHaveUnreadDiscussion(string userId, string feedId)
+        public bool HasNewContent(string currentUserId, string feedId)
         {
-            var userFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == userId && feedId == ufr.FeedId && !ufr.Deleted);
-            var lastRead = userFeedRecord?.LastReadUTC ?? DateTime.MinValue;
-
-            //posts
-            var contentEntities = _contentEntityRepository.Query(ce => ce.FeedId == feedId && ce.CreatedUTC > lastRead)
-                .ToList();
-
-            if (contentEntities.Any())
-                return true;
-
-            //threads
-            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == userId && ucer.FeedId == feedId)
-                .ToList();
-
-            var comments = _commentRepository.Query(c => userContentEntityRecords.Select(ucer => ucer.ContentEntityId).Contains(c.ContentEntityId) && c.CreatedUTC > (userContentEntityRecords.Single(r => r.ContentEntityId == c.ContentEntityId).LastReadUTC))
-                .ToList();
-
-            if (comments.Any())
-                return true;
-
-            //mentions
-            var mentions = _mentionRepository.Query(m => m.EntityId == userId && m.Unread && m.OriginFeedId == feedId)
-            .ToList();
-
-            if (mentions.Any())
-                return true;
-
-            return false;
+            var userFeedRecord = _userFeedRecordRepository.Query(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId).ToList().SingleOrDefault();
+            return userFeedRecord?.Unread ?? false;
         }
     }
 }

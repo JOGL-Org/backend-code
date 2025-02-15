@@ -427,6 +427,21 @@ namespace Jogl.Server.API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [Route("{id}/channel/aggregate/new")]
+        [SwaggerOperation($"Returns a value indicating whether or not there are new posts in channels for a given node")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> ListChannelsAggregateHasNew([SwaggerParameter("ID of the node")] string id)
+        {
+            var entity = GetEntity(id);
+            if (entity == null)
+                return NotFound();
+
+            var res = _channelService.ListForNodeHasNewContent(CurrentUserId, id);
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
         [Route("{id}/users/aggregate")]
         [SwaggerOperation($"Lists all needs for the specified node and its ecosystem")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No node was found for that id")]

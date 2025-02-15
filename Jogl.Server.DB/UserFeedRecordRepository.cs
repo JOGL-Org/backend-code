@@ -67,6 +67,7 @@ namespace Jogl.Server.DB
                                                         .Set(r => r.LastOpenedUTC, readUTC)
                                                         .Set(r => r.UpdatedUTC, readUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
+                                                        .Set(r => r.Unread, false)
                                                         .SetOnInsert(r => r.FeedId, feedId)
                                                         .SetOnInsert(r => r.UserId, userId)
                                                         .SetOnInsert(r => r.Deleted, false)
@@ -83,6 +84,7 @@ namespace Jogl.Server.DB
                                                         .Set(r => r.LastOpenedUTC, followUTC)
                                                         .Set(r => r.UpdatedUTC, followUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
+                                                        .Set(r => r.Unread, false)
                                                         .SetOnInsert(r => r.FeedId, feedId)
                                                         .SetOnInsert(r => r.UserId, userId)
                                                         .SetOnInsert(r => r.Deleted, false)
@@ -101,6 +103,7 @@ namespace Jogl.Server.DB
                                                         .Set(r => r.LastOpenedUTC, writeUTC)
                                                         .Set(r => r.UpdatedUTC, writeUTC)
                                                         .Set(r => r.UpdatedByUserId, userId)
+                                                        .Set(r => r.Unread, false)
                                                         .SetOnInsert(r => r.FeedId, feedId)
                                                         .SetOnInsert(r => r.UserId, userId)
                                                         .SetOnInsert(r => r.Deleted, false)
@@ -115,6 +118,7 @@ namespace Jogl.Server.DB
         {
             return Builders<UserFeedRecord>.Update.Set(e => e.Muted, updatedEntity.Muted)
                                                   .Set(e => e.Starred, updatedEntity.Starred)
+                                                  .Set(e => e.Unread, updatedEntity.Unread)
                                                   .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                                   .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                                   .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);

@@ -186,6 +186,16 @@ namespace Jogl.Server.API.Controllers
             return Ok(contentEntityModels);
         }
 
+        [HttpGet]
+        [Route("{feedId}/new")]
+        [SwaggerOperation($"Returns information on whether there is a new post, thread or mention on a feed")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
+        public async Task<IActionResult> GetChannelHasNew([FromRoute] string id)
+        {
+            var res = _contentService.HasNewContent(CurrentUserId, id);
+            return Ok(res);
+        }
+
         [HttpPost]
         [Route("{feedId}/opened")]
         [SwaggerOperation($"Records the user having opened the specified feed")]
@@ -857,7 +867,7 @@ namespace Jogl.Server.API.Controllers
         {
             var nodeData = _contentService.GetNodeMetadata(id, CurrentUserId);
             var nodeDataModel = _mapper.Map<NodeFeedDataModel>(nodeData);
-            
+
             return Ok(nodeDataModel);
         }
 

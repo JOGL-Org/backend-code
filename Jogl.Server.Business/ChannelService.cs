@@ -109,6 +109,23 @@ namespace Jogl.Server.Business
             return filteredChannels;
         }
 
+        public bool ListForNodeHasNewContent(string currentUserId, string nodeId)
+        {
+            var entityIds = GetFeedEntityIdsForNode(nodeId);
+
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
+            var channels = _channelRepository.Query(c => entityIds.Contains(c.CommunityEntityId))
+                .Filter(c => currentUserMemberships.Select(m => m.CommunityEntityId).Contains(c.Id.ToString()))
+                .ToList();
+
+            return _userFeedRecordRepository
+                   .Query(ufr => ufr.UserId == currentUserId)
+                   .Filter(ufr => channels.Select(c => c.Id.ToString()).Contains(ufr.FeedId))
+                   .Filter(ufr => ufr.FollowedUTC.HasValue)
+                   .Filter(ufr => ufr.Unread)
+                   .Any();
+        }
+
         public async Task UpdateAsync(Channel channel)
         {
             var existingChannel = _channelRepository.Get(channel.Id.ToString());

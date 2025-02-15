@@ -15,6 +15,7 @@ namespace Jogl.Server.Data
 
         public bool Muted { get; set; }
         public bool Starred { get; set; }
+        public bool Unread { get; set; }
 
         [BsonIgnore]
         public FeedEntity FeedEntity { get; set; }
