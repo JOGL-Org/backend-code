@@ -29,6 +29,7 @@ namespace Jogl.Server.Notifier.Discussion
             //find users that follow the thread
             var userIds = _userContentEntityRecordRepository.Query(ucer => ucer.ContentEntityId == comment.ContentEntityId)
                 .Filter(ucer => ucer.FollowedUTC.HasValue)
+                .Filter(ucer => ucer.UserId != comment.CreatedByUserId)
                 .ToList()
                 .Select(ucer => ucer.UserId)
                 .ToList();

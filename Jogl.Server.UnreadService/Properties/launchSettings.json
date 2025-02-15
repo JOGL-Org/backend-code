@@ -1,9 +1,20 @@
 {
   "profiles": {
-    "Jogl.Server.UnreadService": {
+    "dev": {
       "commandName": "Project",
       "commandLineArgs": "--port 7195",
-      "launchBrowser": false
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "prod": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7195",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
     }
   }
 }

@@ -190,9 +190,9 @@ namespace Jogl.Server.API.Controllers
         [Route("{feedId}/new")]
         [SwaggerOperation($"Returns information on whether there is a new post, thread or mention on a feed")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"True or false", typeof(bool))]
-        public async Task<IActionResult> GetChannelHasNew([FromRoute] string id)
+        public async Task<IActionResult> GetChannelHasNew([FromRoute] string feedId)
         {
-            var res = _contentService.HasNewContent(CurrentUserId, id);
+            var res = _contentService.HasNewContent(CurrentUserId, feedId);
             return Ok(res);
         }
 

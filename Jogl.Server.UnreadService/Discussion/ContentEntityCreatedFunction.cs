@@ -25,9 +25,11 @@ namespace Jogl.Server.Notifier.Discussion
             var contentEntity = JsonSerializer.Deserialize<ContentEntity>(message.Body.ToString());
 
             //find users that follow the feed
-            var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.FeedId == contentEntity.FeedId)
+            var userFeedRecords = _userFeedRecordRepository
+                .Query(ufr => ufr.FeedId == contentEntity.FeedId)
                 .Filter(ufr => ufr.FollowedUTC.HasValue)
                 .Filter(ufr => !ufr.Unread)
+                .Filter(ufr => ufr.UserId != contentEntity.CreatedByUserId)
                 .ToList();
 
             //mark their feed as unread
