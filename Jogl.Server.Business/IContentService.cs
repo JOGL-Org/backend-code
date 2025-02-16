@@ -18,6 +18,7 @@ namespace Jogl.Server.Business
         List<DiscussionItem> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize);
         List<DiscussionItem> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize);
         List<DiscussionItem> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize);
+        bool ListForNodeHasNewContent(string currentUserId, string nodeId);
         Task UpdateAsync(ContentEntity contentEntity);
         Task DeleteAsync(string id);
 

@@ -12,6 +12,7 @@ using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 
 namespace Jogl.Server.Business
@@ -288,9 +289,9 @@ namespace Jogl.Server.Business
 
         public List<DiscussionItem> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
-            var mentions = ListMentionsForNode(currentUserId, nodeId, page, pageSize);
-            var threads = ListThreadsForNode(currentUserId, nodeId, page, pageSize);
-            var posts = ListPostsForNode(currentUserId, nodeId, page, pageSize);
+            var mentions = ListMentionsForNode(currentUserId, nodeId, 1, int.MaxValue);
+            var threads = ListThreadsForNode(currentUserId, nodeId, 1, int.MaxValue);
+            var posts = ListPostsForNode(currentUserId, nodeId, 1, int.MaxValue);
 
             var res = new List<DiscussionItem>();
             res.AddRange(mentions);
@@ -302,6 +303,20 @@ namespace Jogl.Server.Business
                 .OrderByDescending(ce => ce.CreatedUTC)
                 .ToList();
             return GetPage(res, page, pageSize);
+        }
+
+        public bool ListForNodeHasNewContent(string currentUserId, string nodeId)
+        {
+            var entityIds = GetFeedEntityIdsForNode(nodeId);
+
+            var res = _userFeedRecordRepository
+                   .Query(ufr => ufr.UserId == currentUserId)
+                   .Filter(ufr => entityIds.Contains(ufr.FeedId))
+                   .Filter(ufr => ufr.FollowedUTC.HasValue)
+                   .Filter(ufr => ufr.Unread)
+                  .ToList();
+
+            return res.Count > 0;
         }
 
         private DiscussionItem GetDiscussionItem(ContentEntity contentEntity, DiscussionItemSource source)
@@ -373,6 +388,7 @@ namespace Jogl.Server.Business
             var contentEntities = _contentEntityRepository
                 .QueryForPosts(currentUserId, ce => userFeedIds.Contains(ce.FeedId))
                 .Sort(SortKey.CreatedDate, false)
+                .GroupBy(ce => ce.FeedId, grp => grp.First())
                 .Page(page, pageSize)
                 .ToList();
 
@@ -380,7 +396,7 @@ namespace Jogl.Server.Business
             EnrichEntitiesWithCreatorData(contentEntities);
             EnrichContentEntityDataWithNewness(contentEntities);
 
-            return contentEntities.DistinctBy(ce => ce.FeedId)
+            return contentEntities
                 .Select(ce => GetDiscussionItem(ce, DiscussionItemSource.Post))
                 .ToList();
         }
@@ -567,13 +583,13 @@ namespace Jogl.Server.Business
         private void EnrichContentEntityDataWithNewness(IEnumerable<ContentEntity> contentEntities)
         {
             var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.UserId == _operationContext.UserId).ToList();
-            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
+            //var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
 
             foreach (var contentEntity in contentEntities)
             {
                 var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
-                var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == contentEntity.Id.ToString())?.LastReadUTC;
-                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed && lastReadPost == null;
+                //  var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == contentEntity.Id.ToString())?.LastReadUTC;
+                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;// && lastReadPost == null;
             }
         }
 

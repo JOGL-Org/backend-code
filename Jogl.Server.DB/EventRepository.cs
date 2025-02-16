@@ -69,7 +69,7 @@ namespace Jogl.Server.DB
                 await coll.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(INDEX_SEARCH, new BsonDocument(new BsonDocument { { "storedSource", true }, { "mappings", new BsonDocument { { "dynamic", true } } } })));
         }
 
-        public IFluentQuery<Event> QueryWithAttendanceData(string searchValue, string currentUserId)
+        public IRepositoryQuery<Event> QueryWithAttendanceData(string searchValue, string currentUserId)
         {
             var q = GetQuery(searchValue);
 
@@ -97,7 +97,7 @@ namespace Jogl.Server.DB
                                     }
                                 }));
 
-            return new FluentQuery<Event>(_configuration, this, _context, q);
+            return new RepositoryQuery<Event>(_configuration, this, _context, q);
         }
     }
 }

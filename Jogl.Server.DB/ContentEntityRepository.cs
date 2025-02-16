@@ -39,7 +39,7 @@ namespace Jogl.Server.DB
             public List<Comment> Comments { get; set; }
         }
 
-        public IFluentQuery<ContentEntity> QueryForPosts(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
+        public IRepositoryQuery<ContentEntity> QueryForPosts(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
         {
             var coll = GetCollection<ContentEntity>();
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
@@ -48,10 +48,10 @@ namespace Jogl.Server.DB
 
             q = q.Match(ce => ce.CreatedByUserId != currentUserId);
 
-            return new FluentQuery<ContentEntity>(_configuration, this, _context, q);
+            return new RepositoryQuery<ContentEntity>(_configuration, this, _context, q);
         }
 
-        public IFluentQuery<ContentEntity> QueryForReplies(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
+        public IRepositoryQuery<ContentEntity> QueryForReplies(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null)
         {
             var coll = GetCollection<ContentEntity>();
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
@@ -76,7 +76,7 @@ namespace Jogl.Server.DB
                         new BsonDocument("Comments", new BsonDocument("$ne", new BsonArray()))
                     }));
 
-            return new FluentQuery<ContentEntity>(_configuration, this, _context, q);
+            return new RepositoryQuery<ContentEntity>(_configuration, this, _context, q);
         }
 
         protected override UpdateDefinition<ContentEntity> GetDefaultUpdateDefinition(ContentEntity updatedEntity)

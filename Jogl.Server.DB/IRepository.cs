@@ -56,8 +56,8 @@ namespace Jogl.Server.DB
         Task DeleteAsync(List<T> entities);
         Task DeleteAsync(Expression<Func<T, bool>> filter);
 
-        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null);
-        public IFluentQuery<T> Query(string searchValue);
-        public IFluentQuery<T> QueryAutocomplete(string searchValue);
+        public IRepositoryQuery<T> Query(Expression<Func<T, bool>> filter = null);
+        public IRepositoryQuery<T> Query(string searchValue);
+        public IRepositoryQuery<T> QueryAutocomplete(string searchValue);
     }
 }

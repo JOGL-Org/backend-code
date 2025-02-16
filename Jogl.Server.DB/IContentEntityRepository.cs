@@ -8,7 +8,7 @@ namespace Jogl.Server.DB
         List<ContentEntity> List(IEnumerable<string> feedIds, Expression<Func<ContentEntity, bool>> filter, int page, int pageSize);
         List<ContentEntity> List(IEnumerable<string> feedIds);
 
-        IFluentQuery<ContentEntity> QueryForPosts(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null);
-        IFluentQuery<ContentEntity> QueryForReplies(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null);
+        IRepositoryQuery<ContentEntity> QueryForPosts(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null);
+        IRepositoryQuery<ContentEntity> QueryForReplies(string currentUserId, Expression<Func<ContentEntity, bool>> filter = null);
     }
 }

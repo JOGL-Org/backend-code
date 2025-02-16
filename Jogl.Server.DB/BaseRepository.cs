@@ -522,24 +522,24 @@ namespace Jogl.Server.DB
             return coll.Aggregate().Search(Builders<T>.Search.Autocomplete(searchDefinition, searchValue), new SearchOptions<T> { IndexName = INDEX_AUTOCOMPLETE }).Match(itm => !itm.Deleted);
         }
 
-        public IFluentQuery<T> Query(Expression<Func<T, bool>> filter = null)
+        public IRepositoryQuery<T> Query(Expression<Func<T, bool>> filter = null)
         {
             var coll = GetCollection<T>();
             var q = coll.Aggregate().Match(itm => !itm.Deleted);
             if (filter != null)
                 q = q.Match(filter);
 
-            return new FluentQuery<T>(_configuration, this, _context, q);
+            return new RepositoryQuery<T>(_configuration, this, _context, q);
         }
 
-        public IFluentQuery<T> Query(string searchValue)
+        public IRepositoryQuery<T> Query(string searchValue)
         {
-            return new FluentQuery<T>(_configuration, this, _context, GetQuery(searchValue));
+            return new RepositoryQuery<T>(_configuration, this, _context, GetQuery(searchValue));
         }
 
-        public IFluentQuery<T> QueryAutocomplete(string searchValue)
+        public IRepositoryQuery<T> QueryAutocomplete(string searchValue)
         {
-            return new FluentQuery<T>(_configuration, this, _context, GetQueryAutocomplete(searchValue));
+            return new RepositoryQuery<T>(_configuration, this, _context, GetQueryAutocomplete(searchValue));
         }
 
         protected IAggregateFluent<T> GetQuery(string searchValue)
