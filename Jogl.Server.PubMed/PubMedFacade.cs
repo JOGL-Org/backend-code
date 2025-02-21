@@ -142,7 +142,7 @@ namespace Jogl.Server.PubMed
             var eFetchResponse = await client.ExecuteGetAsync(eFetchRequest);
 
             //Deserialize content
-            PubmedArticleSet articleSet = XMLConverter(eFetchResponse.Content);
+            var articleSet = Deserialize(eFetchResponse.Content);
 
             //Decided for try/catch instead of TryParse because if this fails, we probably want to know
             int totalResults;
@@ -174,7 +174,7 @@ namespace Jogl.Server.PubMed
             var eFetchResponse = await client.ExecuteGetAsync(eFetchRequest);
 
             //Deserialize content
-            var articleSet = XMLConverter(eFetchResponse.Content);
+            var articleSet = Deserialize(eFetchResponse.Content);
             return articleSet.PubmedArticles;
         }
 
@@ -206,30 +206,39 @@ namespace Jogl.Server.PubMed
             return search?.Replace(" ", " ")?.ToLower();
         }
 
-        private PubmedArticleSet XMLConverter(string xml)
+        private PubmedArticleSet Deserialize(string xml)
         {
-            PubmedArticleSet articleSet;
-            XmlReaderSettings settings = new()
+            try
             {
-                DtdProcessing = DtdProcessing.Parse
-            };
 
-            string escapedXML =
-                xml.Replace("<i>", "").Replace("</i>", "")
-                   .Replace("<sub>", "").Replace("</sub>", "")
-                   .Replace("<sup>", "").Replace("</sup>", "")
-                   .Replace("<b>", "").Replace("</b>", "");
+                PubmedArticleSet articleSet;
+                XmlReaderSettings settings = new()
+                {
+                    DtdProcessing = DtdProcessing.Parse
+                };
 
-            escapedXML = Regex.Replace(escapedXML, @"<(mml:\w+)[^>]*>.*?</\1>", "");
+                string escapedXML =
+                    xml.Replace("<i>", "").Replace("</i>", "")
+                       .Replace("<sub>", "").Replace("</sub>", "")
+                       .Replace("<sup>", "").Replace("</sup>", "")
+                       .Replace("<u>", "").Replace("</u>", "")
+                       .Replace("<b>", "").Replace("</b>", "");
 
-            using (var stringReader = new StringReader(escapedXML))
-            using (var xmlReader = XmlReader.Create(stringReader, settings))
+                escapedXML = Regex.Replace(escapedXML, @"<(mml:\w+)[^>]*>.*?</\1>", "");
+
+                using (var stringReader = new StringReader(escapedXML))
+                using (var xmlReader = XmlReader.Create(stringReader, settings))
+                {
+                    var serializer = new XmlSerializer(typeof(PubmedArticleSet));
+                    articleSet = (PubmedArticleSet)serializer.Deserialize(xmlReader);
+                }
+                return articleSet;
+            }
+            catch (Exception ex)
             {
-                var serializer = new XmlSerializer(typeof(PubmedArticleSet));
-                articleSet = (PubmedArticleSet)serializer.Deserialize(xmlReader);
+                return new PubmedArticleSet { PubmedArticles = new List<PubmedArticle>() };
             }
 
-            return articleSet;
         }
 
         public List<string> ListCategories()
