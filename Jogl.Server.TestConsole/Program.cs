@@ -78,16 +78,16 @@ foreach (var ufr in followedUFRs)
         var commentsInPost = comments.Where(c => c.CreatedByUserId != ucer.UserId && c.ContentEntityId == ucer.ContentEntityId).ToList();
         if (commentsInPost.Any(c => c.CreatedUTC > ucer.LastReadUTC))
         {
-            ufr.Unread = true;
-            await userFeedRecordRepository.UpdateAsync(ufr);
+            ucer.Unread = true;
+            await userContentEntityRecordRepository.UpdateAsync(ucer);
             break;
         }
 
         var mentionsInPost = mentions.Where(m => commentsInPost.Any(c => c.Id.ToString() == m.OriginId)).ToList();
         if (mentionsInPost.Any(m => m.CreatedUTC > ucer.LastReadUTC))
         {
-            ufr.Unread = true;
-            await userFeedRecordRepository.UpdateAsync(ufr);
+            ucer.Unread = true;
+            await userContentEntityRecordRepository.UpdateAsync(ucer);
             break;
         }
     }

@@ -309,14 +309,21 @@ namespace Jogl.Server.Business
         {
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
-            var res = _userFeedRecordRepository
+            var unreadUFRs = _userFeedRecordRepository
                    .Query(ufr => ufr.UserId == currentUserId)
                    .Filter(ufr => entityIds.Contains(ufr.FeedId))
                    .Filter(ufr => ufr.FollowedUTC.HasValue)
                    .Filter(ufr => ufr.Unread)
-                  .ToList();
+                   .ToList();
 
-            return res.Count > 0;
+            var unreadUCERs = _userContentEntityRecordRepository
+                 .Query(ucer => ucer.UserId == currentUserId)
+                 .Filter(ucer => entityIds.Contains(ucer.FeedId))
+                 .Filter(ucer => ucer.FollowedUTC.HasValue)
+                 .Filter(ucer => ucer.Unread)
+                 .ToList();
+
+            return unreadUFRs.Any() || unreadUCERs.Any();
         }
 
         private DiscussionItem GetDiscussionItem(ContentEntity contentEntity, DiscussionItemSource source)
@@ -378,11 +385,11 @@ namespace Jogl.Server.Business
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
 
             //followed feeds 
-            var userFeedIds = _userFeedRecordRepository
+            var userFeedRecords = _userFeedRecordRepository
                 .Query(ufr => ufr.UserId == currentUserId && ufr.FollowedUTC.HasValue && feedEntityIds.Contains(ufr.FeedId))
-                .ToList() //TODO only select FeedId
-                .Select(ucer => ucer.FeedId)
                 .ToList();
+
+            var userFeedIds = userFeedRecords.Select(ufr => ufr.FeedId).ToList();
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
@@ -394,7 +401,7 @@ namespace Jogl.Server.Business
 
             EnrichContentEntityDataWithFeedEntity(contentEntities);
             EnrichEntitiesWithCreatorData(contentEntities);
-            EnrichContentEntityDataWithNewness(contentEntities);
+            EnrichContentEntityDataWithNewness(contentEntities, userFeedRecords);
 
             return contentEntities
                 .Select(ce => GetDiscussionItem(ce, DiscussionItemSource.Post))
@@ -404,33 +411,29 @@ namespace Jogl.Server.Business
         public List<DiscussionItem> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize)
         {
             var feedEntityIds = GetFeedEntityIdsForNode(nodeId);
-            var ucerContentEntityIds = _userContentEntityRecordRepository
+            var userContentEntityRecords = _userContentEntityRecordRepository
                 .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
-                .ToList() //TODO only select FeedId
-                .Select(ucer => ucer.ContentEntityId)
+                .ToList();
+
+            var userContentEntityIds = userContentEntityRecords.Select(ufr => ufr.FeedId).ToList();
+            var comments = _commentRepository.Query(c => userContentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId)
+                .Sort(SortKey.CreatedDate, false)
+                .GroupBy(c => c.ContentEntityId, grp => grp.First())
+                .Page(page, pageSize)
                 .ToList();
 
             //TODO filter for visibility
             var contentEntities = _contentEntityRepository
-                .QueryForReplies(currentUserId, ce => ucerContentEntityIds.Contains(ce.Id.ToString()))
+                .QueryForReplies(currentUserId, ce => userContentEntityIds.Contains(ce.Id.ToString()))
                 .Sort(SortKey.LastActivity, false)
-                .Page(page, pageSize)
                 .ToList();
-
-            var contentEntityIds = contentEntities
-                .Select(ce => ce.Id.ToString())
-                .ToList();
-
-            var comments = _commentRepository.Query(c => contentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId)
-                .Sort(SortKey.CreatedDate, false)
-                .ToList(); //TODO only select one newest comment for every content entity
 
             EnrichCommentDataWithFeedEntity(comments);
             EnrichEntitiesWithCreatorData(comments);
-            EnrichCommentDataWithNewness(comments);
+            EnrichCommentDataWithNewness(comments, userContentEntityRecords);
             EnrichCommentsWithContentEntityData(comments, contentEntities);
 
-            return comments.DistinctBy(c => c.ContentEntityId)
+            return comments
                 .Select(c => GetDiscussionItem(c, DiscussionItemSource.Reply))
                 .ToList();
         }
@@ -460,9 +463,16 @@ namespace Jogl.Server.Business
             EnrichEntitiesWithCreatorData(contentEntities);
             EnrichEntitiesWithCreatorData(comments);
 
-            EnrichContentEntityDataWithNewness(contentEntities);
-            EnrichCommentDataWithNewness(comments);
+            var userContentEntityRecords = _userContentEntityRecordRepository
+                .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
+                .ToList();
 
+            var userFeedRecords = _userFeedRecordRepository
+                .Query(ufr => ufr.UserId == currentUserId && ufr.FollowedUTC.HasValue && feedEntityIds.Contains(ufr.FeedId))
+                .ToList();
+
+            EnrichContentEntityDataWithNewness(contentEntities, userFeedRecords);
+            EnrichCommentDataWithNewness(comments, userContentEntityRecords);
             EnrichCommentsWithContentEntityData(comments, contentEntities);
 
             var res = new List<DiscussionItem>();
@@ -580,23 +590,17 @@ namespace Jogl.Server.Business
             }
         }
 
-        private void EnrichContentEntityDataWithNewness(IEnumerable<ContentEntity> contentEntities)
+        private void EnrichContentEntityDataWithNewness(IEnumerable<ContentEntity> contentEntities, IEnumerable<UserFeedRecord> userFeedRecords)
         {
-            var userFeedRecords = _userFeedRecordRepository.Query(ufr => ufr.UserId == _operationContext.UserId).ToList();
-            //var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
-
             foreach (var contentEntity in contentEntities)
             {
                 var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
-                //  var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == contentEntity.Id.ToString())?.LastReadUTC;
-                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;// && lastReadPost == null;
+                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;
             }
         }
 
-        private void EnrichCommentDataWithNewness(IEnumerable<Comment> comments)
+        private void EnrichCommentDataWithNewness(IEnumerable<Comment> comments, IEnumerable<UserContentEntityRecord> userContentEntityRecords)
         {
-            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.UserId == _operationContext.UserId).ToList();
-
             foreach (var comment in comments)
             {
                 var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == comment.ContentEntityId)?.LastReadUTC ?? DateTime.MinValue;

@@ -10,12 +10,10 @@ namespace Jogl.Server.Notifier.Discussion
     public class CommentCreatedFunction
     {
         private readonly IUserContentEntityRecordRepository _userContentEntityRecordRepository;
-        private readonly IUserFeedRecordRepository _userFeedRecordRepository;
 
-        public CommentCreatedFunction(IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, ILogger<CommentCreatedFunction> logger)
+        public CommentCreatedFunction(IUserContentEntityRecordRepository userContentEntityRecordRepository, ILogger<CommentCreatedFunction> logger)
         {
             _userContentEntityRecordRepository = userContentEntityRecordRepository;
-            _userFeedRecordRepository = userFeedRecordRepository;
         }
 
         [Function(nameof(CommentCreatedFunction))]
@@ -26,24 +24,17 @@ namespace Jogl.Server.Notifier.Discussion
         {
             var comment = JsonSerializer.Deserialize<Comment>(message.Body.ToString());
 
-            //find users that follow the thread
-            var userIds = _userContentEntityRecordRepository.Query(ucer => ucer.ContentEntityId == comment.ContentEntityId)
+            //find users that follow content entity
+            var userContentEntityRecords = _userContentEntityRecordRepository.Query(ucer => ucer.ContentEntityId == comment.ContentEntityId)
                 .Filter(ucer => ucer.FollowedUTC.HasValue)
                 .Filter(ucer => ucer.UserId != comment.CreatedByUserId)
-                .ToList()
-                .Select(ucer => ucer.UserId)
                 .ToList();
 
-            var userFeedRecords = _userFeedRecordRepository.Query(ufr => userIds.Contains(ufr.UserId))
-                .Filter(ufr => ufr.FeedId == comment.FeedId)
-                .Filter(ufr => !ufr.Unread)
-                .ToList();
-
-            //mark their feed as unread
-            foreach (var userFeedRecord in userFeedRecords)
+            //mark their content entity as unread
+            foreach (var ucer in userContentEntityRecords)
             {
-                userFeedRecord.Unread = true;
-                await _userFeedRecordRepository.UpdateAsync(userFeedRecord);
+                ucer.Unread = true;
+                await _userContentEntityRecordRepository.UpdateAsync(ucer);
             }
 
             // Complete the message

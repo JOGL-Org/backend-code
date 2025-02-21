@@ -114,16 +114,25 @@ namespace Jogl.Server.Business
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            var channels = _channelRepository.Query(c => entityIds.Contains(c.CommunityEntityId))
+            var channelIds = _channelRepository.Query(c => entityIds.Contains(c.CommunityEntityId))
                 .Filter(c => currentUserMemberships.Select(m => m.CommunityEntityId).Contains(c.Id.ToString()))
-                .ToList();
+                .ToList(c => c.Id.ToString());
 
-            return _userFeedRecordRepository
-                   .Query(ufr => ufr.UserId == currentUserId)
-                   .Filter(ufr => channels.Select(c => c.Id.ToString()).Contains(ufr.FeedId))
-                   .Filter(ufr => ufr.FollowedUTC.HasValue)
-                   .Filter(ufr => ufr.Unread)
-                   .Any();
+            var unreadUFRs = _userFeedRecordRepository
+                  .Query(ufr => ufr.UserId == currentUserId)
+                  .Filter(ufr => channelIds.Contains(ufr.FeedId))
+                  .Filter(ufr => ufr.FollowedUTC.HasValue)
+                  .Filter(ufr => ufr.Unread)
+                  .ToList();
+
+            var unreadUCERs = _userContentEntityRecordRepository
+                 .Query(ucer => ucer.UserId == currentUserId)
+                 .Filter(ucer => channelIds.Contains(ucer.FeedId))
+                 .Filter(ucer => ucer.FollowedUTC.HasValue)
+                 .Filter(ucer => ucer.Unread)
+                 .ToList();
+
+            return unreadUFRs.Any() || unreadUCERs.Any();
         }
 
         public async Task UpdateAsync(Channel channel)
