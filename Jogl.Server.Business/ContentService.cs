@@ -12,7 +12,6 @@ using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
-using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 
 namespace Jogl.Server.Business
@@ -154,21 +153,17 @@ namespace Jogl.Server.Business
 
         public Discussion GetDiscussion(string currentUserId, string feedId, ContentEntityType? type, ContentEntityFilter filter, string search, int page, int pageSize)
         {
-            var contentEntities = _contentEntityRepository.List(p => !p.Deleted
-            && (type == null || p.Type == type)
-            && p.FeedId == feedId)
-                .OrderByDescending(c => c.CreatedUTC)
+            var contentEntities = _contentEntityRepository
+                .Query(c => c.FeedId == feedId && (type == null || c.Type == type))
+                .Sort(SortKey.CreatedDate, false)
                 .ToList();
 
-            var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId && !ufr.Deleted);
-            var currentUserMentions = _mentionRepository.List(m => m.EntityId == currentUserId && m.OriginFeedId == feedId && !m.Deleted);
-            var currentUserContentEntityRecords = _userContentEntityRecordRepository.List(r => r.UserId == currentUserId && r.FeedId == feedId && !r.Deleted);
+            var currentUserFeedRecord = _userFeedRecordRepository.Get(ufr => ufr.UserId == currentUserId && ufr.FeedId == feedId);
+            var currentUserContentEntityRecords = _userContentEntityRecordRepository.Query(r => r.UserId == currentUserId && r.FeedId == feedId).ToList();
+
+            var currentUserMentions = _mentionRepository.Query(m => m.EntityId == currentUserId && m.OriginFeedId == feedId).ToList();
             var currentUserContentEntityRecordsEntityIds = currentUserContentEntityRecords.Select(ucer => ucer.ContentEntityId);
             var currentUserContentEntityRecordsComments = _commentRepository.List(c => currentUserContentEntityRecordsEntityIds.Contains(c.ContentEntityId) && !c.Deleted);
-
-            var unreadPosts = contentEntities.Count(ce => ce.CreatedUTC > (currentUserFeedRecord?.LastReadUTC ?? DateTime.MaxValue));
-            var unreadMentions = currentUserMentions.Count(m => m.Unread);
-            var unreadThreads = contentEntities.Count(ce => currentUserContentEntityRecordsComments.Any(c => c.ContentEntityId == ce.Id.ToString() && c.CreatedUTC > (currentUserContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == ce.Id.ToString())?.LastReadUTC ?? DateTime.MaxValue)));
 
             switch (filter)
             {
@@ -212,9 +207,9 @@ namespace Jogl.Server.Business
                 ParentFeedEntity = parentFeedEntity,
                 DiscussionStats = new DiscussionStats
                 {
-                    UnreadPosts = unreadPosts,
-                    UnreadMentions = unreadMentions,
-                    UnreadThreads = unreadThreads
+                    UnreadPosts = contentEntities.Count(c => c.CreatedUTC > (currentUserFeedRecord?.LastReadUTC ?? DateTime.MinValue)),
+                    UnreadMentions = currentUserMentions.Count(m => m.Unread),
+                    UnreadThreads = currentUserContentEntityRecords.Count(ucer => ucer.Unread),
                 }
             };
         }
