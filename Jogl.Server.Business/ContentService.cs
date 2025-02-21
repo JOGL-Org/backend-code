@@ -594,8 +594,8 @@ namespace Jogl.Server.Business
         {
             foreach (var contentEntity in contentEntities)
             {
-                var lastReadFeed = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId)?.LastReadUTC ?? DateTime.MinValue;
-                contentEntity.IsNew = contentEntity.CreatedUTC > lastReadFeed;
+                var ufr = userFeedRecords.SingleOrDefault(r => r.FeedId == contentEntity.FeedId);
+                contentEntity.IsNew = ufr?.Unread ?? true;
             }
         }
 
@@ -603,8 +603,8 @@ namespace Jogl.Server.Business
         {
             foreach (var comment in comments)
             {
-                var lastReadPost = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == comment.ContentEntityId)?.LastReadUTC ?? DateTime.MinValue;
-                comment.IsNew = comment.CreatedUTC > lastReadPost;
+                var ucer = userContentEntityRecords.SingleOrDefault(r => r.ContentEntityId == comment.ContentEntityId);
+                comment.IsNew = ucer?.Unread ?? true;
             }
         }
 
