@@ -690,6 +690,14 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
                 .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
+
+            CreateMap<OpenAlex.DTO.Author, AuthorModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName));
+
+            CreateMap<OpenAlex.DTO.Work, PublicationModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

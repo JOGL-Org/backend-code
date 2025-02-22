@@ -9,6 +9,7 @@ using System.Net;
 using Jogl.Server.Data.Enum;
 using Jogl.Server.Data;
 using MongoDB.Bson;
+using Jogl.Server.OpenAlex;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -21,14 +22,16 @@ namespace Jogl.Server.API.Controllers
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IFeedEntityService _feedEntityService;
         private readonly IPaperService _paperService;
+        private readonly IOpenAlexFacade _openAlexFacade;
         private readonly IConfiguration _configuration;
 
-        public PaperController(IContentService contentService, ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IPaperService paperService, IConfiguration configuration, IMapper mapper, ILogger<PaperController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public PaperController(IContentService contentService, ICommunityEntityService communityEntityService, IFeedEntityService feedEntityService, IPaperService paperService, IOpenAlexFacade openAlexFacade, IConfiguration configuration, IMapper mapper, ILogger<PaperController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _contentService = contentService;
             _communityEntityService = communityEntityService;
             _feedEntityService = feedEntityService;
             _paperService = paperService;
+            _openAlexFacade = openAlexFacade;
             _configuration = configuration;
         }
 
@@ -118,7 +121,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, $"The paper was updated")]
         public async Task<IActionResult> UpdatePaper([FromRoute] string id, [FromBody] PaperUpsertModel model)
         {
-            var existingPaper = _paperService.Get(id,CurrentUserId);
+            var existingPaper = _paperService.Get(id, CurrentUserId);
             if (existingPaper == null)
                 return NotFound();
 
@@ -147,6 +150,28 @@ namespace Jogl.Server.API.Controllers
 
             await _paperService.DeleteAsync(paper);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("openalex/authors")]
+        [SwaggerOperation($"Returns a list of scientific authors matching a search term")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The author data", typeof(List<AuthorModel>))]
+        public async Task<IActionResult> ListAuthors([FromQuery] SearchModel model)
+        {
+            var authors = await _openAlexFacade.ListAuthorsAsync(model.Search, model.Page, model.PageSize);
+            var authorModels = authors.Items.Select(_mapper.Map<AuthorModel>);
+            return Ok(authorModels);
+        }
+
+        [HttpGet]
+        [Route("openalex/authors/{authorId}/works")]
+        [SwaggerOperation($"Returns a list of scientific papers by a specific author")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<PublicationModel>))]
+        public async Task<IActionResult> ListPapersForAuthor([FromRoute] string authorId, [FromQuery] SearchModel model)
+        {
+            var publications = await _openAlexFacade.ListWorksAsync(model.Search, model.Page, model.PageSize);
+            var publicationModels = publications.Items.Select(_mapper.Map<PublicationModel>);
+            return Ok(publicationModels);
         }
     }
 }
