@@ -392,6 +392,7 @@ namespace Jogl.Server.Business
                 .Sort(SortKey.CreatedDate, false)
                 .GroupBy(ce => ce.FeedId, grp => grp.First())
                 .Page(page, pageSize)
+                .Sort(ce => ce.CreatedUTC, false)
                 .ToList();
 
             EnrichContentEntityDataWithFeedEntity(contentEntities);
@@ -410,10 +411,11 @@ namespace Jogl.Server.Business
                 .Query(ucer => ucer.UserId == currentUserId && ucer.FollowedUTC.HasValue && feedEntityIds.Contains(ucer.FeedId))
                 .ToList();
 
-            var userContentEntityIds = userContentEntityRecords.Select(ufr => ufr.FeedId).ToList();
+            var userContentEntityIds = userContentEntityRecords.Select(ufr => ufr.ContentEntityId).ToList();
             var comments = _commentRepository.Query(c => userContentEntityIds.Contains(c.ContentEntityId) && c.CreatedByUserId != currentUserId)
                 .Sort(SortKey.CreatedDate, false)
                 .GroupBy(c => c.ContentEntityId, grp => grp.First())
+                .Sort(c => c.CreatedUTC, false)
                 .Page(page, pageSize)
                 .ToList();
 

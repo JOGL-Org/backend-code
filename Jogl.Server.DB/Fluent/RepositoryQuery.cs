@@ -108,7 +108,8 @@ namespace Jogl.Server.DB
 
         public IBaseQuery<TOut> GroupBy<TGroup, TOut>(Expression<Func<T, TGroup>> groupBy, Expression<Func<IGrouping<TGroup, T>, TOut>> outExpr)
         {
-            var newQuery = _query.Group(groupBy, outExpr);
+            var newQuery = _query.Group(groupBy, outExpr)
+                .ReplaceRoot<TOut>("$_v");
 
             return new BaseQuery<TOut>(_configuration, _context, newQuery);
         }

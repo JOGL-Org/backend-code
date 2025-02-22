@@ -33,6 +33,12 @@ namespace Jogl.Server.DB
             return this;
         }
 
+        public IBaseQuery<T> Sort(Expression<Func<T, object>> sort, bool ascending = true)
+        {
+            _query = ascending ? _query.SortBy(sort) : _query.SortByDescending(sort);
+            return this;
+        }
+
         public List<T> ToList()
         {
             return _query.ToList();
