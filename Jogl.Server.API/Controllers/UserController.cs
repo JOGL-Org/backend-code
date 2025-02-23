@@ -1033,7 +1033,7 @@ namespace Jogl.Server.API.Controllers
         [HttpPost]
         [Route("onboarding")]
         [SwaggerOperation("Stores onboarding data for the current user")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding data was stored in the user profile"))]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding data was stored in the user profile")]
         public async Task<IActionResult> StoreOnboardingData([FromBody] OnboardingUpsertModel model)
         {
             var user = _userService.Get(CurrentUserId);
