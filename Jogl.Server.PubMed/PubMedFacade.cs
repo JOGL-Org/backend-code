@@ -46,7 +46,7 @@ namespace Jogl.Server.PubMed
 
             var response = await client.ExecuteGetAsync<PMIDResponse>(request);
 
-            if (response.Data != null && response.Data.Records.Count > 0)
+            if (response.Data != null && response.Data?.Records?.Count > 0)
             {
                 return response.Data.Records[0].PMID;
             }

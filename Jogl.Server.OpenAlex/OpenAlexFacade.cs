@@ -93,6 +93,7 @@ namespace Jogl.Server.OpenAlex
             request.AddQueryParameter("mailto", $"{_configuration["OpenAlex:Email"]}");
 
             var response = await client.ExecuteGetAsync<Work>(request);
+            response.Data.Id = response.Data.Id.Replace("https://openalex.org/", string.Empty);
             return response.Data;
         }
 
