@@ -608,6 +608,33 @@ namespace Jogl.Server.API.Mapping
               .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, dst, ctx) => { return FormatAuthors(src.MedlineCitation?.Article?.AuthorList?.Author, a => $"{a?.ForeName} {a?.LastName}"); }))
               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.PubmedData?.ArticleIdList?.ArticleId?.FirstOrDefault(id => id.IdType == "doi")?.Text; }));
 
+            CreateMap<OpenAlex.DTO.Author, AuthorModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName))
+                .ForMember(dst => dst.OrcidId, opt => opt.MapFrom((src, ctx, dst) => src.Orcid))
+                .ForMember(dst => dst.Institutions, opt => opt.MapFrom((src, ctx, dst) => src.LastKnownInstitutions?.Select(i => i.DisplayName).ToList()))
+                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()));
+
+            CreateMap<OpenAlex.DTO.Work, WorkModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
+                .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => src.Authorships?.Select(i => i.Author.DisplayName).ToList()))
+                .ForMember(dst => dst.Publication, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
+                .ForMember(dst => dst.Date, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate));
+
+            CreateMap<OpenAlex.DTO.Work, Paper>()
+               .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+               .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
+               .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => string.Join(',', src.Authorships?.Select(i => i.Author.DisplayName))))
+               .ForMember(dst => dst.Journal, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
+               .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate))
+               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+               .ForMember(dst => dst.ExternalSystem, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
+               .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
+               .ForMember(dst => dst.DefaultVisibility, opt => opt.MapFrom((src, ctx, dst) => { return FeedEntityVisibility.View; }))
+               .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, dst, ctx) => { return null == src.AbstractInvertedIndex ? "" : FormatOAWorkAbstract(src.AbstractInvertedIndex); }))
+               .ForMember(dst => dst.OpenAccessPdfUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.PrimaryLocation?.PdfUrl ?? src.BestOaLocation?.PdfUrl; }));
+
             //notifications
             CreateMap<Notification, NotificationModel>();
             CreateMap<NotificationData, NotificationDataModel>()
@@ -690,14 +717,6 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
                 .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
-
-            CreateMap<OpenAlex.DTO.Author, AuthorModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
-                .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName));
-
-            CreateMap<OpenAlex.DTO.Work, PublicationModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
-                .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

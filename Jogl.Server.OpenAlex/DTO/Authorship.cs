@@ -8,7 +8,7 @@ namespace Jogl.Server.OpenAlex.DTO
         public string AuthorPosition { get; set; }
 
         [JsonPropertyName("author")]
-        public Author Author { get; set; }
+        public AuthorMini Author { get; set; }
 
         [JsonPropertyName("institutions")]
         public List<Institution> Institutions { get; set; }

@@ -7,10 +7,16 @@ namespace Jogl.Server.OpenAlex.DTO
         [JsonPropertyName("count")]
         public int Count { get; set; }
 
-        [JsonPropertyName("perPage")]
+        [JsonPropertyName("db_response_time_ms")]
+        public int DbResponseTimeMs { get; set; }
+
+        [JsonPropertyName("page")]
+        public int Page { get; set; }
+
+        [JsonPropertyName("per_page")]
         public int PerPage { get; set; }
 
-        [JsonPropertyName("curson")]
-        public string Cursor { get; set; }
+        [JsonPropertyName("groups_count")]
+        public object GroupsCount { get; set; }
     }
 }

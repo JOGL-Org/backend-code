@@ -166,11 +166,22 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [Route("openalex/authors/{authorId}/works")]
         [SwaggerOperation($"Returns a list of scientific papers by a specific author")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<PublicationModel>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<WorkModel>))]
         public async Task<IActionResult> ListPapersForAuthor([FromRoute] string authorId, [FromQuery] SearchModel model)
         {
-            var publications = await _openAlexFacade.ListWorksAsync(model.Search, model.Page, model.PageSize);
-            var publicationModels = publications.Items.Select(_mapper.Map<PublicationModel>);
+            var publications = await _openAlexFacade.ListWorksForAuthorAsync(authorId, model.Page, model.PageSize);
+            var publicationModels = publications.Items.Select(_mapper.Map<WorkModel>);
+            return Ok(publicationModels);
+        }
+
+        [HttpGet]
+        [Route("openalex/works/byAuthor")]
+        [SwaggerOperation($"Returns a list of scientific papers for an author name")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<WorkModel>))]
+        public async Task<IActionResult> ListPapersForAuthorName([FromQuery] SearchModel model)
+        {
+            var publications = await _openAlexFacade.ListWorksForAuthorNameAsync(model.Search, model.Page, model.PageSize);
+            var publicationModels = publications.Items.Select(_mapper.Map<WorkModel>);
             return Ok(publicationModels);
         }
     }
