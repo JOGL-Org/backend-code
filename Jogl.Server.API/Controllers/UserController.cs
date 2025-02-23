@@ -1052,6 +1052,7 @@ namespace Jogl.Server.API.Controllers
             {
                 var openAlexPaper = await _openAlexFacade.GetWorkAsync(paperId);
                 var paper = _mapper.Map<Paper>(openAlexPaper);
+                paper.FeedId = CurrentUserId;
 
                 await InitCreationAsync(paper);
                 await _paperService.CreateAsync(paper);
