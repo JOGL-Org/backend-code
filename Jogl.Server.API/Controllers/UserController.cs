@@ -1029,5 +1029,36 @@ namespace Jogl.Server.API.Controllers
             var userModels = users.Select(_mapper.Map<UserMiniModel>);
             return Ok(userModels);
         }
+
+        [HttpPost]
+        [Route("onboarding")]
+        [SwaggerOperation("Stores onboarding data for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding data was stored in the user profile")]
+        public async Task<IActionResult> StoreOnboardingData([FromBody] OnboardingUpsertModel model)
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user == null)
+                return NotFound();
+
+            if (model.Experience != null)
+                user.Experience = model.Experience.Select(e => _mapper.Map<UserExperience>(e)).ToList();
+            if (model.Experience != null)
+                user.Education = model.Education.Select(e => _mapper.Map<UserEducation>(e)).ToList();
+
+            await InitUpdateAsync(user);
+            await _userService.UpdateAsync(user);
+
+            foreach (var paperId in model.PaperIds)
+            {
+                var openAlexPaper = await _openAlexFacade.GetWorkAsync(paperId);
+                var paper = _mapper.Map<Paper>(openAlexPaper);
+                paper.FeedId = CurrentUserId;
+
+                await InitCreationAsync(paper);
+                await _paperService.CreateAsync(paper);
+            }
+
+            return Ok();
+        }
     }
 }

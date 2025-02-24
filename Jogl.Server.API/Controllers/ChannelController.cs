@@ -21,15 +21,17 @@ namespace Jogl.Server.API.Controllers
         private readonly IDocumentService _documentService;
         private readonly IMembershipService _membershipService;
         private readonly IUserService _userService;
+        private readonly IContentService _contentService;
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IConfiguration _configuration;
 
-        public ChannelController(IChannelService channelService, IDocumentService documentService, IMembershipService membershipService, IUserService userService, ICommunityEntityService communityEntityService, IConfiguration configuration, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public ChannelController(IChannelService channelService, IDocumentService documentService, IMembershipService membershipService, IUserService userService, IContentService contentService, ICommunityEntityService communityEntityService, IConfiguration configuration, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _channelService = channelService;
             _documentService = documentService;
             _membershipService = membershipService;
             _userService = userService;
+            _contentService = contentService;
             _communityEntityService = communityEntityService;
             _configuration = configuration;
         }

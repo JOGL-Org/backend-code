@@ -4,6 +4,6 @@ namespace Jogl.Server.DB
 {
     public interface IEventRepository : IRepository<Event>
     {
-        IFluentQuery<Event> QueryWithAttendanceData(string searchValue, string currentUserId);
+        IRepositoryQuery<Event> QueryWithAttendanceData(string searchValue, string currentUserId);
     }
 }

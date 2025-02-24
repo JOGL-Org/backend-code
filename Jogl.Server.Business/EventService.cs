@@ -183,6 +183,7 @@ namespace Jogl.Server.Business
                 .Sort(sortKey, ascending)
                 .ToList();
 
+            //TODO move to db-side
             var eventAttendances = _eventAttendanceRepository
                 .Query(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId))
                 .ToList();
@@ -202,13 +203,22 @@ namespace Jogl.Server.Business
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            return _eventRepository
+            var events=_eventRepository
                     .QueryWithAttendanceData(null, currentUserId)
                     .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
                     .Filter(e => entityIds.Contains(e.CommunityEntityId))
                     .WithFeedRecordData()
                     .Filter(e => e.LastOpenedUTC == null && e.Start > DateTime.UtcNow)
-                    .Any();
+                    .ToList();
+
+            //TODO move to db-side
+            var eventAttendances = _eventAttendanceRepository
+                .Query(a => events.Select(e => e.Id.ToString()).ToList().Contains(a.EventId))
+                .ToList();
+
+            var filteredEvents = GetFilteredEvents(events, eventAttendances, currentUserMemberships, currentUserId);
+
+            return filteredEvents.Any();
         }
 
         public long CountForNode(string currentUserId, string nodeId, string search)

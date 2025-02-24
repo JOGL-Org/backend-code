@@ -54,7 +54,7 @@ namespace Jogl.Server.API.Model
         public List<UserExperienceModel> Experience { get; set; }
 
         [JsonPropertyName("education")]
-        public List<UserEducation> Education { get; set; }
+        public List<UserEducationModel> Education { get; set; }
 
         [JsonPropertyName("spaces")]
         public List<CommunityEntityMiniModel> Spaces { get; set; }

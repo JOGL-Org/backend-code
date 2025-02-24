@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.OpenAlex.DTO
 {
-    public class Ids
+    public class WorkIds
     {
         [JsonPropertyName("mag")]
         public string MAG { get; set; }

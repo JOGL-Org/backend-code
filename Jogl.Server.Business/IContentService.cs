@@ -18,6 +18,7 @@ namespace Jogl.Server.Business
         List<DiscussionItem> ListContentEntitiesForNode(string currentUserId, string nodeId, int page, int pageSize);
         List<DiscussionItem> ListThreadsForNode(string currentUserId, string nodeId, int page, int pageSize);
         List<DiscussionItem> ListMentionsForNode(string currentUserId, string nodeId, int page, int pageSize);
+        bool ListForNodeHasNewContent(string currentUserId, string nodeId);
         Task UpdateAsync(ContentEntity contentEntity);
         Task DeleteAsync(string id);
 
@@ -50,6 +51,7 @@ namespace Jogl.Server.Business
         Task SetContentEntitiesReadAsync(List<string> contentEntities, string feedId, string userId);
 
         bool MentionEveryone(string text);
+        bool HasNewContent(string currentUserId, string feedId);
 
         Draft GetDraft(string entityId, string userId);
         Task SetDraftAsync(string entityId, string userId, string text);

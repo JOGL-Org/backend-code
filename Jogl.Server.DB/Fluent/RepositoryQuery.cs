@@ -8,23 +8,16 @@ using System.Linq.Expressions;
 
 namespace Jogl.Server.DB
 {
-    public class FluentQuery<T> : IFluentQuery<T> where T : Entity
+    public class RepositoryQuery<T> : BaseQuery<T>, IRepositoryQuery<T> where T : Entity
     {
         protected const string INDEX_SEARCH = "default";
         protected const string INDEX_AUTOCOMPLETE = "autocomplete_default";
 
-        private readonly IConfiguration _configuration;
         private readonly IRepository<T> _repository;
-        private readonly IOperationContext _context;
 
-        private IAggregateFluent<T> _query;
-
-        public FluentQuery(IConfiguration configuration, IRepository<T> repository, IOperationContext context, IAggregateFluent<T> query)
+        public RepositoryQuery(IConfiguration configuration, IRepository<T> repository, IOperationContext context, IAggregateFluent<T> query) : base(configuration, context, query)
         {
-            _configuration = configuration;
-            _context = context;
             _repository = repository;
-            _query = query;
         }
 
         private class EntityWithUFRs
@@ -32,7 +25,7 @@ namespace Jogl.Server.DB
             public List<UserFeedRecord> UserFeedRecords { get; set; }
         }
 
-        public IFluentQuery<T> WithFeedRecordData()
+        public IRepositoryQuery<T> WithFeedRecordData()
         {
             var currentUserId = _context.UserId;
             var userFeedRecordCollection = _repository.GetCollection<UserFeedRecord>("userFeedRecords");
@@ -63,7 +56,7 @@ namespace Jogl.Server.DB
             return this;
         }
 
-        public IFluentQuery<T> Filter(Expression<Func<T, bool>> filter)
+        public new IRepositoryQuery<T> Filter(Expression<Func<T, bool>> filter)
         {
             if (filter != null)
                 _query = _query.Match(filter);
@@ -71,7 +64,7 @@ namespace Jogl.Server.DB
             return this;
         }
 
-        public IFluentQuery<T> FilterFeedEntities(string currentUserId, IEnumerable<Membership> currentUserMemberships, FeedEntityFilter? filter = null)
+        public IRepositoryQuery<T> FilterFeedEntities(string currentUserId, IEnumerable<Membership> currentUserMemberships, FeedEntityFilter? filter = null)
         {
             switch (filter)
             {
@@ -103,7 +96,7 @@ namespace Jogl.Server.DB
             return this;
         }
 
-        public IFluentQuery<T> Sort(SortKey sortKey, bool ascending = true)
+        public IRepositoryQuery<T> Sort(SortKey sortKey, bool ascending = true)
         {
             var sort = _repository.GetSort(sortKey);
             if (sort == null)
@@ -113,15 +106,18 @@ namespace Jogl.Server.DB
             return this;
         }
 
-        public IFluentQuery<T> Page(int page, int pageSize)
+        public IBaseQuery<TOut> GroupBy<TGroup, TOut>(Expression<Func<T, TGroup>> groupBy, Expression<Func<IGrouping<TGroup, T>, TOut>> outExpr)
+        {
+            var newQuery = _query.Group(groupBy, outExpr)
+                .ReplaceRoot<TOut>("$_v");
+
+            return new BaseQuery<TOut>(_configuration, _context, newQuery);
+        }
+
+        public new IRepositoryQuery<T> Page(int page, int pageSize)
         {
             _query = _query.Skip((page - 1) * pageSize).Limit(pageSize);
             return this;
-        }
-
-        public List<T> ToList()
-        {
-            return _query.ToList();
         }
 
         public List<TNew> ToList<TNew>(Expression<Func<T, TNew>> selector)
@@ -132,14 +128,14 @@ namespace Jogl.Server.DB
             return q.ToList();
         }
 
-        public long Count()
+        IBaseQuery<T> IBaseQuery<T>.Filter(Expression<Func<T, bool>> filter)
         {
-            return _query.Count().SingleOrDefault()?.Count ?? 0;
+            return Filter(filter);
         }
 
-        public bool Any()
+        IBaseQuery<T> IBaseQuery<T>.Page(int page, int pageSize)
         {
-            return _query.Any();
+            return Page(page, pageSize);
         }
     }
 }

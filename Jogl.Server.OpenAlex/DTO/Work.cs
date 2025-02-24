@@ -23,7 +23,7 @@ namespace Jogl.Server.OpenAlex.DTO
         public string PublicationDate { get; set; }
 
         [JsonPropertyName("ids")]
-        public Ids Ids { get; set; }
+        public WorkIds Ids { get; set; }
 
         [JsonPropertyName("language")]
         public string Language { get; set; }

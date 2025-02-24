@@ -7,7 +7,7 @@ namespace Jogl.Server.DB
 {
     public class UserContentEntityRecordRepository : BaseRepository<UserContentEntityRecord>, IUserContentEntityRecordRepository
     {
-        public UserContentEntityRecordRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public UserContentEntityRecordRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
@@ -18,6 +18,8 @@ namespace Jogl.Server.DB
             var filter = Builders<UserContentEntityRecord>.Filter.Eq(r => r.UserId, userId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.ContentEntityId, contentEntityId) & Builders<UserContentEntityRecord>.Filter.Eq(r => r.FeedId, feedId);
             var update = Builders<UserContentEntityRecord>.Update.Set(r => r.LastReadUTC, readUTC)
                                                                  .Set(r => r.UpdatedUTC, readUTC)
+                                                                 .Set(r => r.UpdatedByUserId, userId)
+                                                                 .Set(r => r.Unread, false)
                                                                  .SetOnInsert(r => r.FeedId, feedId)
                                                                  .SetOnInsert(r => r.ContentEntityId, contentEntityId)
                                                                  .SetOnInsert(r => r.UserId, userId)
@@ -33,6 +35,8 @@ namespace Jogl.Server.DB
                                                                  .Set(r => r.FollowedUTC, writeUTC)
                                                                  .Set(r => r.LastReadUTC, writeUTC)
                                                                  .Set(r => r.UpdatedUTC, writeUTC)
+                                                                 .Set(r => r.UpdatedByUserId, userId)
+                                                                 .Set(r => r.Unread, false)
                                                                  .SetOnInsert(r => r.FeedId, feedId)
                                                                  .SetOnInsert(r => r.ContentEntityId, contentEntityId)
                                                                  .SetOnInsert(r => r.UserId, userId)
@@ -47,6 +51,7 @@ namespace Jogl.Server.DB
             var update = Builders<UserContentEntityRecord>.Update.Set(r => r.LastMentionUTC, mentionUTC)
                                                                  .Set(r => r.FollowedUTC, mentionUTC)
                                                                  .Set(r => r.UpdatedUTC, mentionUTC)
+                                                                 .Set(r => r.UpdatedByUserId, userId)
                                                                  .SetOnInsert(r => r.FeedId, feedId)
                                                                  .SetOnInsert(r => r.ContentEntityId, contentEntityId)
                                                                  .SetOnInsert(r => r.UserId, userId)
@@ -57,7 +62,9 @@ namespace Jogl.Server.DB
 
         protected override UpdateDefinition<UserContentEntityRecord> GetDefaultUpdateDefinition(UserContentEntityRecord updatedEntity)
         {
-            return Builders<UserContentEntityRecord>.Update.Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
+            return Builders<UserContentEntityRecord>.Update.Set(r => r.Unread, updatedEntity.Unread)
+                                                           .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
+                                                           .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId)
                                                            .Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }
 

@@ -275,5 +275,39 @@ namespace Jogl.Server.API.Controllers
             var membershipId = await _membershipService.CreateAsync(membership);
             return Ok(membershipId);
         }
+
+        [HttpPost]
+        [Route("invite/mass")]
+        [SwaggerOperation("Mass invite a batch of users to a set of community entities")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The users were successfully invited")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No entity was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The currently logged-in user does not have the rights to invite people to the specified entity")]
+        public async Task<IActionResult> InviteUsersMass([FromBody] InvitationMassUpsertModel model)
+        {
+            //var entity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            //if (entity == null)
+            //    return NotFound();
+
+            //if (!entity.Permissions.Contains(Permission.Manage))
+            //    return Forbid();
+
+            //var invitations = invitationModels.Select(i => new Invitation
+            //{
+            //    CommunityEntityId = id,
+            //    CommunityEntityType = entity.Type,
+            //    Entity = entity,
+            //    Type = InvitationType.Invitation,
+            //    InviteeEmail = i.Email,
+            //    InviteeUserId = i.UserId,
+            //    AccessLevel = i.AccessLevel,
+            //    Status = InvitationStatus.Pending,
+            //}).ToList();
+
+            //await InitCreationAsync(invitations);
+            //var redirectUrl = $"{_configuration["App:URL"]}/signup";
+
+            //await _invitationService.CreateMultipleAsync(invitations, redirectUrl);
+            return Ok();
+        }
     }
 }

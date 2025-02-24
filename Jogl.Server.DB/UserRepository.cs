@@ -119,7 +119,7 @@ namespace Jogl.Server.DB
                 await coll.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(INDEX_AUTOCOMPLETE, new BsonDocument(new BsonDocument { { "storedSource", true }, { "mappings", new BsonDocument { { "dynamic", false }, { "fields", new BsonDocument { { nameof(User.FullName), new BsonDocument { { "tokenization", "nGram" }, { "type", "autocomplete" } } } } } } } })));
         }
 
-        public IFluentQuery<User> QueryWithMembershipData(string searchValue, List<string> communityEntityIds)
+        public IRepositoryQuery<User> QueryWithMembershipData(string searchValue, List<string> communityEntityIds)
         {
             var q = GetQuery(searchValue);
 
@@ -142,7 +142,7 @@ namespace Jogl.Server.DB
                      @as: e => e.Memberships);
 
 
-            return new FluentQuery<User>(_configuration, this, _context, q);
+            return new RepositoryQuery<User>(_configuration, this, _context, q);
         }
     }
 }

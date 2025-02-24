@@ -109,6 +109,32 @@ namespace Jogl.Server.Business
             return filteredChannels;
         }
 
+        public bool ListForNodeHasNewContent(string currentUserId, string nodeId)
+        {
+            var entityIds = GetFeedEntityIdsForNode(nodeId);
+
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
+            var channelIds = _channelRepository.Query(c => entityIds.Contains(c.CommunityEntityId))
+                .Filter(c => currentUserMemberships.Select(m => m.CommunityEntityId).Contains(c.Id.ToString()))
+                .ToList(c => c.Id.ToString());
+
+            var unreadUFRs = _userFeedRecordRepository
+                  .Query(ufr => ufr.UserId == currentUserId)
+                  .Filter(ufr => channelIds.Contains(ufr.FeedId))
+                  .Filter(ufr => ufr.FollowedUTC.HasValue)
+                  .Filter(ufr => ufr.Unread)
+                  .ToList();
+
+            var unreadUCERs = _userContentEntityRecordRepository
+                 .Query(ucer => ucer.UserId == currentUserId)
+                 .Filter(ucer => channelIds.Contains(ucer.FeedId))
+                 .Filter(ucer => ucer.FollowedUTC.HasValue)
+                 .Filter(ucer => ucer.Unread)
+                 .ToList();
+
+            return unreadUFRs.Any() || unreadUCERs.Any();
+        }
+
         public async Task UpdateAsync(Channel channel)
         {
             var existingChannel = _channelRepository.Get(channel.Id.ToString());

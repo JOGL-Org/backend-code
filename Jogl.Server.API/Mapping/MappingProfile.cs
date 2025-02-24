@@ -285,10 +285,36 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<UserUpdateModel, User>();
 
-            CreateMap<UserExperience, UserExperienceModel>();
-            CreateMap<UserExperienceModel, UserExperience>();
-            CreateMap<UserEducation, UserEducationModel>();
-            CreateMap<UserEducationModel, UserEducation>();
+            CreateMap<UserExperience, UserExperienceModel>()
+               .ForMember(dst => dst.Company, opt => opt.MapFrom((src, dst, ctx) => src.Company))
+               .ForMember(dst => dst.Position, opt => opt.MapFrom((src, dst, ctx) => src.Position))
+               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Description))
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
+               .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
+
+            CreateMap<UserExperienceModel, UserExperience>()
+               .ForMember(dst => dst.Company, opt => opt.MapFrom((src, dst, ctx) => src.Company))
+               .ForMember(dst => dst.Position, opt => opt.MapFrom((src, dst, ctx) => src.Position))
+               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Description))
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
+               .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
+
+            CreateMap<UserEducation, UserEducationModel>()
+               .ForMember(dst => dst.Institution, opt => opt.MapFrom((src, dst, ctx) => src.School))
+               .ForMember(dst => dst.Program, opt => opt.MapFrom((src, dst, ctx) => src.Description))
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
+               .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
+
+            CreateMap<UserEducationModel, UserEducation>()
+               .ForMember(dst => dst.School, opt => opt.MapFrom((src, dst, ctx) => src.Institution))
+               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Program))
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
+               .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
+
             CreateMap<UserExternalAuth, UserExternalAuthModel>();
             CreateMap<UserExternalAuthModel, UserExternalAuth>();
             CreateMap<UserNotificationSettings, UserNotificationSettingsModel>();
@@ -608,6 +634,34 @@ namespace Jogl.Server.API.Mapping
               .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, dst, ctx) => { return FormatAuthors(src.MedlineCitation?.Article?.AuthorList?.Author, a => $"{a?.ForeName} {a?.LastName}"); }))
               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.PubmedData?.ArticleIdList?.ArticleId?.FirstOrDefault(id => id.IdType == "doi")?.Text; }));
 
+            CreateMap<OpenAlex.DTO.Author, AuthorModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName))
+                .ForMember(dst => dst.OrcidId, opt => opt.MapFrom((src, ctx, dst) => src.Orcid))
+                .ForMember(dst => dst.Institutions, opt => opt.MapFrom((src, ctx, dst) => src.LastKnownInstitutions?.Select(i => i.DisplayName).ToList()))
+                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()));
+
+            CreateMap<OpenAlex.DTO.Work, WorkModel>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
+                .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => src.Authorships?.Select(i => i.Author.DisplayName).ToList()))
+                .ForMember(dst => dst.Publication, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
+                .ForMember(dst => dst.Date, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate));
+
+            CreateMap<OpenAlex.DTO.Work, Paper>()
+               .ForMember(dst => dst.Id, opt => opt.Ignore())
+               .ForMember(dst => dst.Type, opt => opt.Ignore())
+               .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
+               .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => string.Join(',', src.Authorships?.Select(i => i.Author.DisplayName))))
+               .ForMember(dst => dst.Journal, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
+               .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate))
+               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Doi.Replace("https://doi.org/", string.Empty)))
+               .ForMember(dst => dst.ExternalSystem, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
+               .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
+               .ForMember(dst => dst.DefaultVisibility, opt => opt.MapFrom((src, ctx, dst) => { return FeedEntityVisibility.View; }))
+               .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, dst, ctx) => { return null == src.AbstractInvertedIndex ? "" : FormatOAWorkAbstract(src.AbstractInvertedIndex); }))
+               .ForMember(dst => dst.OpenAccessPdfUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.PrimaryLocation?.PdfUrl ?? src.BestOaLocation?.PdfUrl; }));
+
             //notifications
             CreateMap<Notification, NotificationModel>();
             CreateMap<NotificationData, NotificationDataModel>()
@@ -678,18 +732,18 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.Experience, opt => opt.MapFrom(src => src.Experience))
                 .ForMember(dst => dst.Education, opt => opt.MapFrom(src => src.Education));
 
-            CreateMap<Lix.DTO.Education, EducationModel>()
-                .ForMember(dst => dst.Organization, opt => opt.MapFrom(src => src.InstitutionName))
+            CreateMap<Lix.DTO.Education, UserEducationModel>()
+                .ForMember(dst => dst.Institution, opt => opt.MapFrom(src => src.InstitutionName))
                 .ForMember(dst => dst.Program, opt => opt.MapFrom(src => src.FieldOfStudy))
-                .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
-                .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
+                .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
+                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded));
 
-            CreateMap<Lix.DTO.Experience, ExperienceModel>()
-                .ForMember(dst => dst.Organization, opt => opt.MapFrom((src, ctx, dst) => src.Organisation?.Name))
-                .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Title))
+            CreateMap<Lix.DTO.Experience, UserExperienceModel>()
+                .ForMember(dst => dst.Company, opt => opt.MapFrom((src, ctx, dst) => src.Organisation?.Name))
+                .ForMember(dst => dst.Position, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
-                .ForMember(dst => dst.From, opt => opt.MapFrom(src => src.DateStarted))
-                .ForMember(dst => dst.To, opt => opt.MapFrom(src => src.DateEnded));
+                .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
+                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)
