@@ -17,6 +17,30 @@ var contentEntityRepository = new ContentEntityRepository(config);
 var commentRepository = new CommentRepository(config);
 var membershipRepo = new MembershipRepository(config);
 var feedRepository = new FeedRepository(config);
+var documentRepository = new DocumentRepository(config);
+
+var feeds = feedRepository.List(f => true);
+foreach (var ufr in userFeedRecordRepository.List(u => !u.Deleted))
+{
+    var feed = feeds.FirstOrDefault(f => f.Id.ToString() == ufr.FeedId);
+    if (feed == null)
+    {
+        await userFeedRecordRepository.DeleteAsync(ufr);
+        continue;
+    }
+    else
+    {
+
+
+
+    }
+
+    if (feed.Deleted)
+    {
+        await userFeedRecordRepository.DeleteAsync(ufr);
+        continue;
+    }
+}
 
 Console.WriteLine("Done");
 Console.ReadLine();
