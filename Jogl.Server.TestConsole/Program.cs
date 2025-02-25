@@ -19,8 +19,32 @@ var commentRepository = new CommentRepository(config);
 var membershipRepo = new MembershipRepository(config);
 var feedRepository = new FeedRepository(config);
 var documentRepository = new DocumentRepository(config);
+var workspaceRepository = new WorkspaceRepository(config);
 
 var feeds = feedRepository.List(f => true);
+var workspaces = workspaceRepository.List(u => true);
+
+foreach (var feed in feeds)
+{
+    if (feed.Type != Jogl.Server.Data.FeedType.Workspace)
+        continue;
+
+    var workspace = workspaces.FirstOrDefault(f => f.Id == feed.Id);
+    if (workspace == null)
+    {
+        await feedRepository.DeleteAsync(feed);
+        continue;
+    }
+
+    if (workspace.Deleted)
+    {
+        await feedRepository.DeleteAsync(feed);
+        continue;
+    }
+}
+
+feeds = feedRepository.List(f => true);
+
 foreach (var ufr in userFeedRecordRepository.List(u => !u.Deleted))
 {
     var feed = feeds.FirstOrDefault(f => f.Id.ToString() == ufr.FeedId);
