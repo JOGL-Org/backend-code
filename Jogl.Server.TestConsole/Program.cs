@@ -2,6 +2,7 @@
 using Jogl.Server.Configuration;
 using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -28,16 +29,26 @@ foreach (var ufr in userFeedRecordRepository.List(u => !u.Deleted))
         await userFeedRecordRepository.DeleteAsync(ufr);
         continue;
     }
-    else
-    {
-
-
-
-    }
 
     if (feed.Deleted)
     {
         await userFeedRecordRepository.DeleteAsync(ufr);
+        continue;
+    }
+}
+
+foreach (var ucer in userContentEntityRecordRepository.List(u => !u.Deleted))
+{
+    var feed = feeds.FirstOrDefault(f => f.Id.ToString() == ucer.FeedId);
+    if (feed == null)
+    {
+        await userContentEntityRecordRepository.DeleteAsync(ucer);
+        continue;
+    }
+
+    if (feed.Deleted)
+    {
+        await userContentEntityRecordRepository.DeleteAsync(ucer);
         continue;
     }
 }
