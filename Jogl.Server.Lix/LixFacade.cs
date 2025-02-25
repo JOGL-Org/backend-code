@@ -32,10 +32,10 @@ namespace Jogl.Server.Lix
                 request.AddParameter("profile_link", linkedInUrl, ParameterType.QueryString, true);
                 request.AddHeader("Authorization", _configuration["Lix:ApiKey"]);
 
-                var json = File.ReadAllText("bin/Debug/net8.0/data.txt");
-                return JsonSerializer.Deserialize<Profile>(json);
-                //var response =await client.ExecuteGetAsync<Profile>(request);
-                //return response.Data;
+                //var json = File.ReadAllText("bin/Debug/net8.0/data.txt");
+                //return JsonSerializer.Deserialize<Profile>(json);
+                var response =await client.ExecuteGetAsync<Profile>(request);
+                return response.Data;
             }
             catch (Exception ex)
             {
