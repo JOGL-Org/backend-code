@@ -51,10 +51,13 @@ namespace Jogl.Server.DB
         Task UpdateLastActivityAsync(string id, DateTime lastActivityUTC, string updatedByUserId);
         Task UpdateLastActivityAsync(Entity entity);
         Task DeleteAsync(string entityId);
+        Task UndeleteAsync(string entityId);
         Task DeleteAsync(T entity);
+        Task UndeleteAsync(T entity);
         Task DeleteAsync(List<string> entityIds);
         Task DeleteAsync(List<T> entities);
         Task DeleteAsync(Expression<Func<T, bool>> filter);
+        Task UndeleteAsync(Expression<Func<T, bool>> filter);
 
         public IRepositoryQuery<T> Query(Expression<Func<T, bool>> filter = null);
         public IRepositoryQuery<T> Query(string searchValue);

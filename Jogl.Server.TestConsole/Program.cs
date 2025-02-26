@@ -16,10 +16,12 @@ var userContentEntityRecordRepository = new UserContentEntityRecordRepository(co
 var mentionRepository = new MentionRepository(config);
 var contentEntityRepository = new ContentEntityRepository(config);
 var commentRepository = new CommentRepository(config);
-var membershipRepo = new MembershipRepository(config);
+var membershipRepository = new MembershipRepository(config);
+var invitationRepository = new InvitationRepository(config);
 var feedRepository = new FeedRepository(config);
 var documentRepository = new DocumentRepository(config);
 var workspaceRepository = new WorkspaceRepository(config);
+var userRepository = new UserRepository(config);
 
 var feeds = feedRepository.List(f => true);
 var workspaces = workspaceRepository.List(u => true);

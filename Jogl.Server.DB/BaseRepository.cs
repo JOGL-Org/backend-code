@@ -438,16 +438,33 @@ namespace Jogl.Server.DB
             await coll.UpdateOneAsync(e => e.Id == ObjectId.Parse(entityId), Builders<T>.Update.Set(e => e.Deleted, true));
         }
 
+        public async Task UndeleteAsync(string entityId)
+        {
+            var coll = GetCollection<T>();
+            await coll.UpdateOneAsync(e => e.Id == ObjectId.Parse(entityId), Builders<T>.Update.Set(e => e.Deleted, false));
+        }
+
         public async Task DeleteAsync(T entity)
         {
             var coll = GetCollection<T>();
             await coll.UpdateOneAsync(e => e.Id == entity.Id, Builders<T>.Update.Set(e => e.Deleted, true));
+        }
+        public async Task UndeleteAsync(T entity)
+        {
+            var coll = GetCollection<T>();
+            await coll.UpdateOneAsync(e => e.Id == entity.Id, Builders<T>.Update.Set(e => e.Deleted, false));
         }
 
         public async Task DeleteAsync(FilterDefinition<T> filter)
         {
             var coll = GetCollection<T>();
             await coll.UpdateOneAsync(filter, Builders<T>.Update.Set(e => e.Deleted, true));
+        }
+
+        public async Task UndeleteAsync(FilterDefinition<T> filter)
+        {
+            var coll = GetCollection<T>();
+            await coll.UpdateOneAsync(filter, Builders<T>.Update.Set(e => e.Deleted, false));
         }
 
         public async Task DeleteAsync(List<string> entityIds)
@@ -474,6 +491,12 @@ namespace Jogl.Server.DB
         {
             var dbFilter = Builders<T>.Filter.Where(filter);
             await DeleteAsync(dbFilter);
+        }
+
+        public async Task UndeleteAsync(Expression<Func<T, bool>> filter)
+        {
+            var dbFilter = Builders<T>.Filter.Where(filter);
+            await UndeleteAsync(dbFilter);
         }
 
         public virtual async Task EnsureExistsAsync()

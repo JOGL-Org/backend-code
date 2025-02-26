@@ -1859,8 +1859,40 @@ namespace Jogl.Server.Business
             await _commentRepository.DeleteAsync(c => c.FeedId == id && !c.Deleted);
             await _mentionRepository.DeleteAsync(m => m.OriginFeedId == id && !m.Deleted);
             await _reactionRepository.DeleteAsync(r => r.FeedId == id && !r.Deleted);
-            //TODO await _feedIntegrationRepository.DeleteAsync(i => i.FeedId == id && !i.Deleted);
             await _feedRepository.DeleteAsync(id);
+        }
+
+        protected async Task UndeleteFeedAsync(string id)
+        {
+            //delete event feeds
+            foreach (var ev in _eventRepository.List(c => c.CommunityEntityId == id))
+            {
+                await UndeleteFeedAsync(ev.Id.ToString());
+            }
+
+            //delete document feeds
+            foreach (var d in _documentRepository.List(d => d.EntityId == id))
+            {
+                await UndeleteFeedAsync(d.Id.ToString());
+            }
+
+            //delete need feeds
+            foreach (var n in _needRepository.List(n => n.EntityId == id))
+            {
+                await UndeleteFeedAsync(n.Id.ToString());
+            }
+
+            await _userFeedRecordRepository.UndeleteAsync(ufr => ufr.FeedId == id && !ufr.Deleted);
+            await _userContentEntityRecordRepository.UndeleteAsync(ucer => ucer.FeedId == id && !ucer.Deleted);
+            await _needRepository.UndeleteAsync(n => n.EntityId == id && !n.Deleted);
+            await _documentRepository.UndeleteAsync(d => d.FeedId == id && !d.Deleted);
+            await _eventRepository.UndeleteAsync(e => e.CommunityEntityId == id && !e.Deleted);
+
+            await _contentEntityRepository.UndeleteAsync(ce => ce.FeedId == id && !ce.Deleted);
+            await _commentRepository.UndeleteAsync(c => c.FeedId == id && !c.Deleted);
+            await _mentionRepository.UndeleteAsync(m => m.OriginFeedId == id && !m.Deleted);
+            await _reactionRepository.UndeleteAsync(r => r.FeedId == id && !r.Deleted);
+            await _feedRepository.UndeleteAsync(id);
         }
 
         protected async Task DeleteChannel(string id)
