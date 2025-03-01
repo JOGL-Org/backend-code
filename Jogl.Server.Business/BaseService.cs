@@ -154,13 +154,7 @@ namespace Jogl.Server.Business
                     if (membership != null)
                         return false;
 
-                    switch (entity.Type)
-                    {
-                        case CommunityEntityType.Node:
-                            return true;
-                        default:
-                            return relations.Any(r => r.SourceCommunityEntityId == entity.Id.ToString() && memberships.Any(m => m.CommunityEntityId == r.TargetCommunityEntityId));
-                    }
+                    return true;
                 default:
 
                     return false;
