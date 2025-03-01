@@ -417,6 +417,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(membershipId);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/request")]
         [SwaggerOperation("Creates a request to join an entity on behalf of the currently logged in user")]

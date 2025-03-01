@@ -136,6 +136,24 @@ namespace Jogl.Server.Business
                     if (entity.JoiningRestrictionLevel != JoiningRestrictionLevel.Open)
                         return false;
 
+                    if (membership != null)
+                        return false;
+
+                    switch (entity.Type)
+                    {
+                        case CommunityEntityType.Node:
+                            return true;
+                        default:
+                            return relations.Any(r => r.SourceCommunityEntityId == entity.Id.ToString() && memberships.Any(m => m.CommunityEntityId == r.TargetCommunityEntityId));
+                    }
+
+                case Permission.Request:
+                    if (entity.JoiningRestrictionLevel != JoiningRestrictionLevel.Request)
+                        return false;
+
+                    if (membership != null)
+                        return false;
+
                     switch (entity.Type)
                     {
                         case CommunityEntityType.Node:
