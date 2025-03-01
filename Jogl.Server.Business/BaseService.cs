@@ -1131,6 +1131,14 @@ namespace Jogl.Server.Business
             }
         }
 
+        protected void EnrichCommunityEntitiesWithInvitationData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Invitation> currentUserInvitations, string userId)
+        {
+            foreach (var ce in communityEntities)
+            {
+                ce.Invitation = currentUserInvitations.SingleOrDefault(i => i.CommunityEntityId == ce.Id.ToString() && i.InviteeUserId == userId);
+            }
+        }
+
         protected void EnrichCFPWithMembershipData(IEnumerable<CallForProposal> callsForProposals, string userId = null)
         {
             var communityEntityMemberships = _membershipRepository.ListForCommunityEntities(callsForProposals.Select(c => c.Id.ToString()));

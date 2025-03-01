@@ -106,7 +106,6 @@ namespace Jogl.Server.API.Controllers
             {
                 var entityMiniModel = _mapper.Map<TTargetMiniModel>(entity);
                 entityMiniModel.UserAccessLevel = "visitor";
-                entityMiniModel.UserJoiningRestrictionLevel = "forbidden";
                 return Ok(entityMiniModel);
             }
 
@@ -124,13 +123,11 @@ namespace Jogl.Server.API.Controllers
             {
                 var entityMiniModel = _mapper.Map<TTargetMiniModel>(entity);
                 entityMiniModel.UserAccessLevel = _accessService.GetUserAccessLevel(membership, invitation);
-                entityMiniModel.UserJoiningRestrictionLevel = _accessService.GetUserJoiningRestrictionLevel(membership, CurrentUserId, entity)?.ToString()?.ToLower() ?? "forbidden";
                 return Ok(entityMiniModel);
             }
 
             var entityModel = _mapper.Map<TTargetModel>(entity);
             entityModel.UserAccessLevel = _accessService.GetUserAccessLevel(membership, invitation);
-            entityModel.UserJoiningRestrictionLevel = _accessService.GetUserJoiningRestrictionLevel(membership, CurrentUserId, entity)?.ToString()?.ToLower() ?? "forbidden";
 
             return Ok(entityModel);
         }

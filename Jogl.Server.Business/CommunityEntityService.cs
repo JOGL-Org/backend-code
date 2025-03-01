@@ -40,8 +40,9 @@ namespace Jogl.Server.Business
         public List<CommunityEntity> List(string id, string currentUserId, Permission? permission, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)
         {
             var feed = _feedRepository.Get(id);
-            var allRelations = _relationRepository.List(r => !r.Deleted);
-            var currentUserMemberships = _membershipRepository.List(m => m.UserId == currentUserId && !m.Deleted);
+            var allRelations = _relationRepository.Query(r => true).ToList();
+            var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
+            var currentUserInvitations = _invitationRepository.Query(m => m.InviteeUserId == currentUserId).ToList();
 
             switch (feed?.Type)
             {
@@ -83,6 +84,7 @@ namespace Jogl.Server.Business
                         res.AddRange(filteredNodes);
                         res.AddRange(filteredCommunities);
                         EnrichCommunityEntitiesWithMembershipData(res, currentUserId);
+                        EnrichCommunityEntitiesWithInvitationData(res, currentUserInvitations, currentUserId);
 
                         return GetPage(res, page, pageSize);
                     }

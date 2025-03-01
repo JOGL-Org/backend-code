@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data.Util;
+﻿using Jogl.Server.Data.Enum;
+using Jogl.Server.Data.Util;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Jogl.Server.Data
@@ -110,5 +111,8 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public int Level { get; set; }
+
+        [BsonIgnore]
+        public Invitation Invitation { get; set; }
     }
 }

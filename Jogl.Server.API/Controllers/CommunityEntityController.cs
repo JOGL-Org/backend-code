@@ -217,7 +217,6 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("{id}/leave")]
         [SwaggerOperation("Leaves an entity on behalf of the currently logged in user")]
@@ -250,7 +249,7 @@ namespace Jogl.Server.API.Controllers
             if (communityEntity == null)
                 return NotFound();
 
-            if (communityEntity.Permissions.Contains(Permission.Request))
+            if (!communityEntity.Permissions.Contains(Permission.Request))
                 return Forbid();
 
             var existingInvitation = _invitationService.GetForUserAndEntity(CurrentUserId, id);
