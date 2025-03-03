@@ -655,7 +655,7 @@ namespace Jogl.Server.API.Mapping
                .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => string.Join(',', src.Authorships?.Select(i => i.Author.DisplayName))))
                .ForMember(dst => dst.Journal, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
                .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate))
-               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Doi.Replace("https://doi.org/", string.Empty)))
+               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Doi?.Replace("https://doi.org/", string.Empty)))
                .ForMember(dst => dst.ExternalSystem, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
                .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
                .ForMember(dst => dst.DefaultVisibility, opt => opt.MapFrom((src, ctx, dst) => { return FeedEntityVisibility.View; }))
