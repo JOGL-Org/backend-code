@@ -6,7 +6,8 @@ namespace Jogl.Server.OpenAlex
     public interface IOpenAlexFacade
     {
         Task<ListPage<Author>> ListAuthorsAsync(string search, int page, int pageSize);
-        Task<ListPage<Work>> ListWorksForAuthorAsync(string authorId, int page, int pageSize);
+        Task<ListPage<Work>> ListWorksForAuthorIdAsync(string authorId, int page, int pageSize);
+        Task<ListPage<Work>> ListWorksForAuthorIdsAsync(IEnumerable<string> authorIds, int page, int pageSize);
         Task<ListPage<Work>> ListWorksForAuthorNameAsync(string authorSearch, int page, int pageSize);
         Task<ListPage<Work>> ListWorksAsync(string search, int page, int pageSize);
         Task<Work> GetWorkAsync(string id);

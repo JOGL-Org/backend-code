@@ -32,14 +32,22 @@ namespace Jogl.Server.OpenAlex
             return new ListPage<Author>(response?.Data?.Results ?? new List<Author>(), response.Data.Meta.Count);
         }
 
-        public async Task<ListPage<Work>> ListWorksForAuthorAsync(string authorId, int page, int pageSize)
+        public async Task<ListPage<Work>> ListWorksForAuthorIdAsync(string authorId, int page, int pageSize)
         {
+            return await ListWorksForAuthorIdsAsync(new[] { authorId }, page, pageSize);
+        }
+
+        public async Task<ListPage<Work>> ListWorksForAuthorIdsAsync(IEnumerable<string> authorIds, int page, int pageSize)
+        {
+            if (!authorIds.Any())
+                return new ListPage<Work>(new List<Work>());
+
             var client = new RestClient($"{_configuration["OpenAlex:URL"]}");
             var request = new RestRequest("works");
             request.AddQueryParameter("mailto", $"{_configuration["OpenAlex:Email"]}");
             request.AddQueryParameter("per-page", pageSize);
             request.AddQueryParameter("page", page);
-            request.AddQueryParameter("filter", $"authorships.author.id:authors/{authorId}");
+            request.AddQueryParameter("filter", $"authorships.author.id:authors/{string.Join('|', authorIds)}");
 
             var response = await client.ExecuteGetAsync<Response<Work>>(request);
             foreach (var item in response?.Data?.Results)
