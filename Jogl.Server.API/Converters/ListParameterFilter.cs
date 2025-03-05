@@ -17,7 +17,8 @@ namespace Jogl.Server.API.Converters
 
             var converterAttribute = context.ParameterInfo.GetCustomAttribute<ModelBinderAttribute>();
 
-            if (converterAttribute != null && parameter.Schema?.Type == "array" && parameter.Name.Equals("communityEntityIds"))
+            //TODO aaaaaaaaaa refactor this
+            if (converterAttribute != null && parameter.Schema?.Type == "array" &&( parameter.Name.Equals("communityEntityIds")|| parameter.Name.Equals("authorIds")))
             {
                 parameter.Schema.Type = "string";
                 parameter.Style = ParameterStyle.Simple;

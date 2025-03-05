@@ -169,7 +169,7 @@ namespace Jogl.Server.API.Controllers
         [Route("openalex/works/byAuthorIds")]
         [SwaggerOperation($"Returns a list of scientific papers by a specific author or authors")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<WorkModel>))]
-        public async Task<IActionResult> ListPapersForAuthor([ModelBinder(typeof(ListBinder))][FromQuery] List<string> authorIds, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListPapersForAuthor([ModelBinder(typeof(ListBinder))][FromQuery] List<string>? authorIds, [FromQuery] SearchModel model)
         {
             var publications = await _openAlexFacade.ListWorksForAuthorIdsAsync(authorIds, model.Page, model.PageSize);
             var publicationModels = publications.Items.Select(_mapper.Map<WorkModel>);
