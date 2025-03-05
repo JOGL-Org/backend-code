@@ -57,7 +57,7 @@ namespace Jogl.Server.Business
             await LoadTagsAsync(paper);
 
             //Attempt to load paper abstract from OA
-            if (string.IsNullOrEmpty(paper.Summary))
+            if (string.IsNullOrEmpty(paper.Summary) && !string.IsNullOrEmpty(paper.ExternalId))
                 paper.Summary = FormatOAWorkAbstract(await _openAlexFacade.GetAbstractFromDOIAsync(paper.ExternalId));
 
             //create paper
