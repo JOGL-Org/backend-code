@@ -13,6 +13,9 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("community_entity_type")]
         public CommunityEntityType? CommunityEntityType { get; set; }
+      
+        [JsonPropertyName("community_entity_onboarding")]
+        public OnboardingConfigurationModel? CommunityEntityOnboarding { get; set; }
 
         [JsonPropertyName("content_entity_type")]
         public ContentEntityType? ContentEntityType { get; set; }

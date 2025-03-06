@@ -46,14 +46,25 @@ namespace Jogl.Server.Business
                 switch (notification.Type)
                 {
                     case NotificationType.AdminRequest:
-                        var userDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.User);
-                        var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
-                        if (communityEntityDataItem == null || userDataItem == null)
-                            break;
+                        {
+                            var userDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.User);
+                            var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
+                            if (communityEntityDataItem == null || userDataItem == null)
+                                break;
 
-                        var answers = _onboardingQuestionnaireInstanceRepository.Get(r => r.CommunityEntityId == communityEntityDataItem.EntityId && r.UserId == userDataItem.EntityId && !r.Deleted);
-                        communityEntityDataItem.EntityOnboardingAnswersAvailable = answers != null;
-                        break;
+                            var answers = _onboardingQuestionnaireInstanceRepository.Get(r => r.CommunityEntityId == communityEntityDataItem.EntityId && r.UserId == userDataItem.EntityId && !r.Deleted);
+                            communityEntityDataItem.EntityOnboardingAnswersAvailable = answers != null;
+                            break;
+                        }
+                    case NotificationType.Invite:
+                        {
+                            var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
+                            if (communityEntityDataItem == null)
+                                break;
+
+                            communityEntityDataItem.CommunityEntityOnboarding = _communityEntityService.Get(communityEntityDataItem.EntityId)?.Onboarding;
+                            break;
+                        }
                     default:
                         break;
                 }
