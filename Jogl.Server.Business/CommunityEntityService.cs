@@ -42,7 +42,9 @@ namespace Jogl.Server.Business
             var feed = _feedRepository.Get(id);
             var allRelations = _relationRepository.Query(r => true).ToList();
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            var currentUserInvitations = _invitationRepository.Query(m => m.InviteeUserId == currentUserId).ToList();
+            var currentUserInvitations = _invitationRepository.Query(i => i.InviteeUserId == currentUserId)
+                .Filter(i => i.Status == InvitationStatus.Pending)
+                .ToList();
 
             switch (feed?.Type)
             {
