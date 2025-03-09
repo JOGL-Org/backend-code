@@ -890,13 +890,19 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<NotificationModel>))]
         public async Task<IActionResult> GetNotificationsCurrent([FromQuery] SearchModel model)
         {
-            var user = _userService.Get(CurrentUserId);
-            if (user == null)
-                return NotFound();
-
             var notifications = _notificationService.ListSince(CurrentUserId, DateTime.UtcNow.AddYears(-1), model.Page, model.PageSize);
             var notificationModels = notifications.Items.Select(_mapper.Map<NotificationModel>);
             return Ok(new ListPage<NotificationModel>(notificationModels, notifications.Total));
+        }
+
+        [HttpGet]
+        [Route("current/notifications/pending")]
+        [SwaggerOperation($"Returns a boolean value indicating whether or not the current user has any pending (un-actioned) notifications")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "A boolean flag", typeof(bool))]
+        public async Task<IActionResult> HasPendingNotifications([FromQuery] SearchModel model)
+        {
+            var hasPending = _notificationService.HasPendingSince(CurrentUserId, DateTime.UtcNow.AddYears(-1));
+            return Ok(hasPending);
         }
 
         [HttpPost]
@@ -921,7 +927,6 @@ namespace Jogl.Server.API.Controllers
 
             return Ok();
         }
-
 
         [AllowAnonymous]
         [HttpGet]

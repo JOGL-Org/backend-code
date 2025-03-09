@@ -37,6 +37,11 @@ namespace Jogl.Server.Business
             await _notificationRepository.CreateAsync(notifications);
         }
 
+        public bool HasPendingSince(string userId, DateTime? dateTimeUTC)
+        {
+            return _notificationRepository.Count(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Actioned && (n.Type == NotificationType.Invite || n.Type == NotificationType.EventInvite) && !n.Deleted) > 0;
+        }
+
         public ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
         {
             var total = _notificationRepository.Count(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Deleted);
