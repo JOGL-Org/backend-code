@@ -18,5 +18,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("topics")]
         public List<string> Topics { get; set; }
+
+        [JsonPropertyName("newest_work")]
+        public WorkModel LastWork { get; set; }
     }
 }

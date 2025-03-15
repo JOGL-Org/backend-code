@@ -635,14 +635,15 @@ namespace Jogl.Server.API.Mapping
               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.PubmedData?.ArticleIdList?.ArticleId?.FirstOrDefault(id => id.IdType == "doi")?.Text; }));
 
             CreateMap<OpenAlex.DTO.Author, AuthorModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.IdTrimmed))
                 .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName))
                 .ForMember(dst => dst.OrcidId, opt => opt.MapFrom((src, ctx, dst) => src.Orcid))
                 .ForMember(dst => dst.Institutions, opt => opt.MapFrom((src, ctx, dst) => src.LastKnownInstitutions?.Select(i => i.DisplayName).ToList()))
-                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()));
+                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()))
+                .ForMember(dst => dst.LastWork, opt => opt.MapFrom((src, ctx, dst) => src.LastWork));
 
             CreateMap<OpenAlex.DTO.Work, WorkModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.IdTrimmed))
                 .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
                 .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => src.Authorships?.Select(i => i.Author.DisplayName).ToList()))
                 .ForMember(dst => dst.Publication, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
