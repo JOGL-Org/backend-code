@@ -1,8 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using Jogl.Server.Data;
+using Jogl.Server.Data.Enum;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
-    public class ResourceModel : BaseModel
+    public class ResourceModel : FeedEntityModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -13,19 +16,34 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("feed_id")]
-        public string FeedId { get; set; }
+        [JsonPropertyName("data")]
+        public JsonObject? Data { get; set; }
 
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("default_visibility")]
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
 
-        [JsonPropertyName("condition")]
-        public string Condition { get; set; }
+        [JsonPropertyName("user_visibility")]
+        public List<FeedEntityUserVisibilityModel>? UserVisibility { get; set; }
 
-        [JsonPropertyName("image_url")]
-        public string ImageUrl { get; set; }
+        [JsonPropertyName("communityentity_visibility")]
+        public List<FeedEntityCommunityEntityVisibilityModel>? CommunityEntityVisibility { get; set; }
 
-        [JsonPropertyName("image_url_sm")]
-        public string ImageUrlSmall { get; set; }
+        //[JsonPropertyName("created_by")]
+        //public UserMiniModel? CreatedBy { get; set; }
+
+        //[JsonPropertyName("entity")]
+        //public CommunityEntityMiniModel CommunityEntity { get; set; }
+
+        //[JsonPropertyName("feed_stats")]
+        //public FeedStatModel FeedStats { get; set; }
+
+        //[JsonPropertyName("is_new")]
+        //public bool IsNew { get; set; }
+
+        [JsonPropertyName("permissions")]
+        public List<Permission> Permissions { get; set; }
+
+        //[JsonPropertyName("path")]
+        //public List<EntityMiniModel> Path { get; set; }
     }
 }

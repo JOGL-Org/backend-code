@@ -383,8 +383,8 @@ namespace Jogl.Server.Business
 
         public async Task NotifyResourceCreatedAsync(Resource resource)
         {
-            var memberships = _membershipRepository.List(m => m.CommunityEntityId == resource.FeedId && !m.Deleted);
-            var communityEntity = _communityEntityService.Get(resource.FeedId);
+            var memberships = _membershipRepository.List(m => m.CommunityEntityId == resource.EntityId && !m.Deleted);
+            var communityEntity = _communityEntityService.Get(resource.EntityId);
             var user = _userRepository.Get(resource.CreatedByUserId);
 
             foreach (var member in memberships)
@@ -398,7 +398,7 @@ namespace Jogl.Server.Business
                     CreatedByUserId = resource.CreatedByUserId,
                     Type = NotificationType.Resource,
                     UserId = member.UserId,
-                    OriginFeedId = resource.FeedId,
+                    OriginFeedId = resource.EntityId,
                     Data = new List<NotificationData>
                     {
                         new NotificationData{ Key = NotificationDataKey.ContentEntity, EntityId = resource.Id.ToString(), EntityTitle = resource.Title },

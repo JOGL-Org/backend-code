@@ -41,13 +41,33 @@ namespace Jogl.Server.HuggingFace
         public async Task<Repo> GetRepoAsync(string repo)
         {
             var client = new RestClient($"https://huggingface.co/api/");
-            var request = new RestRequest($"{repo}");
 
-            var response = await client.ExecuteGetAsync<Repo>(request);
-            if (!response.IsSuccessStatusCode)
+            if (repo.StartsWith("spaces/"))
+            {
+                var spaceRequest = new RestRequest($"{repo}");
+                var spaceResponse = await client.ExecuteGetAsync<SpaceRepo>(spaceRequest);
+                if (!spaceResponse.IsSuccessStatusCode)
+                    return null;
+
+                return spaceResponse.Data;
+            }
+
+            if (repo.StartsWith("datasets/"))
+            {
+                var datasetRequest = new RestRequest($"{repo}");
+                var datasetResponse = await client.ExecuteGetAsync<DataSetRepo>(datasetRequest);
+                if (!datasetResponse.IsSuccessStatusCode)
+                    return null;
+
+                return datasetResponse.Data;
+            }
+
+            var modelRequest = new RestRequest($"models/{repo}");
+            var modelResponse = await client.ExecuteGetAsync<ModelRepo>(modelRequest);
+            if (!modelResponse.IsSuccessStatusCode)
                 return null;
 
-            return response.Data;
+            return modelResponse.Data;
         }
 
         public async Task<List<Repo>> GetReposAsync(string accessToken)

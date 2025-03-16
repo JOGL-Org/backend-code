@@ -11,5 +11,7 @@ namespace Jogl.Server.HuggingFace.DTO
         public bool Private { get; set; }
 
         public abstract string Url { get; }
+        public abstract string Title { get; }
+        public abstract string Description { get; }
     }
 }

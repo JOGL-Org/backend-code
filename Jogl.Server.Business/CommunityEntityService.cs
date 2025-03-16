@@ -253,7 +253,7 @@ namespace Jogl.Server.Business
 
                 case FeedType.User:
                     if (id == userId)
-                        return new List<Permission> { Permission.Read, Permission.ManageDocuments, Permission.ManageLibrary };
+                        return new List<Permission> { Permission.Read, Permission.ManageDocuments, Permission.ManageLibrary, Permission.PostResources };
                     else
                         return new List<Permission> { Permission.Read };
 

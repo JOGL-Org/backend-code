@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Jogl.Server.Data;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
@@ -11,15 +13,18 @@ namespace Jogl.Server.API.Model
         public string Title { get; set; }
 
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        [JsonPropertyName("data")]
+        public JsonObject? Data { get; set; }
 
-        [JsonPropertyName("condition")]
-        public string Condition { get; set; }
+        [JsonPropertyName("default_visibility")]
+        public FeedEntityVisibility? DefaultVisibility { get; set; }
 
-        [JsonPropertyName("image_id")]
-        public string? ImageId { get; set; }
+        [JsonPropertyName("user_visibility")]
+        public List<FeedEntityUserVisibilityUpsertModel>? UserVisibility { get; set; }
+
+        [JsonPropertyName("communityentity_visibility")]
+        public List<FeedEntityCommunityEntityVisibilityUpsertModel>? CommunityEntityVisibility { get; set; }
     }
 }

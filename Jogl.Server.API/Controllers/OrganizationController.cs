@@ -81,11 +81,6 @@ namespace Jogl.Server.API.Controllers
             throw new NotImplementedException();
         }
 
-        protected override List<Resource> ListResources(string id, string search, int page, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
         {
             return new List<CommunityEntity>();

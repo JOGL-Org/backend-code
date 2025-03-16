@@ -83,11 +83,6 @@ namespace Jogl.Server.API.Controllers
             return _organizationService.ListForCommunity(CurrentUserId, id, search, page, pageSize);
         }
 
-        protected override List<Resource> ListResources(string id, string search, int page, int pageSize)
-        {
-            return _resourceService.ListForFeed(id, search, page, pageSize);
-        }
-
         protected override List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize)
         {
             return _nodeService.ListForCommunity(CurrentUserId, id, search, page, pageSize).Cast<CommunityEntity>().ToList();
