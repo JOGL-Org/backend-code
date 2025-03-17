@@ -19,6 +19,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("data")]
         public JsonObject? Data { get; set; }
 
+        [JsonPropertyName("type")]
+        public ResourceType Type { get; set; }
+
         [JsonPropertyName("default_visibility")]
         public FeedEntityVisibility? DefaultVisibility { get; set; }
 
