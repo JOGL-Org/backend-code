@@ -595,7 +595,7 @@ namespace Jogl.Server.API.Mapping
                   .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Name))
                   .ForMember(dst => dst.FeedStats, opt => opt.MapFrom(src => new FeedStatModel { PostCount = src.PostCount }));
             CreateMap<Resource, PortfolioItemModel>()
-                  .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.Resource))
+                  .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.Repository))
                   .ForMember(dst => dst.Summary, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Title))
                   .ForMember(dst => dst.Url, opt => opt.MapFrom(src => src.Data.Contains("Url") ? src.Data["Url"] : null))

@@ -241,7 +241,7 @@ namespace Jogl.Server.Business
                 {
                     Title = githubRepo.FullName,
                     Description = githubRepo.Description,
-                    Data = new BsonDocument { { "License", githubRepo.License.Name }, { "Source", "Github" }, { "Url", githubRepo.HtmlUrl } },
+                    Data = new BsonDocument { { "License", githubRepo.License?.Name ?? "" }, { "Source", "Github" }, { "Url", githubRepo.HtmlUrl ?? "" } },
                 };
 
             }
@@ -256,7 +256,7 @@ namespace Jogl.Server.Business
                 {
                     Title = huggingfaceRepo.Title,
                     Description = huggingfaceRepo.Description,
-                    Data = new BsonDocument { { "Source", "Huggingface" }, { "Url", huggingfaceRepo.Url } },
+                    Data = new BsonDocument { { "Source", "Huggingface" }, { "Url", huggingfaceRepo.Url ?? "" } },
                 };
             }
 

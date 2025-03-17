@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
-    public enum PortfolioItemType { Paper, JoglDoc, Resource }
+    public enum PortfolioItemType { Paper, JoglDoc, Repository }
     public class PortfolioItemModel : BaseModel
     {
         [JsonPropertyName("id")]
