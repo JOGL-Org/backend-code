@@ -1,6 +1,8 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
+using Jogl.Server.GitHub;
+using Jogl.Server.HuggingFace;
 using MongoDB.Bson;
 
 namespace Jogl.Server.Business
@@ -8,10 +10,14 @@ namespace Jogl.Server.Business
     public class ResourceService : BaseService, IResourceService
     {
         private readonly ICommunityEntityService _communityEntityService;
+        private readonly IGitHubFacade _githubFacade;
+        private readonly IHuggingFaceFacade _huggingFaceFacade;
 
-        public ResourceService(ICommunityEntityService communityEntityService, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public ResourceService(ICommunityEntityService communityEntityService, IGitHubFacade githubFacade, IHuggingFaceFacade huggingFaceFacade, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _communityEntityService = communityEntityService;
+            _githubFacade = githubFacade;
+            _huggingFaceFacade = huggingFaceFacade;
         }
 
         public async Task<string> CreateAsync(Resource resource)
@@ -221,6 +227,40 @@ namespace Jogl.Server.Business
         {
             await DeleteFeedAsync(resource.Id.ToString());
             await _resourceRepository.DeleteAsync(resource);
+        }
+
+        public async Task<Resource> BuildResourceForRepoAsync(string repoUrl, string? accessToken = default)
+        {
+            if (repoUrl.Contains("github"))
+            {
+                var githubRepo = await _githubFacade.GetRepoAsync(repoUrl.Replace("https://github.com/", string.Empty), accessToken);
+                if (githubRepo == null)
+                    return null;
+
+                return new Resource
+                {
+                    Title = githubRepo.FullName,
+                    Description = githubRepo.Description,
+                    Data = new BsonDocument { { "License", githubRepo.License.Name }, { "Source", "Github" }, { "Url", githubRepo.HtmlUrl } },
+                };
+
+            }
+
+            if (repoUrl.Contains("huggingface"))
+            {
+                var huggingfaceRepo = await _huggingFaceFacade.GetRepoAsync(repoUrl.Replace("https://huggingface.co/", string.Empty));
+                if (huggingfaceRepo == null)
+                    return null;
+
+                return new Resource
+                {
+                    Title = huggingfaceRepo.Title,
+                    Description = huggingfaceRepo.Description,
+                    Data = new BsonDocument { { "Source", "Huggingface" }, { "Url", huggingfaceRepo.Url } },
+                };
+            }
+
+            return null;
         }
     }
 }

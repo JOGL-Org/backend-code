@@ -38,5 +38,11 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("journal")]
         public string Journal { get; set; }
+
+        [JsonPropertyName("url")]
+        public string Url { get; set; }
+
+        [JsonPropertyName("source")]
+        public string Source { get; set; }
     }
 }

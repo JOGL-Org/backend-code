@@ -45,6 +45,27 @@ namespace Jogl.Server.API.Controllers
             return Ok(id);
         }
 
+        [HttpPost]
+        [Route("{entityId}/resources/repo")]
+        [SwaggerOperation($"Adds a new repository resource for the specified feed.")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user doesn't have sufficient rights to add resource for the entity")]
+        [SwaggerResponse((int)HttpStatusCode.UnprocessableEntity, $"The url could not be resolved to a valid repository")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The resource was created", typeof(string))]
+        public async Task<IActionResult> AddResource([FromRoute] string entityId, [FromBody] ResourceRepositoryUpsertModel model)
+        {
+            if (!_communityEntityService.HasPermission(entityId, Permission.PostResources, CurrentUserId))
+                return Forbid();
+
+            var resource = await _resourceService.BuildResourceForRepoAsync(model.RepositoryUrl, model.AccessToken);
+            if (resource == null)
+                return UnprocessableEntity();
+
+            resource.EntityId = entityId;
+            await InitCreationAsync(resource);
+            var id = await _resourceService.CreateAsync(resource);
+            return Ok(id);
+        }
+
         [HttpGet]
         [AllowAnonymous]
         [SwaggerOperation($"Lists all resources")]

@@ -1065,46 +1065,16 @@ namespace Jogl.Server.API.Controllers
                 await _paperService.CreateAsync(paper);
             }
 
-            //TODO refactor
             foreach (var repoUrl in model.Repos)
             {
-                if (repoUrl.Contains("github"))
-                {
-                    var githubRepo = await _githubFacade.GetRepoAsync(repoUrl.Replace("https://github.com/", string.Empty), model.GithubAccessToken);
-                    if (githubRepo == null)
-                        continue;
-
-                    var resource = new Resource
-                    {
-                        Title = githubRepo.FullName,
-                        Description = githubRepo.Description,
-                        EntityId = CurrentUserId,
-                        Data = new BsonDocument { { "License", githubRepo.License.Name } },
-                    };
-
-                    await InitCreationAsync(resource);
-                    await _resourceService.CreateAsync(resource);
+                var resource = await _resourceService.BuildResourceForRepoAsync(repoUrl, model.GithubAccessToken);
+                if (resource == null)
                     continue;
-                }
 
-                if (repoUrl.Contains("huggingface"))
-                {
-                    var huggingfaceRepo = await _huggingFaceFacade.GetRepoAsync(repoUrl.Replace("https://huggingface.co/", string.Empty));
-                    if (huggingfaceRepo == null)
-                        continue;
-
-                    var resource = new Resource
-                    {
-                        Title = huggingfaceRepo.Title,
-                        Description = huggingfaceRepo.Description,
-                        EntityId = CurrentUserId,
-                        //Data = new BsonDocument { { "License", githubRepo.License.Name } },
-                    };
-
-                    await InitCreationAsync(resource);
-                    await _resourceService.CreateAsync(resource);
-                    continue;
-                }
+                resource.EntityId = CurrentUserId;
+                await InitCreationAsync(resource);
+                await _resourceService.CreateAsync(resource);
+                continue;
             }
 
             return Ok();

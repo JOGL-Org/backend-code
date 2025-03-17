@@ -1,6 +1,5 @@
 ﻿using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
-using MongoDB.Bson;
 
 namespace Jogl.Server.Business
 {
@@ -18,5 +17,7 @@ namespace Jogl.Server.Business
         Task<string> CreateAsync(Resource resource);
         Task UpdateAsync(Resource resource);
         Task DeleteAsync(Resource resource);
+
+        Task<Resource> BuildResourceForRepoAsync(string repoUrl, string? accessToken = default);
     }
 }
