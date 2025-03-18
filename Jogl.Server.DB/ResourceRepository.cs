@@ -9,7 +9,7 @@ namespace Jogl.Server.DB
 {
     public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
     {
-        public ResourceRepository(IConfiguration configuration, IOperationContext context=null) : base(configuration, context)
+        public ResourceRepository(IConfiguration configuration, IOperationContext context = null) : base(configuration, context)
         {
         }
 
@@ -34,22 +34,15 @@ namespace Jogl.Server.DB
             }
         }
 
-        public List<Resource> ListForFeeds(IEnumerable<string> ids)
-        {
-            var coll = GetCollection<Resource>();
-            var filterBuilder = Builders<Resource>.Filter;
-            var filter = filterBuilder.In(e => e.FeedId, ids) & filterBuilder.Eq(e => e.Deleted, false);
-            return coll.Find(filter).ToList();
-        }
-
         protected override UpdateDefinition<Resource> GetDefaultUpdateDefinition(Resource updatedEntity)
         {
             return Builders<Resource>.Update.Set(e => e.Description, updatedEntity.Description)
                                         .Set(e => e.Title, updatedEntity.Title)
                                         .Set(e => e.Description, updatedEntity.Description)
-                                        .Set(e => e.ImageId, updatedEntity.ImageId)
-                                        .Set(e => e.Type, updatedEntity.Type)
-                                        .Set(e => e.Condition, updatedEntity.Condition)
+                                        .Set(e => e.Data, updatedEntity.Data)
+                                        .Set(e => e.DefaultVisibility, updatedEntity.DefaultVisibility)
+                                        .Set(e => e.UserVisibility, updatedEntity.UserVisibility)
+                                        .Set(e => e.CommunityEntityVisibility, updatedEntity.CommunityEntityVisibility)
                                         .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                         .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId).Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }

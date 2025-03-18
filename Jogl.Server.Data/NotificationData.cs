@@ -7,6 +7,7 @@
         public NotificationDataKey Key { get; set; }
         public string? EntityId { get; set; }
         public CommunityEntityType? CommunityEntityType { get; set; }
+        public OnboardingConfiguration? CommunityEntityOnboarding { get; set; }
         public ContentEntityType? ContentEntityType { get; set; }
         public string? EntityTitle { get; set; }
         public string? EntitySubtype { get; set; }

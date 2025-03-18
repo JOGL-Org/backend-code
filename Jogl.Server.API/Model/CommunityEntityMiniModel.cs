@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.Data;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
@@ -56,8 +57,6 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("user_access_level")]
         public string UserAccessLevel { get; set; }
 
-        [JsonPropertyName("user_joining_restriction_level")]
-        public string UserJoiningRestrictionLevel { get; set; }
 
         [JsonPropertyName("stats")]
         public virtual CommunityEntityStatModel Stats { get; set; }
@@ -88,5 +87,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("links")]
         public List<LinkModel> Links { get; set; }
+
+        [JsonPropertyName("user_invitation")]
+        public InvitationModelUser Invitation { get; set; }
     }
 }

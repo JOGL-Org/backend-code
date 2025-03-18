@@ -158,18 +158,9 @@ namespace Jogl.Server.Business
 
         public async Task DeleteAsync(string id)
         {
-            var community = _channelRepository.Get(id);
-
-            await _membershipRepository.DeleteAsync(m => m.CommunityEntityId == id);
-            await _userFeedRecordRepository.DeleteAsync(ufr => ufr.FeedId == id);
-            await _userContentEntityRecordRepository.DeleteAsync(ufr => ufr.FeedId == id);
-            await _documentRepository.DeleteAsync(d => d.FeedId == id);
-            await _contentEntityRepository.DeleteAsync(ce => ce.FeedId == id);
-            await _commentRepository.DeleteAsync(c => c.FeedId == id);
-            await _reactionRepository.DeleteAsync(r => r.FeedId == id);
-
-            await _feedRepository.DeleteAsync(id);
+            await DeleteFeedAsync(id);
             await _channelRepository.DeleteAsync(id);
+            await _membershipRepository.DeleteAsync(m => m.CommunityEntityId == id);
         }
     }
 }

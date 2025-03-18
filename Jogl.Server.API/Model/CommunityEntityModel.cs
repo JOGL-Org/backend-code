@@ -80,9 +80,6 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("user_access_level")]
         public string UserAccessLevel { get; set; }
 
-        [JsonPropertyName("user_joining_restriction_level")]
-        public string UserJoiningRestrictionLevel { get; set; }
-
         [JsonPropertyName("stats")]
         public virtual CommunityEntityStatModel Stats { get; set; }
 
@@ -100,5 +97,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("path")]
         public List<EntityMiniModel> Path { get; set; }
+
+        [JsonPropertyName("user_invitation")]
+        public InvitationModelUser Invitation { get; set; }
     }
 }

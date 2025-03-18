@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.API.Model;
 using Jogl.Server.Data;
-using Syncfusion.DocIO.DLS;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -217,7 +216,6 @@ namespace Jogl.Server.API.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         [Route("{id}/leave")]
         [SwaggerOperation("Leaves an entity on behalf of the currently logged in user")]
@@ -238,21 +236,51 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpPost]
-        [Route("{id}/join")]
-        [SwaggerOperation("Joins an entity on behalf of the currently logged in user. Only works for community entities with the Open membership access level. Creates a membership record immediately, no invitation is created.")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new membership object", typeof(string))]
+        [Route("{id}/request")]
+        [SwaggerOperation("Creates a request to join an entity on behalf of the currently logged in user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new invitation object", typeof(string))]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "The entity does not exist")]
-        [SwaggerResponse((int)HttpStatusCode.Conflict, "A membership record already exists for the entity and user")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The entity is not open to members joining")]
-        public async Task<IActionResult> Join([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "A request or invitation already exists for the entity and user")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the right to request to join the community entity")]
+        public async Task<IActionResult> Request([SwaggerParameter("ID of the entity")][FromRoute] string id)
         {
             var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
             if (communityEntity == null)
                 return NotFound();
 
-            var membership = _membershipService.Get(id, CurrentUserId);
-            if (membership != null)
+            if (!communityEntity.Permissions.Contains(Permission.Request))
+                return Forbid();
+
+            var existingInvitation = _invitationService.GetForUserAndEntity(CurrentUserId, id);
+            if (existingInvitation != null)
                 return Conflict();
+
+            var invitation = new Invitation
+            {
+                InviteeUserId = CurrentUserId,
+                CommunityEntityId = id,
+                CommunityEntityType = communityEntity.Type,
+                Entity = communityEntity,
+                Type = InvitationType.Request
+            };
+
+            await InitCreationAsync(invitation);
+            var invitationId = await _invitationService.CreateAsync(invitation);
+            return Ok(invitationId);
+        }
+
+        [HttpPost]
+        [Route("{id}/join")]
+        [SwaggerOperation("Joins an entity on behalf of the currently logged in user. Only works for community entities with the Open membership access level. Creates a membership record immediately, no invitation is created.")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new membership object", typeof(string))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "The entity does not exist")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "A request or invitation already exists for the entity and user")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the right to join the community entity")]
+        public async Task<IActionResult> Join([SwaggerParameter("ID of the entity")][FromRoute] string id)
+        {
+            var communityEntity = _communityEntityService.GetEnriched(id, CurrentUserId);
+            if (communityEntity == null)
+                return NotFound();
 
             if (!communityEntity.Permissions.Contains(Permission.Join))
                 return Forbid();
@@ -261,7 +289,7 @@ namespace Jogl.Server.API.Controllers
             if (existingInvitation != null)
                 return Conflict();
 
-            membership = new Membership
+            var membership = new Membership
             {
                 AccessLevel = AccessLevel.Member,
                 UserId = CurrentUserId,

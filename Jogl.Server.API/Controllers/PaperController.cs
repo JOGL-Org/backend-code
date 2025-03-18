@@ -10,6 +10,8 @@ using Jogl.Server.Data.Enum;
 using Jogl.Server.Data;
 using MongoDB.Bson;
 using Jogl.Server.OpenAlex;
+using Jogl.Server.OpenAlex.DTO;
+using Jogl.Server.API.Converters;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -164,18 +166,18 @@ namespace Jogl.Server.API.Controllers
         }
 
         [HttpGet]
-        [Route("openalex/authors/{authorId}/works")]
-        [SwaggerOperation($"Returns a list of scientific papers by a specific author")]
+        [Route("openalex/works/byAuthorIds")]
+        [SwaggerOperation($"Returns a list of scientific papers by a specific author or authors")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<WorkModel>))]
-        public async Task<IActionResult> ListPapersForAuthor([FromRoute] string authorId, [FromQuery] SearchModel model)
+        public async Task<IActionResult> ListPapersForAuthor([ModelBinder(typeof(ListBinder))][FromQuery] List<string>? authorIds, [FromQuery] SearchModel model)
         {
-            var publications = await _openAlexFacade.ListWorksForAuthorAsync(authorId, model.Page, model.PageSize);
+            var publications = await _openAlexFacade.ListWorksForAuthorIdsAsync(authorIds, model.Page, model.PageSize);
             var publicationModels = publications.Items.Select(_mapper.Map<WorkModel>);
             return Ok(publicationModels);
         }
 
         [HttpGet]
-        [Route("openalex/works/byAuthor")]
+        [Route("openalex/works/byAuthorName")]
         [SwaggerOperation($"Returns a list of scientific papers for an author name")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The paper data", typeof(List<WorkModel>))]
         public async Task<IActionResult> ListPapersForAuthorName([FromQuery] SearchModel model)

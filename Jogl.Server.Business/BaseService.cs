@@ -136,6 +136,9 @@ namespace Jogl.Server.Business
                     if (entity.JoiningRestrictionLevel != JoiningRestrictionLevel.Open)
                         return false;
 
+                    if (membership != null)
+                        return false;
+
                     switch (entity.Type)
                     {
                         case CommunityEntityType.Node:
@@ -143,6 +146,15 @@ namespace Jogl.Server.Business
                         default:
                             return relations.Any(r => r.SourceCommunityEntityId == entity.Id.ToString() && memberships.Any(m => m.CommunityEntityId == r.TargetCommunityEntityId));
                     }
+
+                case Permission.Request:
+                    if (entity.JoiningRestrictionLevel != JoiningRestrictionLevel.Request)
+                        return false;
+
+                    if (membership != null)
+                        return false;
+
+                    return true;
                 default:
 
                     return false;
@@ -974,7 +986,6 @@ namespace Jogl.Server.Business
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
             var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
-            var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
 
             foreach (var c in communities)
@@ -983,8 +994,6 @@ namespace Jogl.Server.Business
                 c.NeedCountAggregate = needs.Count(need => c.Id.ToString() == need.EntityId || relations.Any(r => r.SourceCommunityEntityId == need.EntityId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.PaperCount = papers.Count(ppr => c.Id.ToString() == ppr.FeedId);
                 c.PaperCountAggregate = papers.Count(ppr => c.Id.ToString() == ppr.FeedId || relations.Any(r => r.SourceCommunityEntityId == ppr.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
-                c.ResourceCount = resources.Count(res => c.Id.ToString() == res.FeedId);
-                c.ResourceCountAggregate = resources.Count(res => c.Id.ToString() == res.FeedId || relations.Any(r => r.SourceCommunityEntityId == res.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
                 c.DocumentCount = documents.Count(d => c.Id.ToString() == d.FeedId);
                 c.DocumentCountAggregate = documents.Count(d => c.Id.ToString() == d.FeedId || relations.Any(r => r.SourceCommunityEntityId == d.FeedId && r.TargetCommunityEntityId == c.Id.ToString()));
             }
@@ -1020,7 +1029,6 @@ namespace Jogl.Server.Business
 
             var needs = _needRepository.ListForEntityIds(communityEntityIds);
             var papers = _paperRepository.List(p => communityEntityIds.Contains(p.FeedId) && !p.Deleted);
-            var resources = _resourceRepository.List(r => communityEntityIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => communityEntityIds.Contains(d.FeedId) && d.ContentEntityId == null && d.CommentId == null && !d.Deleted);
             var cfps = _callForProposalsRepository.List(cfp => communityEntityIds.Contains(cfp.ParentCommunityEntityId) && !cfp.Deleted);
 
@@ -1032,8 +1040,6 @@ namespace Jogl.Server.Business
                 n.NeedCountAggregate = needs.Count(need => nodeCommunityEntityIds.Contains(need.EntityId));
                 n.PaperCount = papers.Count(ppr => n.Id.ToString() == ppr.FeedId);
                 n.PaperCountAggregate = papers.Count(ppr => nodeCommunityEntityIds.Contains(ppr.FeedId));
-                n.ResourceCount = resources.Count(res => n.Id.ToString() == res.FeedId);
-                n.ResourceCountAggregate = resources.Count(res => nodeCommunityEntityIds.Contains(res.FeedId));
                 n.DocumentCount = documents.Count(d => n.Id.ToString() == d.FeedId);
                 n.DocumentCountAggregate = documents.Count(d => nodeCommunityEntityIds.Contains(d.FeedEntityId));
 
@@ -1068,13 +1074,11 @@ namespace Jogl.Server.Business
             var relations = _relationRepository.List(r => (orgIds.Contains(r.SourceCommunityEntityId) || orgIds.Contains(r.TargetCommunityEntityId)) && !r.Deleted);
 
             var papers = _paperRepository.List(p => orgIds.Contains(p.FeedId) && !p.Deleted);
-            var resources = _resourceRepository.List(r => orgIds.Contains(r.FeedId) && !r.Deleted);
             var documents = _documentRepository.List(d => orgIds.Contains(d.FeedId) && !d.Deleted);
 
             foreach (var o in organizations)
             {
                 o.PaperCount = papers.Count(ppr => ppr.FeedId == o.Id.ToString());
-                o.ResourceCount = resources.Count(r => r.FeedId == o.Id.ToString());
                 o.DocumentCount = documents.Count(d => d.FeedId == o.Id.ToString());
             }
 
@@ -1116,6 +1120,14 @@ namespace Jogl.Server.Business
                     ce.OnboardedUTC = membership?.OnboardedUTC;
                     ce.AccessLevel = membership?.AccessLevel;
                 }
+            }
+        }
+
+        protected void EnrichCommunityEntitiesWithInvitationData(IEnumerable<CommunityEntity> communityEntities, IEnumerable<Invitation> currentUserInvitations, string userId)
+        {
+            foreach (var ce in communityEntities)
+            {
+                ce.Invitation = currentUserInvitations.SingleOrDefault(i => i.CommunityEntityId == ce.Id.ToString() && i.InviteeUserId == userId);
             }
         }
 
@@ -1290,6 +1302,20 @@ namespace Jogl.Server.Business
             EnrichNeedsWithPermissions(needs, currentUserMemberships, userId);
         }
 
+        protected void EnrichResourcesWithPermissions(IEnumerable<Resource> resources, IEnumerable<Membership> currentUserMemberships, string userId)
+        {
+            foreach (var r in resources)
+            {
+                r.Permissions = Enum.GetValues<Permission>().Where(p => Can(r, currentUserMemberships, userId, p)).ToList();
+            }
+        }
+
+        protected void EnrichResourcesWithPermissions(IEnumerable<Resource> resources, string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+            EnrichResourcesWithPermissions(resources, currentUserMemberships, userId);
+        }
+
         protected void EnrichEventsWithPermissions(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string userId = null)
         {
             foreach (var e in events)
@@ -1317,7 +1343,7 @@ namespace Jogl.Server.Business
             foreach (var u in users)
             {
                 if (u.Id.ToString() == userId)
-                    u.Permissions = new List<Permission> { Permission.Read, Permission.Manage, Permission.ManageLibrary, Permission.ManageDocuments };
+                    u.Permissions = new List<Permission> { Permission.Read, Permission.Manage, Permission.ManageLibrary, Permission.ManageDocuments, Permission.PostResources };
                 else
                     u.Permissions = new List<Permission> { Permission.Read };
             }
@@ -1859,8 +1885,40 @@ namespace Jogl.Server.Business
             await _commentRepository.DeleteAsync(c => c.FeedId == id && !c.Deleted);
             await _mentionRepository.DeleteAsync(m => m.OriginFeedId == id && !m.Deleted);
             await _reactionRepository.DeleteAsync(r => r.FeedId == id && !r.Deleted);
-            //TODO await _feedIntegrationRepository.DeleteAsync(i => i.FeedId == id && !i.Deleted);
             await _feedRepository.DeleteAsync(id);
+        }
+
+        protected async Task UndeleteFeedAsync(string id)
+        {
+            //delete event feeds
+            foreach (var ev in _eventRepository.List(c => c.CommunityEntityId == id))
+            {
+                await UndeleteFeedAsync(ev.Id.ToString());
+            }
+
+            //delete document feeds
+            foreach (var d in _documentRepository.List(d => d.EntityId == id))
+            {
+                await UndeleteFeedAsync(d.Id.ToString());
+            }
+
+            //delete need feeds
+            foreach (var n in _needRepository.List(n => n.EntityId == id))
+            {
+                await UndeleteFeedAsync(n.Id.ToString());
+            }
+
+            await _userFeedRecordRepository.UndeleteAsync(ufr => ufr.FeedId == id && !ufr.Deleted);
+            await _userContentEntityRecordRepository.UndeleteAsync(ucer => ucer.FeedId == id && !ucer.Deleted);
+            await _needRepository.UndeleteAsync(n => n.EntityId == id && !n.Deleted);
+            await _documentRepository.UndeleteAsync(d => d.FeedId == id && !d.Deleted);
+            await _eventRepository.UndeleteAsync(e => e.CommunityEntityId == id && !e.Deleted);
+
+            await _contentEntityRepository.UndeleteAsync(ce => ce.FeedId == id && !ce.Deleted);
+            await _commentRepository.UndeleteAsync(c => c.FeedId == id && !c.Deleted);
+            await _mentionRepository.UndeleteAsync(m => m.OriginFeedId == id && !m.Deleted);
+            await _reactionRepository.UndeleteAsync(r => r.FeedId == id && !r.Deleted);
+            await _feedRepository.UndeleteAsync(id);
         }
 
         protected async Task DeleteChannel(string id)

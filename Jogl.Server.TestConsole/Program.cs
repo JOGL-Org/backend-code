@@ -2,6 +2,7 @@
 using Jogl.Server.Configuration;
 using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -15,89 +16,118 @@ var userContentEntityRecordRepository = new UserContentEntityRecordRepository(co
 var mentionRepository = new MentionRepository(config);
 var contentEntityRepository = new ContentEntityRepository(config);
 var commentRepository = new CommentRepository(config);
-var membershipRepo = new MembershipRepository(config);
+var membershipRepository = new MembershipRepository(config);
+var invitationRepository = new InvitationRepository(config);
 var feedRepository = new FeedRepository(config);
+var documentRepository = new DocumentRepository(config);
+var workspaceRepository = new WorkspaceRepository(config);
+var userRepository = new UserRepository(config);
 
-var ufrs = userFeedRecordRepository.Query(ufr => true).ToList();
-var memberships = membershipRepo.Query(m => m.CommunityEntityType == Jogl.Server.Data.CommunityEntityType.Channel).ToList();
-foreach (var membership in memberships)
-{
-    if (ufrs.SingleOrDefault(ufr => ufr.FeedId == membership.CommunityEntityId && ufr.UserId == membership.UserId)?.FollowedUTC == null)
-    {
-        await userFeedRecordRepository.SetFeedFollowedAsync(membership.UserId, membership.CommunityEntityId, DateTime.UtcNow);
-    }
-}
+var feeds = feedRepository.List(f => true);
+var workspaces = workspaceRepository.List(u => true);
+var contentEntities = contentEntityRepository.List(u => true);
+var comments = commentRepository.List(u => true);
 
-var followedUFRs = userFeedRecordRepository.Query(ufr => ufr.FollowedUTC.HasValue).ToList();
-var ucers = userContentEntityRecordRepository.Query(ucer => ucer.FollowedUTC.HasValue).ToList();
-var contentEntities = contentEntityRepository.Query(ce => true).ToList();
-var comments = commentRepository.Query(c => true).ToList();
-var mentions = mentionRepository.Query(m => true).ToList();
-var feeds = feedRepository.Query(f => true).ToList();
+//foreach (var feed in feeds)
+//{
+//    if (feed.Type != Jogl.Server.Data.FeedType.Workspace)
+//        continue;
+
+//    var workspace = workspaces.FirstOrDefault(w => w.Id == feed.Id);
+//    if (workspace == null)
+//    {
+//        await feedRepository.DeleteAsync(feed);
+//        continue;
+//    }
+
+//    if (workspace.Deleted)
+//    {
+//        await feedRepository.DeleteAsync(feed);
+//        continue;
+//    }
+//}
+
+//feeds = feedRepository.List(f => true);
+
+//foreach (var ufr in userFeedRecordRepository.List(u => !u.Deleted))
+//{
+//    var feed = feeds.FirstOrDefault(f => f.Id.ToString() == ufr.FeedId);
+//    if (feed == null)
+//    {
+//        await userFeedRecordRepository.DeleteAsync(ufr);
+//        continue;
+//    }
+
+//    if (feed.Deleted)
+//    {
+//        await userFeedRecordRepository.DeleteAsync(ufr);
+//        continue;
+//    }
+//}
+
+//foreach (var ucer in userContentEntityRecordRepository.List(u => !u.Deleted))
+//{
+//    var feed = feeds.FirstOrDefault(f => f.Id.ToString() == ucer.FeedId);
+//    if (feed == null)
+//    {
+//        await userContentEntityRecordRepository.DeleteAsync(ucer);
+//        continue;
+//    }
+
+//    if (feed.Deleted)
+//    {
+//        await userContentEntityRecordRepository.DeleteAsync(ucer);
+//        continue;
+//    }
+//}
+
+//foreach (var m in mentionRepository.List(m => true))
+//{
+//    var feed = feeds.FirstOrDefault(f => f.Id.ToString() == m.OriginFeedId);
+//    if (feed == null)
+//    {
+//        await mentionRepository.DeleteAsync(m);
+//        continue;
+//    }
+
+//    if (feed.Deleted)
+//    {
+//        await mentionRepository.DeleteAsync(m);
+//        continue;
+//    }
+
+//    if (m.OriginType == Jogl.Server.Data.MentionOrigin.ContentEntity)
+//    {
+//        var contentEntity = contentEntities.SingleOrDefault(ce => ce.Id.ToString() == m.OriginId);
+//        if (contentEntity == null)
+//        {
 
 
-foreach (var ufr in ufrs)
-{
-    if (!ufr.Unread)
-        continue;
+//        }
 
-    ufr.Unread = false;
-    await userFeedRecordRepository.UpdateAsync(ufr);
-}
+//        if (m.OriginFeedId != contentEntity.FeedId)
+//        {
+//            m.OriginFeedId = contentEntity.FeedId;
+//            await mentionRepository.UpdateAsync(m);
+//        }
+//    }
 
-foreach (var ucer in ucers)
-{
-    if (!ucer.Unread)
-        continue;
+//    if (m.OriginType == Jogl.Server.Data.MentionOrigin.Comment)
+//    {
+//        var comment = comments.SingleOrDefault(c => c.Id.ToString() == m.OriginId);
+//        if (comment == null)
+//        {
 
-    ucer.Unread = false;
-    await userContentEntityRecordRepository.UpdateAsync(ucer);
-}
 
-foreach (var ufr in followedUFRs)
-{
-    var feed = feeds.SingleOrDefault(f => f.Id.ToString() == ufr.FeedId);
-    if (feed == null || feed.Type == Jogl.Server.Data.FeedType.Project || feed.Type == Jogl.Server.Data.FeedType.Workspace || feed.Type == Jogl.Server.Data.FeedType.Node || feed.Type == Jogl.Server.Data.FeedType.Organization)
-        continue;
+//        }
 
-    var contentEntitiesInFeed = contentEntities.Where(ce => ce.CreatedByUserId != ufr.UserId && ce.FeedId == ufr.FeedId).ToList();
-    var mentionsInFeed = mentions.Where(m => m.OriginFeedId == ufr.FeedId).ToList();
-    var ucersInFeed = ucers.Where(ucer => ucer.FeedId == ufr.FeedId && ucer.UserId == ufr.UserId).ToList();
-
-    if (contentEntitiesInFeed.Any(c => c.CreatedUTC > ufr.LastReadUTC && c.CreatedUTC > DateTime.UtcNow.AddMonths(-6)))
-    {
-        ufr.Unread = true;
-        await userFeedRecordRepository.UpdateAsync(ufr);
-        continue;
-    }
-
-    if (mentionsInFeed.Any(m => m.CreatedUTC > ufr.LastReadUTC && m.OriginType == Jogl.Server.Data.MentionOrigin.ContentEntity && m.CreatedUTC > DateTime.UtcNow.AddMonths(-6)))
-    {
-        ufr.Unread = true;
-        await userFeedRecordRepository.UpdateAsync(ufr);
-        continue;
-    }
-
-    foreach (var ucer in ucersInFeed)
-    {
-        var commentsInPost = comments.Where(c => c.CreatedByUserId != ucer.UserId && c.ContentEntityId == ucer.ContentEntityId).ToList();
-        if (commentsInPost.Any(c => c.CreatedUTC > ucer.LastReadUTC && c.CreatedUTC > DateTime.UtcNow.AddMonths(-6)))
-        {
-            ucer.Unread = true;
-            await userFeedRecordRepository.UpdateAsync(ufr);
-            continue;
-        }
-
-        var mentionsInPost = mentions.Where(m => commentsInPost.Any(c => c.Id.ToString() == m.OriginId)).ToList();
-        if (mentionsInPost.Any(m => m.CreatedUTC > ucer.LastReadUTC && m.CreatedUTC > DateTime.UtcNow.AddMonths(-6)))
-        {
-            ucer.Unread = true;
-            await userFeedRecordRepository.UpdateAsync(ufr);
-            continue;
-        }
-
-    }
-}
+//        if (m.OriginFeedId != comment.FeedId)
+//        {
+//            m.OriginFeedId = comment.FeedId;
+//            await mentionRepository.UpdateAsync(m);
+//        }
+//    }
+//}
 
 Console.WriteLine("Done");
 Console.ReadLine();

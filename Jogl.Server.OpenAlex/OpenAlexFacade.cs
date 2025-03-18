@@ -8,6 +8,7 @@ namespace Jogl.Server.OpenAlex
     public class OpenAlexFacade : IOpenAlexFacade
     {
         private readonly IConfiguration _configuration;
+        const int PAGE_SIZE = 200;
 
         public OpenAlexFacade(IConfiguration configuration)
         {
@@ -24,22 +25,36 @@ namespace Jogl.Server.OpenAlex
             request.AddQueryParameter("search", GetQueryFromSearch(search));
 
             var response = await client.ExecuteGetAsync<Response<Author>>(request);
-            foreach (var item in response?.Data?.Results)
+            if (response.Data?.Results == null)
+                return new ListPage<Author>(new List<Author>(), 0);
+
+            var works = await ListWorksForAuthorIdsAsync(response.Data.Results.Select(r => r.Id), 1, PAGE_SIZE);
+            foreach (var author in response.Data.Results)
             {
-                item.Id = item.Id.Replace("https://openalex.org/", string.Empty);
+                author.LastWork = works.Items
+                    .OrderByDescending(w => w.Id)
+                    .FirstOrDefault(w => w.Authorships.Any(a => a.Author.Id == author.Id));
             }
 
-            return new ListPage<Author>(response?.Data?.Results ?? new List<Author>(), response.Data.Meta.Count);
+            return new ListPage<Author>(response.Data.Results, response.Data.Meta.Count);
         }
 
-        public async Task<ListPage<Work>> ListWorksForAuthorAsync(string authorId, int page, int pageSize)
+        public async Task<ListPage<Work>> ListWorksForAuthorIdAsync(string authorId, int page, int pageSize)
         {
+            return await ListWorksForAuthorIdsAsync(new[] { authorId }, page, pageSize);
+        }
+
+        public async Task<ListPage<Work>> ListWorksForAuthorIdsAsync(IEnumerable<string> authorIds, int page, int pageSize)
+        {
+            if (!authorIds.Any())
+                return new ListPage<Work>(new List<Work>());
+
             var client = new RestClient($"{_configuration["OpenAlex:URL"]}");
             var request = new RestRequest("works");
             request.AddQueryParameter("mailto", $"{_configuration["OpenAlex:Email"]}");
             request.AddQueryParameter("per-page", pageSize);
             request.AddQueryParameter("page", page);
-            request.AddQueryParameter("filter", $"authorships.author.id:authors/{authorId}");
+            request.AddQueryParameter("filter", $"authorships.author.id:authors/{string.Join('|', authorIds)}");
 
             var response = await client.ExecuteGetAsync<Response<Work>>(request);
             foreach (var item in response?.Data?.Results)

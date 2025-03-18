@@ -440,12 +440,20 @@ namespace Jogl.Server.Business
                 .FilterFeedEntities(currentUserId, currentUserMemberships)
                 .ToList();
 
+            var resources = _resourceRepository
+                .Query(search)
+                .Filter(d => d.EntityId == userId)
+                //.FilterFeedEntities(currentUserId, currentUserMemberships)
+                .ToList();
+
             EnrichPapersWithPermissions(papers, currentUserId);
             EnrichDocumentsWithPermissions(documents, currentUserId);
+            EnrichResourcesWithPermissions(resources, currentUserId);
 
             var entities = new List<FeedEntity>();
             entities.AddRange(papers);
             entities.AddRange(documents);
+            entities.AddRange(resources);
 
             EnrichFeedEntitiesWithFeedStats(entities);
 

@@ -44,9 +44,8 @@ namespace Jogl.Server.API.Controllers
 
         protected abstract List<CommunityEntity> ListEcosystem(string id, string search, int page, int pageSize);
         protected abstract List<Workspace> ListCommunities(string id, string search, int page, int pageSize);
-        protected abstract List<Data.Node> ListNodes(string id, string search, int page, int pageSize);
+        protected abstract List<Node> ListNodes(string id, string search, int page, int pageSize);
         protected abstract List<Organization> ListOrganizations(string id, string search, int page, int pageSize);
-        protected abstract List<Resource> ListResources(string id, string search, int page, int pageSize);
 
         protected BaseCommunityEntityController(IAccessService accessService, IInvitationService invitationService, IMembershipService membershipService, IUserService userService, IDocumentService documentService, ICommunityEntityService communityEntityService, ICommunityEntityInvitationService communityEntityInvitationService, ICommunityEntityMembershipService communityEntityMembershipService, IContentService contentService, IEventService eventService, IChannelService channelService, IPaperService paperService, IResourceService resourceService, INeedService needService, IUrlService urlService, IConfiguration configuration, IMapper mapper, ILogger logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
@@ -106,7 +105,6 @@ namespace Jogl.Server.API.Controllers
             {
                 var entityMiniModel = _mapper.Map<TTargetMiniModel>(entity);
                 entityMiniModel.UserAccessLevel = "visitor";
-                entityMiniModel.UserJoiningRestrictionLevel = "forbidden";
                 return Ok(entityMiniModel);
             }
 
@@ -124,13 +122,11 @@ namespace Jogl.Server.API.Controllers
             {
                 var entityMiniModel = _mapper.Map<TTargetMiniModel>(entity);
                 entityMiniModel.UserAccessLevel = _accessService.GetUserAccessLevel(membership, invitation);
-                entityMiniModel.UserJoiningRestrictionLevel = _accessService.GetUserJoiningRestrictionLevel(membership, CurrentUserId, entity)?.ToString()?.ToLower() ?? "forbidden";
                 return Ok(entityMiniModel);
             }
 
             var entityModel = _mapper.Map<TTargetModel>(entity);
             entityModel.UserAccessLevel = _accessService.GetUserAccessLevel(membership, invitation);
-            entityModel.UserJoiningRestrictionLevel = _accessService.GetUserJoiningRestrictionLevel(membership, CurrentUserId, entity)?.ToString()?.ToLower() ?? "forbidden";
 
             return Ok(entityModel);
         }
@@ -417,6 +413,7 @@ namespace Jogl.Server.API.Controllers
             return Ok(membershipId);
         }
 
+        [Obsolete]
         [HttpPost]
         [Route("{id}/request")]
         [SwaggerOperation("Creates a request to join an entity on behalf of the currently logged in user")]
@@ -1210,119 +1207,6 @@ namespace Jogl.Server.API.Controllers
 
             await InitCreationAsync(newMembership);
             await _communityEntityMembershipService.CreateAsync(newMembership);
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("{id}/resources")]
-        [SwaggerOperation($"Adds a new resource for the specified community entity")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "The community entity could not be found")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The ID of the new resource", typeof(string))]
-        public async Task<IActionResult> AddResource([SwaggerParameter("ID of the community entity")][FromRoute] string id, [FromBody] ResourceUpsertModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Data.Enum.Permission.PostResources))
-                return Forbid();
-
-            var resource = _mapper.Map<Resource>(model);
-            resource.FeedId = entity.FeedId;
-            await InitCreationAsync(resource);
-            var resourceId = await _resourceService.CreateAsync(resource);
-
-            return Ok(resourceId);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("{id}/resources")]
-        [SwaggerOperation($"Lists all resources for the specified community entity")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No community entity was found for that id")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(List<ResourceModel>))]
-        public async Task<IActionResult> GetResources([SwaggerParameter("ID of the community entity")][FromRoute] string id,/* [SwaggerParameter("The resource type")][FromQuery] ResourceType? type, */[FromQuery] SearchModel model)
-        {
-            var entity = GetEntity(id);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Permission.Read))
-                return Forbid();
-
-            var resources = ListResources(id, model.Search, model.Page, model.PageSize);
-            var resourceModels = resources.Select(_mapper.Map<ResourceModel>);
-            return Ok(resourceModels);
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("resources/{resourceId}")]
-        [SwaggerOperation($"Returns a single resource")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No resource was found for the resource id or the resource doesn't exist in the given community entity type")]
-        public async Task<IActionResult> GetResource([FromRoute] string resourceId)
-        {
-            var resource = _resourceService.Get(resourceId);
-            if (resource == null)
-                return NotFound();
-
-            var entity = GetEntity(resource.FeedId);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Permission.Read))
-                return Forbid();
-
-            var resourceModel = _mapper.Map<ResourceModel>(resource);
-            return Ok(resourceModel);
-        }
-
-        [HttpPut]
-        [Route("resources/{resourceId}")]
-        [SwaggerOperation($"Updates the resource")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No resource was found for the resource id or the resource doesn't exist in the given community entity type")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the rights to edit resources for the community entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The resource was updated")]
-        public async Task<IActionResult> UpdateResource([FromRoute] string resourceId, [FromBody] ResourceUpsertModel model)
-        {
-            var resource = _resourceService.Get(resourceId);
-            if (resource == null)
-                return NotFound();
-
-            var entity = GetEntity(resource.FeedId);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Permission.Manage))
-                return Forbid();
-
-            var updatedResource = _mapper.Map<Resource>(model);
-            await InitUpdateAsync(updatedResource);
-            updatedResource.Id = ObjectId.Parse(resourceId);
-            await _resourceService.UpdateAsync(updatedResource);
-            return Ok();
-        }
-
-        [HttpDelete]
-        [Route("resources/{resourceId}")]
-        [SwaggerOperation($"Deletes the specified resource")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No resource was found for the resource id or the resource doesn't exist in the given community entity type")]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, "The current user does not have the rights to edit resources for the community entity")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"The resource was deleted")]
-        public async Task<IActionResult> DeleteResource([FromRoute] string resourceId)
-        {
-            var resource = _resourceService.Get(resourceId);
-            if (resource == null)
-                return NotFound();
-
-            var entity = GetEntity(resource.FeedId);
-            if (entity == null)
-                return NotFound();
-
-            if (!entity.Permissions.Contains(Permission.Manage))
-                return Forbid();
-
-            await _resourceService.DeleteAsync(resourceId);
             return Ok();
         }
 

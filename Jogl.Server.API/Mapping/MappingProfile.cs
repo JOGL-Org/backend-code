@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using AutoMapper;
 using Jogl.Server.API.Model;
 using Jogl.Server.Data;
@@ -32,6 +34,20 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<string, ObjectId>().ConstructUsing(id => ObjectId.Parse(id));
             CreateMap<ObjectId, string>().ConstructUsing(id => id.ToString());
+
+            CreateMap<JsonObject, BsonDocument>().ConvertUsing((src, dest) =>
+            {
+                if (src == null) return null;
+                var json = src.ToJsonString();
+                return BsonDocument.Parse(json);
+            });
+
+            CreateMap<BsonDocument, JsonObject>().ConvertUsing((src, dest) =>
+            {
+                if (src == null) return null;
+                var json = src.ToJson();
+                return JsonNode.Parse(json)?.AsObject();
+            });
 
             CreateMap<string, byte[]>().ConstructUsing(data => Convert.FromBase64String(data.Contains(",") ? data.Substring(data.IndexOf(",") + 1) : data));
             CreateMap<byte[], string>().ConstructUsing(data => Convert.ToBase64String(data));
@@ -548,20 +564,42 @@ namespace Jogl.Server.API.Mapping
             CreateMap<TextValueModel, Tag>()
                 .ForMember(dst => dst.Text, opt => opt.MapFrom(src => src.Value));
 
-            //resources
-            CreateMap<Resource, ResourceModel>()
-                  .ForMember(dst => dst.ImageUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.ImageId)))
-                  .ForMember(dst => dst.ImageUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.ImageId, true)));
+            //needs
+            CreateMap<Resource, EntityMiniModel>()
+                .ForMember(dst => dst.EntityType, opt => opt.MapFrom((src, dst, ctx) => FeedType.Resource));
+            //.ForMember(dst => dst.BannerUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.BannerId)))
+            //.ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.BannerId, true)))
+            //.ForMember(dst => dst.LogoUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId)))
+            //.ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId, true)));
+            CreateMap<Resource, ResourceModel>();
+            //.ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
+            //.ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
+            //{
+            //    PostCount = src.PostCount,
+            //    NewPostCount = src.NewPostCount,
+            //    NewMentionCount = src.NewMentionCount,
+            //    NewThreadActivityCount = src.NewThreadActivityCount,
+            //    CommentCount = src.CommentCount
+            //}));
             CreateMap<ResourceUpsertModel, Resource>();
 
             //portfolio items
             CreateMap<Paper, PortfolioItemModel>()
                   .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.Paper))
+                  .ForMember(dst => dst.Summary, opt => opt.MapFrom(src => src.Summary))
+                  .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Title))
                   .ForMember(dst => dst.FeedStats, opt => opt.MapFrom(src => new FeedStatModel { PostCount = src.PostCount }));
             CreateMap<Document, PortfolioItemModel>()
                   .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.JoglDoc))
                   .ForMember(dst => dst.Summary, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Name))
+                  .ForMember(dst => dst.FeedStats, opt => opt.MapFrom(src => new FeedStatModel { PostCount = src.PostCount }));
+            CreateMap<Resource, PortfolioItemModel>()
+                  .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.Repository))
+                  .ForMember(dst => dst.Summary, opt => opt.MapFrom(src => src.Description))
+                  .ForMember(dst => dst.Title, opt => opt.MapFrom(src => src.Title))
+                  .ForMember(dst => dst.Url, opt => opt.MapFrom(src => src.Data.Contains("Url") ? src.Data["Url"] : null))
+                  .ForMember(dst => dst.Source, opt => opt.MapFrom(src => src.Data.Contains("Source") ? src.Data["Source"] : null))
                   .ForMember(dst => dst.FeedStats, opt => opt.MapFrom(src => new FeedStatModel { PostCount = src.PostCount }));
 
             //papers
@@ -635,14 +673,15 @@ namespace Jogl.Server.API.Mapping
               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, dst, ctx) => { return src.PubmedData?.ArticleIdList?.ArticleId?.FirstOrDefault(id => id.IdType == "doi")?.Text; }));
 
             CreateMap<OpenAlex.DTO.Author, AuthorModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.IdTrimmed))
                 .ForMember(dst => dst.Name, opt => opt.MapFrom((src, ctx, dst) => src.DisplayName))
                 .ForMember(dst => dst.OrcidId, opt => opt.MapFrom((src, ctx, dst) => src.Orcid))
                 .ForMember(dst => dst.Institutions, opt => opt.MapFrom((src, ctx, dst) => src.LastKnownInstitutions?.Select(i => i.DisplayName).ToList()))
-                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()));
+                .ForMember(dst => dst.Topics, opt => opt.MapFrom((src, ctx, dst) => src.Topics.Select(t => t.DisplayName).ToList()))
+                .ForMember(dst => dst.LastWork, opt => opt.MapFrom((src, ctx, dst) => src.LastWork));
 
             CreateMap<OpenAlex.DTO.Work, WorkModel>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.Id))
+                .ForMember(dst => dst.Id, opt => opt.MapFrom((src, ctx, dst) => src.IdTrimmed))
                 .ForMember(dst => dst.Title, opt => opt.MapFrom((src, ctx, dst) => src.Title))
                 .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => src.Authorships?.Select(i => i.Author.DisplayName).ToList()))
                 .ForMember(dst => dst.Publication, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
@@ -655,7 +694,7 @@ namespace Jogl.Server.API.Mapping
                .ForMember(dst => dst.Authors, opt => opt.MapFrom((src, ctx, dst) => string.Join(',', src.Authorships?.Select(i => i.Author.DisplayName))))
                .ForMember(dst => dst.Journal, opt => opt.MapFrom((src, ctx, dst) => src.PrimaryLocation?.Source?.DisplayName))
                .ForMember(dst => dst.PublicationDate, opt => opt.MapFrom((src, ctx, dst) => src.PublicationDate))
-               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Doi.Replace("https://doi.org/", string.Empty)))
+               .ForMember(dst => dst.ExternalId, opt => opt.MapFrom((src, ctx, dst) => src.Doi?.Replace("https://doi.org/", string.Empty)))
                .ForMember(dst => dst.ExternalSystem, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
                .ForMember(dst => dst.Summary, opt => opt.MapFrom((src, ctx, dst) => { return ExternalSystem.OpenAlex; }))
                .ForMember(dst => dst.DefaultVisibility, opt => opt.MapFrom((src, ctx, dst) => { return FeedEntityVisibility.View; }))

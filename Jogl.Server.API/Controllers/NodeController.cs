@@ -88,12 +88,6 @@ namespace Jogl.Server.API.Controllers
             return _organizationService.ListForNode(CurrentUserId, id, search, page, pageSize);
         }
 
-        protected override List<Resource> ListResources(string id, string search, int page, int pageSize)
-        {
-            return _resourceService.ListForNode(CurrentUserId, id, search, page, pageSize);
-        }
-
-
         [HttpPost]
         [SwaggerOperation($"Create a new node. The current user becomes a member of the node with the {nameof(AccessLevel.Owner)} role")]
         public async override Task<IActionResult> Create([FromBody] NodeUpsertModel model)

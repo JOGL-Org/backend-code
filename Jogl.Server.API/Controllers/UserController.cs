@@ -9,7 +9,6 @@ using Jogl.Server.Data.Util;
 using Jogl.Server.Email;
 using Jogl.Server.GitHub;
 using Jogl.Server.HuggingFace;
-using Jogl.Server.LinkedIn;
 using Jogl.Server.Lix;
 using Jogl.Server.OpenAlex;
 using Jogl.Server.Orcid;
@@ -17,6 +16,7 @@ using Jogl.Server.PubMed;
 using Jogl.Server.SemanticScholar;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
@@ -41,6 +41,7 @@ namespace Jogl.Server.API.Controllers
         private readonly ITagService _tagService;
         private readonly IEventService _eventService;
         private readonly IPaperService _paperService;
+        private readonly IResourceService _resourceService;
         private readonly IDocumentService _documentService;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
@@ -55,7 +56,7 @@ namespace Jogl.Server.API.Controllers
         private readonly ILixFacade _lixFacade;
         private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IFeedEntityService feedEntityService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
+        public UserController(IUserService userService, IFeedEntityService feedEntityService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IResourceService resourceService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _feedEntityService = feedEntityService;
@@ -71,6 +72,7 @@ namespace Jogl.Server.API.Controllers
             _tagService = tagService;
             _eventService = eventService;
             _paperService = paperService;
+            _resourceService = resourceService;
             _documentService = documentService;
             _notificationService = notificationService;
             _emailService = emailService;
@@ -890,13 +892,19 @@ namespace Jogl.Server.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, "", typeof(ListPage<NotificationModel>))]
         public async Task<IActionResult> GetNotificationsCurrent([FromQuery] SearchModel model)
         {
-            var user = _userService.Get(CurrentUserId);
-            if (user == null)
-                return NotFound();
-
             var notifications = _notificationService.ListSince(CurrentUserId, DateTime.UtcNow.AddYears(-1), model.Page, model.PageSize);
             var notificationModels = notifications.Items.Select(_mapper.Map<NotificationModel>);
             return Ok(new ListPage<NotificationModel>(notificationModels, notifications.Total));
+        }
+
+        [HttpGet]
+        [Route("current/notifications/pending")]
+        [SwaggerOperation($"Returns a boolean value indicating whether or not the current user has any pending (un-actioned) notifications")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "A boolean flag", typeof(bool))]
+        public async Task<IActionResult> HasPendingNotifications([FromQuery] SearchModel model)
+        {
+            var hasPending = _notificationService.HasPendingSince(CurrentUserId, DateTime.UtcNow.AddYears(-1));
+            return Ok(hasPending);
         }
 
         [HttpPost]
@@ -921,7 +929,6 @@ namespace Jogl.Server.API.Controllers
 
             return Ok();
         }
-
 
         [AllowAnonymous]
         [HttpGet]
@@ -1056,6 +1063,18 @@ namespace Jogl.Server.API.Controllers
 
                 await InitCreationAsync(paper);
                 await _paperService.CreateAsync(paper);
+            }
+
+            foreach (var repoUrl in model.Repos)
+            {
+                var resource = await _resourceService.BuildResourceForRepoAsync(repoUrl, model.GithubAccessToken);
+                if (resource == null)
+                    continue;
+
+                resource.EntityId = CurrentUserId;
+                await InitCreationAsync(resource);
+                await _resourceService.CreateAsync(resource);
+                continue;
             }
 
             return Ok();

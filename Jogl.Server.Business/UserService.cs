@@ -367,6 +367,25 @@ namespace Jogl.Server.Business
             await _userRepository.DeleteAsync(id);
         }
 
+        public async Task UndeleteAsync(User user)
+        {
+            var id = user.Id.ToString();
+
+            //delete feed
+            await UndeleteFeedAsync(id);
+
+            await _membershipRepository.UndeleteAsync(m => m.UserId == id && !m.Deleted);
+            await _invitationRepository.UndeleteAsync(i => i.InviteeUserId == id && !i.Deleted);
+            await _pushNotificationTokenRepository.UndeleteAsync(t => t.UserId == id && !t.Deleted);
+            await _userFeedRecordRepository.UndeleteAsync(ufr => ufr.UserId == id && !ufr.Deleted);
+            await _userContentEntityRecordRepository.UndeleteAsync(ucer => ucer.UserId == id && !ucer.Deleted);
+            await _verificationCodeRepository.UndeleteAsync(vc => vc.UserId == id && !vc.Deleted);
+            await _mentionRepository.UndeleteAsync(m => m.EntityId == id && !m.Deleted);
+            await _followingRepository.UndeleteAsync(f => f.UserIdFrom == id && !f.Deleted);
+            await _followingRepository.UndeleteAsync(f => f.UserIdTo == id && !f.Deleted);
+            await _userRepository.UndeleteAsync(id);
+        }
+
         public async Task ResetPasswordAsync(string email, string url)
         {
             var code = GenerateCode();

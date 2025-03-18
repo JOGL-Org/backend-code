@@ -85,11 +85,6 @@ namespace Jogl.Server.API.Controllers
             throw new Exception();
         }
 
-        protected override List<Resource> ListResources(string id, string search, int page, int pageSize)
-        {
-            return _resourceService.ListForFeed(id, search, page, pageSize);
-        }
-
         [HttpPost]
         [SwaggerOperation($"Create a new call for proposals. The current user becomes a member of the call for proposals with the {nameof(AccessLevel.Owner)} role")]
         public async override Task<IActionResult> Create([FromBody] CallForProposalUpsertModel model)

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
-    public enum PortfolioItemType { Paper, JoglDoc }
+    public enum PortfolioItemType { Paper, JoglDoc, Repository }
     public class PortfolioItemModel : BaseModel
     {
         [JsonPropertyName("id")]
@@ -38,5 +38,11 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("journal")]
         public string Journal { get; set; }
+
+        [JsonPropertyName("url")]
+        public string Url { get; set; }
+
+        [JsonPropertyName("source")]
+        public string Source { get; set; }
     }
 }

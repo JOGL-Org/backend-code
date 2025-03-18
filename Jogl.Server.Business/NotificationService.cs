@@ -37,6 +37,11 @@ namespace Jogl.Server.Business
             await _notificationRepository.CreateAsync(notifications);
         }
 
+        public bool HasPendingSince(string userId, DateTime? dateTimeUTC)
+        {
+            return _notificationRepository.Count(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Actioned && (n.Type == NotificationType.Invite || n.Type == NotificationType.EventInvite) && !n.Deleted) > 0;
+        }
+
         public ListPage<Notification> ListSince(string userId, DateTime? dateTimeUTC, int page, int pageSize)
         {
             var total = _notificationRepository.Count(n => n.UserId == userId && n.CreatedUTC >= dateTimeUTC && !n.Deleted);
@@ -46,14 +51,25 @@ namespace Jogl.Server.Business
                 switch (notification.Type)
                 {
                     case NotificationType.AdminRequest:
-                        var userDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.User);
-                        var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
-                        if (communityEntityDataItem == null || userDataItem == null)
-                            break;
+                        {
+                            var userDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.User);
+                            var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
+                            if (communityEntityDataItem == null || userDataItem == null)
+                                break;
 
-                        var answers = _onboardingQuestionnaireInstanceRepository.Get(r => r.CommunityEntityId == communityEntityDataItem.EntityId && r.UserId == userDataItem.EntityId && !r.Deleted);
-                        communityEntityDataItem.EntityOnboardingAnswersAvailable = answers != null;
-                        break;
+                            var answers = _onboardingQuestionnaireInstanceRepository.Get(r => r.CommunityEntityId == communityEntityDataItem.EntityId && r.UserId == userDataItem.EntityId && !r.Deleted);
+                            communityEntityDataItem.EntityOnboardingAnswersAvailable = answers != null;
+                            break;
+                        }
+                    case NotificationType.Invite:
+                        {
+                            var communityEntityDataItem = notification.Data.SingleOrDefault(d => d.Key == NotificationDataKey.CommunityEntity);
+                            if (communityEntityDataItem == null)
+                                break;
+
+                            communityEntityDataItem.CommunityEntityOnboarding = _communityEntityService.Get(communityEntityDataItem.EntityId)?.Onboarding;
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -367,8 +383,8 @@ namespace Jogl.Server.Business
 
         public async Task NotifyResourceCreatedAsync(Resource resource)
         {
-            var memberships = _membershipRepository.List(m => m.CommunityEntityId == resource.FeedId && !m.Deleted);
-            var communityEntity = _communityEntityService.Get(resource.FeedId);
+            var memberships = _membershipRepository.List(m => m.CommunityEntityId == resource.EntityId && !m.Deleted);
+            var communityEntity = _communityEntityService.Get(resource.EntityId);
             var user = _userRepository.Get(resource.CreatedByUserId);
 
             foreach (var member in memberships)
@@ -382,7 +398,7 @@ namespace Jogl.Server.Business
                     CreatedByUserId = resource.CreatedByUserId,
                     Type = NotificationType.Resource,
                     UserId = member.UserId,
-                    OriginFeedId = resource.FeedId,
+                    OriginFeedId = resource.EntityId,
                     Data = new List<NotificationData>
                     {
                         new NotificationData{ Key = NotificationDataKey.ContentEntity, EntityId = resource.Id.ToString(), EntityTitle = resource.Title },

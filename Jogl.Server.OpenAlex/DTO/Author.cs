@@ -7,6 +7,9 @@ namespace Jogl.Server.OpenAlex.DTO
         [JsonPropertyName("id")]
         public string Id { get; set; }
 
+        [JsonIgnore]
+        public string IdTrimmed { get { return Id.Replace("https://openalex.org/", string.Empty); } }
+
         [JsonPropertyName("orcid")]
         public string Orcid { get; set; }
 
@@ -57,5 +60,8 @@ namespace Jogl.Server.OpenAlex.DTO
 
         [JsonPropertyName("created_date")]
         public string CreatedDate { get; set; }
+
+        [JsonIgnore]
+        public Work LastWork { get; set; }
     }
 }

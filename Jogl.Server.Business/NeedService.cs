@@ -53,6 +53,8 @@ namespace Jogl.Server.Business
         public Need Get(string needId, string userId)
         {
             var need = _needRepository.Get(needId);
+            if (need == null)
+                return null;
 
             EnrichNeedData(new List<Need> { need }, userId);
             need.Path = _feedEntityService.GetPath(need, userId);
