@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.API.Model;
 using Jogl.Server.Data;
-using Syncfusion.DocIO.DLS;
 
 namespace Jogl.Server.API.Controllers
 {

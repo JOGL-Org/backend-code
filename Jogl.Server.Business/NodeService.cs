@@ -86,10 +86,10 @@ namespace Jogl.Server.Business
         public Node Get(string nodeId, string userId)
         {
             var node = _nodeRepository.Get(nodeId);
-            EnrichNodeData(new Node[] { node }, userId);
             if (node == null)
                 return null;
-
+            
+            EnrichNodeData(new Node[] { node }, userId);
             return node;
         }
 
