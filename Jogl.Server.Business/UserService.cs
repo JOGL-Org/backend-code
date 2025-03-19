@@ -338,6 +338,12 @@ namespace Jogl.Server.Business
             await _userRepository.UpdateAsync(user);
         }
 
+        public async Task UpdateOnboardingStatusAsync(User user)
+        {
+            user.Onboarding = true;
+            await _userRepository.SetOnboardingStatusAsync(user);
+        }
+
         public async Task SetActiveAsync(User user)
         {
             await _userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);

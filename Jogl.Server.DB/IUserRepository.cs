@@ -8,6 +8,7 @@ namespace Jogl.Server.DB
         User GetForEmail(string email);
 
         Task SetStatusAsync(string userId, UserStatus status);
+        Task SetOnboardingStatusAsync(User user);
         Task SetPasswordAsync(string userId, string passwordHash, byte[] salt);
 
         IRepositoryQuery<User> QueryWithMembershipData(string searchValue, List<string> communityEntityIds);

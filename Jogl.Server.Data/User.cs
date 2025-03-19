@@ -42,6 +42,7 @@ namespace Jogl.Server.Data
         public List<Wallet> Wallets { get; set; }
         public DateTime? NotificationsReadUTC { get; set; }
         public string Language { get; set; }
+        public bool Onboarding { get; set; }
 
         [BsonIgnore]
         public int FollowedCount { get; set; }

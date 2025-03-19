@@ -70,6 +70,13 @@ namespace Jogl.Server.DB
                                                            .Set(e => e.UpdatedByUserId, userId));
         }
 
+        public async Task SetOnboardingStatusAsync(User user)
+        {
+            await UpdateAsync(user.Id.ToString(), Builders<User>.Update.Set(e => e.Onboarding, user.Onboarding)
+                                                                       .Set(e => e.UpdatedUTC, user.UpdatedUTC)
+                                                                       .Set(e => e.UpdatedByUserId, user.UpdatedByUserId));
+        }
+
         protected override UpdateDefinition<User> GetDefaultUpdateDefinition(User updatedEntity)
         {
             var fullname = updatedEntity.FullName;

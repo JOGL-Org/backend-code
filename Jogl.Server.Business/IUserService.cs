@@ -21,6 +21,7 @@ namespace Jogl.Server.Business
         List<User> Autocomplete(string search, int page, int pageSize);
 
         Task UpdateAsync(User user);
+        Task UpdateOnboardingStatusAsync(User user);
         Task DeleteAsync(User user);
 
         Task ResetPasswordAsync(string email, string url);
@@ -51,5 +52,7 @@ namespace Jogl.Server.Business
         Task UpsertPushNotificationTokenAsync(string token, string userId);
 
         List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string currentUserId, string nodeId, string search);
+
+
     }
 }

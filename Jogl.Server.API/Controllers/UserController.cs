@@ -1079,5 +1079,34 @@ namespace Jogl.Server.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Route("onboarding/status")]
+        [SwaggerOperation("Stores onboarding status for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding status was stored in the user profile")]
+        public async Task<IActionResult> StoreOnboardingStatus()
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user == null)
+                return NotFound();
+
+            await InitUpdateAsync(user);
+            await _userService.UpdateOnboardingStatusAsync(user);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("onboarding/status")]
+        [SwaggerOperation("Gets onboarding status for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The onboarding status", typeof(bool))]
+        public async Task<IActionResult> GetOnboardingStatus()
+        {
+            var user = _userService.Get(CurrentUserId);
+            if (user == null)
+                return NotFound();
+
+            return Ok(user.Onboarding);
+        }
     }
 }
