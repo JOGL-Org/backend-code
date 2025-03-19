@@ -217,23 +217,23 @@ namespace Jogl.Server.Business
                 .ToList();
 
 
-            var docs = _documentRepository.Query(search)
-                .Filter(d => userIds.Contains(d.FeedId))
-                .ToList();
+            //var docs = _documentRepository.Query(search)
+            //    .Filter(d => userIds.Contains(d.FeedId))
+            //    .ToList();
 
-            var documentUserIds = docs.Select(u => u.CreatedByUserId).Distinct().ToList();
-            var documentUsers = _userRepository.Get(documentUserIds);
+            //var documentUserIds = docs.Select(u => u.CreatedByUserId).Distinct().ToList();
+            //var documentUsers = _userRepository.Get(documentUserIds);
 
-            var papers = _paperRepository.Query(search)
-                .Filter(p => userIds.Contains(p.FeedId))
-                .ToList();
+            //var papers = _paperRepository.Query(search)
+            //    .Filter(p => userIds.Contains(p.FeedId))
+            //    .ToList();
 
-            var paperUserIds = papers.Select(p => p.CreatedByUserId).Distinct().ToList();
-            var paperUsers = _userRepository.Get(paperUserIds);
+            //var paperUserIds = papers.Select(p => p.CreatedByUserId).Distinct().ToList();
+            //var paperUsers = _userRepository.Get(paperUserIds);
 
-            var allUsers = users.Concat(documentUsers).Concat(paperUsers).DistinctBy(u => u.Id).ToList();
+            //var allUsers = users.Concat(documentUsers).Concat(paperUsers).DistinctBy(u => u.Id).ToList();
 
-            var userPage = GetPage(allUsers, page, pageSize);
+            var userPage = GetPage(/*allUsers*/users, page, pageSize);
             EnrichUserData(userPage, userId);
             EnrichUserDataWithCommonSpaces(users, nodeId, userId);
 
