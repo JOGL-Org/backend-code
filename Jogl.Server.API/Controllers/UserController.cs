@@ -1054,6 +1054,7 @@ namespace Jogl.Server.API.Controllers
 
             await InitUpdateAsync(user);
             await _userService.UpdateAsync(user);
+            await _userService.UpdateOnboardingStatusAsync(user);
 
             foreach (var paperId in model.PaperIds)
             {
