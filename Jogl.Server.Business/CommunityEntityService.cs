@@ -108,6 +108,9 @@ namespace Jogl.Server.Business
                 return null;
 
             var feed = _feedRepository.Get(id);
+            if (feed == null)
+                return null;
+
             var type = GetType(feed.Type);
             if (!type.HasValue)
                 return null;
