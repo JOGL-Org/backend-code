@@ -775,14 +775,16 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.Institution, opt => opt.MapFrom(src => src.InstitutionName))
                 .ForMember(dst => dst.Program, opt => opt.MapFrom(src => src.FieldOfStudy))
                 .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
-                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded));
+                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded != "Present" ? src.DateEnded : null))
+                .ForMember(dst => dst.Current, opt => opt.MapFrom(src => src.DateEnded == "Present"));
 
             CreateMap<Lix.DTO.Experience, UserExperienceModel>()
                 .ForMember(dst => dst.Company, opt => opt.MapFrom((src, ctx, dst) => src.Organisation?.Name))
                 .ForMember(dst => dst.Position, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
-                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded));
+                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded != "Present" ? src.DateEnded : null))
+                .ForMember(dst => dst.Current, opt => opt.MapFrom(src => src.DateEnded == "Present"));
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

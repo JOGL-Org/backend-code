@@ -31,6 +31,28 @@ var comments = commentRepository.List(u => true);
 foreach (var user in userRepository.List(u => true))
 {
     user.Onboarding = true;
+
+    if (user.Experience != null)
+        foreach (var exp in user.Experience)
+        {
+            if (exp.DateTo == "Present")
+            {
+                exp.DateTo = null;
+                exp.Current = true;
+            }
+        }
+
+    if (user.Education != null)
+        foreach (var edu in user.Education)
+        {
+            if (edu.DateTo == "Present")
+            {
+                edu.DateTo = null;
+                edu.Current = true;
+            }
+        }
+
+    await userRepository.UpdateAsync(user);
     await userRepository.SetOnboardingStatusAsync(user);
 }
 
