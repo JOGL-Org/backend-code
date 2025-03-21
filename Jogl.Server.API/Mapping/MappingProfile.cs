@@ -319,14 +319,16 @@ namespace Jogl.Server.API.Mapping
 
             CreateMap<UserEducation, UserEducationModel>()
                .ForMember(dst => dst.Institution, opt => opt.MapFrom((src, dst, ctx) => src.School))
-               .ForMember(dst => dst.Program, opt => opt.MapFrom((src, dst, ctx) => src.Description))
+               .ForMember(dst => dst.Program, opt => opt.MapFrom((src, dst, ctx) => src.Program))
+               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Description))
                .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
                .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
                .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
 
             CreateMap<UserEducationModel, UserEducation>()
                .ForMember(dst => dst.School, opt => opt.MapFrom((src, dst, ctx) => src.Institution))
-               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Program))
+               .ForMember(dst => dst.Program, opt => opt.MapFrom((src, dst, ctx) => src.Program))
+               .ForMember(dst => dst.Description, opt => opt.MapFrom((src, dst, ctx) => src.Description))
                .ForMember(dst => dst.DateFrom, opt => opt.MapFrom((src, dst, ctx) => src.DateFrom))
                .ForMember(dst => dst.DateTo, opt => opt.MapFrom((src, dst, ctx) => src.DateTo))
                .ForMember(dst => dst.Current, opt => opt.MapFrom((src, dst, ctx) => src.Current));
@@ -774,6 +776,7 @@ namespace Jogl.Server.API.Mapping
             CreateMap<Lix.DTO.Education, UserEducationModel>()
                 .ForMember(dst => dst.Institution, opt => opt.MapFrom(src => src.InstitutionName))
                 .ForMember(dst => dst.Program, opt => opt.MapFrom(src => src.FieldOfStudy))
+                .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Degree))
                 .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
                 .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded != "Present" ? src.DateEnded : null))
                 .ForMember(dst => dst.Current, opt => opt.MapFrom(src => src.DateEnded == "Present"));

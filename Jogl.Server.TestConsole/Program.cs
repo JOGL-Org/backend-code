@@ -50,6 +50,12 @@ foreach (var user in userRepository.List(u => true))
                 edu.DateTo = null;
                 edu.Current = true;
             }
+
+            if (string.IsNullOrEmpty(edu.Program) && !string.IsNullOrEmpty(edu.Description))
+            {
+                edu.Program = edu.Description;
+                edu.Description = null;
+            }
         }
 
     await userRepository.UpdateAsync(user);

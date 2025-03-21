@@ -6,8 +6,10 @@ namespace Jogl.Server.API.Model
     {
         [JsonPropertyName("school")]
         public string Institution { get; set; }
-        [JsonPropertyName("description")]
+        [JsonPropertyName("program")]
         public string? Program { get; set; }
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
         [JsonPropertyName("date_from")]
         public string? DateFrom { get; set; }
         [JsonPropertyName("date_to")]
