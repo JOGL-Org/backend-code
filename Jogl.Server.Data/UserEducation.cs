@@ -1,5 +1,9 @@
-﻿namespace Jogl.Server.Data
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
+
+namespace Jogl.Server.Data
 {
+    [BsonIgnoreExtraElements]
     public class UserEducation
     {
         public string School { get; set; }
