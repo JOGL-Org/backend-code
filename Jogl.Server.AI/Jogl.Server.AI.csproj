@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\" />
+  </ItemGroup>
+
 </Project>
