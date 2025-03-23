@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    //"dev": {
+    //  "commandName": "Project",
+    //  "commandLineArgs": "--port 7142",
+    //  "environmentVariables": {
+    //    "DOTNET_ENVIRONMENT": "Development"
+    //  }
+    //},
+    "prod": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7142",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

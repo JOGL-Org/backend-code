@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<OutputType>Exe</OutputType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Include="appsettings.Development.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="appsettings.Production.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<None Include="local.settings.json" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="1.2.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.18.1" />
+		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.4.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
+		<ProjectReference Include="..\Jogl.Server.AI\Jogl.Server.AI.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
+		<ProjectReference Include="..\Jogl.Server.GitHub\Jogl.Server.GitHub.csproj" />
+		<ProjectReference Include="..\Jogl.Server.HuggingFace\Jogl.Server.HuggingFace.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Search\Jogl.Server.Search.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
+	</ItemGroup>
+</Project>
