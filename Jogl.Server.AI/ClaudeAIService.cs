@@ -21,7 +21,7 @@ namespace Jogl.Server.AI
 
             var prompts = new List<SystemMessage>
             {
-                new SystemMessage($"The following message will be a natural language query. The user is searching for other users. We need to extract a search query representing a topic or area of expertise to feed into Azure AI Search. Respond with a json of the following format: {{\"success\": boolean, \"extractedQuery\": string, \"explanation\": string}}")
+                new SystemMessage($"The following message will be a natural language query. The user is searching for other users. We need to extract a search query representing a topic or area of expertise to feed into Azure AI Search. Respond with a json of the following format: {{\"success\": boolean, \"extractedQuery\": string, \"explanation\": string}}. ")
             };
 
             var parameters = new MessageParameters()
@@ -47,7 +47,7 @@ namespace Jogl.Server.AI
 
             var prompts = new List<SystemMessage>
             {
-                new SystemMessage($"The following is a json of a search result from Azure AI Search. Explain why the search result matches the original query {query}.")
+                new SystemMessage($"The following is a json of a search result from Azure AI Search. Using the typical chatGTP style for answers (using a small intro, bullet points for the main content and bold font for important expressions), explain why the search result matches the original query {query}. If you think the match is weak, do not say that explicitly. Do not mention the original search query. Your response will be embedded in a front end for searching profiles, the end user has no notion of which data you are referencing and we need any explanation to quote the source text snippet")
             };
 
             var parameters = new MessageParameters()

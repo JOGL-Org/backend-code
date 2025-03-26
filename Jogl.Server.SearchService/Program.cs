@@ -41,6 +41,7 @@ builder.Services.AddScoped<IAIService, ClaudeAIService>();
 
 //add secrets
 builder.Configuration.AddKeyVault();
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
