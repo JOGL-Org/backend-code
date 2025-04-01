@@ -32,7 +32,7 @@ namespace Jogl.Server.OpenAlex
             foreach (var author in response.Data.Results)
             {
                 author.LastWork = works.Items
-                    .OrderByDescending(w => w.Id)
+                    .OrderByDescending(w => w.PublicationDate)
                     .FirstOrDefault(w => w.Authorships.Any(a => a.Author.Id == author.Id));
             }
 

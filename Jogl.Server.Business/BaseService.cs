@@ -311,55 +311,6 @@ namespace Jogl.Server.Business
             }
         }
 
-        [Obsolete]
-        protected IEnumerable<string> GetLinkedEntityIds(CommunityEntity entity)
-        {
-            switch (entity.Type)
-            {
-                case CommunityEntityType.Project:
-                    return _relationRepository
-                        .List(r => r.SourceCommunityEntityId == entity.Id.ToString() && !r.Deleted)
-                        .Select(c => c.TargetCommunityEntityId);
-                default:
-                    return new List<string>();
-            }
-        }
-
-        protected Dictionary<string, CommunityEntityType> CollectCommunityEntityTypeDictionary(Feed feed)
-        {
-            var res = new Dictionary<string, CommunityEntityType> { };
-            CommunityEntityType type;
-            if (Enum.TryParse(feed.Type.ToString(), true, out type))
-                res.Add(feed.Id.ToString(), type);
-
-            return res;
-        }
-
-        protected List<string> GetNodeIdsForCommunity(IEnumerable<Relation> allRelations, string communityId)
-        {
-            return GetNodeIdsForCommunities(allRelations, new List<string> { communityId });
-        }
-
-        protected List<string> GetNodeIdsForCommunities(IEnumerable<Relation> allRelations, IEnumerable<string> communityIds)
-        {
-            return allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Node && r.SourceCommunityEntityType == CommunityEntityType.Workspace && communityIds.Contains(r.SourceCommunityEntityId))
-                 .Select(r => r.TargetCommunityEntityId)
-                 .ToList();
-        }
-
-        protected List<string> GetNodeIdsForMemberships(IEnumerable<Relation> allRelations, IEnumerable<Membership> currentUserMemberships)
-        {
-            var nodeIds = currentUserMemberships.Where(m => m.CommunityEntityType == CommunityEntityType.Node).Select(m => m.CommunityEntityId);
-            var workspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Node && r.SourceCommunityEntityType == CommunityEntityType.Workspace && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId))
-                 .Select(r => r.TargetCommunityEntityId);
-
-            var subWorkspaceNodeIds = allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Workspace && r.SourceCommunityEntityType == CommunityEntityType.Workspace && allRelations.Any(r2 => r2.SourceCommunityEntityId == r.TargetCommunityEntityId && r2.TargetCommunityEntityType == CommunityEntityType.Node) && currentUserMemberships.Any(m => m.CommunityEntityId == r.SourceCommunityEntityId))
-                 .Select(r => r.TargetCommunityEntityId);
-
-
-            return nodeIds.Concat(workspaceNodeIds).Concat(subWorkspaceNodeIds).ToList();
-        }
-
         protected List<string> GetCommunityEntityIdsForNode(IEnumerable<Relation> allRelations, string nodeId)
         {
             if (string.IsNullOrEmpty(nodeId))
@@ -386,12 +337,7 @@ namespace Jogl.Server.Business
               .Distinct()
               .ToList();
         }
-
-        protected List<string> GetFeedEntityIdsForNode(IEnumerable<Relation> allRelations, IEnumerable<Event> allEvents, string nodeId)
-        {
-            return GetFeedEntityIdsForNodes(allRelations, allEvents, new List<string> { nodeId });
-        }
-
+        
         protected List<string> GetFeedEntityIdsForNode(string nodeId)
         {
             var relations = _relationRepository.List(r => !r.Deleted);
@@ -412,51 +358,10 @@ namespace Jogl.Server.Business
               .ToList();
         }
 
-        protected List<string> GetFeedEntityIdsForNodes(IEnumerable<Relation> allRelations, IEnumerable<Event> allEvents, List<string> nodeIds)
-        {
-            var communityEntityIds = GetCommunityEntityIdsForNodes(allRelations, nodeIds);
-            var eventIds = allEvents.Where(e => communityEntityIds.Contains(e.CommunityEntityId)).Select(e => e.Id.ToString());
-
-            return communityEntityIds
-                .Concat(eventIds)
-                .Distinct()
-                .ToList();
-        }
-
-        protected List<string> GetCommunityEntityIdsForOrg(IEnumerable<Relation> allRelations, string orgId)
-        {
-            return GetCommunityEntityIdsForOrgs(allRelations, new List<string> { orgId });
-        }
-
         protected List<string> GetCommunityEntityIdsForOrg(string orgId)
         {
             var relations = _relationRepository.List(r => r.TargetCommunityEntityType == CommunityEntityType.Organization && r.TargetCommunityEntityId == orgId && !r.Deleted);
             return GetCommunityEntityIdsForNode(relations, orgId);
-        }
-
-        protected List<string> GetCommunityEntityIdsForOrgs(IEnumerable<Relation> allRelations, List<string> orgIds)
-        {
-            return allRelations.Where(r => r.TargetCommunityEntityType == CommunityEntityType.Organization && orgIds.Contains(r.TargetCommunityEntityId))
-                .Select(r => r.SourceCommunityEntityId)
-                .Concat(orgIds)
-                .Distinct()
-                .ToList();
-        }
-
-        protected List<string> GetFeedEntityIdsForOrg(IEnumerable<Relation> allRelations, IEnumerable<Event> allEvents, string orgId)
-        {
-            return GetFeedEntityIdsForOrgs(allRelations, allEvents, new List<string> { orgId });
-        }
-
-        protected List<string> GetFeedEntityIdsForOrgs(IEnumerable<Relation> allRelations, IEnumerable<Event> allEvents, List<string> orgIds)
-        {
-            var communityEntityIds = GetCommunityEntityIdsForOrgs(allRelations, orgIds);
-            var eventIds = allEvents.Where(e => communityEntityIds.Contains(e.CommunityEntityId)).Select(e => e.Id.ToString());
-
-            return communityEntityIds
-                .Concat(eventIds)
-                .Distinct()
-                .ToList();
         }
 
         //protected List<CommunityEntity> GetEcosystemForOrganizations(IProjectRepository projectRepository, IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, ICallForProposalRepository callForProposalsRepository, IOrganizationRepository organizationRepository, string organizationId, string currentUserId, IEnumerable<CommunityEntityType> types)

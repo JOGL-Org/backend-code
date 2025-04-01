@@ -4,6 +4,7 @@ using Jogl.Server.DB.Context;
 using Jogl.Server.Search;
 using Microsoft.OpenApi.Models;
 using Jogl.Server.AI;
+using Jogl.Server.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,16 +29,17 @@ builder.Services.AddSwaggerGen(config =>
         Version = "v1"
     });
     config.SupportNonNullableReferenceTypes();
-    //   config.EnableAnnotations();
+    config.EnableAnnotations();
 });
 
 //data access
 builder.Services.AddScoped<IOperationContext, OperationContext>();
 builder.Services.AddRepositories();
 
+builder.Services.AddScoped<IBusinessSearchService, BusinessSearchService>();
 builder.Services.AddScoped<ISearchService, AzureSearchService>();
+builder.Services.AddScoped<IRelationService, RelationService>();
 builder.Services.AddScoped<IAIService, ClaudeAIService>();
-//builder.Services.AddApplicationInsightsTelemetry();
 
 //add secrets
 builder.Configuration.AddKeyVault();

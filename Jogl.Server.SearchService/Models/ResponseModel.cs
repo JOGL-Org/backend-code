@@ -1,4 +1,4 @@
-﻿namespace Jogl.Server.API.Controllers
+﻿namespace Jogl.Server.SearchService.Models
 {
     public class ResponseModel<T>
     {

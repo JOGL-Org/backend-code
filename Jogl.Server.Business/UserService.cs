@@ -216,7 +216,6 @@ namespace Jogl.Server.Business
                 .Sort(sortKey, sortAscending)
                 .ToList();
 
-
             //var docs = _documentRepository.Query(search)
             //    .Filter(d => userIds.Contains(d.FeedId))
             //    .ToList();

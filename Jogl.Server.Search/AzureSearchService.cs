@@ -52,7 +52,7 @@ namespace Jogl.Server.Search
             return searchDoc;
         }
 
-        public async Task<List<User>> SearchUsersAsync(string query)
+        public async Task<List<User>> SearchUsersAsync(string query, IEnumerable<string>? userIds = default)
         {
             // Create a search client
             SearchClient searchClient = new SearchClient(
@@ -60,24 +60,34 @@ namespace Jogl.Server.Search
                 "users",
                 new DefaultAzureCredential());
 
-            // Set up the search options with semantic search and explanations
-            SearchOptions options = new SearchOptions
+            //create options
+            var options = new SearchOptions
             {
                 QueryType = SearchQueryType.Semantic,
                 Size = 3,
                 SemanticSearch = new SemanticSearchOptions
                 {
-                    //Debug = QueryDebugMode.Semantic,
                     SemanticConfigurationName = "default",
-                    //QueryCaption = new QueryCaption(QueryCaptionType.Extractive),
-                    //QueryAnswer = new QueryAnswer(QueryAnswerType.Extractive),
                 }
             };
 
-            // Execute the search
-            var results = await searchClient.SearchAsync<User>(query, options);
+            //if ids available, generate filter
+            if (userIds != null && userIds.Any())
+                options.Filter = string.Join(" or ", userIds.Select(id => $"id eq '{id}'"));
+            
+            try
+            {
 
-            return results.Value.GetResultsAsync().ToBlockingEnumerable().Select(v => v.Document).ToList();
+                //execute search
+                var results = await searchClient.SearchAsync<User>(query, options);
+
+                return results.Value.GetResultsAsync().ToBlockingEnumerable().Select(v => v.Document).ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
     }
 }
