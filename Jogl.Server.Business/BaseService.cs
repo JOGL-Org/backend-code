@@ -680,13 +680,10 @@ namespace Jogl.Server.Business
 
             foreach (var user in users)
             {
-                user.FollowedCount = followed.Count(m => m.UserIdFrom == user.Id.ToString() && !m.Deleted);
-                user.FollowerCount = followers.Count(m => m.UserIdTo == user.Id.ToString() && !m.Deleted);
-
                 if (string.IsNullOrEmpty(currentUserId))
                     continue;
 
-                user.UserFollows = followers.Any(f => f.UserIdFrom == currentUserId && f.UserIdTo == user.Id.ToString());
+                user.UserConnected = followers.Any(f => f.UserIdFrom == currentUserId && f.UserIdTo == user.Id.ToString());
             }
         }
 

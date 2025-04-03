@@ -1109,5 +1109,25 @@ namespace Jogl.Server.API.Controllers
 
             return Ok(user.Onboarding);
         }
+
+        [HttpPost]
+        [Route("{id}/connection")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id")]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, "The current user is already connected to this user")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, "The user cannot connect to themselves")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully created")]
+        public async Task<IActionResult> Connect([FromRoute] string id)
+        {
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("{id}/connection")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id or the current user isn't connected to this user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully deleted")]
+        public async Task<IActionResult> Disconnect([FromRoute] string id)
+        {
+            return Ok();
+        }
     }
 }

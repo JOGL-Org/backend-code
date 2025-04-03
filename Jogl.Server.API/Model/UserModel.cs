@@ -90,14 +90,8 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("education")]
         public List<UserEducationModel> Education { get; set; }
 
-        [JsonPropertyName("followed_count")]
-        public int FollowedCount { get; set; }
-
-        [JsonPropertyName("follower_count")]
-        public int FollowerCount { get; set; }
-
-        [JsonPropertyName("user_follows")]
-        public bool UserFollows { get; set; }
+        [JsonPropertyName("user_connected")]
+        public bool UserConnected { get; set; }
 
         [JsonPropertyName("stats")]
         public CommunityEntityStatModel Stats { get; set; }

@@ -45,11 +45,7 @@ namespace Jogl.Server.Data
         public bool Onboarding { get; set; }
 
         [BsonIgnore]
-        public int FollowedCount { get; set; }
-        [BsonIgnore]
-        public int FollowerCount { get; set; }
-        [BsonIgnore]
-        public bool UserFollows { get; set; }
+        public bool UserConnected { get; set; }
         [BsonIgnore]
         public int ProjectCount { get; set; }
         [BsonIgnore]
