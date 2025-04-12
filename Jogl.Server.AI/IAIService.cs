@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Data;
+﻿using Jogl.Server.AI.DTO;
+using Jogl.Server.Data;
 
 namespace Jogl.Server.AI
 {
@@ -7,6 +8,8 @@ namespace Jogl.Server.AI
         Task<PromptResult> GetSearchQueryAsync(string query);
         Task<string> ExplainSearchResultAsync(string query, object searchResult);
         Task<string> GetResponseAsync(IEnumerable<string> contextData, IEnumerable<InputItem> inputHistory);
+        Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m);
+        Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m);
         Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity;
     }
 

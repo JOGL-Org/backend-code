@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Jogl.Server.DB.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jogl.Server.DB.Extensions
 {
@@ -48,6 +49,8 @@ namespace Jogl.Server.DB.Extensions
             serviceCollection.AddTransient<IInvitationKeyRepository, InvitationKeyRepository>();
             serviceCollection.AddTransient<IEmailRecordRepository, EmailRecordRepository>();
             serviceCollection.AddTransient<ISystemValueRepository, SystemValueRepository>();
+            serviceCollection.AddTransient<IInterfaceChannelRepository, InterfaceChannelRepository>();
+            serviceCollection.AddTransient<IOperationContext, OperationContext>();
         }
     }
 }

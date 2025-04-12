@@ -52,7 +52,7 @@ namespace Jogl.Server.Search
             return searchDoc;
         }
 
-        public async Task<List<User>> SearchUsersAsync(string query, IEnumerable<string>? userIds = default)
+        public async Task<List<SearchResult<User>>> SearchUsersAsync(string query, IEnumerable<string>? userIds = default)
         {
             // Create a search client
             SearchClient searchClient = new SearchClient(
@@ -64,7 +64,7 @@ namespace Jogl.Server.Search
             var options = new SearchOptions
             {
                 QueryType = SearchQueryType.Semantic,
-                Size = 3,
+                Size = 8,
                 SemanticSearch = new SemanticSearchOptions
                 {
                     SemanticConfigurationName = "default",
@@ -74,14 +74,14 @@ namespace Jogl.Server.Search
             //if ids available, generate filter
             if (userIds != null && userIds.Any())
                 options.Filter = string.Join(" or ", userIds.Select(id => $"id eq '{id}'"));
-            
+
             try
             {
 
                 //execute search
                 var results = await searchClient.SearchAsync<User>(query, options);
 
-                return results.Value.GetResultsAsync().ToBlockingEnumerable().Select(v => v.Document).ToList();
+                return results.Value.GetResultsAsync().ToBlockingEnumerable()/*Select(v => v.Document).*/.ToList();
             }
             catch (Exception ex)
             {

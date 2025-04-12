@@ -4,6 +4,7 @@ using Anthropic.SDK;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Jogl.Server.Data;
+using Jogl.Server.AI.DTO;
 
 namespace Jogl.Server.AI
 {
@@ -92,6 +93,56 @@ namespace Jogl.Server.AI
                 throw new Exception($"Claude request failed for feed prompt");
 
             return response.Message.ToString();
+        }
+
+        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m)
+        {
+            var client = new AnthropicClient(_configuration["Claude:APIKey"]);
+
+            var prompts = new List<SystemMessage>();
+            prompts.Add(new SystemMessage(prompt));
+
+            var parameters = new MessageParameters()
+            {
+                Messages = inputHistory.Select(i => new Message(i.FromUser ? RoleType.User : RoleType.Assistant, i.Text)).ToList(),
+                Model = AnthropicModels.Claude35Sonnet,
+                Stream = false,
+                MaxTokens = 1024,
+                Temperature = temperature,
+                PromptCaching = PromptCacheType.Messages,
+                System = prompts,
+            };
+
+            var response = await client.Messages.GetClaudeMessageAsync(parameters);
+            if (response?.Message == null)
+                throw new Exception($"Claude request failed for feed prompt");
+
+            return response.Message.ToString();
+        }
+
+        public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m)
+        {
+            var client = new AnthropicClient(_configuration["Claude:APIKey"]);
+
+            var prompts = new List<SystemMessage>();
+            prompts.Add(new SystemMessage(prompt));
+
+            var parameters = new MessageParameters()
+            {
+                Messages = inputHistory.Select(i => new Message(i.FromUser ? RoleType.User : RoleType.Assistant, i.Text)).ToList(),
+                Model = AnthropicModels.Claude35Sonnet,
+                Stream = false,
+                MaxTokens = 1024,
+                Temperature = temperature,
+                PromptCaching = PromptCacheType.Messages,
+                System = prompts
+            };
+
+            var response = await client.Messages.GetClaudeMessageAsync(parameters);
+            if (response?.Message == null)
+                throw new Exception($"Claude request failed for feed prompt");
+
+            return JsonSerializer.Deserialize<T>(response.Message.ToString());
         }
 
         public async Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity

@@ -93,9 +93,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.UnreadService",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.SearchIndexerService", "Jogl.Server.SearchIndexerService\Jogl.Server.SearchIndexerService.csproj", "{D22226AD-1553-4195-9FDE-E8A174C61FDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.SearchService", "Jogl.Server.SearchService\Jogl.Server.SearchService.csproj", "{B44488B3-E3C7-4C44-B582-967ED25F68D2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Search", "Jogl.Server.Search\Jogl.Server.Search.csproj", "{FBB164E0-931A-4110-B47D-BA92D00763AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.SlackAgentAPI", "Jogl.Server.SlackAgentAPI\Jogl.Server.SlackAgentAPI.csproj", "{A26CACDC-E576-4A86-8A06-DD9C9CDA9ECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.AI.Agent", "Jogl.Server.AI.Agent\Jogl.Server.AI.Agent.csproj", "{19473D0D-E4BA-49B8-8EC7-94F2DF26C57E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -279,14 +281,18 @@ Global
 		{D22226AD-1553-4195-9FDE-E8A174C61FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D22226AD-1553-4195-9FDE-E8A174C61FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D22226AD-1553-4195-9FDE-E8A174C61FDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B44488B3-E3C7-4C44-B582-967ED25F68D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B44488B3-E3C7-4C44-B582-967ED25F68D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B44488B3-E3C7-4C44-B582-967ED25F68D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B44488B3-E3C7-4C44-B582-967ED25F68D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBB164E0-931A-4110-B47D-BA92D00763AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FBB164E0-931A-4110-B47D-BA92D00763AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBB164E0-931A-4110-B47D-BA92D00763AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBB164E0-931A-4110-B47D-BA92D00763AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26CACDC-E576-4A86-8A06-DD9C9CDA9ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26CACDC-E576-4A86-8A06-DD9C9CDA9ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26CACDC-E576-4A86-8A06-DD9C9CDA9ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26CACDC-E576-4A86-8A06-DD9C9CDA9ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19473D0D-E4BA-49B8-8EC7-94F2DF26C57E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19473D0D-E4BA-49B8-8EC7-94F2DF26C57E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19473D0D-E4BA-49B8-8EC7-94F2DF26C57E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19473D0D-E4BA-49B8-8EC7-94F2DF26C57E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
