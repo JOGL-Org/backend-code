@@ -1,10 +1,8 @@
-using Amazon.S3.Model;
 using Jogl.Server.AI;
 using Jogl.Server.AI.Agent;
 using Jogl.Server.DB;
 using SlackNet;
 using SlackNet.Events;
-using System.ComponentModel;
 
 namespace Jogl.Server.SlackAgentAPI.Handler;
 
@@ -79,6 +77,6 @@ public class MessageHandler : IEventHandler<MessageEvent>
 
     private async Task DeleteMessageAsync(ISlackApiClient client, string channel, string ts)
     {
-        await _slackApiClient.Chat.Delete(ts, channel, true);
+        await client.Chat.Delete(ts, channel, true);
     }
 }
