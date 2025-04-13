@@ -16,6 +16,7 @@ using Jogl.Server.PubMed;
 using Jogl.Server.SemanticScholar;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Amqp;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
@@ -1051,6 +1052,29 @@ namespace Jogl.Server.API.Controllers
                 user.Experience = model.Experience.Select(e => _mapper.Map<UserExperience>(e)).ToList();
             if (model.Experience != null)
                 user.Education = model.Education.Select(e => _mapper.Map<UserEducation>(e)).ToList();
+
+            //add github profile
+            if (!string.IsNullOrWhiteSpace(model.GithubAccessToken))
+            {
+                var info = await _githubFacade.GetUserInfoAsync(model.GithubAccessToken);
+                if (!string.IsNullOrEmpty(info?.HtmlUrl) && !user.Links.Any(l => l.URL == info.HtmlUrl))
+                    user.Links.Add(new Link { URL = info.HtmlUrl });
+            }
+
+            //add huggingface profile
+            if (!string.IsNullOrWhiteSpace(model.HuggingfaceAccessToken))
+            {
+                var info = await _huggingFaceFacade.GetUserInfoAsync(model.HuggingfaceAccessToken);
+                if (!string.IsNullOrEmpty(info?.URL) && !user.Links.Any(l => l.URL == info.URL))
+                    user.Links.Add(new Link { URL = info.URL });
+            }
+
+            //add linkedin profile
+            if (!string.IsNullOrWhiteSpace(model.LinkedInUrl))
+            {
+                if (!user.Links.Any(l => l.URL == model.LinkedInUrl))
+                    user.Links.Add(new Link { URL = model.LinkedInUrl });
+            }
 
             await InitUpdateAsync(user);
             await _userService.UpdateAsync(user);

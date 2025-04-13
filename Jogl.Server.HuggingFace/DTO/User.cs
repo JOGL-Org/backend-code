@@ -24,5 +24,17 @@ namespace Jogl.Server.HuggingFace.DTO
 
         [JsonPropertyName("isMod")]
         public bool IsMod { get; set; }
+
+        [JsonIgnore()]
+        public string URL
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Name))
+                    return null;
+
+                return $"https://huggingface.co/{Name}";
+            }
+        }
     }
 }

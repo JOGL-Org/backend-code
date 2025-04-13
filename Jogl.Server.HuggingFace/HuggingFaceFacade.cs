@@ -38,6 +38,19 @@ namespace Jogl.Server.HuggingFace
             }
         }
 
+        public async Task<User> GetUserInfoAsync(string accessToken)
+        {
+            var client = new RestClient($"https://huggingface.co/api/");
+            client.AddDefaultHeader("Authorization", $"Bearer {accessToken}");
+
+            var userRequest = new RestRequest($"whoami-v2");
+            var userResponse = await client.ExecuteGetAsync<User>(userRequest);
+            if (!userResponse.IsSuccessStatusCode)
+                return null;
+
+            return userResponse.Data;
+        }
+
         public async Task<Repo> GetRepoAsync(string repo)
         {
             var client = new RestClient($"https://huggingface.co/api/");

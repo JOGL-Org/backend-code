@@ -4,14 +4,14 @@ namespace Jogl.Server.GitHub.DTO
 {
     public class UserInfo
     {
-        //[JsonPropertyName("sub")]
-        //public string Id { get; set; }
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
 
-        //[JsonPropertyName("name")]
-        //public string Name { get; set; }
+        [JsonPropertyName("login")]
+        public string Login { get; set; }
 
-        //[JsonPropertyName("given_name")]
-        //public string GivenName { get; set; }
+        [JsonPropertyName("html_url")]
+        public string HtmlUrl { get; set; }
 
         //[JsonPropertyName("family_name")]
         //public string LastName { get; set; }

@@ -16,6 +16,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("huggingface_access_token")]
         public string? HuggingfaceAccessToken { get; set; }
 
+        [JsonPropertyName("linkedin_url")]
+        public string? LinkedInUrl { get; set; }
+
         [JsonPropertyName("experience")]
         public List<UserExperienceModel>? Experience { get; set; }
 
