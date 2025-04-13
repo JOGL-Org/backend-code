@@ -55,6 +55,7 @@ namespace Jogl.Server.OpenAlex
             request.AddQueryParameter("per-page", pageSize);
             request.AddQueryParameter("page", page);
             request.AddQueryParameter("filter", $"authorships.author.id:authors/{string.Join('|', authorIds)}");
+            request.AddQueryParameter("sort", "publication_date:desc");
 
             var response = await client.ExecuteGetAsync<Response<Work>>(request);
             foreach (var item in response?.Data?.Results)
