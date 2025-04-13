@@ -2,6 +2,7 @@
 using RestSharp;
 using Microsoft.Extensions.Logging;
 using Jogl.Server.GitHub.DTO;
+using System.Text;
 
 namespace Jogl.Server.GitHub
 {
@@ -55,6 +56,34 @@ namespace Jogl.Server.GitHub
                 return null;
             }
         }
+
+        public async Task<string> GetReadmeAsync(string repo, string accessToken)
+        {
+            try
+            {
+                var client = new RestClient($"https://api.github.com/");
+                var request = new RestRequest($"repos/{repo}/readme");
+                if (!string.IsNullOrEmpty(accessToken))
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
+
+                var response = await client.ExecuteGetAsync<Readme>(request);
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                var content = response.Data?.Content;
+                if (string.IsNullOrEmpty(content))
+                    return null;
+
+                var bytes = Convert.FromBase64String(content);
+                return Encoding.UTF8.GetString(bytes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return null;
+            }
+        }
+
 
         public async Task<List<Repo>> GetReposAsync(string accessToken)
         {

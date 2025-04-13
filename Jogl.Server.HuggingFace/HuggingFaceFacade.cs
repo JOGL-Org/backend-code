@@ -83,6 +83,19 @@ namespace Jogl.Server.HuggingFace
             return modelResponse.Data;
         }
 
+        public async Task<string> GetReadmeAsync(string repo, string accessToken)
+        {
+            var client = new RestClient($"https://huggingface.co/");
+
+            var modelRequest = new RestRequest($"{repo}/raw/main/README.md");
+            var modelResponse = await client.ExecuteGetAsync<ModelRepo>(modelRequest);
+            if (!modelResponse.IsSuccessStatusCode)
+                return null;
+
+            return modelResponse.Content;
+        }
+
+
         public async Task<List<Repo>> GetReposAsync(string accessToken)
         {
             var client = new RestClient($"https://huggingface.co/api/");

@@ -34,8 +34,8 @@ namespace Jogl.Server.HuggingFace.DTO
         [JsonPropertyName("lastModified")]
         public DateTime LastModified { get; set; }
 
-        [JsonPropertyName("gated")]
-        public string Gated { get; set; }
+        //[JsonPropertyName("gated")]
+        //public bool Gated { get; set; }
 
         [JsonPropertyName("disabled")]
         public bool Disabled { get; set; }
@@ -55,11 +55,11 @@ namespace Jogl.Server.HuggingFace.DTO
         [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("safetensors")]
-        public Safetensors Safetensors { get; set; }
+        //[JsonPropertyName("safetensors")]
+        //public Safetensors Safetensors { get; set; }
 
-        [JsonPropertyName("usedStorage")]
-        public long UsedStorage { get; set; }
+        //[JsonPropertyName("usedStorage")]
+        //public long UsedStorage { get; set; }
 
         [JsonIgnore]
         public override string Title => Id;
@@ -83,19 +83,19 @@ namespace Jogl.Server.HuggingFace.DTO
         public List<string> Tags { get; set; }
     }
 
-    public class Parameters
-    {
-        [JsonPropertyName("F32")]
-        public int F32 { get; set; }
-    }
+    //public class Parameters
+    //{
+    //    [JsonPropertyName("F32")]
+    //    public int F32 { get; set; }
+    //}
 
-    public class Safetensors
-    {
-        [JsonPropertyName("parameters")]
-        public Parameters Parameters { get; set; }
+    //public class Safetensors
+    //{
+    //    [JsonPropertyName("parameters")]
+    //    public Parameters Parameters { get; set; }
 
-        [JsonPropertyName("total")]
-        public int Total { get; set; }
-    }
+    //    [JsonPropertyName("total")]
+    //    public int Total { get; set; }
+    //}
 
 }

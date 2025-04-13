@@ -31,8 +31,8 @@ namespace Jogl.Server.HuggingFace.DTO
         [JsonPropertyName("subdomain")]
         public string Subdomain { get; set; }
 
-        [JsonPropertyName("gated")]
-        public bool Gated { get; set; }
+        //[JsonPropertyName("gated")]
+        //public bool Gated { get; set; }
 
         [JsonPropertyName("disabled")]
         public bool Disabled { get; set; }

@@ -8,6 +8,7 @@ namespace Jogl.Server.HuggingFace
         Task<User> GetUserInfoAsync(string accessToken);
         Task<List<Discussion>> ListPRsAsync(string repo);
         Task<Repo> GetRepoAsync(string repo);
+        Task<string> GetReadmeAsync(string repo, string accessToken);
         Task<List<Repo>> GetReposAsync(string accessToken);
     }
 }

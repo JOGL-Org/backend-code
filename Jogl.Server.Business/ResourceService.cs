@@ -237,11 +237,18 @@ namespace Jogl.Server.Business
                 if (githubRepo == null)
                     return null;
 
+                var readme = await _githubFacade.GetReadmeAsync(repoUrl.Replace("https://github.com/", string.Empty), accessToken);
+
                 return new Resource
                 {
                     Title = githubRepo.FullName,
                     Description = githubRepo.Description,
-                    Data = new BsonDocument { { "License", githubRepo.License?.Name ?? "" }, { "Source", "Github" }, { "Url", githubRepo.HtmlUrl ?? "" } },
+                    Data = new BsonDocument {
+                        { "License", githubRepo.License?.Name ?? "" },
+                        { "Source", "Github" },
+                        { "Url", githubRepo.HtmlUrl ?? "" },
+                        { "Readme", readme ?? "" }
+                    },
                 };
 
             }
@@ -252,11 +259,17 @@ namespace Jogl.Server.Business
                 if (huggingfaceRepo == null)
                     return null;
 
+                var readme = await _huggingFaceFacade.GetReadmeAsync(repoUrl.Replace("https://huggingface.co/", string.Empty), accessToken);
+
                 return new Resource
                 {
                     Title = huggingfaceRepo.Title,
                     Description = huggingfaceRepo.Description,
-                    Data = new BsonDocument { { "Source", "Huggingface" }, { "Url", huggingfaceRepo.Url ?? "" } },
+                    Data = new BsonDocument {
+                        { "Source", "Huggingface" },
+                        { "Url", huggingfaceRepo.Url ?? "" },
+                        { "Readme", readme ?? "" }
+                    },
                 };
             }
 

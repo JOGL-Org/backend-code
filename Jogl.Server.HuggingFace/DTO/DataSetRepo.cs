@@ -19,8 +19,8 @@ namespace Jogl.Server.HuggingFace.DTO
         [JsonPropertyName("private")]
         public bool Private { get; set; }
 
-        [JsonPropertyName("gated")]
-        public bool Gated { get; set; }
+        //[JsonPropertyName("gated")]
+        //public string Gated { get; set; }
 
         [JsonPropertyName("disabled")]
         public bool Disabled { get; set; }
@@ -49,8 +49,8 @@ namespace Jogl.Server.HuggingFace.DTO
         [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonPropertyName("usedStorage")]
-        public int UsedStorage { get; set; }
+        //[JsonPropertyName("usedStorage")]
+        //public long UsedStorage { get; set; }
 
         [JsonIgnore]
         public override string Title => Id;
