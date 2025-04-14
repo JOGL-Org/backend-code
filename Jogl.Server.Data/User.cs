@@ -24,6 +24,7 @@ namespace Jogl.Server.Data
         public string Country { get; set; }
         public string City { get; set; }
         public string Email { get; set; }
+        public string Current { get; set; }
         public string PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public List<Link> Links { get; set; }
@@ -64,5 +65,14 @@ namespace Jogl.Server.Data
         public override FeedType FeedType => FeedType.User;
 
         public List<Membership> Memberships { get; set; }
+
+        [BsonIgnore]
+        public List<Paper> Papers { get; set; }
+
+        [BsonIgnore]
+        public List<Document> Documents { get; set; }
+
+        [BsonIgnore]
+        public List<Resource> Resources { get; set; }
     }
 }

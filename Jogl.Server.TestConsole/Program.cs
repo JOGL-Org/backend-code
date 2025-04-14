@@ -1,8 +1,8 @@
-﻿using Amazon.Runtime.Internal;
-using Jogl.Server.Configuration;
+﻿using Jogl.Server.Configuration;
+using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Concurrent;
+using System.Text.Json;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -22,44 +22,39 @@ var feedRepository = new FeedRepository(config);
 var documentRepository = new DocumentRepository(config);
 var workspaceRepository = new WorkspaceRepository(config);
 var userRepository = new UserRepository(config);
+var paperRepository = new PaperRepository(config);
+var resourceRepository = new ResourceRepository(config);
 
-var feeds = feedRepository.List(f => true);
-var workspaces = workspaceRepository.List(u => true);
-var contentEntities = contentEntityRepository.List(u => true);
-var comments = commentRepository.List(u => true);
-
-foreach (var user in userRepository.List(u => true))
+var json = File.ReadAllText("C:\\code\\Seed_data_quantum.json");
+var data = JsonSerializer.Deserialize<List<User>>(json);
+foreach (var user in data)
 {
-    user.Onboarding = true;
+    user.Status = UserStatus.Verified;
 
-    if (user.Experience != null)
-        foreach (var exp in user.Experience)
-        {
-            if (exp.DateTo == "Present")
-            {
-                exp.DateTo = null;
-                exp.Current = true;
-            }
-        }
+    var id = await userRepository.CreateAsync(user);
+    foreach (var paper in user.Papers)
+    {
+        paper.FeedId = id;
+        paper.DefaultVisibility = FeedEntityVisibility.View;
+        await paperRepository.CreateAsync(paper);
+    }
 
-    if (user.Education != null)
-        foreach (var edu in user.Education)
-        {
-            if (edu.DateTo == "Present")
-            {
-                edu.DateTo = null;
-                edu.Current = true;
-            }
+    foreach (var doc in user.Documents)
+    {
+        doc.FeedId = id;
+        doc.Type = DocumentType.JoglDoc;
+        doc.DefaultVisibility = FeedEntityVisibility.View;
+        await documentRepository.CreateAsync(doc);
+    }
 
-            if (string.IsNullOrEmpty(edu.Program) && !string.IsNullOrEmpty(edu.Description))
-            {
-                edu.Program = edu.Description;
-                edu.Description = null;
-            }
-        }
+    foreach (var res in user.Resources)
+    {
+        res.EntityId = id;
+        res.DefaultVisibility = FeedEntityVisibility.View;
+        await resourceRepository.CreateAsync(res);
+    }
 
-    await userRepository.UpdateAsync(user);
-    await userRepository.SetOnboardingStatusAsync(user);
+
 }
 
 Console.WriteLine("Done");

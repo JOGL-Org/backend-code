@@ -1,6 +1,7 @@
 ﻿using Jogl.Server.Data.Util;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Data
 {
@@ -17,6 +18,7 @@ namespace Jogl.Server.Data
         [RichText]
         public string Description { get; set; }
 
+        [JsonConverter(typeof(BsonDocumentConverter))]
         public BsonDocument Data { get; set; }
 
         public string EntityId { get; set; }
