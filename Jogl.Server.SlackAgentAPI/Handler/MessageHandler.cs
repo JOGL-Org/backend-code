@@ -36,7 +36,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
             await _interfaceChannelRepository.CreateAsync(new Data.InterfaceChannel { ExternalId = slackEvent.Team });
         }
 
-        if (string.IsNullOrEmpty(channel.Key))
+        if (string.IsNullOrEmpty(channel?.Key))
         {
             _logger.LogWarning("Slack workspace missing a key: {team}", slackEvent.Team);
             return;

@@ -29,32 +29,37 @@ var json = File.ReadAllText("C:\\code\\Seed_data_quantum.json");
 var data = JsonSerializer.Deserialize<List<User>>(json);
 foreach (var user in data)
 {
-    user.Status = UserStatus.Verified;
-
-    var id = await userRepository.CreateAsync(user);
-    foreach (var paper in user.Papers)
+    try
     {
-        paper.FeedId = id;
-        paper.DefaultVisibility = FeedEntityVisibility.View;
-        await paperRepository.CreateAsync(paper);
-    }
+        user.Status = UserStatus.Verified;
 
-    foreach (var doc in user.Documents)
+        var id = await userRepository.CreateAsync(user);
+        foreach (var paper in user.Papers)
+        {
+            paper.FeedId = id;
+            paper.DefaultVisibility = FeedEntityVisibility.View;
+            await paperRepository.CreateAsync(paper);
+        }
+
+        foreach (var doc in user.Documents)
+        {
+            doc.FeedId = id;
+            doc.Type = DocumentType.JoglDoc;
+            doc.DefaultVisibility = FeedEntityVisibility.View;
+            await documentRepository.CreateAsync(doc);
+        }
+
+        foreach (var res in user.Resources)
+        {
+            res.EntityId = id;
+            res.DefaultVisibility = FeedEntityVisibility.View;
+            await resourceRepository.CreateAsync(res);
+        }
+    }
+    catch (Exception ex)
     {
-        doc.FeedId = id;
-        doc.Type = DocumentType.JoglDoc;
-        doc.DefaultVisibility = FeedEntityVisibility.View;
-        await documentRepository.CreateAsync(doc);
+        Console.WriteLine(ex);
     }
-
-    foreach (var res in user.Resources)
-    {
-        res.EntityId = id;
-        res.DefaultVisibility = FeedEntityVisibility.View;
-        await resourceRepository.CreateAsync(res);
-    }
-
-
 }
 
 Console.WriteLine("Done");

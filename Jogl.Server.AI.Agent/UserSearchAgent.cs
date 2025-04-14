@@ -1,6 +1,6 @@
-﻿using Jogl.Server.AI.DTO;
-using Jogl.Server.Business;
+﻿using Jogl.Server.Business;
 using Jogl.Server.DB;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -12,14 +12,16 @@ namespace Jogl.Server.AI.Agent
         private readonly Search.ISearchService _searchService;
         private readonly IRelationService _relationService;
         private readonly ISystemValueRepository _systemValueRepository;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<UserSearchAgent> _logger;
 
-        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, ISystemValueRepository systemValueRepository, ILogger<UserSearchAgent> logger)
+        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
         {
             _aiService = aIService;
             _searchService = searchService;
             _relationService = relationService;
             _systemValueRepository = systemValueRepository;
+            _configuration = configuration;
             _logger = logger;
         }
 
@@ -52,11 +54,13 @@ namespace Jogl.Server.AI.Agent
 
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
+
+
             var hubUsers = _relationService.ListUserIdsForNode(nodeId);
             var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery);
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
-                UserURL = $"<https://app2.jogl.io/user/{u.Document.Id}",
+                UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
                 Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
