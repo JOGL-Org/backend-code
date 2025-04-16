@@ -73,5 +73,5 @@ app.UseSlackNet(c =>
     c.UseSocketMode(true);
 });
 
-app.MapGet("/", () => "Hello, Slack!");
+app.MapControllers();
 app.Run();

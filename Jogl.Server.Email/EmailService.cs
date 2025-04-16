@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jogl.Server.Email
 {
-    public enum EmailTemplate { UserVerification, PasswordReset, InvitationWithEmail, InvitationWithUser, Request, Message, CFPMessage, EventMessage, ContactDemo, ObjectAdded, ContentEntityAddedInChannel, ContentEntityAddedInObject, CommentAdded, MentionCreated, ObjectShared, ObjectDeleted }
+    public enum EmailTemplate { UserVerification, Login, PasswordReset, InvitationWithEmail, InvitationWithUser, Request, Message, CFPMessage, EventMessage, ContactDemo, ObjectAdded, ContentEntityAddedInChannel, ContentEntityAddedInObject, CommentAdded, MentionCreated, ObjectShared, ObjectDeleted }
     public class SendGridEmailService : IEmailService
     {
         private readonly IConfiguration _configuration;
@@ -122,6 +122,8 @@ namespace Jogl.Server.Email
                             return "d-7fc56ff601c9411592f20fb0eb27025d";
                         case EmailTemplate.MentionCreated:
                             return "d-a2bad3a3c8704fc9a491b056270bfcf1";
+                        case EmailTemplate.Login:
+                            return "d-a6e2722e663b440bb5a01752574d9452";
 
                         default:
                             throw new Exception($"Cannot determine template id for template {template}");
@@ -161,7 +163,8 @@ namespace Jogl.Server.Email
                             return "d-675268e56fc64373b70d75ad0603e93d";
                         case EmailTemplate.MentionCreated:
                             return "d-4a328cd281a24346bd826f412af30c9f";
-
+                        case EmailTemplate.Login:
+                            return "d-a6e2722e663b440bb5a01752574d9452";
 
                         default:
                             throw new Exception($"Cannot determine template id for template {template}");

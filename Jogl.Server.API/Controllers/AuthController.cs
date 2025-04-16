@@ -12,6 +12,8 @@ using System.Net;
 using Jogl.Server.LinkedIn;
 using Jogl.Server.API.Services;
 using Jogl.Server.GitHub;
+using static Duende.IdentityServer.Models.IdentityResources;
+using Microsoft.AspNet.SignalR;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -68,6 +70,45 @@ namespace Jogl.Server.API.Controllers
             return Ok(new AuthResultModel
             {
                 Token = userToken,
+                UserId = user.Id.ToString()
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("login/email")]
+        [SwaggerOperation($"Sends an email with a one-time login code")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Email sent")]
+        public async Task<IActionResult> Login([FromBody] UserLoginModel model)
+        {
+            var user = _userService.GetForEmail(model.Email);
+            if (user == null)
+                return Ok(); //OK is returned here on purpose, as returning anything else exposes the API do data-mining practices
+
+            var redirectUrl = $"{_configuration["App:URL"]}/signin";
+            await _userService.OneTimeLoginAsync(model.Email, redirectUrl);
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("login/email/code")]
+        [SwaggerOperation($"Verifies the one-time login code and completes the login processs.")]
+        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Invalid user credentials")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "User login successful", typeof(AuthResultModel))]
+        public async Task<IActionResult> LoginWithCode([FromBody] UserLoginCodeModel model)
+        {
+            var ok = await _userService.VerifyOneTimeLoginAsync(model.Email, model.Code);
+            if (!ok)
+                return Unauthorized();
+
+            var user = _userService.GetForEmail(model.Email);
+            if (user == null)
+                return Unauthorized();
+
+            return Ok(new AuthResultModel
+            {
+                Token = _authService.GetToken(model.Email),
                 UserId = user.Id.ToString()
             });
         }
@@ -196,44 +237,6 @@ namespace Jogl.Server.API.Controllers
 
             await _userService.SetPasswordAsync(user.Id.ToString(), model.NewPassword);
             return Ok();
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("code/trigger")]
-        [SwaggerOperation($"Initiates the one-time login process using the supplied email address")]
-        public async Task<IActionResult> InitiateLoginWithCode(string email)
-        {
-            var redirectUrl = $"{_configuration["App:URL"]}/signin/onetime";
-            await _userService.OneTimeLoginAsync(email, redirectUrl);
-            return Ok();
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("code/login")]
-        [SwaggerOperation($"Verifies the one-time login code and completes the one-time login processs. If a user doesn't exist with the supplied email, it will be created. A user created in this manner has no password and can only log in via further one-time codes until they link another authentication method to their account.")]
-        [SwaggerResponse((int)HttpStatusCode.Unauthorized, "Invalid user credentials")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "User login successful")]
-        public async Task<IActionResult> LoginWithCode([FromBody] UserLoginCodeModel model)
-        {
-            var ok = await _userService.VerifyOneTimeLoginAsync(model.Email, model.Code);
-            if (!ok)
-                return Unauthorized();
-
-            var userId = _userService.GetForEmail(model.Email)?.Id.ToString();
-            if (string.IsNullOrEmpty(userId))
-                userId = await _userService.CreateAsync(new Data.User
-                {
-                    Email = model.Email,
-                    Status = Data.UserStatus.Verified
-                });
-
-            return Ok(new AuthResultModel
-            {
-                Token = _authService.GetToken(model.Email),
-                UserId = userId
-            });
         }
 
         [AllowAnonymous]

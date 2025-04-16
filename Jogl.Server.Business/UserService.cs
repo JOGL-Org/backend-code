@@ -439,7 +439,6 @@ namespace Jogl.Server.Business
             return true;
         }
 
-        [Obsolete]
         public async Task OneTimeLoginAsync(string email, string url)
         {
             var code = GenerateCode();
@@ -451,6 +450,11 @@ namespace Jogl.Server.Business
                 CreatedUTC = DateTime.UtcNow,
                 UserEmail = email,
                 ValidUntilUTC = DateTime.UtcNow.AddHours(1)
+            });
+
+            await _emailService.SendEmailAsync(email, EmailTemplate.Login, new
+            {
+                url = url + $"?email={email}&code={code}"
             });
         }
 
