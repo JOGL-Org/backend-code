@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.Data;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Jogl.Server.URL
 {
@@ -104,6 +105,11 @@ namespace Jogl.Server.URL
                 case FeedType.User: return "user";
                 default: throw new Exception($"Unknown feed type: {type}");
             }
+        }
+
+        public string GetOneTimeLoginLink(string email, string code)
+        {
+            return $"{_configuration["App:URL"]}/signin?email={email}&code={code}";
         }
     }
 }

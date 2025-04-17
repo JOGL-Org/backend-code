@@ -1,5 +1,7 @@
 using Jogl.Server.Data.Util;
 using Jogl.Server.PubMed.DTO;
+using Jogl.Server.PubMed.DTO.EFetch;
+using MeshHeading = Jogl.Server.PubMed.DTO.MeshHeading;
 
 namespace Jogl.Server.PubMed
 {

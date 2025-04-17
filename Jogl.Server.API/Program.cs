@@ -3,39 +3,29 @@ using Jogl.Server.API.Converters;
 using Jogl.Server.API.Mapping;
 using Jogl.Server.API.Middleware;
 using Jogl.Server.Auth;
-using Jogl.Server.Business;
-using Jogl.Server.DB;
-using Jogl.Server.Email;
 using Jogl.Server.OpenAlex;
 using Jogl.Server.Orcid;
 using Jogl.Server.PubMed;
 using Jogl.Server.GoogleAuth;
 using Jogl.Server.SemanticScholar;
-using Jogl.Server.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using Jogl.Server.Events;
 using Polly;
 using Polly.Retry;
 using Jogl.Server.LinkedIn;
 using Jogl.Server.API.Services;
-using Jogl.Server.GitHub;
-using Jogl.Server.Notifications;
-using Jogl.Server.URL;
 using Jogl.Server.Images;
-using Jogl.Server.ServiceBus;
 using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
-using Jogl.Server.HuggingFace;
 using Jogl.Server.Arxiv;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
 using System.Security.Cryptography.X509Certificates;
-using Jogl.Server.DB.Context;
 using Jogl.Server.DB.Extensions;
 using Jogl.Server.Lix;
+using Jogl.Server.Business.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,86 +56,25 @@ builder.Services.AddSwaggerGen(config =>
 });
 
 // Program.cs
-
 builder.Services.AddTransient<TelemetryMiddleware>();
 //api services
 builder.Services.AddTransient<IVerificationService, CaptchaVerificationService>();
 builder.Services.AddTransient<IContextService, ContextService>();
 //auth services
-builder.Services.AddMemoryCache();
-builder.Services.AddTransient<IAuthChallengeService, AuthChallengeService>();
-builder.Services.AddTransient<IAuthService, AuthService>();
-//business
-builder.Services.AddTransient<ICommunityEntityService, CommunityEntityService>();
-builder.Services.AddTransient<ICommunityEntityInvitationService, CommunityEntityInvitationService>();
-builder.Services.AddTransient<ICommunityEntityMembershipService, CommunityEntityMembershipService>();
-builder.Services.AddTransient<IChannelService, ChannelService>();
-builder.Services.AddTransient<ICallForProposalService, CallForProposalService>();
-builder.Services.AddTransient<IWorkspaceService, WorkspaceService>();
-builder.Services.AddTransient<INodeService, NodeService>();
-builder.Services.AddTransient<IOrganizationService, OrganizationService>();
-builder.Services.AddTransient<IMembershipService, MembershipService>();
-builder.Services.AddTransient<IInvitationService, InvitationService>();
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IUserVerificationService, UserVerificationService>();
-builder.Services.AddTransient<IDocumentService, DocumentService>();
-builder.Services.AddTransient<IImageService, ImageService>();
-builder.Services.AddTransient<INeedService, NeedService>();
-builder.Services.AddTransient<IContentService, ContentService>();
-builder.Services.AddTransient<ITagService, TagService>();
-builder.Services.AddTransient<IAccessService, AccessService>();
-builder.Services.AddTransient<IPaperService, PaperService>();
-builder.Services.AddTransient<IResourceService, ResourceService>();
-builder.Services.AddTransient<IProposalService, ProposalService>();
-builder.Services.AddTransient<INotificationService, NotificationService>();
-builder.Services.AddTransient<IUrlService, UrlService>();
-builder.Services.AddTransient<IEventService, EventService>();
-builder.Services.AddTransient<IEntityService, EntityService>();
-builder.Services.AddTransient<IFeedEntityService, FeedEntityService>();
 
-//email
-builder.Services.AddTransient<IEmailService, SendGridEmailService>();
-
-//storage
-builder.Services.AddTransient<IStorageService, BlobStorageService>();
-
-//data access
-builder.Services.AddScoped<IOperationContext, OperationContext>();
+builder.Services.AddBusiness();
 builder.Services.AddRepositories();
 builder.Services.AddInitialization();
 
-builder.Services.AddTransient<IOrcidFacade, OrcidFacade>();
-builder.Services.AddTransient<ISemanticScholarFacade, SemanticScholarFacade>();
-builder.Services.AddTransient<IPubMedFacade, PubMedFacade>();
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
 builder.Services.AddTransient<ILixFacade, LixFacade>();
-builder.Services.AddTransient<IGitHubFacade, GitHubFacade>();
-builder.Services.AddTransient<IArxivFacade, ArxivFacade>();
-builder.Services.AddTransient<IHuggingFaceFacade, HuggingFaceFacade>();
-builder.Services.AddTransient<IOpenAlexFacade, OpenAlexFacade>();
 
 //images
 builder.Services.AddTransient<IConversionService, ConversionService>();
 
 //documents
 builder.Services.AddTransient<IDocumentConverter, DocumentConverter>();
-
-//calendar
-builder.Services.AddTransient<ICalendarService, GoogleCalendarService>();
-
-//notifications
-builder.Services.AddTransient<INotificationFacade, ServiceBusNotificationFacade>();
-
-//service bus
-builder.Services.AddTransient<IServiceBusProxy, AzureServiceBusProxy>();
-
-builder.Services.AddResiliencePipeline("retry", builder =>
-{
-    builder
-        .AddRetry(new RetryStrategyOptions())
-        .AddTimeout(TimeSpan.FromSeconds(3));
-});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>

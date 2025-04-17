@@ -85,8 +85,7 @@ namespace Jogl.Server.API.Controllers
             if (user == null)
                 return Ok(); //OK is returned here on purpose, as returning anything else exposes the API do data-mining practices
 
-            var redirectUrl = $"{_configuration["App:URL"]}/signin";
-            await _userService.OneTimeLoginAsync(model.Email, redirectUrl);
+            await _userService.StartOneTimeLoginAsync(model.Email);
             return Ok();
         }
 

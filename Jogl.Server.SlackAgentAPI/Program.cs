@@ -5,10 +5,10 @@ using SlackNet.AspNetCore;
 using SlackNet.Extensions.DependencyInjection;
 using SlackNet.Events;
 using Jogl.Server.Search;
-using Jogl.Server.DB.Context;
 using Jogl.Server.DB.Extensions;
 using Jogl.Server.Business;
 using Jogl.Server.AI.Agent.Extensions;
+using Jogl.Server.Business.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,11 +37,11 @@ builder.Services.AddSwaggerGen(config =>
 });
 
 //data access
-builder.Services.AddScoped<IOperationContext, OperationContext>();
+builder.Services.AddBusiness();
 builder.Services.AddRepositories();
 
 builder.Services.AddScoped<IRelationService, RelationService>();
-builder.Services.AddSingleton<Jogl.Server.Search.ISearchService, AzureSearchService>();
+builder.Services.AddSingleton<ISearchService, AzureSearchService>();
 builder.Services.AddAIAgent();
 
 //add secrets

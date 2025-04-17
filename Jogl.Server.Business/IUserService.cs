@@ -26,7 +26,8 @@ namespace Jogl.Server.Business
 
         Task ResetPasswordAsync(string email, string url);
         Task<bool> ResetPasswordConfirmAsync(string email, string code, string newPassword);
-        Task OneTimeLoginAsync(string email, string url);
+        Task StartOneTimeLoginAsync(string email);
+        Task<string> GetOnetimeLoginCodeAsync(string email);
         Task<bool> VerifyOneTimeLoginAsync(string email, string code);
         Task SetPasswordAsync(string userId, string password);
         Task SetActiveAsync(User user);
@@ -53,6 +54,6 @@ namespace Jogl.Server.Business
 
         List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string currentUserId, string nodeId, string search);
 
-
+        Task<string> ImportUserAsync(string firstName, string lastName, string email);
     }
 }

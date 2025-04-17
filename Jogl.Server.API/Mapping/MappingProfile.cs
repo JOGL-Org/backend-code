@@ -8,6 +8,7 @@ using Jogl.Server.Data.Util;
 using Jogl.Server.Images;
 using Jogl.Server.LinkedIn.DTO;
 using Jogl.Server.Orcid;
+using Jogl.Server.PubMed.DTO.EFetch;
 using MongoDB.Bson;
 
 namespace Jogl.Server.API.Mapping
@@ -666,7 +667,7 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.ExternalIdUrl, opt => opt.MapFrom((src, dst, ctx) => { return src.Doi; }));
 
             //articles - PM
-            CreateMap<PubMed.DTO.PubmedArticle, PaperModelPM>()
+            CreateMap<PubmedArticle, PaperModelPM>()
               .ForMember(dst => dst.Title, opt => opt.MapFrom((src, dst, ctx) => { return src.MedlineCitation?.Article?.ArticleTitle?.Text; }))
               .ForMember(dst => dst.Journal, opt => opt.MapFrom((src, dst, ctx) => { return src.MedlineCitation?.Article?.Journal?.Title; }))
               .ForMember(dst => dst.Abstract, opt => opt.MapFrom((src, dst, ctx) => { return FormatPMArticleAbstract(src.MedlineCitation?.Article?.Abstract?.AbstractText); }))
@@ -862,7 +863,7 @@ namespace Jogl.Server.API.Mapping
             return stringBuilder.ToString().Trim();
         }
 
-        protected string FormatPMArticleAbstract(List<PubMed.DTO.AbstractText> abstractFragments)
+        protected string FormatPMArticleAbstract(List<AbstractText> abstractFragments)
         {
             if (abstractFragments?.Count > 1)
                 return string.Join("\n", abstractFragments.Select(at => $"{at?.Label}: {at?.Text}"));

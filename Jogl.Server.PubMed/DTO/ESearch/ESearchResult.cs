@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Jogl.Server.PubMed.DTO
+namespace Jogl.Server.PubMed.DTO.ESearch
 {
     public class ESearchResult
     {

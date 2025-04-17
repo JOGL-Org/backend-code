@@ -16,7 +16,7 @@ namespace Jogl.Server.API.Model
         public string Email { get; set; }
 
         [JsonPropertyName("password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         [JsonPropertyName("newsletter")]
         public bool MailNewsletter { get; set; }

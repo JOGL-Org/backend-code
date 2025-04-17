@@ -3,8 +3,8 @@ using Jogl.Server.Data;
 using Jogl.Server.Data.Util;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
+using Jogl.Server.URL;
 using MongoDB.Bson;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,7 +13,6 @@ namespace Jogl.Server.Business
 {
     public class UserService : BaseService, IUserService
     {
-        private readonly IOrganizationRepository _organizationRepository;
         private readonly IUserVerificationCodeRepository _verificationCodeRepository;
         private readonly ISkillRepository _skillRepository;
         private readonly IWaitlistRecordRepository _waitlistRecordRepository;
@@ -22,10 +21,10 @@ namespace Jogl.Server.Business
         private readonly IAuthService _authService;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
+        private readonly IUrlService _urlService;
 
-        public UserService(IOrganizationRepository organizationRepository, IUserVerificationCodeRepository verificationCodeRepository, IAuthService authService, ISkillRepository skillRepository, IWaitlistRecordRepository waitlistRecordRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IEmailService emailService, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public UserService(IUserVerificationCodeRepository verificationCodeRepository, IAuthService authService, ISkillRepository skillRepository, IWaitlistRecordRepository waitlistRecordRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IEmailService emailService, IUrlService urlService, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
-            _organizationRepository = organizationRepository;
             _verificationCodeRepository = verificationCodeRepository;
             _authService = authService;
             _skillRepository = skillRepository;
@@ -34,6 +33,7 @@ namespace Jogl.Server.Business
             _communityEntityService = communityEntityService;
             _notificationService = notificationService;
             _emailService = emailService;
+            _urlService = urlService;
         }
 
         public async Task<string> CreateAsync(User user, string password = "")
@@ -439,7 +439,18 @@ namespace Jogl.Server.Business
             return true;
         }
 
-        public async Task OneTimeLoginAsync(string email, string url)
+        public async Task StartOneTimeLoginAsync(string email)
+        {
+            var code = await GetOnetimeLoginCodeAsync(email);
+            var redirectUrl = _urlService.GetOneTimeLoginLink(email, code);
+
+            await _emailService.SendEmailAsync(email, EmailTemplate.Login, new
+            {
+                url = redirectUrl
+            });
+        }
+
+        public async Task<string> GetOnetimeLoginCodeAsync(string email)
         {
             var code = GenerateCode();
 
@@ -452,10 +463,7 @@ namespace Jogl.Server.Business
                 ValidUntilUTC = DateTime.UtcNow.AddHours(1)
             });
 
-            await _emailService.SendEmailAsync(email, EmailTemplate.Login, new
-            {
-                url = url + $"?email={email}&code={code}"
-            });
+            return code;
         }
 
         public async Task<bool> VerifyOneTimeLoginAsync(string email, string code)
@@ -657,6 +665,15 @@ namespace Jogl.Server.Business
             }
 
             return username;
+        }
+
+        public Task<string> ImportUserAsync(string firstName, string lastName, string email)
+        {
+            var user = new User { FirstName = firstName, LastName = lastName, Email = email };
+            user.Status = UserStatus.Verified;
+            user.Username = GetUniqueUsername(firstName, lastName);
+
+            return _userRepository.CreateAsync(user);
         }
     }
 }

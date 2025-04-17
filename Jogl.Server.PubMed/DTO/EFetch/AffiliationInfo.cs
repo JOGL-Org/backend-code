@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace Jogl.Server.PubMed.DTO
+namespace Jogl.Server.PubMed.DTO.EFetch
 {
 	[XmlRoot(ElementName = "AffiliationInfo")]
 	public class AffiliationInfo

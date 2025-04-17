@@ -1,4 +1,4 @@
-namespace Jogl.Server.PubMed
+namespace Jogl.Server.PubMed.DTO
 {
     public class MeshHeading
     {

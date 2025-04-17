@@ -3,9 +3,12 @@ using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
-using Jogl.Server.PubMed.DTO;
 using Jogl.Server.Data.Util;
 using System.Text.RegularExpressions;
+using Jogl.Server.PubMed.DTO.EFetch;
+using Jogl.Server.PubMed.DTO.ESearch;
+using Jogl.Server.PubMed.DTO;
+using MeshHeading = Jogl.Server.PubMed.DTO.MeshHeading;
 
 namespace Jogl.Server.PubMed
 {

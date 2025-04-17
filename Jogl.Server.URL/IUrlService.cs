@@ -13,5 +13,7 @@ namespace Jogl.Server.URL
         string GetUrlFragment(CommunityEntityType type);
         string GetUrlFragment(FeedType type);
         FeedType GetFeedType(string fragment);
+
+        string GetOneTimeLoginLink(string email, string code);
     }
 }
