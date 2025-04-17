@@ -1,5 +1,6 @@
 using Azure.Search.Documents.Models;
 using Jogl.Server.Data;
+using User = Jogl.Server.Search.Model.User;
 
 namespace Jogl.Server.Search
 {

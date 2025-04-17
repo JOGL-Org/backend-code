@@ -8,9 +8,10 @@ using Jogl.Server.SemanticScholar.Extensions;
 using Jogl.Server.HuggingFace.Extensions;
 using Jogl.Server.Notifications.Extensions;
 using Jogl.Server.PubMed.Extensions;
+using Jogl.Server.DB.Extensions;
 using Jogl.Server.Storage.Extensions;
-using Jogl.Server.URL;
 using Microsoft.Extensions.DependencyInjection;
+using Jogl.Server.URL.Extensions;
 
 namespace Jogl.Server.Business.Extensions
 {
@@ -40,11 +41,14 @@ namespace Jogl.Server.Business.Extensions
             serviceCollection.AddTransient<IResourceService, ResourceService>();
             serviceCollection.AddTransient<IProposalService, ProposalService>();
             serviceCollection.AddTransient<INotificationService, NotificationService>();
-            serviceCollection.AddTransient<IUrlService, UrlService>();
             serviceCollection.AddTransient<IEventService, EventService>();
             serviceCollection.AddTransient<IEntityService, EntityService>();
             serviceCollection.AddTransient<IFeedEntityService, FeedEntityService>();
+            serviceCollection.AddTransient<IRelationService, RelationService>();
 
+            serviceCollection.AddRepositories();
+
+            serviceCollection.AddUrls();
             serviceCollection.AddEmail();
             serviceCollection.AddNotifications();
             serviceCollection.AddAuth();

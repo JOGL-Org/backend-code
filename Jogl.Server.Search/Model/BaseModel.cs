@@ -1,4 +1,4 @@
-namespace Jogl.Server.Search
+namespace Jogl.Server.Search.Model
 {
     public abstract class BaseModel
     {

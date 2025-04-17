@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Jogl.Server.Search
+namespace Jogl.Server.Search.Model
 {
     public class User : BaseModel
     {

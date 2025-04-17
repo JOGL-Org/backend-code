@@ -4,15 +4,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Azure.Identity;
 using Jogl.Server.Data;
+using User = Jogl.Server.Search.Model.User;
 
 namespace Jogl.Server.Search
 {
     public class AzureSearchService : ISearchService
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogger<User> _logger;
+        private readonly ILogger<AzureSearchService> _logger;
 
-        public AzureSearchService(IConfiguration configuration, ILogger<User> logger)
+        public AzureSearchService(IConfiguration configuration, ILogger<AzureSearchService> logger)
         {
             _configuration = configuration;
             _logger = logger;

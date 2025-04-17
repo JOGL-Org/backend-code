@@ -57,7 +57,7 @@ namespace Jogl.Server.API.Controllers
                 if (user.IsBot || user.Id == "USLACKBOT")
                     continue;
 
-                if (user.Name != "filip.vostatek")
+                if (user.Name != "filip.vostatek" && user.Name != "louis_1214")
                     continue;
 
                 var userChannelId = await client.Conversations.Open([user.Id]);
@@ -67,7 +67,7 @@ namespace Jogl.Server.API.Controllers
                 {
                     var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);
                     var url = _urlService.GetOneTimeLoginLink(user.Profile.Email, code);
-                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.FirstName}, it seems you already have a JOGL profile! You can use this url to log in: {url}" });
+                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.FirstName}, it seems you already have a JOGL profile! You can log in <{url}|here>" });
                 }
                 else
                 {
@@ -76,7 +76,7 @@ namespace Jogl.Server.API.Controllers
                     var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);
                     var url = _urlService.GetOneTimeLoginLink(user.Profile.Email, code);
                     await _membershipService.AddMembersAsync([new Membership { CommunityEntityId = channel.NodeId, CommunityEntityType = CommunityEntityType.Node, AccessLevel = AccessLevel.Member, UserId = userId }]);
-                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.Email}, welcome to JOGL! You can set up your profile here: {url}" });
+                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.FirstName}, welcome to JOGL! We've set up your JOGL account on {user.Profile.Email}. You can set up your profile <{url}|here>" });
                 }
             }
 

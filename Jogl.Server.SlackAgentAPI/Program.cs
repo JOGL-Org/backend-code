@@ -4,9 +4,6 @@ using Microsoft.OpenApi.Models;
 using SlackNet.AspNetCore;
 using SlackNet.Extensions.DependencyInjection;
 using SlackNet.Events;
-using Jogl.Server.Search;
-using Jogl.Server.DB.Extensions;
-using Jogl.Server.Business;
 using Jogl.Server.AI.Agent.Extensions;
 using Jogl.Server.Business.Extensions;
 
@@ -38,10 +35,6 @@ builder.Services.AddSwaggerGen(config =>
 
 //data access
 builder.Services.AddBusiness();
-builder.Services.AddRepositories();
-
-builder.Services.AddScoped<IRelationService, RelationService>();
-builder.Services.AddSingleton<ISearchService, AzureSearchService>();
 builder.Services.AddAIAgent();
 
 //add secrets
