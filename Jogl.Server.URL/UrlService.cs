@@ -109,7 +109,7 @@ namespace Jogl.Server.URL
 
         public string GetOneTimeLoginLink(string email, string code)
         {
-            return $"{_configuration["App:URL"]}/signin?email={email}&code={code}";
+            return $"{_configuration["App:URL"]}/signin-auto?email={email}&code={code}";
         }
     }
 }

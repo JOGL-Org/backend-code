@@ -1,5 +1,6 @@
 using Jogl.Server.AI;
 using Jogl.Server.AI.Agent;
+using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Slack;
 using SlackNet;
@@ -12,12 +13,19 @@ public class MessageHandler : IEventHandler<MessageEvent>
     private readonly ISlackService _slackService;
     private readonly IAgent _agent;
     private readonly IInterfaceChannelRepository _interfaceChannelRepository;
+    private readonly IInterfaceMessageRepository _interfaceMessageRepository;
+    private readonly IInterfaceUserRepository _interfaceUserRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<MessageHandler> _logger;
-    public MessageHandler(ISlackService slackService, IAgent agent, IInterfaceChannelRepository interfaceChannelRepository, ILogger<MessageHandler> logger)
+
+    public MessageHandler(ISlackService slackService, IAgent agent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceMessageRepository interfaceMessageRepository, IInterfaceUserRepository interfaceUserRepository, IUserRepository userRepository, ILogger<MessageHandler> logger)
     {
         _slackService = slackService;
         _agent = agent;
         _interfaceChannelRepository = interfaceChannelRepository;
+        _interfaceMessageRepository = interfaceMessageRepository;
+        _interfaceUserRepository = interfaceUserRepository;
+        _userRepository = userRepository;
         _logger = logger;
     }
 
@@ -44,6 +52,16 @@ public class MessageHandler : IEventHandler<MessageEvent>
             return;
         }
 
+        var prev = await _slackService.GetPreviousMessage(channel.Key, slackEvent.Channel, slackEvent.Ts);
+        var interfaceMessage = prev != null ? _interfaceMessageRepository.Get(im => im.ExternalId == prev.Id) : null;
+        if (interfaceMessage?.Tag == InterfaceMessage.TAG_ONBOARDING)
+        {
+            var interfaceUser = _interfaceUserRepository.Get(iu => iu.ExternalId == slackEvent.User);
+            await _userRepository.SetCurrentAsync(interfaceUser.UserId, slackEvent.Text);
+            await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"Thank you. You are now fully onboarded on JOGL", slackEvent.Ts);
+            return;
+        }
+
         var messages = await _slackService.GetConversationAsync(channel.Key, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts);
         var tempMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"Your query is being processed now, your results should be available in a few seconds", slackEvent.Ts);
 
@@ -51,4 +69,5 @@ public class MessageHandler : IEventHandler<MessageEvent>
         await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, response, slackEvent.Ts);
         await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
     }
+
 }

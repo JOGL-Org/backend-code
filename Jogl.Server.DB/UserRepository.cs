@@ -70,6 +70,13 @@ namespace Jogl.Server.DB
                                                            .Set(e => e.UpdatedByUserId, userId));
         }
 
+        public async Task SetCurrentAsync(string userId, string current)
+        {
+            await UpdateAsync(userId, Builders<User>.Update.Set(e => e.Current, current)
+                                                           .Set(e => e.UpdatedUTC, DateTime.UtcNow)
+                                                           .Set(e => e.UpdatedByUserId, userId));
+        }
+
         public async Task SetOnboardingStatusAsync(User user)
         {
             await UpdateAsync(user.Id.ToString(), Builders<User>.Update.Set(e => e.Onboarding, user.Onboarding)

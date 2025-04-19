@@ -35,7 +35,7 @@ namespace Jogl.Server.ConversationCoordinator
             var interfaceUser = _interfaceUserRepository.Get(u => u.UserId == user.Id.ToString());
             if (interfaceUser == null)
             {
-                _logger.LogDebug("no interface user for {0}", user.Id);
+                _logger.LogDebug("No interface user for {0}", user.Id);
                 return;
             }
 

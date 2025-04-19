@@ -8,6 +8,7 @@ namespace Jogl.Server.DB
         User GetForEmail(string email);
 
         Task SetStatusAsync(string userId, UserStatus status);
+        Task SetCurrentAsync(string userId, string current);
         Task SetOnboardingStatusAsync(User user);
         Task SetPasswordAsync(string userId, string passwordHash, byte[] salt);
 
