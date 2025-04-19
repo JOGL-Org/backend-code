@@ -45,15 +45,11 @@ namespace Jogl.Server.Business
         List<TextValue> GetSkills(string search, int page, int pageSize);
         TextValue GetSkill(string value);
 
-        string GetUniqueUsername(string firstName, string lastName);
-
         Task CreateWaitlistRecordAsync(WaitlistRecord record);
         Task SendContactEmailAsync(UserContact contact);
 
         Task UpsertPushNotificationTokenAsync(string token, string userId);
 
         List<CommunityEntity> ListCommunityEntitiesForNodeUsers(string currentUserId, string nodeId, string search);
-
-        Task<string> ImportUserAsync(string firstName, string lastName, string email);
     }
 }

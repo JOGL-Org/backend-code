@@ -29,7 +29,6 @@ namespace Jogl.Server.Business
         Task NotifyRequestCreatedWithdrawAsync(Invitation invitation);
         Task NotifyCommunityEntityInviteCreatedAsync(CommunityEntityInvitation invitation);
         Task NotifyCommunityEntityInviteCreatedWithdrawAsync(CommunityEntityInvitation invitation);
-
-
+        Task NotifyOnboardingCompletedAsync(User user);
     }
 }

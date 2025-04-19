@@ -25,7 +25,7 @@ var userRepository = new UserRepository(config);
 var paperRepository = new PaperRepository(config);
 var resourceRepository = new ResourceRepository(config);
 
-var json = File.ReadAllText("C:\\code\\Seed_data_quantum.json");
+var json = File.ReadAllText("C:\\code\\Seed_data_synbio.json");
 var data = JsonSerializer.Deserialize<List<User>>(json);
 foreach (var user in data)
 {

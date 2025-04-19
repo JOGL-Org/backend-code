@@ -677,28 +677,9 @@ namespace Jogl.Server.Business
         //    });
         //}
 
-        private NotificationData GetFeedEntityData(Entity feedEntity)
+        public async Task NotifyOnboardingCompletedAsync(User user)
         {
-            var communityEntity = feedEntity as CommunityEntity;
-            var user = feedEntity as User;
-            var contentEntity = feedEntity as ContentEntity;
-
-            var key = NotificationDataKey.User;
-            if (communityEntity != null)
-                key = NotificationDataKey.CommunityEntity;
-            if (contentEntity != null)
-                key = NotificationDataKey.ContentEntity;
-
-            return new NotificationData
-            {
-                Key = key,
-                CommunityEntityType = communityEntity?.Type,
-                ContentEntityType = contentEntity?.Type,
-                EntityLogoId = communityEntity?.LogoId ?? user?.AvatarId,
-                EntityId = feedEntity.Id.ToString(),
-                EntityTitle = communityEntity?.Title ?? contentEntity.Text ?? user?.FirstName + " " + user?.LastName,
-                //EntityOnboardingEnabled = communityEntity?.Onboarding?.Enabled ?? false,
-            };
+            await _notificationFacade.NotifyOnboardingCompletedAsync(user);
         }
     }
 }

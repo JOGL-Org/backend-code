@@ -111,9 +111,6 @@ namespace Jogl.Server.API.Controllers
             //create user object
             var user = _mapper.Map<User>(model);
 
-            //autogenerate username
-            user.Username = _userService.GetUniqueUsername(user.FirstName, user.LastName);
-
             //create
             await InitCreationAsync(user);
             var userId = await _userService.CreateAsync(user, model.Password);
@@ -165,7 +162,6 @@ namespace Jogl.Server.API.Controllers
             {
                 FirstName = model.FirstName.Trim(),
                 LastName = model.LastName.Trim(),
-                Username = _userService.GetUniqueUsername(model.FirstName, model.LastName),
                 Email = model.Email.Trim(),
                 Status = UserStatus.Pending,
                 Wallets = new List<Wallet>(new Wallet[] { new Wallet { Address = model.Wallet, Type = walletType } })
@@ -1099,9 +1095,9 @@ namespace Jogl.Server.API.Controllers
                 resource.EntityId = CurrentUserId;
                 await InitCreationAsync(resource);
                 await _resourceService.CreateAsync(resource);
-                continue;
             }
 
+            await _notificationService.NotifyOnboardingCompletedAsync(user);
             return Ok();
         }
 

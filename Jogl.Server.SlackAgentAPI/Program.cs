@@ -1,9 +1,8 @@
 using Jogl.Server.Configuration;
 using Jogl.Server.SlackAgentAPI.Handler;
 using Microsoft.OpenApi.Models;
-using SlackNet.AspNetCore;
-using SlackNet.Extensions.DependencyInjection;
 using SlackNet.Events;
+using Jogl.Server.Slack.Extensions;
 using Jogl.Server.AI.Agent.Extensions;
 using Jogl.Server.Business.Extensions;
 
@@ -40,10 +39,8 @@ builder.Services.AddAIAgent();
 //add secrets
 builder.Configuration.AddKeyVault();
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddSlackNet(c =>
+builder.Services.AddSlack(builder.Configuration, (c) =>
 {
-    c.UseAppLevelToken(builder.Configuration["Slack:AppLevelToken"]);
-    c.UseSigningSecret(builder.Configuration["Slack:SigningSecret"]);
     c.RegisterEventHandler<MessageEvent, MessageHandler>();
     c.RegisterEventHandler<MemberJoinedChannel, ChannelHandler>();
     c.RegisterEventHandler<BotAdded, BotAddedHandler>();
@@ -61,7 +58,7 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseRouting();
-app.UseSlackNet(c =>
+app.UseSlack(c =>
 {
     c.UseSocketMode(true);
 });

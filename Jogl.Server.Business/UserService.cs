@@ -85,8 +85,10 @@ namespace Jogl.Server.Business
                 ThreadActivityJogl = true,
             };
 
-            await _userRepository.CreateAsync(user);
+            if (string.IsNullOrEmpty(user.Username))
+                user.Username = GetUniqueUsername(user.FirstName, user.LastName);
 
+            await _userRepository.CreateAsync(user);
 
             //check for pending invitations
             var invites = _invitationRepository.List(i => i.InviteeEmail == user.Email
@@ -591,7 +593,7 @@ namespace Jogl.Server.Business
             return _skillRepository.Get(s => s.Value == value);
         }
 
-        public string GetUniqueUsername(string firstName, string lastName)
+        private string GetUniqueUsername(string firstName, string lastName)
         {
             var rootUsername = ToAlphaNum(firstName?.Trim() + lastName?.Trim());
             var users = _userRepository.List(u => u.Username.StartsWith(rootUsername));
@@ -665,15 +667,6 @@ namespace Jogl.Server.Business
             }
 
             return username;
-        }
-
-        public Task<string> ImportUserAsync(string firstName, string lastName, string email)
-        {
-            var user = new User { FirstName = firstName, LastName = lastName, Email = email };
-            user.Status = UserStatus.Verified;
-            user.Username = GetUniqueUsername(firstName, lastName);
-
-            return _userRepository.CreateAsync(user);
         }
     }
 }

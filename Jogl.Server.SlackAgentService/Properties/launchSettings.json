@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Jogl.Server.SlackAgentService": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7085",
+      "launchBrowser": false
+    }
+  }
+}

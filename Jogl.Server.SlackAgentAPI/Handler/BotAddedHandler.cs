@@ -16,8 +16,8 @@ public class BotAddedHandler : IEventHandler<BotAdded>
 
     public async Task Handle(BotAdded slackEvent)
     {
-        var members = await _slackApiClient.Conversations.Members("C08LJPULL3H");
-        var userChannelId = await _slackApiClient.Conversations.Open([members.Members[0]]);
-        await _slackApiClient.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = "Hello" });
+        //var members = await _slackApiClient.Conversations.Members("C08LJPULL3H");
+        //var userChannelId = await _slackApiClient.Conversations.Open([members.Members[0]]);
+        //await _slackApiClient.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = "Hello" });
     }
 }

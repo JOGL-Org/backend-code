@@ -262,7 +262,6 @@ namespace Jogl.Server.API.Controllers
                 {
                     FirstName = data.GivenName.Trim(),
                     LastName = data.FamilyName?.Trim() ?? string.Empty,
-                    Username = _userService.GetUniqueUsername(data.GivenName, data.FamilyName),
                     Email = data.Emails[0].Trim(),
                     OrcidId = orcid,
                     Auth = new UserExternalAuth
@@ -325,7 +324,6 @@ namespace Jogl.Server.API.Controllers
                 {
                     FirstName = profile.GivenName.Trim(),
                     LastName = profile.LastName?.Trim() ?? string.Empty,
-                    Username = _userService.GetUniqueUsername(profile.GivenName, profile.LastName),
                     Email = profile.email.Trim(),
                     Auth = new UserExternalAuth
                     {
@@ -382,7 +380,6 @@ namespace Jogl.Server.API.Controllers
                 {
                     FirstName = profile.GivenName.Trim(),
                     LastName = profile.LastName?.Trim() ?? string.Empty,
-                    Username = _userService.GetUniqueUsername(profile.GivenName, profile.LastName),
                     Email = profile.email.Trim(),
                     Auth = new UserExternalAuth
                     {

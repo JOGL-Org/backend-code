@@ -50,6 +50,9 @@ namespace Jogl.Server.DB.Extensions
             serviceCollection.AddTransient<IEmailRecordRepository, EmailRecordRepository>();
             serviceCollection.AddTransient<ISystemValueRepository, SystemValueRepository>();
             serviceCollection.AddTransient<IInterfaceChannelRepository, InterfaceChannelRepository>();
+            serviceCollection.AddTransient<IInterfaceUserRepository, InterfaceUserRepository>();
+            serviceCollection.AddTransient<IInterfaceMessageRepository, InterfaceMessageRepository>();
+
             serviceCollection.AddTransient<IOperationContext, OperationContext>();
         }
     }

@@ -92,5 +92,10 @@ namespace Jogl.Server.Notifications
                 await NotifyInvitedAsync(invitation);
             }
         }
+
+        public async Task NotifyOnboardingCompletedAsync(User user)
+        {
+            await _serviceBus.SendAsync(user, "onboarding-completed");
+        }
     }
 }

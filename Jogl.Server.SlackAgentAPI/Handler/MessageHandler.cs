@@ -1,6 +1,7 @@
 using Jogl.Server.AI;
 using Jogl.Server.AI.Agent;
 using Jogl.Server.DB;
+using Jogl.Server.Slack;
 using SlackNet;
 using SlackNet.Events;
 
@@ -8,21 +9,16 @@ namespace Jogl.Server.SlackAgentAPI.Handler;
 
 public class MessageHandler : IEventHandler<MessageEvent>
 {
-    private readonly ISlackApiClient _slackApiClient;
+    private readonly ISlackService _slackService;
     private readonly IAgent _agent;
     private readonly IInterfaceChannelRepository _interfaceChannelRepository;
     private readonly ILogger<MessageHandler> _logger;
-    public MessageHandler(ISlackApiClient slackApiClient, IAgent agent, IInterfaceChannelRepository interfaceChannelRepository, ILogger<MessageHandler> logger)
+    public MessageHandler(ISlackService slackService, IAgent agent, IInterfaceChannelRepository interfaceChannelRepository, ILogger<MessageHandler> logger)
     {
-        _slackApiClient = slackApiClient;
+        _slackService = slackService;
         _agent = agent;
         _interfaceChannelRepository = interfaceChannelRepository;
         _logger = logger;
-    }
-
-    private ISlackApiClient GetClient(string key)
-    {
-        return _slackApiClient.WithAccessToken(key);
     }
 
     public async Task Handle(MessageEvent slackEvent)
@@ -48,35 +44,11 @@ public class MessageHandler : IEventHandler<MessageEvent>
             return;
         }
 
-        var client = GetClient(channel.Key);
-        var tempMessageTs = await SendMessageAsync(client, slackEvent.Channel, $"Your query is being processed now, your results should be available in a few seconds", slackEvent.Ts);
-        var messages = await GetHistoryAsync(client, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts, [tempMessageTs]);
+        var messages = await _slackService.GetConversationAsync(channel.Key, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts);
+        var tempMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"Your query is being processed now, your results should be available in a few seconds", slackEvent.Ts);
 
-        var response = await _agent.GetResponseAsync(messages, channel.NodeId);
-        await SendMessageAsync(client, slackEvent.Channel, response, slackEvent.Ts);
-        await DeleteMessageAsync(client, slackEvent.Channel, tempMessageTs);
-    }
-
-    private async Task<string> SendMessageAsync(ISlackApiClient client, string channel, string text, string ts)
-    {
-        var res = await client.Chat.PostMessage(new SlackNet.WebApi.Message
-        {
-            Channel = channel,
-            Text = text,
-            ThreadTs = ts
-        });
-
-        return res.Ts;
-    }
-
-    private async Task<List<InputItem>> GetHistoryAsync(ISlackApiClient client, string channel, string threadTs, IEnumerable<string> ignoreTs)
-    {
-        var history = await client.Conversations.Replies(channel, threadTs, limit: 10);
-        return history.Messages.Where(m => !ignoreTs.Contains(m.Ts)).Select(m => new InputItem { FromUser = string.IsNullOrEmpty(m.BotId), Text = m.Text }).ToList();
-    }
-
-    private async Task DeleteMessageAsync(ISlackApiClient client, string channel, string ts)
-    {
-        await client.Chat.Delete(ts, channel, true);
+        var response = await _agent.GetResponseAsync(messages.Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), channel.NodeId);
+        await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, response, slackEvent.Ts);
+        await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
     }
 }

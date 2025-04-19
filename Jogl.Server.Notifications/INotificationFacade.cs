@@ -19,5 +19,6 @@ namespace Jogl.Server.Notifications
         Task NotifyInvitedAsync(List<Invitation> invitations);
         Task NotifyInvitedAsync(EventAttendance invitation);
         Task NotifyInvitedAsync(List<EventAttendance> invitations);
+        Task NotifyOnboardingCompletedAsync(User user);
     }
 }

@@ -16,12 +16,12 @@ public class ChannelHandler : IEventHandler<MemberJoinedChannel>
 
     public async Task Handle(MemberJoinedChannel slackEvent)
     {
-        var members = await _slackApiClient.Conversations.Members(slackEvent.Channel);
-        foreach (var member in members.Members)
-        {
-            var userChannelId = await _slackApiClient.Conversations.Open([member]);
-            await _slackApiClient.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = "Hello" });
-        }
+        //var members = await _slackApiClient.Conversations.Members(slackEvent.Channel);
+        //foreach (var member in members.Members)
+        //{
+        //    var userChannelId = await _slackApiClient.Conversations.Open([member]);
+        //    await _slackApiClient.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = "Hello" });
+        //}
         
     }
 }

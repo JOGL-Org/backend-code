@@ -1,30 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using Jogl.Server.SlackAgentAPI.Handler;
-using SlackNet;
 using Jogl.Server.DB;
 using Jogl.Server.Business;
 using Jogl.Server.URL;
 using Jogl.Server.Data;
+using Jogl.Server.Slack;
+using MongoDB.Driver.Linq;
 
 namespace Jogl.Server.API.Controllers
 {
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly ISlackApiClient _slackApiClient;
+        private readonly ISlackService _slackService;
         private readonly IUserService _userService;
         private readonly IUrlService _urlService;
         private readonly IMembershipService _membershipService;
         private readonly IInterfaceChannelRepository _interfaceChannelRepository;
+        private readonly IInterfaceUserRepository _interfaceUserRepository;
         private readonly ILogger<MessageHandler> _logger;
 
-        public AdminController(ISlackApiClient slackApiClient, IUserService userService, IUrlService urlService, IMembershipService membershipService, IInterfaceChannelRepository interfaceChannelRepository, ILogger<MessageHandler> logger)
+        public AdminController(ISlackService slackService, IUserService userService, IUrlService urlService, IMembershipService membershipService, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, ILogger<MessageHandler> logger)
         {
-            _slackApiClient = slackApiClient;
+            _slackService = slackService;
             _userService = userService;
             _urlService = urlService;
             _membershipService = membershipService;
             _interfaceChannelRepository = interfaceChannelRepository;
+            _interfaceUserRepository = interfaceUserRepository;
             _logger = logger;
         }
 
@@ -37,51 +40,71 @@ namespace Jogl.Server.API.Controllers
                 return NotFound();
 
             if (channel.Key == null)
-                return BadRequest();
-
-            var client = _slackApiClient.WithAccessToken(channel.Key);
-
-            var cursor = string.Empty;
-            var users = new List<SlackNet.User>();
-            while (true)
             {
-                var page = await client.Users.List(cursor: cursor, limit: 10);
-                users.AddRange(page.Members);
-                cursor = page.ResponseMetadata.NextCursor;
-                if (string.IsNullOrEmpty(cursor))
-                    break;
+                _logger.LogWarning("Channel not initialized with access key {0}", channel.ExternalId);
+                return BadRequest();
             }
 
+            var users = await _slackService.ListWorkspaceUsersAsync(channel.Key);
             foreach (var user in users)
             {
-                if (user.IsBot || user.Id == "USLACKBOT")
+                if (user.Name != "filip.vostatek")
                     continue;
 
-                if (user.Name != "filip.vostatek" && user.Name != "louis_1214")
-                    continue;
+                var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);
+                var url = _urlService.GetOneTimeLoginLink(user.Profile.Email, code);
+                var channelId = await _slackService.GetUserChannelIdAsync(channel.Key, user.Id);
 
-                var userChannelId = await client.Conversations.Open([user.Id]);
-
-                var userExists = _userService.GetForEmail(user.Profile.Email) != null;
-                if (userExists)
+                var existingUser = _userService.GetForEmail(user.Profile.Email);
+                if (existingUser != null)
                 {
-                    var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);
-                    var url = _urlService.GetOneTimeLoginLink(user.Profile.Email, code);
-                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.FirstName}, it seems you already have a JOGL profile! You can log in <{url}|here>" });
+                    var existingInterfaceUser = _interfaceUserRepository.Get(iu => iu.UserId == existingUser.Id.ToString());
+                    if (existingInterfaceUser == null)
+                        await _interfaceUserRepository.CreateAsync(new InterfaceUser
+                        {
+                            CreatedByUserId = existingUser.Id.ToString(),
+                            CreatedUTC = DateTime.UtcNow,
+                            UserId = existingUser.Id.ToString(),
+                            ChannelId = channel.Id.ToString(),
+                            ExternalId = user.Id,
+                        });
+
+                    await _slackService.SendMessageAsync(channel.Key, channelId, $"Hello {user.Profile.FirstName}, it seems you already have a JOGL profile! You can log in <{url}|here>");
                 }
                 else
                 {
-                    var userId = await _userService.ImportUserAsync(user.Profile.FirstName, user.Profile.LastName, user.Profile.Email);
+                    var userId = await _userService.CreateAsync(new User
+                    {
+                        FirstName = user.Profile.FirstName,
+                        LastName = user.Profile.LastName,
+                        Email = user.Profile.Email,
+                        Status = UserStatus.Verified,
+                        CreatedUTC = DateTime.UtcNow,
+                    });
 
-                    var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);
-                    var url = _urlService.GetOneTimeLoginLink(user.Profile.Email, code);
-                    await _membershipService.AddMembersAsync([new Membership { CommunityEntityId = channel.NodeId, CommunityEntityType = CommunityEntityType.Node, AccessLevel = AccessLevel.Member, UserId = userId }]);
-                    await client.Chat.PostMessage(new SlackNet.WebApi.Message { Channel = userChannelId, Text = $"Hello {user.Profile.FirstName}, welcome to JOGL! We've set up your JOGL account on {user.Profile.Email}. You can set up your profile <{url}|here>" });
+                    await _interfaceUserRepository.CreateAsync(new InterfaceUser
+                    {
+                        CreatedByUserId = userId,
+                        CreatedUTC = DateTime.UtcNow,
+                        UserId = userId,
+                        ChannelId = channel.Id.ToString(),
+                        ExternalId = user.Id,
+                    });
+
+                    await _membershipService.AddMembersAsync([new Membership {
+                        CreatedByUserId = userId,
+                        CreatedUTC = DateTime.UtcNow,
+                        CommunityEntityId = channel.NodeId,
+                        CommunityEntityType = CommunityEntityType.Node,
+                        AccessLevel = AccessLevel.Member,
+                        UserId = userId,
+                    }]);
+
+                    await _slackService.SendMessageAsync(channel.Key, channelId, $"Hello {user.Profile.FirstName}, welcome to JOGL! We've set up your JOGL account on {user.Profile.Email}. You can set up your profile <{url}|here>");
                 }
             }
 
             return Ok();
         }
-
     }
 }
