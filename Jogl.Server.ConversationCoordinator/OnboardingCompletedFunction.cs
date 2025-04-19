@@ -34,7 +34,10 @@ namespace Jogl.Server.ConversationCoordinator
             var user = JsonSerializer.Deserialize<User>(message.Body.ToString());
             var interfaceUser = _interfaceUserRepository.Get(u => u.UserId == user.Id.ToString());
             if (interfaceUser == null)
+            {
+                _logger.LogDebug("no interface user for {0}", user.Id);
                 return;
+            }
 
             var interfaceChannel = _interfaceChannelRepository.Get(interfaceUser.ChannelId);
 
@@ -53,6 +56,8 @@ namespace Jogl.Server.ConversationCoordinator
                 ExternalId = messageId,
                 Tag = InterfaceMessage.TAG_ONBOARDING,
             });
+
+            _logger.LogDebug("Sent slack message to {0}", user.Id);
         }
     }
 }
