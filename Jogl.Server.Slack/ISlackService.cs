@@ -5,6 +5,7 @@ namespace Jogl.Server.Slack
 {
     public interface ISlackService
     {
+        Task<User> GetUserInfoAsync(string channelAccessToken, string userId);
         Task<string> GetUserChannelIdAsync(string channelAccessToken, string userId);
         Task<string> SendMessageAsync(string channelAccessToken, string channelId, string message, string? threadId = default);
         Task DeleteMessageAsync(string channelAccessToken, string channelId, string id);

@@ -15,6 +15,13 @@ namespace Jogl.Server.Slack
             _logger = logger;
         }
 
+        public async Task<User> GetUserInfoAsync(string channelAccessToken, string userId)
+        {
+            var client = _slackApiClient.WithAccessToken(channelAccessToken);
+
+            return await client.Users.Info(userId);
+        }
+
         public async Task<string> GetUserChannelIdAsync(string channelAccessToken, string userId)
         {
             var client = _slackApiClient.WithAccessToken(channelAccessToken);

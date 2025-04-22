@@ -42,9 +42,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
     <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
-    <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
-    <ProjectReference Include="..\Jogl.Server.Localization\Jogl.Server.Localization.csproj" />
-    <ProjectReference Include="..\Jogl.Server.PushNotifications\Jogl.Server.PushNotifications.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />
     <ProjectReference Include="..\Jogl.Server.Slack\Jogl.Server.Slack.csproj" />
   </ItemGroup>
   <ItemGroup>

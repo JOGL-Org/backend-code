@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Jogl.Server.Conversation.Data;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Slack;
@@ -27,11 +28,11 @@ namespace Jogl.Server.ConversationCoordinator
 
         [Function(nameof(OnboardingCompletedFunction))]
         public async Task RunInvitesAsync(
-            [ServiceBusTrigger("onboarding-completed", Connection = "ConnectionString", AutoCompleteMessages =true)]
+            [ServiceBusTrigger(Const.ONBOARDING_COMPLETED, Connection = "ConnectionString", AutoCompleteMessages =true)]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)
         {
-            var user = JsonSerializer.Deserialize<User>(message.Body.ToString());
+            var user = JsonSerializer.Deserialize<Data.User>(message.Body.ToString());
             var interfaceUser = _interfaceUserRepository.Get(u => u.UserId == user.Id.ToString());
             if (interfaceUser == null)
             {
@@ -40,7 +41,6 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             var interfaceChannel = _interfaceChannelRepository.Get(interfaceUser.ChannelId);
-
             if (string.IsNullOrEmpty(interfaceChannel.ExternalId))
             {
                 _logger.LogWarning("Channel not initialized with access key {0}", interfaceChannel.ExternalId);
@@ -57,7 +57,7 @@ namespace Jogl.Server.ConversationCoordinator
                 Tag = InterfaceMessage.TAG_ONBOARDING,
             });
 
-            _logger.LogDebug("Sent slack message to {0}", user.Id);
+            _logger.LogDebug("Sent onboarding-complete message to {0}", interfaceUser.ExternalId);
         }
     }
 }

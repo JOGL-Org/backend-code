@@ -1,5 +1,4 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Jogl.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
@@ -17,7 +16,7 @@ namespace Jogl.Server.ServiceBus
             _logger = logger;
         }
 
-        public async Task SendAsync<T>(T payload, string queueName) where T : Entity
+        public async Task SendAsync<T>(T payload, string queueName) 
         {
             var client = new ServiceBusClient(_configuration["Azure:ServiceBus:ConnectionString"]);
             var sender = client.CreateSender(queueName);
@@ -25,7 +24,7 @@ namespace Jogl.Server.ServiceBus
             await sender.SendMessageAsync(new ServiceBusMessage(JsonSerializer.Serialize(payload)));
         }
 
-        public async Task SendAsync<T>(IEnumerable<T> payload, string queueName) where T : Entity
+        public async Task SendAsync<T>(IEnumerable<T> payload, string queueName) 
         {
             var client = new ServiceBusClient(_configuration["Azure:ServiceBus:ConnectionString"]);
             var sender = client.CreateSender(queueName);
@@ -37,7 +36,7 @@ namespace Jogl.Server.ServiceBus
             }
         }
 
-        public async Task SubscribeAsync<T>(string queueName, string subscriptionName, Func<T, Task> onMessage) where T : Entity
+        public async Task SubscribeAsync<T>(string queueName, string subscriptionName, Func<T, Task> onMessage)
         {
             var client = new ServiceBusClient(_configuration["Azure:ServiceBus:ConnectionString"]);
             var processor = client.CreateProcessor(queueName, subscriptionName);

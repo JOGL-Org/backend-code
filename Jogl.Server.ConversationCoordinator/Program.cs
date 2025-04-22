@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Jogl.Server.Business.Extensions;
 
 var host = new HostBuilder()
     //  .ConfigureFunctionsWorkerDefaults()
@@ -22,7 +23,7 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
 
-        services.AddRepositories();
+        services.AddBusiness();
         services.AddSlack(context.Configuration);
     })
     .Build();

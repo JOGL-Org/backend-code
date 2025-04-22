@@ -1,5 +1,4 @@
-﻿using Azure;
-using Jogl.Server.Data;
+﻿using Jogl.Server.Data;
 using Jogl.Server.ServiceBus;
 
 namespace Jogl.Server.Notifications
@@ -96,6 +95,11 @@ namespace Jogl.Server.Notifications
         public async Task NotifyOnboardingCompletedAsync(User user)
         {
             await _serviceBus.SendAsync(user, "onboarding-completed");
+        }
+
+        public async Task NotifyAsync<T>(string queueOrTopicName, T data)
+        {
+            await _serviceBus.SendAsync(data, queueOrTopicName);
         }
     }
 }

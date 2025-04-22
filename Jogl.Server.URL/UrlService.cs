@@ -1,6 +1,7 @@
 ﻿using Jogl.Server.Data;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Web;
 
 namespace Jogl.Server.URL
 {
@@ -109,7 +110,7 @@ namespace Jogl.Server.URL
 
         public string GetOneTimeLoginLink(string email, string code)
         {
-            return $"{_configuration["App:URL"]}/signin-auto?email={email}&code={code}";
+            return $"{_configuration["App:URL"]}/signin-auto?email={HttpUtility.UrlEncode(email)}&code={code}";
         }
     }
 }

@@ -5,7 +5,6 @@ using Jogl.Server.Business;
 using Jogl.Server.URL;
 using Jogl.Server.Data;
 using Jogl.Server.Slack;
-using MongoDB.Driver.Linq;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -39,16 +38,22 @@ namespace Jogl.Server.API.Controllers
             if (channel == null)
                 return NotFound();
 
-            if (channel.Key == null)
+            if (string.IsNullOrEmpty(channel.Key))
             {
                 _logger.LogWarning("Channel not initialized with access key {0}", channel.ExternalId);
+                return BadRequest();
+            }
+
+            if (string.IsNullOrEmpty(channel.NodeId))
+            {
+                _logger.LogWarning("Slack workspace missing a node id: {0}", channel.ExternalId);
                 return BadRequest();
             }
 
             var users = await _slackService.ListWorkspaceUsersAsync(channel.Key);
             foreach (var user in users)
             {
-                if (user.Name != "filip.vostatek")
+                if (user.Profile.Email != "thomas+99@JOGL.io")
                     continue;
 
                 var code = await _userService.GetOnetimeLoginCodeAsync(user.Profile.Email);

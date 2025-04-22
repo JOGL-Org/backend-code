@@ -42,7 +42,7 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSlack(builder.Configuration, (c) =>
 {
     c.RegisterEventHandler<MessageEvent, MessageHandler>();
-    c.RegisterEventHandler<MemberJoinedChannel, ChannelHandler>();
+    c.RegisterEventHandler<TeamJoin, TeamJoinHandler>();
     c.RegisterEventHandler<BotAdded, BotAddedHandler>();
 });
 var app = builder.Build();

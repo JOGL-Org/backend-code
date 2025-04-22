@@ -5,6 +5,7 @@ using Jogl.Server.DB;
 using Jogl.Server.Email;
 using Jogl.Server.URL;
 using MongoDB.Bson;
+using MongoDB.Driver.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -462,7 +463,7 @@ namespace Jogl.Server.Business
                 Code = code,
                 CreatedUTC = DateTime.UtcNow,
                 UserEmail = email,
-                ValidUntilUTC = DateTime.UtcNow.AddHours(1)
+                ValidUntilUTC = DateTime.UtcNow.AddDays(7)
             });
 
             return code;
