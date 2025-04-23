@@ -21,13 +21,14 @@ namespace Jogl.Server.ConversationCoordinator
         private readonly IMembershipService _membershipService;
         private readonly ILogger<UserJoinedFunction> _logger;
 
-        public UserJoinedFunction(ISlackService slackService, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IUserService userService, IUrlService urlService, ILogger<UserJoinedFunction> logger)
+        public UserJoinedFunction(ISlackService slackService, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IUserService userService, IUrlService urlService, IMembershipService membershipService, ILogger<UserJoinedFunction> logger)
         {
             _slackService = slackService;
             _interfaceChannelRepository = interfaceChannelRepository;
             _interfaceUserRepository = interfaceUserRepository;
             _userService = userService;
             _urlService = urlService;
+            _membershipService = membershipService;
             _logger = logger;
         }
 
@@ -109,7 +110,7 @@ namespace Jogl.Server.ConversationCoordinator
                         UserId = userId,
                     }]);
 
-                await _slackService.SendMessageAsync(channel.Key, channelId, $"Hello {user.FirstName}, welcome to JOGL! We've set up your JOGL account on {user.Email}. You can set up your profile <{url}|here>");
+                await _slackService.SendMessageAsync(channel.Key, channelId, string.Format(Messages.Greeting_New, user.FirstName, url));
                 _logger.LogDebug("Sent new user message to {0}", user.ExternalId);
             }
         }

@@ -108,6 +108,11 @@ namespace Jogl.Server.URL
             }
         }
 
+        public string GetOneTimeLoginLink(string email)
+        {
+            return $"{_configuration["App:URL"]}/otp?email={HttpUtility.UrlEncode(email)}";
+        }
+
         public string GetOneTimeLoginLink(string email, string code)
         {
             return $"{_configuration["App:URL"]}/signin-auto?email={HttpUtility.UrlEncode(email)}&code={code}";

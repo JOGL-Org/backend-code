@@ -93,7 +93,6 @@ namespace Jogl.Server.API.Controllers
         [HttpPost]
         [SwaggerOperation($"Create a new user")]
         [SwaggerResponse((int)HttpStatusCode.OK, "ID of the new user record", typeof(string))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, "The supplied verification code is invalid")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "The captcha code is invalid")]
         [SwaggerResponse((int)HttpStatusCode.Conflict, "A user with this email or nickname already exists", typeof(ErrorModel))]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateModel model)
@@ -110,29 +109,16 @@ namespace Jogl.Server.API.Controllers
 
             //create user object
             var user = _mapper.Map<User>(model);
+            user.Status = UserStatus.Verified;
 
             //create
             await InitCreationAsync(user);
             var userId = await _userService.CreateAsync(user, model.Password);
 
-            //if no verification code present, trigger verification
-            if (string.IsNullOrEmpty(model.VerificationCode))
-            {
-                await _userVerificationService.CreateAsync(user, VerificationAction.Verify, model.RedirectURL, true);
-                return Ok(userId);
-            }
+            //send login email
+            await _userService.StartOneTimeLoginAsync(model.Email);
 
-            //if verification code present, process
-            var result = await _userVerificationService.VerifyAsync(model.Email, VerificationAction.Verify, model.VerificationCode);
-            switch (result.Status)
-            {
-                //if invalid, return HTTP 400
-                case VerificationStatus.Invalid:
-                    return BadRequest();
-                //if successful, return OK
-                default:
-                    return Ok(userId);
-            }
+            return Ok(userId);
         }
 
         [AllowAnonymous]
@@ -1053,6 +1039,9 @@ namespace Jogl.Server.API.Controllers
             if (!string.IsNullOrWhiteSpace(model.GithubAccessToken))
             {
                 var info = await _githubFacade.GetUserInfoAsync(model.GithubAccessToken);
+                if (user.Links == null)
+                    user.Links = new List<Link>();
+
                 if (!string.IsNullOrEmpty(info?.HtmlUrl) && !user.Links.Any(l => l.URL == info.HtmlUrl))
                     user.Links.Add(new Link { URL = info.HtmlUrl });
             }
@@ -1061,6 +1050,9 @@ namespace Jogl.Server.API.Controllers
             if (!string.IsNullOrWhiteSpace(model.HuggingfaceAccessToken))
             {
                 var info = await _huggingFaceFacade.GetUserInfoAsync(model.HuggingfaceAccessToken);
+                if (user.Links == null)
+                    user.Links = new List<Link>();
+
                 if (!string.IsNullOrEmpty(info?.URL) && !user.Links.Any(l => l.URL == info.URL))
                     user.Links.Add(new Link { URL = info.URL });
             }
@@ -1068,6 +1060,9 @@ namespace Jogl.Server.API.Controllers
             //add linkedin profile
             if (!string.IsNullOrWhiteSpace(model.LinkedInUrl))
             {
+                if (user.Links == null)
+                    user.Links = new List<Link>();
+
                 if (!user.Links.Any(l => l.URL == model.LinkedInUrl))
                     user.Links.Add(new Link { URL = model.LinkedInUrl });
             }

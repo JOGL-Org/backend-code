@@ -445,17 +445,18 @@ namespace Jogl.Server.Business
         public async Task StartOneTimeLoginAsync(string email)
         {
             var code = await GetOnetimeLoginCodeAsync(email);
-            var redirectUrl = _urlService.GetOneTimeLoginLink(email, code);
+            var redirectUrl = _urlService.GetOneTimeLoginLink(email);
 
             await _emailService.SendEmailAsync(email, EmailTemplate.Login, new
             {
+                code = code,
                 url = redirectUrl
             });
         }
 
         public async Task<string> GetOnetimeLoginCodeAsync(string email)
         {
-            var code = GenerateCode();
+            var code = GenerateCode(6, true);
 
             await _verificationCodeRepository.CreateAsync(new UserVerificationCode
             {
@@ -495,9 +496,12 @@ namespace Jogl.Server.Business
             await _userRepository.SetPasswordAsync(userId, hash, salt);
         }
 
-        private string GenerateCode(int size = 16)
+        private string GenerateCode(int size = 16, bool digitsOnly = false)
         {
             var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+            if (digitsOnly)
+                chars = "1234567890".ToCharArray();
+
             byte[] data = new byte[4 * size];
             using (var crypto = RandomNumberGenerator.Create())
             {

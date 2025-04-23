@@ -5,6 +5,8 @@ using SlackNet.Events;
 using Jogl.Server.Slack.Extensions;
 using Jogl.Server.AI.Agent.Extensions;
 using Jogl.Server.Business.Extensions;
+using Jogl.Server.DB.Extensions;
+using Jogl.Server.Notifications.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
