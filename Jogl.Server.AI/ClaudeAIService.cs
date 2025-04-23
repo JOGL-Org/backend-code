@@ -109,7 +109,7 @@ namespace Jogl.Server.AI
                 Stream = false,
                 MaxTokens = 1024,
                 Temperature = temperature,
-                PromptCaching = PromptCacheType.Messages,
+                //PromptCaching = PromptCacheType.Messages,
                 System = prompts,
             };
 

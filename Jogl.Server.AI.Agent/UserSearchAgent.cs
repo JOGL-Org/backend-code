@@ -59,7 +59,7 @@ namespace Jogl.Server.AI.Agent
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
-                Handle = emailHandles.ContainsKey(u.Document.Email) ? emailHandles[u.Document.Email] : "",
+                Handle = emailHandles.ContainsKey(u.Document.Email) ? $"@{emailHandles[u.Document.Email]}" : "",
                 Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
