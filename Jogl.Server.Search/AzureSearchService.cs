@@ -36,6 +36,7 @@ namespace Jogl.Server.Search
 
             // Map simple fields
             searchDoc["id"] = user.Id.ToString();
+            searchDoc["Email"] = user.Email;
             searchDoc["Name"] = user.FirstName + " " + user.LastName;
             searchDoc["ShortBio"] = user.ShortBio ?? string.Empty;
             searchDoc["Bio"] = user.Bio ?? string.Empty;

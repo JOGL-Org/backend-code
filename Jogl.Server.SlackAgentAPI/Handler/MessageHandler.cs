@@ -65,7 +65,10 @@ public class MessageHandler : IEventHandler<MessageEvent>
         var messages = await _slackService.GetConversationAsync(channel.Key, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts);
         var tempMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"Your query is being processed now, your results should be available in a few seconds", slackEvent.Ts);
 
-        var response = await _agent.GetResponseAsync(messages.Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), channel.NodeId);
+        var allUsers = await _slackService.ListWorkspaceUsersAsync(channel.Key);
+        var emailHandles = allUsers.ToDictionary(u => u.Profile.Email, u => u.Profile.DisplayName);
+
+        var response = await _agent.GetResponseAsync(messages.Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), emailHandles, channel.NodeId);
         await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, response, slackEvent.Ts);
         await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
     }

@@ -25,7 +25,7 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<string> GetResponseAsync(IEnumerable<InputItem> messages, string? nodeId = default)
+        public async Task<string> GetResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
@@ -54,13 +54,12 @@ namespace Jogl.Server.AI.Agent
 
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
-
-
             var hubUsers = _relationService.ListUserIdsForNode(nodeId);
             var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery);
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
+                Handle = emailHandles.ContainsKey(u.Document.Email) ? emailHandles[u.Document.Email] : "",
                 Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
