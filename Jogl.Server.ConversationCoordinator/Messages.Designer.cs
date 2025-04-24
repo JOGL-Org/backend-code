@@ -61,17 +61,35 @@ namespace Jogl.Server.ConversationCoordinator {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hey {0}! :wave: I’m JOGL, your personal expert assistant.
-        ///I’m here to help you connect with the right people, communities, and resources—based on what you’re working on and what you’re great at.
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Current_Complete {
+            get {
+                return ResourceManager.GetString("Current_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *Hey {0}! :wave: I’m JOGL, your personal expert assistant.*
+        ///I’m here to help you connect with the right people in this community and beyond—based on what you’re working on, what you’re great at and what your current needs are.
         ///Whether you’re looking for collaborators, advice, or just curious about who around you can help—you can ask me things like:
-        /// • “Who here has worked on infectious diseases?”
-        /// • “Is there anyone who could help me review my grant proposal Here it is?”
-        /// • “I need a Python expert for a side project”
-        ///Don’t hesitate  [rest of string was truncated]&quot;;.
+        /// • “Who here has been working with infectious diseases?”
+        /// • “Is there anyone who could help me on my project proposal on the implementation of X for Y? Here  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Greeting_New {
             get {
                 return ResourceManager.GetString("Greeting_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *Welcome back, {0}! :raised_hands: Your JOGL profile is almost set. One last step.*
+        ///Now that I’ve got a sense of what you’ve done, I’d love to know what you’re actually working on right now. That way, I can better connect you with people who can help—or who might want to collaborate with you.
+        ///You can tell me in your own words, the more details you provide the better understanding I will have and the more relevant your matches will be.  Keep in mind that any information contained in your JOGL profile can b [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Onboarding_Complete {
+            get {
+                return ResourceManager.GetString("Onboarding_Complete", resourceCulture);
             }
         }
     }

@@ -117,17 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Current_Complete" xml:space="preserve">
+    <value>Thank you {0}! Your JOGL profile is now live.
+Now that I know more about what you do and what you’re into, I can help you find the right people and opportunities—right here in this space and across the entire JOGL network.
+You can ask me anything, provide as much details as possible for better matches. While your JOGL profile is public, all your queries here remain confidential.
+</value>
+  </data>
   <data name="Greeting_New" xml:space="preserve">
-    <value>Hey {0}! :wave: I’m JOGL, your personal expert assistant.
-I’m here to help you connect with the right people, communities, and resources—based on what you’re working on and what you’re great at.
+    <value>*Hey {0}! :wave: I’m JOGL, your personal expert assistant.*
+I’m here to help you connect with the right people in this community and beyond—based on what you’re working on, what you’re great at and what your current needs are.
 Whether you’re looking for collaborators, advice, or just curious about who around you can help—you can ask me things like:
- • “Who here has worked on infectious diseases?”
- • “Is there anyone who could help me review my grant proposal Here it is?”
- • “I need a Python expert for a side project”
-Don’t hesitate to provide details such as the summary of a project or proposal you need help on. It will help me find better matches for you :sparkles:
+ • “Who here has been working with infectious diseases?”
+ • “Is there anyone who could help me on my project proposal on the implementation of X for Y? Here is a description of my project…”
+ • “I need a Python expert for a side project. Here is a description of my project”
+All your queries remain confidential.
 To get started, I’ll help you build your JOGL profile using the work you’ve already done—papers, code, talks, projects, and more. It only takes a minute.
-:point_right: Just click &lt;{1}|here&gt; to create your profile.
-Once you’re set up, I can start making smart introductions for you, both in this community and beyond.
+:point_right: Click &lt;{1}|here&gt; to create your profile
+Once you’re set up, I can start making smart introductions for you.
 Let’s make some great things happen :dizzy:</value>
+  </data>
+  <data name="Onboarding_Complete" xml:space="preserve">
+    <value>*Welcome back, {0}! :raised_hands: Your JOGL profile is almost set. One last step.*
+Now that I’ve got a sense of what you’ve done, I’d love to know what you’re actually working on right now. That way, I can better connect you with people who can help—or who might want to collaborate with you.
+You can tell me in your own words, the more details you provide the better understanding I will have and the more relevant your matches will be.  Keep in mind that any information contained in your JOGL profile can be partially shared with potential matches.</value>
   </data>
 </root>

@@ -48,7 +48,7 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             var channelId = await _slackService.GetUserChannelIdAsync(interfaceChannel.Key, interfaceUser.ExternalId);
-            var messageId = await _slackService.SendMessageAsync(interfaceChannel.Key, channelId, "You are almost done with your onboarding. If you don't mind, can you tell us what you're working on these days?");
+            var messageId = await _slackService.SendMessageAsync(interfaceChannel.Key, channelId, string.Format(Messages.Onboarding_Complete, user.FirstName);
             await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
             {
                 CreatedUTC = DateTime.UtcNow,
