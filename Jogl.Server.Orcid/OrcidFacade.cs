@@ -547,12 +547,10 @@ namespace Jogl.Server.Orcid
                     dynamic tokenResponse = JsonConvert.DeserializeObject(responseContent);
                     string accessToken = tokenResponse.access_token;
                     AccessToken = accessToken;
-                    Console.WriteLine(accessToken);
                     return accessToken;
                 }
                 else
                 {
-                    Console.WriteLine("Error retrieving access token: " + responseContent);
                     return null;
                 }
             }
