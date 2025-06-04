@@ -19,7 +19,7 @@ using Jogl.Server.API.Services;
 using Jogl.Server.Images;
 using Jogl.Server.Documents;
 using Jogl.Server.Configuration;
-using Jogl.Server.Arxiv;
+using Jogl.Server.Search.Extensions;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
 using System.Security.Cryptography.X509Certificates;
@@ -64,6 +64,7 @@ builder.Services.AddTransient<IContextService, ContextService>();
 
 builder.Services.AddBusiness();
 builder.Services.AddRepositories();
+builder.Services.AddSearch();
 builder.Services.AddInitialization();
 
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();

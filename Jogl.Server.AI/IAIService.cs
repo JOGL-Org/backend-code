@@ -10,6 +10,7 @@ namespace Jogl.Server.AI
         Task<string> GetResponseAsync(IEnumerable<string> contextData, IEnumerable<InputItem> inputHistory);
         Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m);
         Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m);
+        Task<T> GetResponseAsync<T>(string prompt, T sampleObject, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m);
         Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity;
     }
 

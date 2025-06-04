@@ -402,3 +402,6 @@ FodyWeavers.xsd
 profile.arm.json
 /Jogl.Server.Loader.PubMed/pubmed-tags-2024.xml
 /Jogl.Server.IdentityService/tempkey.jwk
+/Jogl.Server.TestConsole/aphp
+/Jogl.Server.TestConsole/data4good
+/Jogl.Server.TestConsole/xrp

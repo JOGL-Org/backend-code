@@ -105,6 +105,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Slack", "Jogl.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Conversation.Data", "Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj", "{B2D72186-A710-4830-BA32-5FBDDFC8685D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.SerpAPI", "Jogl.Server.SerpAPI\Jogl.Server.SerpAPI.csproj", "{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -311,6 +313,10 @@ Global
 		{B2D72186-A710-4830-BA32-5FBDDFC8685D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2D72186-A710-4830-BA32-5FBDDFC8685D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2D72186-A710-4830-BA32-5FBDDFC8685D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

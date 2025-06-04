@@ -43,8 +43,8 @@ namespace Jogl.Server.Lix
                 if (response.Data == null)
                     return null;
 
-                response.Data.Education = response.Data.Education.Where(e => !string.IsNullOrEmpty(e.InstitutionName)).ToList();
-                response.Data.Experience = response.Data.Experience.Where(e => !string.IsNullOrEmpty(e.Organisation?.Name)).ToList();
+                response.Data.Education = response.Data.Education?.Where(e => !string.IsNullOrEmpty(e.InstitutionName))?.ToList();
+                response.Data.Experience = response.Data.Experience?.Where(e => !string.IsNullOrEmpty(e.Organisation?.Name))?.ToList();
 
                 return response.Data;
             }

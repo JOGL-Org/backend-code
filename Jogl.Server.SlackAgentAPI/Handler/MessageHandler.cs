@@ -59,7 +59,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
         {
             var interfaceUser = _interfaceUserRepository.Get(iu => iu.ExternalId == slackEvent.User);
             await _userRepository.SetCurrentAsync(interfaceUser.UserId, slackEvent.Text);
-            await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, string.Format("Thank you {0}! Your JOGL profile is now live.\r\nNow that I know more about what you do and what you’re into, I can help you find the right people and opportunities—right here in this space and across the entire JOGL network.\r\nYou can ask me anything, provide as much details as possible for better matches. While your JOGL profile is public, all your queries here remain confidential.\r\n", user.Profile.FirstName), slackEvent.Ts);
+            await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, string.Format("Thank you {0}! Your JOGL profile is now live.\r\nNow that I know more about what you do and what you’re into, I can help you find the right people and opportunities—right here in this space and across the entire JOGL network.\r\nYou can ask me anything, provide as much details as possible for better matches. While your JOGL profile is public, all your queries here remain confidential.\r\n", user.Profile.FirstName));
             return;
         }
 

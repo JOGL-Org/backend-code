@@ -57,7 +57,6 @@ namespace Jogl.Server.DB
                                          //.Set(e => e.UserIds, updatedEntity.UserIds)
                                          //.Set(e => e.Journal, updatedEntity.Journal)
                                          //.Set(e => e.OpenAccessPdfUrl, updatedEntity.OpenAccessPdfUrl)
-                                         .Set(e => e.FeedIds, updatedEntity.FeedIds)
                                          .Set(e => e.FeedId, updatedEntity.FeedId)
                                          .Set(e => e.DefaultVisibility, updatedEntity.DefaultVisibility)
                                          .Set(e => e.UserVisibility, updatedEntity.UserVisibility)

@@ -8,6 +8,221 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="aphp\meta\Adidja Mdahoma_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Alan Rajendran_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Alexandre Dos Santos_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Alexis Bernatets_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Alice Deshayes_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Alice Thebaut_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Alina Pascale_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Ama Gassama-Diagne_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Ameetha Ratier_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Ana Mesic_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Anita Baillet_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Anne Dubart-Kupperschmitt_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Anne Spraul_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Anne-Marie Roque-Afonso_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Antoine Gardin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Antoine Pilon_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Antoinette Lemoine_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Antonietta Messina_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Antonio Sa Cunha_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Arnaud Bruneel_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Astrid Laurent-Bellue_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Audrey Coilly_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Beatrice Benoit_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Belkacem Acidi_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Bogdan Hermeziu_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Bruno Roche_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Catherine Guettier_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Chady Salloum_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Charlotte Neel_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Chloe CAENEN-BRAZ_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Christelle Vauloup-Fellous_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Christian Pous_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Cyrille Feray_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Dalila Habes_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Daniel Cherqui_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Daniel Perdiz_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Denis Estrade_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Didier Samuel_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Eleanor Luce_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Eleonora De Martin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Emmanuel Gonzales_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Emmanuel Jacquemin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Emmanuelle Saux_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Eric Vibert_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Faouzi Saliba_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Florent Guerin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Francois Le Naour_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Gregory MERLEN_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Hadrien Tranchart_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Hafsa Haidi_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Haishen Xie_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Hong-Hong Zhu_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Ibrahim Dagher_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Ilias Kounis_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Imen Mezni_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Isabelle Cantaloube_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Isabelle Doignon_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Isabelle Garcin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Jamila Faivre_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Jean-Charles Duclos-Vallee_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Jocelyne Hamelin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Keegan Tailleur_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Khadidiatou Diarra_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Laila Djambae_Edu_Exp_Bio_20250513223718.json" />
+	  <None Remove="aphp\meta\Latifa Bouzhir_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Lugien Alasadi_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Maite Lewin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Manon Banet_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Marc-Antoine Allard_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Marie Buendia_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Marion Almes_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Martine Lapalus_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Meriem Saidani_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Micheline Misrahi-Abadou_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Mylene Sebagh_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Najet Mejdoubi-Charef_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Nassima Benzoubir_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Nicolas Golse_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Nicolas Moniaux_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Oanez Ackermann_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Olivier DELLIS_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Olivier Fayol_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Olivier Lahuna_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Olivier Rosmorduc_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Pascal Hammel_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Pascale Dupuis-Williams_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Philippe Ichai_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Rene Adam_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Rodolphe Sobesky_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Rodrigue DOAMBA_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Severine Lorin_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Slavka Kascakova_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Sophie Branchereau_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Sophie Laroche_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Stephane Benoist_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Sylvie Job_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Thierry Tordjmann_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Thomas Falguieres_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Yosra Riahi_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\meta\Zoe Tiprez_Edu_Exp_Bio_20250513202255.json" />
+	  <None Remove="aphp\papers\Acidi Belkacem_20250509224945.json" />
+	  <None Remove="aphp\papers\Adidja Mdahoma_20250510150033.json" />
+	  <None Remove="aphp\papers\Alan Raj Jeffrey Rajendran_20250510130831.json" />
+	  <None Remove="aphp\papers\Alexandre Dos Santos_20250514163949.json" />
+	  <None Remove="aphp\papers\Alexis Bernatets_20250509234659.json" />
+	  <None Remove="aphp\papers\Alice Deshayes_20250510005250.json" />
+	  <None Remove="aphp\papers\Alice Thebaut_20250510144402.json" />
+	  <None Remove="aphp\papers\Alina Pascale_20250511151408.json" />
+	  <None Remove="aphp\papers\Ama Gassama Diagne_20250509225328.json" />
+	  <None Remove="aphp\papers\Ameetha Ratier_20250510150021.json" />
+	  <None Remove="aphp\papers\Ana Mesic_20250509234916.json" />
+	  <None Remove="aphp\papers\Anita Baillet_20250510014345.json" />
+	  <None Remove="aphp\papers\Anne Dubart-Kupperschmitt_20250513224043.json" />
+	  <None Remove="aphp\papers\Anne Marie Roque Afonso_20250513231731.json" />
+	  <None Remove="aphp\papers\Anne Spraul_20250510144230.json" />
+	  <None Remove="aphp\papers\Antoine Gardin_20250510144852.json" />
+	  <None Remove="aphp\papers\Antoine Pilon_20250510145826.json" />
+	  <None Remove="aphp\papers\Antoinette Lemoine_20250514113409.json" />
+	  <None Remove="aphp\papers\Antonietta Messina_20250509234622.json" />
+	  <None Remove="aphp\papers\Antonio Sa Cunha_20250514171717.json" />
+	  <None Remove="aphp\papers\Arnaud Bruneel_20250510145148.json" />
+	  <None Remove="aphp\papers\Astrid Laurent-Bellue_20250510005452.json" />
+	  <None Remove="aphp\papers\Audrey Coilly_20250514104659.json" />
+	  <None Remove="aphp\papers\Beatrice Benoit_20250512000700.json" />
+	  <None Remove="aphp\papers\Be╠üatrice Benoit_20250512000700.json" />
+	  <None Remove="aphp\papers\Bogdan Hermeziu_20250510144722.json" />
+	  <None Remove="aphp\papers\Bruno Roche_20250514185558.json" />
+	  <None Remove="aphp\papers\Catherine Guettier_20250513212749.json" />
+	  <None Remove="aphp\papers\Chady Salloum_20250513232423.json" />
+	  <None Remove="aphp\papers\Charlotte Neel_20250510013545.json" />
+	  <None Remove="aphp\papers\Chloe Caenen-Braz_20250511151710.json" />
+	  <None Remove="aphp\papers\Christelle Vauloup-Fellous_20250513230856.json" />
+	  <None Remove="aphp\papers\Christian Pous_20250510013758.json" />
+	  <None Remove="aphp\papers\Christian Pou╠ês_20250510013758.json" />
+	  <None Remove="aphp\papers\Cyrille Feray_20250514190229.json" />
+	  <None Remove="aphp\papers\Dalila Habes_20250510012604.json" />
+	  <None Remove="aphp\papers\Daniel Cherqui_20250514112623.json" />
+	  <None Remove="aphp\papers\Daniel Perdiz_20250510014745.json" />
+	  <None Remove="aphp\papers\Denis Estrade_20250510144904.json" />
+	  <None Remove="aphp\papers\Didier Samuel_20250514111049.json" />
+	  <None Remove="aphp\papers\Eleanor Luce_20250510130723.json" />
+	  <None Remove="aphp\papers\Eleonora De Martin_20250513192348.json" />
+	  <None Remove="aphp\papers\Ele╠üanor Luce_20250510130723.json" />
+	  <None Remove="aphp\papers\Emmanuel Gonzales_20250513194745.json" />
+	  <None Remove="aphp\papers\Emmanuel Jacquemin_20250513204042.json" />
+	  <None Remove="aphp\papers\Emmanuelle Vie_20250510005617.json" />
+	  <None Remove="aphp\papers\Eric Vibert_20250514105614.json" />
+	  <None Remove="aphp\papers\Faouzi Saliba_20250513225735.json" />
+	  <None Remove="aphp\papers\Florent Guerin_20250511225805.json" />
+	  <None Remove="aphp\papers\Francois Le Naour_20250511213253.json" />
+	  <None Remove="aphp\papers\Franc╠ºois Le Naour_20250511213253.json" />
+	  <None Remove="aphp\papers\Gregory Merlen_20250510005958.json" />
+	  <None Remove="aphp\papers\Hadrien Tranchart_20250513211459.json" />
+	  <None Remove="aphp\papers\Hafsa Haidi_20250509222720.json" />
+	  <None Remove="aphp\papers\Haishen Xie_20250510142424.json" />
+	  <None Remove="aphp\papers\Hong-Hong Zhu_linkedin_lix_20250510175644.json.json" />
+	  <None Remove="aphp\papers\Ibrahim Dagher_20250514183643.json" />
+	  <None Remove="aphp\papers\Ilias Kounis_20250510014940.json" />
+	  <None Remove="aphp\papers\Imen Mezni_20250511213543.json" />
+	  <None Remove="aphp\papers\Isabelle Cantaloube_20250510145950.json" />
+	  <None Remove="aphp\papers\Isabelle Doignon_20250513180215.json" />
+	  <None Remove="aphp\papers\Isabelle Garcin_20250511224232.json" />
+	  <None Remove="aphp\papers\Jamila Faivre_20250513211218.json" />
+	  <None Remove="aphp\papers\Jean Charles Duclos Vallee_20250513224940.json" />
+	  <None Remove="aphp\papers\Jean Charles Duclos Valle╠üe_20250513224940.json" />
+	  <None Remove="aphp\papers\Jocelyne Hamelin_20250510145348.json" />
+	  <None Remove="aphp\papers\Keegan Tailleur_20250510010704.json" />
+	  <None Remove="aphp\papers\Khadidiatou Diarra_20250510142746.json" />
+	  <None Remove="aphp\papers\Laila Djambae_20250510150049.json" />
+	  <None Remove="aphp\papers\Latifa Bouzhir_20250510143039.json" />
+	  <None Remove="aphp\papers\Lugien Alasadi_20250511145550.json" />
+	  <None Remove="aphp\papers\Maite Lewin_20250513202816.json" />
+	  <None Remove="aphp\papers\Maite╠ü Lewin_20250513202816.json" />
+	  <None Remove="aphp\papers\Manon Banet_20250510012215.json" />
+	  <None Remove="aphp\papers\Marc Antoine ALLARD_20250513223756.json" />
+	  <None Remove="aphp\papers\Marie Annick Buendia_20250513210420.json" />
+	  <None Remove="aphp\papers\Marion Almes_20250510144554.json" />
+	  <None Remove="aphp\papers\Martine Lapalus_20250510012122.json" />
+	  <None Remove="aphp\papers\Meriem Saidani_20250509234637.json" />
+	  <None Remove="aphp\papers\Micheline Misrahi_20250514190122.json" />
+	  <None Remove="aphp\papers\Mylene Sebagh_20250514184105.json" />
+	  <None Remove="aphp\papers\Myle╠Çne Sebagh_20250514184105.json" />
+	  <None Remove="aphp\papers\Najet Mejdoubi-Charef_20250511152505.json" />
+	  <None Remove="aphp\papers\Nassima Benzoubir_20250510015702.json" />
+	  <None Remove="aphp\papers\Nicolas Golse_20250509224739.json" />
+	  <None Remove="aphp\papers\Nicolas Moniaux_20250509235200.json" />
+	  <None Remove="aphp\papers\Oanez Ackermann_20250510012831.json" />
+	  <None Remove="aphp\papers\Olivier Dellis_20250510005825.json" />
+	  <None Remove="aphp\papers\Olivier Fayol_20250510142733.json" />
+	  <None Remove="aphp\papers\Olivier Lahuna_20250509222710.json" />
+	  <None Remove="aphp\papers\Olivier Rosmorduc_20250513205748.json" />
+	  <None Remove="aphp\papers\Pascal Hammel_20250513233746.json" />
+	  <None Remove="aphp\papers\Pascale Dupuis-Williams_20250512000238.json" />
+	  <None Remove="aphp\papers\Philippe Ichai_20250513230239.json" />
+	  <None Remove="aphp\papers\Philippe Ichai╠ê_20250513230239.json" />
+	  <None Remove="aphp\papers\Rene ADAM_20250513201814.json" />
+	  <None Remove="aphp\papers\Rene╠ü ADAM_20250513201814.json" />
+	  <None Remove="aphp\papers\Rodolphe Sobesky_20250509233402.json" />
+	  <None Remove="aphp\papers\Rodrigue Doamba_20250509225022.json" />
+	  <None Remove="aphp\papers\Severine Lorin_20250510145525.json" />
+	  <None Remove="aphp\papers\Se╠üverine Lorin_20250510145525.json" />
+	  <None Remove="aphp\papers\Slavka Kascakova_20250510130320.json" />
+	  <None Remove="aphp\papers\Sophie Branchereau_20250513205020.json" />
+	  <None Remove="aphp\papers\Sophie Laroche_20250509232217.json" />
+	  <None Remove="aphp\papers\Stephane Benoist_20250514182853.json" />
+	  <None Remove="aphp\papers\Ste╠üphane Benoist_20250514182853.json" />
+	  <None Remove="aphp\papers\Sylvie Job_20250509235425.json" />
+	  <None Remove="aphp\papers\Thierry Tordjmann_20250510142655.json" />
+	  <None Remove="aphp\papers\Thomas Falguieres_20250510011924.json" />
+	  <None Remove="aphp\papers\Thomas Falguie╠Çres_20250510011924.json" />
+	  <None Remove="aphp\papers\Yosra Riahi_20250510012339.json" />
+	  <None Remove="aphp\papers\Zoe Tiprez_20250509234646.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="appsettings.Production.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<DependentUpon>appsettings.json</DependentUpon>
@@ -22,14 +237,2797 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+	  <EmbeddedResource Include="aphp\meta\Adidja Mdahoma_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alan Rajendran_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alexandre Dos Santos_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alexis Bernatets_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alice Deshayes_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alice Thebaut_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Alina Pascale_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Ama Gassama-Diagne_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Ameetha Ratier_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Ana Mesic_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Anita Baillet_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Anne Dubart-Kupperschmitt_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Anne Spraul_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Anne-Marie Roque-Afonso_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Antoine Gardin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Antoine Pilon_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Antoinette Lemoine_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Antonietta Messina_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Antonio Sa Cunha_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Arnaud Bruneel_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Astrid Laurent-Bellue_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Audrey Coilly_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Beatrice Benoit_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Belkacem Acidi_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Bogdan Hermeziu_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Bruno Roche_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Catherine Guettier_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Chady Salloum_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Charlotte Neel_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Chloe CAENEN-BRAZ_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Christelle Vauloup-Fellous_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Christian Pous_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Cyrille Feray_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Dalila Habes_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Daniel Cherqui_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Daniel Perdiz_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Denis Estrade_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Didier Samuel_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Eleanor Luce_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Eleonora De Martin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Emmanuel Gonzales_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Emmanuel Jacquemin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Emmanuelle Saux_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Eric Vibert_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Faouzi Saliba_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Florent Guerin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Francois Le Naour_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Gregory MERLEN_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Hadrien Tranchart_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Hafsa Haidi_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Haishen Xie_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Hong-Hong Zhu_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Ibrahim Dagher_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Ilias Kounis_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Imen Mezni_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Isabelle Cantaloube_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Isabelle Doignon_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Isabelle Garcin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Jamila Faivre_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Jean-Charles Duclos-Vallee_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Jocelyne Hamelin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Keegan Tailleur_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Khadidiatou Diarra_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Laila Djambae_Edu_Exp_Bio_20250513223718.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Latifa Bouzhir_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Lugien Alasadi_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Maite Lewin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Manon Banet_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Marc-Antoine Allard_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Marie Buendia_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Marion Almes_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Martine Lapalus_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Meriem Saidani_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Micheline Misrahi-Abadou_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Mylene Sebagh_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Najet Mejdoubi-Charef_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Nassima Benzoubir_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Nicolas Golse_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Nicolas Moniaux_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Oanez Ackermann_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Olivier DELLIS_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Olivier Fayol_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Olivier Lahuna_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Olivier Rosmorduc_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Pascal Hammel_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Pascale Dupuis-Williams_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Philippe Ichai_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Rene Adam_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Rodolphe Sobesky_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Rodrigue DOAMBA_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Severine Lorin_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Slavka Kascakova_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Sophie Branchereau_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Sophie Laroche_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Stephane Benoist_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Sylvie Job_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Thierry Tordjmann_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Thomas Falguieres_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Yosra Riahi_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\meta\Zoe Tiprez_Edu_Exp_Bio_20250513202255.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Acidi Belkacem_20250509224945.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Adidja Mdahoma_20250510150033.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alan Raj Jeffrey Rajendran_20250510130831.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alexandre Dos Santos_20250514163949.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alexis Bernatets_20250509234659.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alice Deshayes_20250510005250.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alice Thebaut_20250510144402.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Alina Pascale_20250511151408.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Ama Gassama Diagne_20250509225328.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Ameetha Ratier_20250510150021.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Ana Mesic_20250509234916.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Anita Baillet_20250510014345.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Anne Dubart-Kupperschmitt_20250513224043.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Anne Marie Roque Afonso_20250513231731.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Anne Spraul_20250510144230.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Antoine Gardin_20250510144852.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Antoine Pilon_20250510145826.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Antoinette Lemoine_20250514113409.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Antonietta Messina_20250509234622.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Antonio Sa Cunha_20250514171717.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Arnaud Bruneel_20250510145148.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Astrid Laurent-Bellue_20250510005452.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Audrey Coilly_20250514104659.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Beatrice Benoit_20250512000700.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Bogdan Hermeziu_20250510144722.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Bruno Roche_20250514185558.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Catherine Guettier_20250513212749.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Chady Salloum_20250513232423.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Charlotte Neel_20250510013545.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Chloe Caenen-Braz_20250511151710.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Christelle Vauloup-Fellous_20250513230856.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Christian Pous_20250510013758.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Cyrille Feray_20250514190229.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Dalila Habes_20250510012604.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Daniel Cherqui_20250514112623.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Daniel Perdiz_20250510014745.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Denis Estrade_20250510144904.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Didier Samuel_20250514111049.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Eleanor Luce_20250510130723.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Eleonora De Martin_20250513192348.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Emmanuel Gonzales_20250513194745.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Emmanuel Jacquemin_20250513204042.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Emmanuelle Vie_20250510005617.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Eric Vibert_20250514105614.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Faouzi Saliba_20250513225735.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Florent Guerin_20250511225805.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Francois Le Naour_20250511213253.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Gregory Merlen_20250510005958.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Hadrien Tranchart_20250513211459.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Hafsa Haidi_20250509222720.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Haishen Xie_20250510142424.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Hong-Hong Zhu_linkedin_lix_20250510175644.json.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Ibrahim Dagher_20250514183643.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Ilias Kounis_20250510014940.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Imen Mezni_20250511213543.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Isabelle Cantaloube_20250510145950.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Isabelle Doignon_20250513180215.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Isabelle Garcin_20250511224232.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Jamila Faivre_20250513211218.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Jean Charles Duclos Vallee_20250513224940.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Jocelyne Hamelin_20250510145348.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Keegan Tailleur_20250510010704.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Khadidiatou Diarra_20250510142746.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Laila Djambae_20250510150049.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Latifa Bouzhir_20250510143039.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Lugien Alasadi_20250511145550.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Maite Lewin_20250513202816.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Manon Banet_20250510012215.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Marc Antoine ALLARD_20250513223756.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Marie Annick Buendia_20250513210420.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Marion Almes_20250510144554.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Martine Lapalus_20250510012122.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Meriem Saidani_20250509234637.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Micheline Misrahi_20250514190122.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Mylene Sebagh_20250514184105.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Najet Mejdoubi-Charef_20250511152505.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Nassima Benzoubir_20250510015702.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Nicolas Golse_20250509224739.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Nicolas Moniaux_20250509235200.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Oanez Ackermann_20250510012831.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Olivier Dellis_20250510005825.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Olivier Fayol_20250510142733.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Olivier Lahuna_20250509222710.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Olivier Rosmorduc_20250513205748.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Pascal Hammel_20250513233746.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Pascale Dupuis-Williams_20250512000238.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Philippe Ichai_20250513230239.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Rene ADAM_20250513201814.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Rodolphe Sobesky_20250509233402.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Rodrigue Doamba_20250509225022.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Severine Lorin_20250510145525.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Slavka Kascakova_20250510130320.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Sophie Branchereau_20250513205020.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Sophie Laroche_20250509232217.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Stephane Benoist_20250514182853.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Sylvie Job_20250509235425.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Thierry Tordjmann_20250510142655.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Thomas Falguieres_20250510011924.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Yosra Riahi_20250510012339.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="aphp\papers\Zoe Tiprez_20250509234646.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Jogl.Server.AI\Jogl.Server.AI.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
 		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Documents\Jogl.Server.Documents.csproj" />
+		<ProjectReference Include="..\Jogl.Server.Lix\Jogl.Server.Lix.csproj" />
+		<ProjectReference Include="..\Jogl.Server.SerpAPI\Jogl.Server.SerpAPI.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="data4good\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="data4good\aaadryyy_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\abulte_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\acfogarty_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Ackim59_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AD-97_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\adelshb_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\aecof_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\alencon_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\alexisthual_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\alexphiev_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\allezalex_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\altazine_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AMDonati_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ameliedubourg_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AmineKheldouni_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\andrelaszlo_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AnneGiralt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AnnekimBanchereau_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\antoan2_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\antoine-sii_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\armgilles_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ArnaudWald_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ArthusWQZ_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\artpech_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ArtusVuatrin_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\AwaSacko_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Baboo7_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\baptistesola2_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\baruch11_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\BasCR-hub_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\BastienGauthier_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\benoit-cty_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\bixiou_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\bmaingret_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\bmaisonn_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\bouffan_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Brams75_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\bricefotzo_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\brunetsimon_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\BuonOmo_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\c-o_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\CalvinWilliams1012_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\camila-ud_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\cgoudet_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\CharlesGaydon_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\charlottedgt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\chloeskt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\cjean-pierre_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\clembac_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ClementMayer_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ClP-Eki_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\d4gvince_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\DatenBiene_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\daylennguyen_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\deanoakley_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\dependabot[bot]_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\DimitriCabaud_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\DnzzL_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\edthrn_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ejamet73_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\eleonoreft_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\eliottrabin2_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\elise-chin_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ElodieQ_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\emaulandi_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Eniidras_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Erawpalassalg_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\estellerambier_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\FabienNaveau_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\fe51_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\felixbarriere_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\firthir_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\flrntpt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\francescacosta_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\frgfm_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Gabriel-Ducrocq_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\gabysoph_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\gaudinnicolas_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\GHCamille_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\greg-lep_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\gronteix_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Guepardow_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\guerinjeanmarc_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\guylifshitz_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\hadrilec_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\HananeMaghlazi_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\hehlinge42_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Henley13_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\HenriChabert_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\hippolytej_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Hkllopp_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\hnarjis_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Hugo-GEE_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\HugoChevalier_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\hyqiu_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\jabessouguie_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\jauffretp_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\jeannedionisi_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\JeremieBB_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\JeremyDesir_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Johanna-Seif_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\juguirlet_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\julamb_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\jupeg_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\kaaloo_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Karanshade_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Karinehoo_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\kazdaghli_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\komi24_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\lebcel_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Ledoux_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\lefko2000_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\line-ton-that_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\linetonthat_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\louis-sanna-eki_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\louise-davy_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\louwelgryn_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\LucasZimmermann_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\LuisBlanche_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\machbry_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Mael-Brs_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mahdiqb_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Makitsu_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\MarahGamdou_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mariemmrzk_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\MarionCoutarel_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\marthevienne_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\martin1tab_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\MateoLostanlen_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\matheo-daly_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\matthieu994_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Max-Pol_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\maximecharpentierdata_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Mehdi2402_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\meng-tih_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Michael-bot521_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mifine_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mikanribu_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mnicolleUTC_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\morgandavidson_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\morganednl_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\mrn-i_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\n-toussaint_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Nathanlauga_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\nicolas-toussaint_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\njouanin_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\nthulstrupp_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\oliviernguyenquoc_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\omontigny_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\pagbrl_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\pajachiet_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\PanDav2_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\paulroujansky_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\petermartigny_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\polomarcus_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\portematthieu_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\qmoret_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\quentin-kamenda_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\QuentinKamenda_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\raphaeleadjerad_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rcourivaud_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rdufief_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\remi-boivin_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\remiriv_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Renaud-D-Harreville_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rlhez_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rmnvncnt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\RobertoCastellini87_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\romainm13_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\RomainWarlop_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\RonanMorgan_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rquilliet_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\rv2931_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SaboniAmine_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\sam-scott_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\sammous_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\samueldelcourt_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\sarahlunette_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\sarima_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Scienthusiast_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\sebastienbourgeois_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SebM42_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\seiteta_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\selimrbd_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SergeNanou_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SharonBrg_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\simondac_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\slamer59_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Soliine_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SophieMdl_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\SpacemanPete_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ssoulier_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\stephanegigandet_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Steven-Sanseau_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\taaroa-nui_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\tallulaha_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\tdquan_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\teleboas_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\teolemon_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\theaupoulat_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\TheoLvs_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\TheoSchwartz_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\thito514_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\thrivedevteam_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\timtonthat_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Tiyop_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\trojette_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\user030421_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ValentinFigue_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\vchallier_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Vicam_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\VincGargasson_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\virobidou_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Vladou73_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\vmando_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\WajdiF_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Wbarillon_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\Yann-girard_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\yassilah_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ygirard_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\YounessDataV_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="data4good\ZakiAbdelwahed_github_fullprofile_edu_exp_bio_repos20250526150849.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aanchal Malhotra_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aaron Tham_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Abdelwahab HamouΓÇÉLhadj_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Abderahman Rejeb_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Abhiram Kothapalli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Abishek Sankararaman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aditya Gopalan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aditya Kumar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Adriano Koshiyama_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Agnieszka Rychwalska_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alan Orwick_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alastair Moore_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alberto Rossi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alberto Sonnino_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alceste Scalas_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aleksei Gudkov_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aleksei Mashlakov_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alessandro Chiesa_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alevtina Dubovitskaya_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alex Butean_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alex Khodaverdian_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alex Ozdemir_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alexander Blume_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alexander Spiegelman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alexandra Schneiders_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alfonso Delgado De Molina Rius_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ali Kabiri_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Alishah Chator_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Amit Goyal_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anand Ashok Sawant_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anasuya Acharya_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrea Bracciali_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andreas Strebinger_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrei Kwok_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrei Tara_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrew HudsonΓÇÉSmith_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrew Knight_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrew Myers_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Andrey Chursin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anh-Duong Nguyen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Aniket Kuiri_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anil Kumar Sutrala_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anjum Khurshid_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ankush Das_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ankush Mitra_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Annibale Panichella_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Antoine Cully_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Antonios Inglezakis_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Antony Welfare_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anunay Kulshrestha_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anusha Vangala_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anwar Walid_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Anyi Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ari Juels_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Arie Gurfinkel_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Arie van Deursen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ariel Gabizon_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ariel ZetlinΓÇÉJones_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Arthur Gervais_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Arushi Jaiswal_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Arvind Narayanan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ashok Kumar Das_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ashwin Ramachandran_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Athanasios Vasilakos_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Avery Ching_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Avery Laird_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bahman Zamani_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bala╠üzs Bodo╠ü_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Basudeb Bera_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Behkish Nassirzadeh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ben Fisch_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ben Weintraub_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Benedikt Bu╠ênz_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Benjamin Kaiser_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Benjamin Livshits_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Binanda Sengupta_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bing Chang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bo Luo_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Boyang Zhang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bryan Parno_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Bryan Routledge_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Campbell Harvey_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Catherine Yu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chang Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chao Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Charles Miers_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Charlie Hou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chaya Ganesh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chen Lin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chi-en Amy Tai_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chien-Chih Chen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chris Bayer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Christof Ferreira Torres_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Christopher Clack_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Christopher Portmann_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Christopher Wilson_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chunhua Su_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Chunyu Mao_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Clare Sullivan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Claudio Tessone_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Cody Cowley_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Cole Holan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Colin Nolden_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Cristian Lepore_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Cristina Nita-Rotaru_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Crystal Andrea Roma_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dahlia Malkhi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Damien Ackerer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Damien Magoni_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dan Boneh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dan Meng_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Daniel Harrell_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Daniel Leung_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Daniel Pe╠ürez_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Daniel Platt_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dashan Huang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\David Andolfatto_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\David Hoffman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\David Shipworth_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\David Tuckett_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Debasis Giri_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Deepak Puthal_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Denise Gorse_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Devkishen Sisodia_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dick Epema_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dimitri Marinelli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dimitri Stallenberg_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dirk Helbing_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dmitri Perelman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dong Hoon Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Donghwa Shin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Duc Le_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Durbadal Chattaraj_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Dusit Niyato_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Eamonn Gashier_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Eleftherios Kokoris Kogias_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Elias Iosif_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Elisaweta Masserova_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Eric Burger_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Eric Meyer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ethan Cecchetti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ewerton Andrade_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fabio Caccioli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fabio Ciulla_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fangming Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fatima Kanij_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Felipe Shiraishi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fernando Matsumoto_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Flaviene Scheidt de Cristo_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Flavio Iannelli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Florian Breuer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Florian Guitton_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Florian Spychiger_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Florian Trame╠Çr_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Francesca Medda_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Francesco DΓÇÖAcunto_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Francesco Pierangeli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Frank Pfenning_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Fuwei Jiang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gang Li_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gareth Peters_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Geoffrey Goodell_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Geong Sen Poh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\George Danezis_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Georgios Dimitropoulos_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ghassan Karame_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Giacomo Livan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gilles Hilary_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Giovanna Massarotto_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Giulia Fanti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Giulio Malavolta_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Go Yamamoto_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gordon Fraser_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gregory Chondrokoukis_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Grischa Liebel_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guilherme Koslovski_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guilherme Rito_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guomin Yang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guowen Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guy Vishnia_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Guyue Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Gyu Myoung Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hamy Ratoanina_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Han-Chieh Chao_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hanjun Li_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hao Tan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Haobin Ni_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Haotian Wu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hari Govind V K_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Harold James_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Harry Kalodner_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hazem Danny Al-Nakib_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hector Yassuda_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Henri Bal_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hideaki Aoyama_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hiwon Yoon_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hjalmar Turesson_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\HongΓÇÉHee Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Horst Treiblmaier_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Huaiying Sun_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hugh Harsono_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hugo Jonker_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hyo Jin Jo_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Hyoseung Kim_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ilham Qasse_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ilsun You_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ioannis Lianos_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Iris HΓÇôY Chiu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ishani Santurkar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ishav Desai_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Isobel Seabrook_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jakub S╠üliwin╠üski_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\James Angel_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jan Hoffmann_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jean Belo Klamti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jean-Jacques Quisquater_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jeremiah Alexander_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jeremy Barnett_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jiahua Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jiaming Yuan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jian Weng_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jianting Ning_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jianying Zhou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jianzhen Luo_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jiaqing Luo_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jiayun Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jin-Dong Dong_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Joa╠âo Henrique Faes Battisti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jochen Papenbrock_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Joel Rodrigues_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Joey Santoro_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Johannes Klinglmayr_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Johannes Sedlmeir_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\John Bautista_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\John Keogh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\John Kolb_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\John LandonΓÇÉLane_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jonatas Viana da Silva_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jonathan Bootle_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jonathan Downing_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jonathan Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jonathan Mayer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jong Hwan Park_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jongsub Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Juan Ignacio Iban╠âez_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jun Aoyagi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jun Cai_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Jun Li_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Junpei Komiyama_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Justin Drake_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Justin Raizes_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Justin Thaler_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kai Bu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kai Sun_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kaihua Qin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kari Kostiainen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Karim Rejeb_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Karl Kreder_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Karl Wu╠êst_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ke Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kenichi Ueda_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kevin Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kirill Ivkushkin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kittiphon Phalakarn_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Klaus-Tycho Foerster_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Klitos Christodoulou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kohei Kawaguchi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Krzysztof Paruch_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\KueiΓÇÉFang Hsiao_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kui Ren_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kyle Soska_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Kyoung Claudio Jung_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ladd Hanson_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Laura Xiaolei Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Lei Jiao_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Leonardo Kimura_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Li Yan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Lily Zechner_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Lin Wang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Linfeng Cheng_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ling Ren_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Liyi Zhou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Loris Diana_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Lucas Alberto Pineda Met_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Lucian Trestioreanu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\M.A. Hasan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Magdalena Roszczyn╠üska-Kurasin╠üska_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mahsa Panahandeh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Majd Soud_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Malte Mo╠êser_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marcelo Pasin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marco Marques_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marcos Simpli╠ücio_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marcus Dapp_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marek Grajek_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Maria Schett_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marinos Themistocleous_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marion Garaus_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Marios Touloupou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mark Ballandies_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Martin Plattner_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Massimo Bartoletti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Matheus Ferreira_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mathieu Baudet_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Matteo Abbondati_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Matthew Nance Hall_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mauri╠ücio Pillon_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ma┼égorzata S╠ümietanka_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Michael Bartholic_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Michael Batty_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Michael Fell_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Michael Jacobides_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mingxun Zhou_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mitchell Olsthoorn_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mohammad Hamdaqa_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mohammad Obaidat_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mohammad Wazid_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mohammod Shamim Hossain_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Moozhan Shakeri_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Moritz Platt_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Muhammad Daud Bin Mahmud_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Muhammad Khurram Khan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Muhammad Usman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mustafa AbdulΓÇÉMoheeth_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Mustafa Al-Bassam_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nan Li_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Neeraj Kumar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nguyen Truong_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Niall Roche_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nicholas Spooner_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nick Arnosti_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nicolas Christin_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nicolas Courtois_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nikhil Vadgama_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Niklas Bussmann_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Nitin Awathare_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Og╠åuzhan Ersoy_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Oscar King_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ovia Seshadri_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pablo Gamito_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pandi Vijayakumar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Paola Cerchiello_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Paolo Giudici_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Paolo Tasca_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Parikshit Hegde_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pascal Lorenz_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Paul Momtaz_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pawe┼é Sza┼éachowski_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pedro Moreno-Sa╠ünchez_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pedro Nardelli_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pengfei Wu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Phil Daian_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Philip Treleaven_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Philipp Jovanovic_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pouria Derakhshanfar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pratiksha Chaudhary_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pratyush Mishra_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Primavera De Filippi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Pulak Ghosh_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Qing Chan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Quan Wen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Radu State_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ramakrishnan Durairajan_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Riad Wahby_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Richards Peter_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Rickard Nyman_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Robert Deng_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Robert Norvill_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Robert Streit_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Roberta Scaramozzino_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Roberto Zunino_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Robin Fritsch_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Roger Wattenhofer_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Rosario Mantegna_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Rubaiyat Islam_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Rudrapatna Shyamasundar_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ryo Ishida_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sahil Garg_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sam Werner_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Samiran Chattopadhyay_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Samuel Mergendahl_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Samuli Honkapuro_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sanglu Lu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Satwik Prabhu Kumble_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sean Rivera_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sebastian Ba╠ånescu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sebastiano Panichella_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Seongbae Lim_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Seth Matthew Weinberg_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Seung-Ho Lee_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shaanan Cohney_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sharon Shoham_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shehar Bano_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sheng Zhang_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shengmin Xu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shinya Kawata_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shuiguang Deng_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shujun Li_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shunya Noda_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Shutong Chen_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Silvia Bartolucci_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Simon Cousaert_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Simone Righi_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sinis╠îa Matetic╠ü_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Siqi Liu_XRP_Ubri_full profile_20250602222434.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Siqiu Yao_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Song Guo_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Soumya Banerjee_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sourav Das_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sourav Saha_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Srinath Setty_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sriram Vishwanath_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sr─æjan C╠îapkun_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Stefan Schmid_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Stefania Fiorentino_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Stefanie Roos_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Stephanie Balzer_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Stephen Utkus_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Steven Andrews_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Steven Goldfeder_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Suhaiza Zailani_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Sukhi Jutla_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Takahiro Hattori_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tao Li_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tao Xue_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tatsuru Kikuchi_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tereza Cristina Melo de Brito Carvalho_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Thomas Asikis_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Thomas Dasaklis_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tim Marple_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tina Ehrke-Rabel_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ting He_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Tomaso Aste_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Toranosuke Onishi_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Toshiko Matsui_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Turan Bali_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ueli Maurer_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Umesh Bellur_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vangelis Malamas_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Veni Arakelian_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Verena Kallhoff_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vijay Ganesh_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vijay Garg_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vinay Ribeiro_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vincent Hellendoorn_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vipul Goyal_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vishwas Patil_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vitor Perles_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vivian Rajeswaren_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vorapong Suppakitpaisarn_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vyas Sekar_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Vytautas Tumas_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wazen Shbair_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Weizhi Meng_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wen Yu_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wenzhi Ding_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Will Serrano_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\William Lin_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wilson Nguyen_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wilton Jaciel Loch_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wojciech Golab_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Wonsuk Choi_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Xavier Devroey_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Xiaoshuai Zhang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ximeng Liu_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ximing Liu_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Xinyi Huang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yan Chen_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yan Ji_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yanfei Hu_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yang Yang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yang Zheng_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yangguang Tian_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yanni Georghiades_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yao Cheng_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ye Lin Sally Hahn_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ye Wang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Ye-Sheen Lim_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yebo Feng_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yibo Jin_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yifan Song_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yike Guo_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yinghui Zhang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yingjiu Li_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yo-Der Song_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yoshi Fujiwara_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Youngho Park_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuen C Lo_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuichi Ikeda_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuki Ito_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuliya Guseva_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yutian Yang_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\YuTing Chen_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuup Van Engelshoven_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Yuxuan Du_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Zekun Li_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Zhangxiang Hu_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Zhen Hai_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Zhuzhong Qian_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="xrp\Áron Lászka_XRP_Ubri_full profile_20250602222435.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

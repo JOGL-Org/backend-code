@@ -45,6 +45,7 @@ namespace Jogl.Server.AI.Agent
             {
                 Explanation = "explanation",
                 ExtractedQuery = "topic or field",
+                ExtractedConfiguration = "default or current",
                 Success = false
             };
 
@@ -55,7 +56,7 @@ namespace Jogl.Server.AI.Agent
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
             var hubUsers = _relationService.ListUserIdsForNode(nodeId);
-            var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery);
+            var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration);
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
@@ -63,7 +64,8 @@ namespace Jogl.Server.AI.Agent
                 Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
-                OriginalData = u.Document
+                OriginalData = u.Document,
+                Highlights = u.SemanticSearch.Captions
             }));
 
             var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages);

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Azure.Identity;
 using Jogl.Server.Data;
 using User = Jogl.Server.Search.Model.User;
+using System.Globalization;
 
 namespace Jogl.Server.Search
 {
@@ -40,6 +41,7 @@ namespace Jogl.Server.Search
             searchDoc["Name"] = user.FirstName + " " + user.LastName;
             searchDoc["ShortBio"] = user.ShortBio ?? string.Empty;
             searchDoc["Bio"] = user.Bio ?? string.Empty;
+            searchDoc["Current"] = user.Current ?? string.Empty;
             searchDoc["Educations_Institution"] = user.Education != null ? user.Education.Select(e => e.School).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Educations_Program"] = user.Education != null ? user.Education.Select(e => e.Program).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Experiences_Company"] = user.Experience != null ? user.Experience.Select(e => e.Company).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
@@ -51,10 +53,21 @@ namespace Jogl.Server.Search
             searchDoc["Papers_Title"] = papers != null ? papers.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract"] = papers != null ? papers.Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
+            searchDoc["Papers_Title_Current"] = papers != null ? papers.Where(IsCurrent).Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            searchDoc["Papers_Abstract_Current"] = papers != null ? papers.Where(IsCurrent).Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+
             return searchDoc;
         }
 
-        public async Task<List<SearchResult<User>>> SearchUsersAsync(string query, IEnumerable<string>? userIds = default)
+        private bool IsCurrent(Paper p)
+        {
+            if (!DateTime.TryParseExact(p.PublicationDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                return false;
+
+            return (DateTime.UtcNow - date) < TimeSpan.FromDays(2 * 365);
+        }
+
+        public async Task<List<SearchResult<User>>> SearchUsersAsync(string query, string configuration = "default", IEnumerable<string>? userIds = default)
         {
             // Create a search client
             SearchClient searchClient = new SearchClient(
@@ -66,10 +79,12 @@ namespace Jogl.Server.Search
             var options = new SearchOptions
             {
                 QueryType = SearchQueryType.Semantic,
-                Size = 8,
+                Size = 3,
                 SemanticSearch = new SemanticSearchOptions
                 {
-                    SemanticConfigurationName = "default",
+                    SemanticConfigurationName = configuration,
+                    QueryCaption = new QueryCaption(QueryCaptionType.Extractive),
+                    QueryAnswer = new QueryAnswer(QueryAnswerType.Extractive)
                 }
             };
 
@@ -83,7 +98,8 @@ namespace Jogl.Server.Search
                 //execute search
                 var results = await searchClient.SearchAsync<User>(query, options);
 
-                return results.Value.GetResultsAsync().ToBlockingEnumerable()/*Select(v => v.Document).*/.ToList();
+                var x = results.Value.GetResultsAsync().ToBlockingEnumerable().ToList();
+                return /*Select(v => v.Document).*/x.ToList();
             }
             catch (Exception ex)
             {

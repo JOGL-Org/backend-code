@@ -4,7 +4,6 @@ using Anthropic.SDK;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Jogl.Server.Data;
-using Jogl.Server.AI.DTO;
 
 namespace Jogl.Server.AI
 {
@@ -143,6 +142,11 @@ namespace Jogl.Server.AI
                 throw new Exception($"Claude request failed for feed prompt");
 
             return JsonSerializer.Deserialize<T>(response.Message.ToString());
+        }
+
+        public async Task<T> GetResponseAsync<T>(string prompt, T sampleObject, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m)
+        {
+            return default(T);
         }
 
         public async Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity

@@ -9,12 +9,14 @@ namespace Jogl.Server.Business
         protected readonly IWorkspaceRepository _workspaceRepository;
         protected readonly INodeRepository _nodeRepository;
         protected readonly IOrganizationRepository _organizationRepository;
+        protected readonly IConversationRepository _conversationRepository;
 
-        public FeedEntityService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, IOrganizationRepository organizationRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, null)
+        public FeedEntityService(IWorkspaceRepository workspaceRepository, INodeRepository nodeRepository, IOrganizationRepository organizationRepository, IConversationRepository conversationRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, null)
         {
             _workspaceRepository = workspaceRepository;
             _nodeRepository = nodeRepository;
             _organizationRepository = organizationRepository;
+            _conversationRepository = conversationRepository;
         }
 
         public FeedEntitySet GetFeedEntitySet(IEnumerable<string> feedIds)
@@ -180,6 +182,12 @@ namespace Jogl.Server.Business
                 case FeedType.Channel:
                     await _channelRepository.UpdateLastActivityAsync(entityId, updatedUTC, updatedByUserId);
                     break;
+                case FeedType.Resource:
+                    await _resourceRepository.UpdateLastActivityAsync(entityId, updatedUTC, updatedByUserId);
+                    break;
+                case FeedType.Conversation:
+                    await _conversationRepository.UpdateLastActivityAsync(entityId, updatedUTC, updatedByUserId);
+                    break;
                 default:
                     throw new Exception($"Cannot update activity on feed type {feed.Type}");
             }
@@ -322,6 +330,12 @@ namespace Jogl.Server.Business
                 case FeedType.Channel:
                     return _channelRepository.Get(id);
 
+                case FeedType.Resource:
+                    return _resourceRepository.Get(id);
+
+                case FeedType.Conversation:
+                    return _conversationRepository.Get(id);
+
                 default:
                     throw new NotImplementedException($"Cannot load entity for type {type}");
             }
@@ -412,6 +426,20 @@ namespace Jogl.Server.Business
 
                     EnrichChannelsWithPermissions(new[] { channel }, userId);
                     return channel;
+                case FeedType.Resource:
+                    var resource = _resourceRepository.Get(id);
+                    if (resource == null)
+                        return null;
+
+                    EnrichResourcesWithPermissions(new[] { resource }, userId);
+                    return resource;
+                case FeedType.Conversation:
+                    var conversation = _conversationRepository.Get(id);
+                    if (conversation == null)
+                        return null;
+
+                    EnrichConversationsWithPermissions(new[] { conversation }, userId);
+                    return conversation;
                 default:
                     throw new NotImplementedException($"Cannot load entity for type {type}");
             }

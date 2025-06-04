@@ -46,7 +46,7 @@ namespace Jogl.Server.Data
         public bool Onboarding { get; set; }
 
         [BsonIgnore]
-        public bool UserConnected { get; set; }
+        public UserConnectionStatus? UserConnectionStatus { get; set; }
         [BsonIgnore]
         public int ProjectCount { get; set; }
         [BsonIgnore]

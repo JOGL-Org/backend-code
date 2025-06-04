@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <PackageReference Include="RestSharp" Version="110.2.0" />
 	  <PackageReference Include="Syncfusion.XlsIORenderer.Net.Core" Version="26.1.39" />
 	  <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="26.1.39" />
 	  <PackageReference Include="Syncfusion.PresentationRenderer.Net.Core" Version="26.1.39" />

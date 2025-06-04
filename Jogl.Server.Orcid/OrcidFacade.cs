@@ -648,17 +648,17 @@ namespace Jogl.Server.Orcid
                         work.Tags = subjectList;
                     }
 
-                    for (int i = 0; i < workData.author.Count; i++)
-                    {
-                        var author = workData.author[i];
-                        Contributor contributor = new Contributor
-                        {
-                            Name = author?.name ?? (author?.given + author?.family),
-                            Role = "Author"
-                        };
+                        //for (int i = 0; i < workData.author.Count; i++)
+                        //{
+                        //    var author = workData.author[i];
+                        //    Contributor contributor = new Contributor
+                        //    {
+                        //        Name = author?.name ?? (author?.given + author?.family),
+                        //        Role = "Author"
+                        //    };
 
-                        work.Contributors.Add(contributor);
-                    }
+                        //    work.Contributors.Add(contributor);
+                        //}
 
                     ExternalId url = new()
                     {

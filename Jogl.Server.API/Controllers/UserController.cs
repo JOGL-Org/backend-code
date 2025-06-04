@@ -16,8 +16,6 @@ using Jogl.Server.PubMed;
 using Jogl.Server.SemanticScholar;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Amqp;
-using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
@@ -55,9 +53,11 @@ namespace Jogl.Server.API.Controllers
         private readonly IGitHubFacade _githubFacade;
         private readonly IHuggingFaceFacade _huggingFaceFacade;
         private readonly ILixFacade _lixFacade;
+        private readonly Search.ISearchService _searchService;
+        private readonly IUserConnectionService _userConnectionService;
         private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IFeedEntityService feedEntityService, IUserVerificationService userVerificationService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IResourceService resourceService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
+        public UserController(IUserService userService, IFeedEntityService feedEntityService, IUserVerificationService userVerificationService, IUserConnectionService userConnectionService, IProposalService proposalService, IWorkspaceService workspaceService, INodeService nodeService, IOrganizationService organizationService, INeedService needService, IInvitationService invitationService, IContentService contentService, ICommunityEntityService communityEntityService, ITagService tagService, IEventService eventService, IPaperService paperService, IResourceService resourceService, IDocumentService documentService, INotificationService notificationService, IEmailService emailService, IOpenAlexFacade openAlexFacade, IOrcidFacade orcidFacade, ISemanticScholarFacade s2Facade, IPubMedFacade pubMedFacade, IAuthService authService, IConfiguration configuration, IMapper mapper, ILogger<UserController> logger, IVerificationService verificationService, IEntityService entityService, IContextService contextService, IGitHubFacade gitHubFacade, IHuggingFaceFacade huggingFaceFacade, Search.ISearchService searchService, ILixFacade lixFacade) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _feedEntityService = feedEntityService;
@@ -86,6 +86,8 @@ namespace Jogl.Server.API.Controllers
             _githubFacade = gitHubFacade;
             _huggingFaceFacade = huggingFaceFacade;
             _lixFacade = lixFacade;
+            _searchService = searchService;
+            _userConnectionService = userConnectionService;
             _configuration = configuration;
         }
 
@@ -303,11 +305,23 @@ namespace Jogl.Server.API.Controllers
         [HttpGet]
         [SwaggerOperation("List all users for a given query")]
         [SwaggerResponse((int)HttpStatusCode.OK, "A list of user models", typeof(ListPage<UserMiniModel>))]
-        public async Task<IActionResult> Search([FromQuery] SearchModel model)
+        public async Task<IActionResult> List([FromQuery] SearchModel model)
         {
             var entities = _userService.List(CurrentUserId, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var models = entities.Items.Select(_mapper.Map<UserMiniModel>);
             return Ok(new ListPage<UserMiniModel>(models, entities.Total));
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("search")]
+        [SwaggerOperation("searches users for a given query")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "A list of user models", typeof(ListPage<Search.Model.User>))]
+        public async Task<IActionResult> Search2([FromQuery] string query)
+        {
+            var entities = await _searchService.SearchUsersAsync(query);
+            var models = entities.Select(e => e.Document);
+            return Ok(models);
         }
 
         [HttpPatch]
@@ -1127,22 +1141,82 @@ namespace Jogl.Server.API.Controllers
 
         [HttpPost]
         [Route("{id}/connection")]
+        [SwaggerOperation("Sends a connection request from the currently logged in user to the specified user")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id")]
         [SwaggerResponse((int)HttpStatusCode.Conflict, "The current user is already connected to this user")]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, "The user cannot connect to themselves")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully created")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The connection request was successfully sent")]
         public async Task<IActionResult> Connect([FromRoute] string id)
         {
+            if (id == CurrentUserId)
+                return BadRequest();
+
+            var user = _userService.Get(id);
+            if (user == null)
+                return NotFound();
+
+            var existingConnection = _userConnectionService.Get(CurrentUserId, id);
+            if (existingConnection != null)
+                return Conflict();
+
+            var connection = new UserConnection { FromUserId = CurrentUserId, ToUserId = id, Status = UserConnectionStatus.Pending };
+
+            await InitCreationAsync(connection);
+            var res = _userConnectionService.InviteAsync(connection);
+            return Ok(res);
+        }
+
+        //[HttpDelete]
+        //[Route("{id}/connection")]
+        //[SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id or the current user isn't connected to this user")]
+        //[SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully deleted")]
+        //public async Task<IActionResult> Disconnect([FromRoute] string id)
+        //{
+        //    var connection = _userConnectionService.Get(CurrentUserId, id);
+        //    if (connection == null)
+        //        return NotFound();
+
+        //    await _userConnectionService.DeleteAsync(connection);
+        //    return Ok();
+        //}
+
+        [HttpPost]
+        [Route("{id}/connection/reject")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No connection request was found for that user id")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully rejected")]
+        public async Task<IActionResult> Reject([FromRoute] string id)
+        {
+            var connection = _userConnectionService.Get(CurrentUserId, id);
+            if (connection == null)
+                return NotFound();
+
+            await _userConnectionService.RejectInvitationAsync(connection);
             return Ok();
         }
 
-        [HttpDelete]
-        [Route("{id}/connection")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, "No user was found for that id or the current user isn't connected to this user")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully deleted")]
-        public async Task<IActionResult> Disconnect([FromRoute] string id)
+        [HttpPost]
+        [Route("{id}/connection/accept")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No connection request was found for that user id")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "The connection was successfully accepted")]
+        public async Task<IActionResult> Accept([FromRoute] string id)
         {
+            var connection = _userConnectionService.Get(CurrentUserId, id);
+            if (connection == null)
+                return NotFound();
+
+            await _userConnectionService.AcceptInvitationAsync(connection);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("connection")]
+        [SwaggerOperation("Gets a list of connected users for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Connected users", typeof(List<UserMiniModel>))]
+        public async Task<IActionResult> ListConnectedUsers()
+        {
+            var users = _userConnectionService.ListConnectedUsers(CurrentUserId);
+            var userModels = users.Select(u => _mapper.Map<UserMiniModel>(u));
+            return Ok(userModels);
         }
     }
 }

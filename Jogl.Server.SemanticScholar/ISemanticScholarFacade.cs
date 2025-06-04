@@ -6,6 +6,7 @@ namespace Jogl.Server.SemanticScholar
     public interface ISemanticScholarFacade
     {
         Task<ListPage<SemanticPaper>> ListWorksAsync(string search, int page, int pageSize);
+        Task<SemanticPaper> GetWorkAsync(string id);
         Task<ListPage<Author>> ListAuthorsAsync(string search, int page, int pageSize);
         Task<SemanticTags> ListTagsByDOIAsync(string search);
     }

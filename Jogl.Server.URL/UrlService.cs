@@ -104,6 +104,8 @@ namespace Jogl.Server.URL
                 case FeedType.Paper: return "paper";
                 case FeedType.Event: return "event";
                 case FeedType.User: return "user";
+                case FeedType.Resource: return "resource";
+                case FeedType.Conversation: return "conversation";
                 default: throw new Exception($"Unknown feed type: {type}");
             }
         }

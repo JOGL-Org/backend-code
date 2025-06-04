@@ -1,6 +1,4 @@
-﻿using Jogl.Server.Data;
-using Jogl.Server.Data.Enum;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
 {
@@ -11,5 +9,8 @@ namespace Jogl.Server.API.Model
 
         [JsonPropertyName("user")]
         public UserMiniModel User { get; set; }
+
+        [JsonPropertyName("latest_message")]
+        public ContentEntityModel LatestMessage { get; set; }
     }
 }

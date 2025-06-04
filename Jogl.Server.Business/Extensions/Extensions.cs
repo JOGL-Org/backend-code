@@ -45,6 +45,8 @@ namespace Jogl.Server.Business.Extensions
             serviceCollection.AddTransient<IEntityService, EntityService>();
             serviceCollection.AddTransient<IFeedEntityService, FeedEntityService>();
             serviceCollection.AddTransient<IRelationService, RelationService>();
+            serviceCollection.AddTransient<IUserConnectionService, UserConnectionService>();
+            serviceCollection.AddTransient<IConversationService, ConversationService>();
 
             serviceCollection.AddRepositories();
 

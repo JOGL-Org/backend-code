@@ -118,7 +118,8 @@ namespace Jogl.Server.Business
                             return membership != null && (membership.AccessLevel == AccessLevel.Admin || membership.AccessLevel == AccessLevel.Owner);
                         default:
                             return false;
-                    };
+                    }
+                    ;
                 case Permission.ListProposals:
                 case Permission.CreateProposals:
                     switch (entity.Type)
@@ -127,7 +128,8 @@ namespace Jogl.Server.Business
                             return membership != null;
                         default:
                             return false;
-                    };
+                    }
+                    ;
                 case Permission.DeleteContentEntity:
                 case Permission.DeleteComment:
                 case Permission.Membership:
@@ -337,7 +339,7 @@ namespace Jogl.Server.Business
               .Distinct()
               .ToList();
         }
-        
+
         protected List<string> GetFeedEntityIdsForNode(string nodeId)
         {
             var relations = _relationRepository.List(r => !r.Deleted);
@@ -673,17 +675,6 @@ namespace Jogl.Server.Business
                 user.NodeCount = memberships.Count(m => m.UserId == user.Id.ToString() && !m.Deleted && m.CommunityEntityType == CommunityEntityType.Node);
                 user.OrganizationCount = memberships.Count(m => m.UserId == user.Id.ToString() && !m.Deleted && m.CommunityEntityType == CommunityEntityType.Organization);
                 user.NeedCount = needs.Count(n => n.CreatedByUserId == user.Id.ToString() && !n.Deleted && n.EndDate > DateTime.UtcNow);
-            }
-
-            var followed = _followingRepository.ListForFollowers(users.Select(u => u.Id.ToString()));
-            var followers = _followingRepository.ListForFolloweds(users.Select(u => u.Id.ToString()));
-
-            foreach (var user in users)
-            {
-                if (string.IsNullOrEmpty(currentUserId))
-                    continue;
-
-                user.UserConnected = followers.Any(f => f.UserIdFrom == currentUserId && f.UserIdTo == user.Id.ToString());
             }
         }
 
@@ -1216,6 +1207,20 @@ namespace Jogl.Server.Business
         {
             var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
             EnrichResourcesWithPermissions(resources, currentUserMemberships, userId);
+        }
+
+        protected void EnrichConversationsWithPermissions(IEnumerable<Conversation> conversations, IEnumerable<Membership> currentUserMemberships, string userId)
+        {
+            foreach (var c in conversations)
+            {
+                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, currentUserMemberships, userId, p)).ToList();
+            }
+        }
+
+        protected void EnrichConversationsWithPermissions(IEnumerable<Conversation> conversations, string userId = null)
+        {
+            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
+            EnrichConversationsWithPermissions(conversations, currentUserMemberships, userId);
         }
 
         protected void EnrichEventsWithPermissions(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string userId = null)

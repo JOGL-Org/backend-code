@@ -586,6 +586,25 @@ namespace Jogl.Server.API.Mapping
             //}));
             CreateMap<ResourceUpsertModel, Resource>();
 
+            //needs
+            CreateMap<Conversation, EntityMiniModel>()
+                .ForMember(dst => dst.EntityType, opt => opt.MapFrom((src, dst, ctx) => FeedType.Conversation));
+            //.ForMember(dst => dst.BannerUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.BannerId)))
+            //.ForMember(dst => dst.BannerUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.BannerId, true)))
+            //.ForMember(dst => dst.LogoUrl, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId)))
+            //.ForMember(dst => dst.LogoUrlSmall, opt => opt.MapFrom((src, dst, ctx) => GetUrl(src.CommunityEntity?.LogoId, true)));
+            CreateMap<Conversation, ConversationModel>();
+            //.ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
+            //.ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
+            //{
+            //    PostCount = src.PostCount,
+            //    NewPostCount = src.NewPostCount,
+            //    NewMentionCount = src.NewMentionCount,
+            //    NewThreadActivityCount = src.NewThreadActivityCount,
+            //    CommentCount = src.CommentCount
+            //}));
+
+
             //portfolio items
             CreateMap<Paper, PortfolioItemModel>()
                   .ForMember(dst => dst.Type, opt => opt.MapFrom(src => PortfolioItemType.Paper))

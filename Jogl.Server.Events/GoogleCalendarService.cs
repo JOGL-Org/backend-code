@@ -25,7 +25,7 @@ namespace Jogl.Server.Events
         public GoogleCalendarService(IUrlService urlService, ResiliencePipelineProvider<string> pipelineProvider, IConfiguration configuration, ILogger<CalendarService> logger)
         {
             _urlService = urlService;
-            _pipeline = pipelineProvider.GetPipeline("retry");
+            _pipeline = pipelineProvider?.GetPipeline("retry");
             _configuration = configuration;
 
             var credentialParameters = GetCredentialParameters();
@@ -144,11 +144,15 @@ namespace Jogl.Server.Events
             var req = _calendarService.Events.Delete(calendarId, eventId);
             req.SendUpdates = EventsResource.DeleteRequest.SendUpdatesEnum.None;
 
-            await _pipeline.ExecuteAsync(async token =>
+            if (_pipeline != null)
+                await _pipeline.ExecuteAsync(async token =>
+                {
+                    return await req.ExecuteAsync();
+                });
+            else
             {
-                return await req.ExecuteAsync();
-            });
-
+                await req.ExecuteAsync();
+            }
         }
 
         public async Task InviteUserAsync(string calendarId, string eventId, string email, AttendanceStatus status = AttendanceStatus.Pending)

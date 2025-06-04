@@ -49,7 +49,7 @@ namespace Jogl.Server.API.Controllers
             var users = await _slackService.ListWorkspaceUsersAsync(channel.Key);
             foreach (var user in users)
             {
-                if (user.Profile.Email != "thomas+99@JOGL.io")
+                if (user.Profile.Email != "thomas+104@JOGL.io")
                     continue;
 
                 await _notificationFacade.NotifyAsync(Const.USER_JOINED_INTERFACE_CHANNEL, new UserJoined

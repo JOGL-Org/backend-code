@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Jogl.Server.LinkedIn\Jogl.Server.LinkedIn.csproj" />
     <ProjectReference Include="..\Jogl.Server.Lix\Jogl.Server.Lix.csproj" />
     <ProjectReference Include="..\Jogl.Server.Orcid\Jogl.Server.Orcid.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Search\Jogl.Server.Search.csproj" />
     <ProjectReference Include="..\Jogl.Server.SemanticScholar\Jogl.Server.SemanticScholar.csproj" />
     <ProjectReference Include="..\Jogl.Server.PubMed\Jogl.Server.PubMed.csproj" />
     <ProjectReference Include="..\Jogl.Server.GoogleAuth\Jogl.Server.GoogleAuth.csproj" />

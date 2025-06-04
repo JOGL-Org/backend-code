@@ -16,8 +16,10 @@ namespace Jogl.Server.Search.Model
         public List<string> Experiences_Position { get; set; }
         public List<string> Documents_Title { get; set; }
         public List<string> Documents_Content { get; set; }
+        
         public List<string> Papers_Title { get; set; }
+        
+        [JsonIgnore]
         public List<string> Papers_Abstract { get; set; }
-
     }
 }

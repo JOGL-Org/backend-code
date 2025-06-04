@@ -10,14 +10,14 @@ namespace Jogl.Server.Business
         private readonly IOrganizationRepository _organizationRepository;
         private readonly INodeRepository _nodeRepository;
         private readonly IWorkspaceRepository _workspaceRepository;
-        private readonly ICommunityEntityFollowingRepository _communityEntityfollowingRepository;
+        private readonly IConversationRepository _conversationRepository;
 
-        public CommunityEntityService(IOrganizationRepository organizationRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, ICommunityEntityFollowingRepository communityEntityFollowingRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public CommunityEntityService(IOrganizationRepository organizationRepository, INodeRepository nodeRepository, IWorkspaceRepository workspaceRepository, IConversationRepository conversationRepository, IUserConnectionRepository userConnectionRepository, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _organizationRepository = organizationRepository;
             _nodeRepository = nodeRepository;
             _workspaceRepository = workspaceRepository;
-            _communityEntityfollowingRepository = communityEntityFollowingRepository;
+            _conversationRepository = conversationRepository;
         }
 
         public List<CommunityEntity> List(IEnumerable<string> ids)
@@ -264,6 +264,16 @@ namespace Jogl.Server.Business
                     var channel = _channelRepository.Get(id);
                     EnrichChannelData(new Channel[] { channel }, userId);
                     return channel.Permissions;
+
+                case FeedType.Resource:
+                    var resource = _resourceRepository.Get(id);
+                    EnrichResourcesWithPermissions(new Resource[] { resource }, userId);
+                    return resource.Permissions;
+
+                case FeedType.Conversation:
+                    var conversation = _conversationRepository.Get(id);
+                    EnrichConversationsWithPermissions(new Conversation[] { conversation }, userId);
+                    return conversation.Permissions;
 
                 default:
                     throw new NotImplementedException($"Cannot load permissions for feed type {type}");

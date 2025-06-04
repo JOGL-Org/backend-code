@@ -185,10 +185,11 @@ namespace Jogl.Server.Business
 
         public List<Workspace> ListForPaperExternalId(string userId, string externalId)
         {
-            var paper = _paperRepository.Get(p => p.ExternalId == externalId && !p.Deleted);
-            var workspaceIds = paper.FeedIds;
+            var papers = _paperRepository
+                .Query(p => p.ExternalId == externalId)
+                .ToList();
 
-            var workspaces = _workspaceRepository.Get(workspaceIds);
+            var workspaces = _workspaceRepository.Get(papers.Select(p => p.FeedId).ToList());
             var filteredWorkspaces = GetFilteredWorkspaces(workspaces, userId, null);
             EnrichWorkspaceData(filteredWorkspaces, userId);
 

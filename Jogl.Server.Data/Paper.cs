@@ -23,15 +23,11 @@ namespace Jogl.Server.Data
         public string Summary { get; set; }
         public string Authors { get; set; }
         public string FeedId { get; set; }
-        [Obsolete]
-        public List<string> FeedIds { get; set; }
         public List<string> UserIds { get; set; }
         public string Journal { get; set; }
         public string OpenAccessPdfUrl { get; set; }
-
-        [Obsolete]
-        public List<string> Tags { get; set; }
         public string ExternalId { get; set; }
+        public string SourceId { get; set; }
         public PaperType Type { get; set; }
         public ContentEntityStatus Status { get; set; }
         public ExternalSystem ExternalSystem { get; set; }

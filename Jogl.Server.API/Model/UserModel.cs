@@ -1,5 +1,4 @@
 ﻿using Jogl.Server.Data;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Jogl.Server.API.Model
@@ -90,8 +89,8 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("education")]
         public List<UserEducationModel> Education { get; set; }
 
-        [JsonPropertyName("user_connected")]
-        public bool UserConnected { get; set; }
+        [JsonPropertyName("user_connection_status")]
+        public UserConnectionStatus? UserConnectionStatus { get; set; }
 
         [JsonPropertyName("stats")]
         public CommunityEntityStatModel Stats { get; set; }

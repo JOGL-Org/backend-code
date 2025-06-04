@@ -18,19 +18,21 @@ namespace Jogl.Server.Business
         private readonly ISkillRepository _skillRepository;
         private readonly IWaitlistRecordRepository _waitlistRecordRepository;
         private readonly IPushNotificationTokenRepository _pushNotificationTokenRepository;
+        private readonly IUserConnectionRepository _userConnectionRepository;
         private readonly ICommunityEntityService _communityEntityService;
         private readonly IAuthService _authService;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
         private readonly IUrlService _urlService;
 
-        public UserService(IUserVerificationCodeRepository verificationCodeRepository, IAuthService authService, ISkillRepository skillRepository, IWaitlistRecordRepository waitlistRecordRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IEmailService emailService, IUrlService urlService, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
+        public UserService(IUserVerificationCodeRepository verificationCodeRepository, IAuthService authService, ISkillRepository skillRepository, IWaitlistRecordRepository waitlistRecordRepository, IPushNotificationTokenRepository pushNotificationTokenRepository, IUserConnectionRepository userConnectionRepository, ICommunityEntityService communityEntityService, INotificationService notificationService, IEmailService emailService, IUrlService urlService, IUserFollowingRepository followingRepository, IMembershipRepository membershipRepository, IInvitationRepository invitationRepository, IRelationRepository relationRepository, INeedRepository needRepository, IDocumentRepository documentRepository, IPaperRepository paperRepository, IResourceRepository resourceRepository, ICallForProposalRepository callForProposalsRepository, IProposalRepository proposalRepository, IContentEntityRepository contentEntityRepository, ICommentRepository commentRepository, IMentionRepository mentionRepository, IReactionRepository reactionRepository, IFeedRepository feedRepository, IUserContentEntityRecordRepository userContentEntityRecordRepository, IUserFeedRecordRepository userFeedRecordRepository, IEventRepository eventRepository, IEventAttendanceRepository eventAttendanceRepository, IUserRepository userRepository, IChannelRepository channelRepository, IFeedEntityService feedEntityService) : base(followingRepository, membershipRepository, invitationRepository, relationRepository, needRepository, documentRepository, paperRepository, resourceRepository, callForProposalsRepository, proposalRepository, contentEntityRepository, commentRepository, mentionRepository, reactionRepository, feedRepository, userContentEntityRecordRepository, userFeedRecordRepository, eventRepository, eventAttendanceRepository, userRepository, channelRepository, feedEntityService)
         {
             _verificationCodeRepository = verificationCodeRepository;
             _authService = authService;
             _skillRepository = skillRepository;
             _waitlistRecordRepository = waitlistRecordRepository;
             _pushNotificationTokenRepository = pushNotificationTokenRepository;
+            _userConnectionRepository = userConnectionRepository;
             _communityEntityService = communityEntityService;
             _notificationService = notificationService;
             _emailService = emailService;
@@ -145,6 +147,7 @@ namespace Jogl.Server.Business
                 return null;
 
             EnrichUserData(new User[] { user }, currentUserId);
+            EnrichUserDataWithConnectionStatus(new User[] { user }, currentUserId);
             return user;
         }
 
@@ -672,6 +675,17 @@ namespace Jogl.Server.Business
             }
 
             return username;
+        }
+
+        protected void EnrichUserDataWithConnectionStatus(IEnumerable<User> users, string currentUserId)
+        {
+            var userIds = users.Select(u => u.Id.ToString());
+            var userConnections = _userConnectionRepository.List(uc => (uc.FromUserId == currentUserId && userIds.Contains(uc.ToUserId)) || uc.ToUserId == currentUserId && userIds.Contains(uc.FromUserId));
+            foreach (var user in users)
+            {
+                var userConnection = userConnections.SingleOrDefault(c => c.FromUserId == user.Id.ToString() || c.ToUserId == user.Id.ToJson());
+                user.UserConnectionStatus = userConnection?.Status;
+            }
         }
     }
 }
