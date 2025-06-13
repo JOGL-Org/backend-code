@@ -1,9 +1,10 @@
-﻿using Jogl.Server.AI;
+﻿using Jogl.Server.AI.Agent.DTO;
 
 namespace Jogl.Server.AI.Agent
 {
     public interface IAgent
     {
-        Task<string> GetResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default);
+        Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default);
+        Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context);
     }
 }

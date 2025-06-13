@@ -1,4 +1,5 @@
-﻿using Jogl.Server.Business;
+﻿using Jogl.Server.AI.Agent.DTO;
+using Jogl.Server.Business;
 using Jogl.Server.DB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,20 +26,20 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<string> GetResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default)
+        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
             {
                 _logger.LogError("USER_SEARCH_QUERY_PROMPT system value missing");
-                return null;
+                return new AgentResponse { Text = "An error has ocurred" };
             }
 
             var resultPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_RESULT_PROMPT");
             if (resultPrompt == null)
             {
                 _logger.LogError("USER_SEARCH_RESULT_PROMPT system value missing");
-                return null;
+                return new AgentResponse { Text = "An error has ocurred" };
             }
 
             var exampleResult = new PromptResult()
@@ -51,7 +52,7 @@ namespace Jogl.Server.AI.Agent
 
             var res = await _aiService.GetResponseAsync<PromptResult>(string.Format(queryPrompt.Value, JsonSerializer.Serialize(exampleResult)), messages, 0);
             if (!res.Success)
-                return res.Explanation;
+                return new AgentResponse { Text = res.Explanation };
 
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
@@ -69,7 +70,21 @@ namespace Jogl.Server.AI.Agent
             }));
 
             var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages);
-            return explanationRes;
+            return new AgentResponse { Text = explanationRes, Context = searchResultsText };
+        }
+
+        public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context)
+        {
+            var prompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_FOLLOWUP_PROMPT");
+            if (prompt == null)
+            {
+                _logger.LogError("USER_SEARCH_FOLLOWUP_PROMPT system value missing");
+                return new AgentResponse { Text = "An error has ocurred" };
+            }
+
+            var promptText = string.Format(prompt.Value, context);
+            var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m);
+            return new AgentResponse { Text = response };
         }
     }
 }

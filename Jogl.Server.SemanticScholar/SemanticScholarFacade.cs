@@ -36,6 +36,9 @@ namespace Jogl.Server.SemanticScholar
             request.AddQueryParameter("fields", "externalIds,publicationDate,publicationTypes,openAccessPdf,paperId,abstract,url,authors,citationCount,title,journal,year");
 
             var response = await client.ExecuteGetAsync<SemanticPaper>(request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+
             return response.Data;
         }
 

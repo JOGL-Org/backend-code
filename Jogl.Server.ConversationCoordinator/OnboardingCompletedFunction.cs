@@ -47,13 +47,19 @@ namespace Jogl.Server.ConversationCoordinator
                 return;
             }
 
+            var messageText = string.Format(Messages.Onboarding_Complete, user.FirstName);
             var channelId = await _slackService.GetUserChannelIdAsync(interfaceChannel.Key, interfaceUser.ExternalId);
-            var messageId = await _slackService.SendMessageAsync(interfaceChannel.Key, channelId, string.Format(Messages.Onboarding_Complete, user.FirstName));
+            var messageId = await _slackService.SendMessageAsync(interfaceChannel.Key, channelId, messageText);
+            
             await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
             {
                 CreatedUTC = DateTime.UtcNow,
                 CreatedByUserId = user.Id.ToString(),
-                ExternalId = messageId,
+                MessageId = messageId,
+                ChannelId = interfaceChannel.ExternalId,
+                ConversationId = messageId,
+                UserId = interfaceUser.ExternalId,
+                Text = messageText,
                 Tag = InterfaceMessage.TAG_ONBOARDING,
             });
 

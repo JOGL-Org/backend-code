@@ -268,11 +268,16 @@ foreach (var file in Directory.GetFiles("xrp/"))
             if (existingPapers.Any(p => p.FeedEntityId == user.Id.ToString() && p.SourceId == paperId))
                 continue;
 
+            paperId = paperId.Replace("https://doi.org", string.Empty);
+
             Paper paper = null;
             switch (paperSource)
             {
                 case "openalex":
                     var oaPaper = await openAlexFacade.GetWorkAsync(paperId);
+                    if (oaPaper == null)
+                        continue; 
+                    
                     paper = new Paper
                     {
                         Authors = string.Join(", ", oaPaper.Authorships.Select(a => a.Author.DisplayName)),
@@ -288,9 +293,12 @@ foreach (var file in Directory.GetFiles("xrp/"))
 
                 case "semantic scholar":
                     var ssPaper = await semanticScholarFacade.GetWorkAsync(paperId);
+                    if (ssPaper == null)
+                        continue; 
+                    
                     paper = new Paper
                     {
-                        Authors = string.Join(", ", ssPaper.Authors?.Select(a => a.Name)?? new List<string>()),
+                        Authors = string.Join(", ", ssPaper.Authors?.Select(a => a.Name) ?? new List<string>()),
                         ExternalId = ssPaper.ExternalIds.DOI,
                         ExternalSystem = ExternalSystem.SemanticScholar,
                         Journal = ssPaper.Journal?.Name,
@@ -303,6 +311,9 @@ foreach (var file in Directory.GetFiles("xrp/"))
 
                 case "orcid":
                     var oPaper = await orcidFacade.GetWorkFromDOI(paperId);
+                    if (oPaper == null)
+                        continue;
+
                     paper = new Paper
                     {
                         Authors = string.Join(", ", oPaper.Contributors.Select(a => a.Name)),
