@@ -723,7 +723,10 @@ namespace Jogl.Server.Business
             foreach (var c in channels)
             {
                 c.MemberCount = channelMemberships.Count(m => m.CommunityEntityId == c.Id.ToString());
-                c.CommunityEntity = (CommunityEntity)_feedEntityService.GetEntityFromLists(c.CommunityEntityId, feedEntitySet);
+
+                var ce = _feedEntityService.GetEntityFromLists(c.CommunityEntityId, feedEntitySet);
+                if (ce is CommunityEntity)
+                    c.CommunityEntity = (CommunityEntity)ce;
             }
 
             EnrichChannelsWithMembershipData(channels, currentUserMemberships);

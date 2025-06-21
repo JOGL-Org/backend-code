@@ -88,13 +88,21 @@ namespace Jogl.Server.Business
             if (channel == null)
                 return null;
 
-            channel.Path = _feedEntityService.GetPath(channel, userId);
+            //channel.Path = _feedEntityService.GetPath(channel, userId);
             var stats = GetDiscussionStats(userId, channelId);
             channel.UnreadPosts = stats.UnreadPosts;
             channel.UnreadThreads = stats.UnreadThreads;
             channel.UnreadMentions = stats.UnreadMentions;
 
             return channel;
+        }
+
+
+        public List<Channel> ListAgentChannels(string userId, SortKey sortKey, bool sortAscending)
+        {
+            var channels = _channelRepository.Query(c => c.CommunityEntityId == userId).ToList();
+
+            return channels;
         }
 
         public List<Channel> ListForEntity(string userId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool sortAscending)

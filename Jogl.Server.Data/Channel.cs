@@ -14,6 +14,7 @@ namespace Jogl.Server.Data
         public string IconKey { get; set; }
 
         public string Title { get; set; }
+        public string Key { get; set; }
 
         public string? Description { get; set; }
 

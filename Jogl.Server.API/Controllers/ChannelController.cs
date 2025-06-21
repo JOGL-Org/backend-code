@@ -70,6 +70,16 @@ namespace Jogl.Server.API.Controllers
             return Ok(channelModels);
         }
 
+        [HttpGet]
+        [Route("agent")]
+        [SwaggerOperation($"Lists agent channels for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"channel data", typeof(List<ChannelModel>))]
+        public async Task<IActionResult> GetAgentChannels()
+        {
+            var channels = _channelService.ListAgentChannels(CurrentUserId, SortKey.CreatedDate, false);
+            var channelModels = channels.Select(_mapper.Map<ChannelModel>);
+            return Ok(channelModels);
+        }
 
         [AllowAnonymous]
         [HttpGet]

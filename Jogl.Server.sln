@@ -107,6 +107,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Conversation.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.SerpAPI", "Jogl.Server.SerpAPI\Jogl.Server.SerpAPI.csproj", "{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Loader.Profile", "Jogl.Server.Loader.Profile\Jogl.Server.Loader.Profile.csproj", "{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.JOGLAgentAPI", "Jogl.Server.JOGLAgentAPI\Jogl.Server.JOGLAgentAPI.csproj", "{572EBA4D-5F86-4F54-962E-0B6DBD003F90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -317,6 +321,14 @@ Global
 		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C984B8BE-46E2-4E95-BB46-9C97D151F9AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,6 +338,7 @@ Global
 		{953A9F84-4F05-4728-A600-068A199CC637} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 		{2A844990-0EC8-46E4-BB23-B9E64FE6B09E} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 		{429F7F23-B1B1-4BDD-B223-42C865509F77} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
+		{C2D7E3A5-80D4-4F10-9891-51E0CE48D91F} = {7B69564A-71B4-4DBA-A214-B3D04869AF3B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635F8D0F-097B-43A6-B570-C3E47AA829E5}

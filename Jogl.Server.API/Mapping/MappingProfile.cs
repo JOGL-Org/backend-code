@@ -629,7 +629,6 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.EntityType, opt => opt.MapFrom((src, dst, ctx) => FeedType.Paper));
             CreateMap<Paper, PaperModel>()
                 .ForMember(dst => dst.IsNew, opt => opt.MapFrom((src, dst, ctx) => src.LastOpenedUTC == null))
-                .ForMember(dst => dst.FeedCount, opt => opt.MapFrom((src, dst, ctx) => { return src.FeedIds?.Count() ?? 0; }))
                 .ForMember(dst => dst.FeedStats, opt => opt.MapFrom((src, dst, ctx) => new FeedStatModel
                 {
                     PostCount = src.PostCount,
