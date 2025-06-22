@@ -2,6 +2,7 @@
 using Jogl.Server.DB;
 using Jogl.Server.ServiceBus;
 using Jogl.Server.WebSocketService.Sockets;
+using SharpCompress.Common;
 
 namespace Jogl.Server.WebSocketService
 {
@@ -27,13 +28,14 @@ namespace Jogl.Server.WebSocketService
             await _serviceBusProxy.SubscribeAsync("comment-created", "sockets", async (Comment comment) =>
             {
                 //notify via websockets
-                var userFeeds = _userFeedRecordRepository.List(ufr => ufr.FeedId == comment.FeedId && !ufr.Muted && !ufr.Deleted);
+                var userFeeds = _userFeedRecordRepository.List(ufr => ufr.UserId != null && ufr.FeedId == comment.FeedId && !ufr.Muted && !ufr.Deleted);
                 foreach (var userFeed in userFeeds)
                 {
                     await _socketGateway.SendMessageAsync(new SocketServerMessage { Type = ServerMessageType.FeedActivity, TopicId = userFeed.UserId, SubjectId = userFeed.FeedId });
                 }
 
                 await _socketGateway.SendMessageAsync(new SocketServerMessage { Type = ServerMessageType.CommentInPost, TopicId = comment.ContentEntityId, SubjectId = comment.FeedId });
+                await _socketGateway.SendMessageAsync(new SocketServerMessage { Type = ServerMessageType.PostInFeed, TopicId = comment.FeedId, SubjectId = comment.FeedId });
 
                 foreach (var mention in comment.Mentions)
                 {
@@ -44,7 +46,7 @@ namespace Jogl.Server.WebSocketService
             await _serviceBusProxy.SubscribeAsync("content-entity-created", "sockets", async (ContentEntity entity) =>
             {
                 //notify via websockets
-                var userFeeds = _userFeedRecordRepository.List(ufr => ufr.FeedId == entity.FeedId && !ufr.Muted && !ufr.Deleted);
+                var userFeeds = _userFeedRecordRepository.List(ufr => ufr.UserId != null && ufr.FeedId == entity.FeedId && !ufr.Muted && !ufr.Deleted);
                 foreach (var userFeed in userFeeds)
                 {
                     await _socketGateway.SendMessageAsync(new SocketServerMessage { Type = ServerMessageType.FeedActivity, TopicId = userFeed.UserId, SubjectId = userFeed.FeedId });

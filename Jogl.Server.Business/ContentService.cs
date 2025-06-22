@@ -73,10 +73,12 @@ namespace Jogl.Server.Business
             var id = await _contentEntityRepository.CreateAsync(entity);
 
             //mark feed write
-            await _userFeedRecordRepository.SetFeedWrittenAsync(entity.CreatedByUserId, entity.FeedId, DateTime.UtcNow);
+            if (!string.IsNullOrEmpty(entity.CreatedByUserId))
+                await _userFeedRecordRepository.SetFeedWrittenAsync(entity.CreatedByUserId, entity.FeedId, DateTime.UtcNow);
 
             //mark content entity write
-            await _userContentEntityRecordRepository.SetContentEntityWrittenAsync(entity.CreatedByUserId, entity.FeedId, id, DateTime.UtcNow);
+            if (!string.IsNullOrEmpty(entity.CreatedByUserId))
+                await _userContentEntityRecordRepository.SetContentEntityWrittenAsync(entity.CreatedByUserId, entity.FeedId, id, DateTime.UtcNow);
 
             //process mentions
             entity.Mentions = GetMentions(entity.CreatedByUserId, entity.FeedId, entity.Text);
@@ -735,10 +737,12 @@ namespace Jogl.Server.Business
             await _contentEntityRepository.UpdateLastActivityAsync(comment.ContentEntityId, comment.CreatedUTC, comment.CreatedByUserId);
 
             //mark feed write
-            await _userFeedRecordRepository.SetFeedWrittenAsync(comment.CreatedByUserId, comment.FeedId, DateTime.UtcNow);
+            if (!string.IsNullOrEmpty(comment.CreatedByUserId))
+                await _userFeedRecordRepository.SetFeedWrittenAsync(comment.CreatedByUserId, comment.FeedId, DateTime.UtcNow);
 
             //mark content entity write
-            await _userContentEntityRecordRepository.SetContentEntityWrittenAsync(comment.CreatedByUserId, comment.FeedId, comment.ContentEntityId, DateTime.UtcNow);
+            if (!string.IsNullOrEmpty(comment.CreatedByUserId))
+                await _userContentEntityRecordRepository.SetContentEntityWrittenAsync(comment.CreatedByUserId, comment.FeedId, comment.ContentEntityId, DateTime.UtcNow);
 
             //process notifications
             //await _notificationService.NotifyCommentPostedAsync(comment);
