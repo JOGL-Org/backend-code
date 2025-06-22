@@ -48,7 +48,7 @@ namespace Jogl.Server.Notifier.Discussion
 
             await _interfaceMessageRepository.CreateAsync(rootInterfaceMessage);
 
-            var response = await _agent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = contentEntity.Text }], new Dictionary<string, string>());
+            var response = await _agent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = contentEntity.Text }], new Dictionary<string, string>(), null, "JOGL");
             var replyId = await _contentService.CreateCommentAsync(new Comment
             {
                 ContentEntityId = contentEntity.Id.ToString(),

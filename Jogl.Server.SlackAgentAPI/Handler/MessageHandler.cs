@@ -94,7 +94,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
         var allUsers = await _slackService.ListWorkspaceUsersAsync(channel.Key);
         var emailHandles = allUsers.ToDictionary(u => u.Profile.Email, u => u.Id);
 
-        var response = await _agent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = slackEvent.Text }], emailHandles, channel.NodeId);
+        var response = await _agent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = slackEvent.Text }], emailHandles, channel.NodeId, "SLACK");
         var messageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, response.Text, slackEvent.Ts);
         await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
 
@@ -136,7 +136,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
         var tempMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"We will have a reply for you in a few moments", slackEvent.Ts);
 
         var messages = await _slackService.GetConversationAsync(channel.Key, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts);
-        var followup = await _agent.GetFollowupResponseAsync(messages.Where(m => m.Id != tempMessageId).Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), rootInterfaceMessage.Context);
+        var followup = await _agent.GetFollowupResponseAsync(messages.Where(m => m.Id != tempMessageId).Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), rootInterfaceMessage.Context, "SLACK");
         var replyMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, followup.Text, slackEvent.Ts);
         await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
 

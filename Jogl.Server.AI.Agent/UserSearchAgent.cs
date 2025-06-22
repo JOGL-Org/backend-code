@@ -26,7 +26,7 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default)
+        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default, string? interfaceType = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
@@ -35,10 +35,11 @@ namespace Jogl.Server.AI.Agent
                 return new AgentResponse { Text = "An error has ocurred" };
             }
 
-            var resultPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_RESULT_PROMPT");
+            var resultPromptKey = $"USER_SEARCH_RESULT_PROMPT_{interfaceType}";
+            var resultPrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptKey);
             if (resultPrompt == null)
             {
-                _logger.LogError("USER_SEARCH_RESULT_PROMPT system value missing");
+                _logger.LogError("{resultPromptKey} system value missing", resultPromptKey);
                 return new AgentResponse { Text = "An error has ocurred" };
             }
 
@@ -73,12 +74,13 @@ namespace Jogl.Server.AI.Agent
             return new AgentResponse { Text = explanationRes, Context = searchResultsText };
         }
 
-        public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context)
+        public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string? interfaceType = default)
         {
-            var prompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_FOLLOWUP_PROMPT");
+            var promptKey = $"USER_SEARCH_FOLLOWUP_PROMPT_{interfaceType}";
+            var prompt = _systemValueRepository.Get(sv => sv.Key == promptKey);
             if (prompt == null)
             {
-                _logger.LogError("USER_SEARCH_FOLLOWUP_PROMPT system value missing");
+                _logger.LogError("{promptKey} system value missing", promptKey);
                 return new AgentResponse { Text = "An error has ocurred" };
             }
 
