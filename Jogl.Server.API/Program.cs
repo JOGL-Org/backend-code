@@ -26,6 +26,7 @@ using System.Security.Cryptography.X509Certificates;
 using Jogl.Server.DB.Extensions;
 using Jogl.Server.Lix;
 using Jogl.Server.Business.Extensions;
+using Jogl.Server.DB.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,7 @@ builder.Services.AddTransient<IConversionService, ConversionService>();
 builder.Services.AddTransient<IDocumentConverter, DocumentConverter>();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IOperationContext, HttpOperationContext>();
 builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new MappingProfiles(provider.GetService<IHttpContextAccessor>()));

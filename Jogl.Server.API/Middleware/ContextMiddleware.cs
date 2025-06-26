@@ -32,7 +32,7 @@ namespace Jogl.Server.API.Middleware
 
                 opContext.UserId = claim.Value;
 
-                var nodeId = context.Request.Headers["nodeId"];
+                var nodeId = context.Request.Headers["Nodeid"];
                 if (string.IsNullOrEmpty(nodeId))
                     return;
 
