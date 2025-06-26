@@ -10,6 +10,9 @@ namespace Jogl.Server.AI
         [JsonPropertyName("extractedQuery")]
         public string ExtractedQuery { get; set; }
 
+        [JsonPropertyName("extractedGlobal")]
+        public bool ExtractedGlobal { get; set; }
+
         [JsonPropertyName("extractedConfiguration")]
         public string ExtractedConfiguration { get; set; }
 

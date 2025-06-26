@@ -52,5 +52,8 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public List<User> Users { get; set; }
+
+        [BsonIgnore]
+        public string NodeId { get; set; }
     }
 }

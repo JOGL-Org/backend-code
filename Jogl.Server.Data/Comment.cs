@@ -42,5 +42,8 @@ namespace Jogl.Server.Data
 
         [BsonIgnore]
         public Reaction UserReaction { get; set; }
+
+        [BsonIgnore]
+        public string NodeId { get; set; }
     }
 }

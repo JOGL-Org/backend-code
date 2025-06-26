@@ -6,6 +6,7 @@ using Azure.Identity;
 using Jogl.Server.Data;
 using User = Jogl.Server.Search.Model.User;
 using System.Globalization;
+using MongoDB.Bson;
 
 namespace Jogl.Server.Search
 {
@@ -20,18 +21,22 @@ namespace Jogl.Server.Search
             _logger = logger;
         }
 
-        public async Task IndexUsersAsync(IEnumerable<Data.User> users, IEnumerable<Document> documents, IEnumerable<Paper> papers)
+        public async Task IndexUsersAsync(IEnumerable<Data.User> users, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> resources)
         {
             SearchClient searchClient = new SearchClient(
                 new Uri(_configuration["Azure:Search:URL"]),
                 "users",
                 new DefaultAzureCredential());
 
-            var searchDocuments = users.Select(u => TransformUserToSearchDocument(u, documents.Where(d => d.FeedId == u.Id.ToString()), papers.Where(p => p.FeedId == u.Id.ToString()))).ToList();
-            await searchClient.UploadDocumentsAsync(searchDocuments);
+            var searchDocuments = users.Select(u => TransformUserToSearchDocument(u, documents.Where(d => d.FeedId == u.Id.ToString()), papers.Where(p => p.FeedId == u.Id.ToString()), resources.Where(r => r.EntityId == u.Id.ToString()))).ToList();
+
+            foreach (var batch in searchDocuments.Chunk(100))
+            {
+                await searchClient.UploadDocumentsAsync(searchDocuments);
+            }
         }
 
-        private SearchDocument TransformUserToSearchDocument(Data.User user, IEnumerable<Document> documents, IEnumerable<Paper> papers)
+        private SearchDocument TransformUserToSearchDocument(Data.User user, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> resources)
         {
             var searchDoc = new SearchDocument();
 
@@ -49,6 +54,9 @@ namespace Jogl.Server.Search
 
             searchDoc["Documents_Title"] = documents != null ? documents.Select(e => e.Name).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Documents_Content"] = documents != null ? documents.Select(e => e.Description).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+
+            //searchDoc["Resources_Title"] = resources != null ? resources.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            //searchDoc["Resources_Content"] = resources != null ? resources.Select(e => e.Data.ToJson()).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
             searchDoc["Papers_Title"] = papers != null ? papers.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract"] = papers != null ? papers.Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();

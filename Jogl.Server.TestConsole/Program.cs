@@ -53,6 +53,12 @@ var channelRepository = new ChannelRepository(config);
 var existingChannels = channelRepository.Query(c => !string.IsNullOrEmpty(c.Key)).ToList();
 foreach (var user in userRepository.Query().ToList())
 {
+    if (user.Status != UserStatus.Pending)
+        continue;
+
+    await userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);
+    continue;
+
     var existingChannel = existingChannels.SingleOrDefault(c => c.CommunityEntityId == user.Id.ToString());
     if (existingChannel != null)
         continue;

@@ -7,7 +7,6 @@ using Jogl.Server.SerpAPI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using DnsClient.Internal;
 using Jogl.Server.Business;
 using Jogl.Server.Storage;
 using Jogl.Server.Documents;
@@ -20,12 +19,7 @@ using Jogl.Server.Orcid;
 using MongoDB.Bson;
 using Jogl.Server.PubMed.DTO.EFetch;
 using System.Text;
-using Microsoft.AspNetCore.Routing.Constraints;
-using System.Drawing.Text;
-using Jogl.Server.Events;
-using Jogl.Server.URL;
-using Google.Apis.Calendar.v3;
-using Jogl.Server.Lix.DTO;
+
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.json")
@@ -48,6 +42,7 @@ var workspaceRepository = new WorkspaceRepository(config);
 var userRepository = new UserRepository(config);
 var paperRepository = new PaperRepository(config);
 var resourceRepository = new ResourceRepository(config);
+var channelRepository = new ChannelRepository(config);
 
 //var calendarService = new GoogleCalendarService(new UrlService(config), null, config, new Logger<CalendarService>(new LoggerFactory()));
 //delete some events
@@ -122,8 +117,9 @@ var orcidFacade = new OrcidFacade(config, null);
 
 var existingResources = resourceRepository.List(r => !r.Deleted);
 var existingPapers = paperRepository.List(p => !p.Deleted);
+var existingChannels = channelRepository.Query(c => !string.IsNullOrEmpty(c.Key)).ToList();
 
-foreach (var file in Directory.GetFiles("data4good/"))
+foreach (var file in Directory.GetFiles("../../../data4good/"))
 {
     try
     {
@@ -173,6 +169,7 @@ foreach (var file in Directory.GetFiles("data4good/"))
             var id = await feedRepository.CreateAsync(feed);
             user.Id = ObjectId.Parse(id);
 
+            user.Status = UserStatus.Verified;
             user.ContactMe = true;
             user.NotificationSettings = new UserNotificationSettings
             {
@@ -202,6 +199,37 @@ foreach (var file in Directory.GetFiles("data4good/"))
             };
 
             await userRepository.CreateAsync(user);
+
+            //create AI channel
+            var existingChannel = existingChannels.SingleOrDefault(c => c.CommunityEntityId == user.Id.ToString());
+            if (existingChannel != null)
+                continue;
+
+            var channelId = await channelRepository.CreateAsync(new Channel
+            {
+                Title = "Search Agent",
+                Description = "An AI-powered conversational agent that helps you search our database of experts",
+                Key = "USER_SEARCH",
+                CommunityEntityId = user.Id.ToString(),
+                CreatedByUserId = user.Id.ToString(),
+                CreatedUTC = DateTime.UtcNow,
+            });
+
+            await feedRepository.CreateAsync(new Feed
+            {
+                CreatedUTC = DateTime.UtcNow,
+                Id = ObjectId.Parse(channelId),
+                Type = FeedType.Channel,
+            });
+
+            var membershipId = await membershipRepository.CreateAsync(new Membership
+            {
+                AccessLevel = AccessLevel.Member,
+                CommunityEntityId = channelId,
+                UserId = user.Id.ToString(),
+                CreatedByUserId = user.Id.ToString(),
+                CreatedUTC = DateTime.UtcNow,
+            });
         }
         else
         {
@@ -209,55 +237,71 @@ foreach (var file in Directory.GetFiles("data4good/"))
         }
 
         var repos = json["repolist"]?.AsArray();
+        Console.WriteLine($"{repos?.Count} repositories");
         foreach (JsonNode repo in repos ?? new JsonArray())
         {
             var title = repo.AsObject().ContainsKey("name") ? repo["name"]?.GetValue<string>() : null;
             var description = repo.AsObject().ContainsKey("description") ? repo["description"]?.GetValue<string>() : null;
             var abst = repo.AsObject().ContainsKey("abstract") ? repo["abstract"]?.GetValue<string>() : null;
-            var keywords = repo.AsObject().ContainsKey("keywords") ? (repo["keywords"] as JsonArray).Select(node=>node.GetValue<string>()).ToList() : null;
+            var keywords = repo.AsObject().ContainsKey("keywords") ? (repo["keywords"] as JsonArray).Select(node => node.GetValue<string>()).ToList() : null;
             var readme = repo.AsObject().ContainsKey("readme") ? repo["readme"]?.GetValue<string>() : null;
             var homepage = repo.AsObject().ContainsKey("homepage") ? repo["homepage"]?.GetValue<string>() : null;
 
             if (string.IsNullOrEmpty(title))
                 continue;
 
-            if (existingResources.Any(r => r.EntityId == user.Id.ToString() && r.Title == title))
-                continue;
-
-            var resource = new Resource
+            var existingResource = existingResources.FirstOrDefault(r => r.EntityId == user.Id.ToString() && r.Title == title);
+            if (existingResource != null)
             {
-                Title = title,
-                Description = description,
-                Data = new BsonDocument {
+                existingResource.Description = description;
+                existingResource.Data = new BsonDocument {
+                        { "Source", "Github" },
+                        { "Url", homepage ?? "" },
+                        { "Readme", readme ?? "" },
+                        { "Abstract", abst ?? "" },
+                        { "Keywords", keywords != null? string.Join("," ,keywords) :"" }
+                    };
+                existingResource.UpdatedUTC = DateTime.UtcNow;
+                await resourceRepository.UpdateAsync(existingResource);
+            }
+            else
+            {
+                var resource = new Resource
+                {
+                    Title = title,
+                    Description = description,
+                    Data = new BsonDocument {
                         { "Source", "Github" },
                         { "Url", homepage ?? "" },
                         { "Readme", readme ?? "" },
                         { "Abstract", abst ?? "" },
                         { "Keywords", keywords != null? string.Join("," ,keywords) :"" }
                     },
-                EntityId = user.Id.ToString(),
-                CreatedUTC = DateTime.UtcNow,
-            };
+                    EntityId = user.Id.ToString(),
+                    CreatedUTC = DateTime.UtcNow,
+                };
 
-            var feed = new Feed()
-            {
-                CreatedUTC = resource.CreatedUTC,
-                CreatedByUserId = resource.CreatedByUserId,
-                Type = FeedType.Resource,
-            };
+                var feed = new Feed()
+                {
+                    CreatedUTC = resource.CreatedUTC,
+                    CreatedByUserId = resource.CreatedByUserId,
+                    Type = FeedType.Resource,
+                };
 
-            var id = await feedRepository.CreateAsync(feed);
+                var id = await feedRepository.CreateAsync(feed);
 
-            //mark feed write
-            await userFeedRecordRepository.SetFeedWrittenAsync(resource.CreatedByUserId, id, DateTime.UtcNow);
+                //mark feed write
+                await userFeedRecordRepository.SetFeedWrittenAsync(resource.CreatedByUserId, id, DateTime.UtcNow);
 
-            //create resource
-            resource.Id = ObjectId.Parse(id);
-            resource.UpdatedUTC = resource.CreatedUTC;
-            await resourceRepository.CreateAsync(resource);
+                //create resource
+                resource.Id = ObjectId.Parse(id);
+                resource.UpdatedUTC = resource.CreatedUTC;
+                await resourceRepository.CreateAsync(resource);
+            }
         }
 
         var papers = json["paperlist"]?["papers"]?.AsArray();
+        Console.WriteLine($"{papers?.Count} papers");
         foreach (JsonNode paperJson in papers ?? new JsonArray())
         {
             var paperId = paperJson.AsObject().ContainsKey("id") ? paperJson["id"]?.GetValue<string>() : null;

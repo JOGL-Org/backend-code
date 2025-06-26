@@ -66,6 +66,9 @@ namespace Jogl.Server.Business
 
         public async Task<string> CreateAsync(ContentEntity entity)
         {
+            //set context data
+            entity.NodeId = _operationContext.NodeId;
+
             //mark feed entity as updated
             await _feedEntityService.UpdateActivityAsync(entity.FeedId, entity.CreatedUTC, entity.CreatedByUserId);
 
@@ -730,6 +733,9 @@ namespace Jogl.Server.Business
 
         public async Task<string> CreateCommentAsync(Comment comment)
         {
+            //set context data
+            comment.NodeId = _operationContext.NodeId;
+
             //mark feed entity as updated
             await _feedEntityService.UpdateActivityAsync(comment.FeedId, comment.CreatedUTC, comment.CreatedByUserId);
 

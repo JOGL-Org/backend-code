@@ -10,7 +10,7 @@ namespace Jogl.Server.API.Middleware
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<ContextMiddleware> _logger;
 
-        public ContextMiddleware( RequestDelegate next, IWebHostEnvironment environment, ILogger<ContextMiddleware> logger)
+        public ContextMiddleware(RequestDelegate next, IWebHostEnvironment environment, ILogger<ContextMiddleware> logger)
         {
             _next = next;
             _environment = environment;
@@ -31,6 +31,12 @@ namespace Jogl.Server.API.Middleware
                     return;
 
                 opContext.UserId = claim.Value;
+
+                var nodeId = context.Request.Headers["nodeId"];
+                if (string.IsNullOrEmpty(nodeId))
+                    return;
+
+                opContext.NodeId = nodeId;
             }
             catch (Exception)
             {

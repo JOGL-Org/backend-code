@@ -1,8 +1,12 @@
-﻿using Jogl.Server.AI.Agent.DTO;
+﻿using Azure.Search.Documents.Indexes.Models;
+using Azure.Search.Documents.Models;
+using Jogl.Server.AI.Agent.DTO;
 using Jogl.Server.Business;
 using Jogl.Server.DB;
+using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Immutable;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
@@ -47,8 +51,9 @@ namespace Jogl.Server.AI.Agent
             {
                 Explanation = "explanation",
                 ExtractedQuery = "topic or field",
+                ExtractedGlobal = true,
                 ExtractedConfiguration = "default or current",
-                Success = false
+                Success = true
             };
 
             var res = await _aiService.GetResponseAsync<PromptResult>(string.Format(queryPrompt.Value, JsonSerializer.Serialize(exampleResult)), messages, 0);
@@ -57,13 +62,21 @@ namespace Jogl.Server.AI.Agent
 
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
-            var hubUsers = _relationService.ListUserIdsForNode(nodeId);
-            var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration);
+            var searchResults = new List<SearchResult<User>>();
+            if (string.IsNullOrEmpty(nodeId) || res.ExtractedGlobal)
+            {
+                searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration);
+            }
+            else
+            {
+                var hubUserIds = _relationService.ListUserIdsForNode(nodeId);
+                searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration, hubUserIds);
+            }
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
                 Handle = emailHandles.ContainsKey(u.Document.Email) ? $"@{emailHandles[u.Document.Email]}" : "",
-                Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
+                //Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 OriginalData = u.Document,
