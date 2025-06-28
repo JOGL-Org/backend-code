@@ -14,13 +14,15 @@ namespace Jogl.Server.ConversationCoordinator
     {
         private readonly IContentService _contentService;
         private readonly IAgent _agent;
+        private readonly IChannelRepository _channelRepository;
         private readonly IInterfaceMessageRepository _interfaceMessageRepository;
         private readonly ILogger<CommentCreatedFunction> _logger;
 
-        public CommentCreatedFunction(IContentService contentService, IAgent agent, IInterfaceMessageRepository interfaceMessageRepository, ILogger<CommentCreatedFunction> logger)
+        public CommentCreatedFunction(IContentService contentService, IAgent agent, IChannelRepository channelRepository, IInterfaceMessageRepository interfaceMessageRepository, ILogger<CommentCreatedFunction> logger)
         {
             _contentService = contentService;
             _agent = agent;
+            _channelRepository = channelRepository;
             _interfaceMessageRepository = interfaceMessageRepository;
             _logger = logger;
         }
@@ -37,6 +39,10 @@ namespace Jogl.Server.ConversationCoordinator
 
             var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == comment.FeedId && m.MessageId == comment.ContentEntityId);
             if (rootInterfaceMessage?.Context == null)
+                return;
+
+            var channel = _channelRepository.Get(comment.FeedId);
+            if (channel?.Key != "USER_SEARCH")
                 return;
 
             //log incoming message

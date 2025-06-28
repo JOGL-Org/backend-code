@@ -14,13 +14,15 @@ namespace Jogl.Server.Notifier.Discussion
     {
         private readonly IContentService _contentService;
         private readonly IAgent _agent;
+        private readonly IChannelRepository _channelRepository;
         private readonly IInterfaceMessageRepository _interfaceMessageRepository;
         private readonly ILogger<ContentEntityCreatedFunction> _logger;
 
-        public ContentEntityCreatedFunction(IContentService contentService, IAgent agent, IInterfaceMessageRepository interfaceMessageRepository, ILogger<ContentEntityCreatedFunction> logger)
+        public ContentEntityCreatedFunction(IContentService contentService, IAgent agent, IChannelRepository channelRepository, IInterfaceMessageRepository interfaceMessageRepository, ILogger<ContentEntityCreatedFunction> logger)
         {
             _contentService = contentService;
             _agent = agent;
+            _channelRepository = channelRepository;
             _interfaceMessageRepository = interfaceMessageRepository;
             _logger = logger;
         }
@@ -33,6 +35,10 @@ namespace Jogl.Server.Notifier.Discussion
         {
             var contentEntity = JsonSerializer.Deserialize<ContentEntity>(message.Body.ToString());
             if (string.IsNullOrEmpty(contentEntity.CreatedByUserId))
+                return;
+
+            var channel = _channelRepository.Get(contentEntity.FeedId);
+            if (channel?.Key != "USER_SEARCH")
                 return;
 
             //log incoming message

@@ -50,10 +50,20 @@ var paperRepository = new PaperRepository(config);
 var resourceRepository = new ResourceRepository(config);
 var channelRepository = new ChannelRepository(config);
 
+await membershipRepository.CreateAsync(new Membership
+{
+    CommunityEntityId = "674f3ceda442a3424df80b05",
+    CommunityEntityType = CommunityEntityType.Node,
+    UserId = "650804ea64460e828ac486bf",
+    CreatedByUserId = "650804ea64460e828ac486bf",
+    CreatedUTC = DateTime.UtcNow,
+    AccessLevel = AccessLevel.Owner,
+});
+
 var existingChannels = channelRepository.Query(c => !string.IsNullOrEmpty(c.Key)).ToList();
 foreach (var user in userRepository.Query().ToList())
 {
-    if (user.Status != UserStatus.Pending)
+    if (user.CreatedUTC>)
         continue;
 
     await userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);

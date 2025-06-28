@@ -115,18 +115,19 @@ var semanticScholarFacade = new SemanticScholarFacade(config);
 var orcidFacade = new OrcidFacade(config, null);
 
 
+var existingMemberships = membershipRepository.List(m => !m.Deleted);
 var existingResources = resourceRepository.List(r => !r.Deleted);
 var existingPapers = paperRepository.List(p => !p.Deleted);
 var existingChannels = channelRepository.Query(c => !string.IsNullOrEmpty(c.Key)).ToList();
 
-foreach (var file in Directory.GetFiles("../../../data4good/"))
+foreach (var file in Directory.GetFiles("../../../WIC2025/"))
 {
     try
     {
         var jsonString = File.ReadAllText(file);
         var json = JsonNode.Parse(jsonString);
-        var firstName = json["General"]["First Name"]?.GetValue<string>();
-        var lastName = json["General"]["Last Name"]?.GetValue<string>();
+        var firstName = json["first_name"]?.GetValue<string>();
+        var lastName = json["last_name"]?.GetValue<string>();
 
         if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
         {
@@ -136,14 +137,14 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
 
         var user = new User
         {
-            FirstName = json["General"]["First Name"].GetValue<string>(),
-            LastName = json["General"]["Last Name"].GetValue<string>(),
-            ShortBio = json["General"]["Headline"]?.GetValue<string>(),
-            Bio = json["General"]["Bio"]?.GetValue<string>(),
+            FirstName = json["first_name"].GetValue<string>(),
+            LastName = json["last_name"].GetValue<string>(),
+            ShortBio = json["Headline"]?.GetValue<string>(),
+            Bio = json["Bio"]?.GetValue<string>(),
             Experience = json["Experience"]?.Deserialize<List<UserExperience>>(),
             Education = json["Education"]?.Deserialize<List<UserEducation>>(),
-            Username = json["General"]["First Name"].GetValue<string>() + json["General"]["Last Name"].GetValue<string>(),
-            Email = $"{json["General"]["First Name"].GetValue<string>()}.{json["General"]["Last Name"].GetValue<string>()}+xrp@jogl.io"
+            Username = json["first_name"].GetValue<string>() + json["last_name"].GetValue<string>(),
+            Email = $"{json["email"]}"
         };
 
         //skills
@@ -151,7 +152,7 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
         user.Skills = new List<string>();
         foreach (JsonNode skillNode in skillsArray ?? new JsonArray())
         {
-            var skill = skillNode["skills"].GetValue<string>();
+            var skill = skillNode["skill"].GetValue<string>();
             user.Skills.Add(skill);
         }
 
@@ -168,6 +169,7 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
 
             var id = await feedRepository.CreateAsync(feed);
             user.Id = ObjectId.Parse(id);
+            user.Onboarding = true;
 
             user.Status = UserStatus.Verified;
             user.ContactMe = true;
@@ -226,6 +228,7 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
             {
                 AccessLevel = AccessLevel.Member,
                 CommunityEntityId = channelId,
+                CommunityEntityType = CommunityEntityType.Channel,
                 UserId = user.Id.ToString(),
                 CreatedByUserId = user.Id.ToString(),
                 CreatedUTC = DateTime.UtcNow,
@@ -234,8 +237,12 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
         else
         {
             user = existingUser;
+            user.Onboarding = true;
+
+            await userRepository.SetOnboardingStatusAsync(user);
         }
 
+        // repositories
         var repos = json["repolist"]?.AsArray();
         Console.WriteLine($"{repos?.Count} repositories");
         foreach (JsonNode repo in repos ?? new JsonArray())
@@ -300,7 +307,8 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
             }
         }
 
-        var papers = json["paperlist"]?["papers"]?.AsArray();
+        // papers
+        var papers = json["paper_list"]?["papers"]?.AsArray();
         Console.WriteLine($"{papers?.Count} papers");
         foreach (JsonNode paperJson in papers ?? new JsonArray())
         {
@@ -400,6 +408,21 @@ foreach (var file in Directory.GetFiles("../../../data4good/"))
             paper.Id = ObjectId.Parse(id);
             paper.UpdatedUTC = paper.CreatedUTC;
             await paperRepository.CreateAsync(paper);
+        }
+
+        var existingMembership = existingMemberships.FirstOrDefault(m => m.UserId == user.Id.ToString() && m.CommunityEntityId == "674f3ceda442a3424df80b05");
+        if (existingMembership == null)
+        {
+            //associate to hub
+            await membershipRepository.CreateAsync(new Membership
+            {
+                AccessLevel = AccessLevel.Member,
+                CommunityEntityId = "674f3ceda442a3424df80b05",
+                CommunityEntityType = CommunityEntityType.Node,
+                UserId = user.Id.ToString(),
+                CreatedByUserId = user.Id.ToString(),
+                CreatedUTC = DateTime.UtcNow,
+            });
         }
 
         Console.WriteLine($"done with {user.FirstName} {user.LastName}");
