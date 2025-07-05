@@ -50,28 +50,16 @@ var paperRepository = new PaperRepository(config);
 var resourceRepository = new ResourceRepository(config);
 var channelRepository = new ChannelRepository(config);
 
-await membershipRepository.CreateAsync(new Membership
-{
-    CommunityEntityId = "674f3ceda442a3424df80b05",
-    CommunityEntityType = CommunityEntityType.Node,
-    UserId = "650804ea64460e828ac486bf",
-    CreatedByUserId = "650804ea64460e828ac486bf",
-    CreatedUTC = DateTime.UtcNow,
-    AccessLevel = AccessLevel.Owner,
-});
-
 var existingChannels = channelRepository.Query(c => !string.IsNullOrEmpty(c.Key)).ToList();
 foreach (var user in userRepository.Query().ToList())
 {
-    if (user.CreatedUTC>)
-        continue;
-
-    await userRepository.SetStatusAsync(user.Id.ToString(), UserStatus.Verified);
-    continue;
-
     var existingChannel = existingChannels.SingleOrDefault(c => c.CommunityEntityId == user.Id.ToString());
     if (existingChannel != null)
+    {
+        existingChannel.Settings = new List<string> { "content_entities_created_by_any_member", "comments_created_by_any_member" };
+        await channelRepository.UpdateAsync(existingChannel);
         continue;
+    }
 
     var channelId = await channelRepository.CreateAsync(new Channel
     {
@@ -81,6 +69,7 @@ foreach (var user in userRepository.Query().ToList())
         CommunityEntityId = user.Id.ToString(),
         CreatedByUserId = user.Id.ToString(),
         CreatedUTC = DateTime.UtcNow,
+        Settings = new List<string> { "content_entities_created_by_any_member", "comments_created_by_any_member" }
     });
 
     await feedRepository.CreateAsync(new Feed

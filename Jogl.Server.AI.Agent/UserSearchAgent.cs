@@ -1,12 +1,10 @@
-﻿using Azure.Search.Documents.Indexes.Models;
-using Azure.Search.Documents.Models;
+﻿using Azure.Search.Documents.Models;
 using Jogl.Server.AI.Agent.DTO;
 using Jogl.Server.Business;
 using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
@@ -16,15 +14,17 @@ namespace Jogl.Server.AI.Agent
         private readonly IAIService _aiService;
         private readonly Search.ISearchService _searchService;
         private readonly IRelationService _relationService;
+        private readonly IPaperService _paperService;
         private readonly ISystemValueRepository _systemValueRepository;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserSearchAgent> _logger;
 
-        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
+        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, IPaperService paperService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
         {
             _aiService = aIService;
             _searchService = searchService;
             _relationService = relationService;
+            _paperService = paperService;
             _systemValueRepository = systemValueRepository;
             _configuration = configuration;
             _logger = logger;
@@ -72,14 +72,25 @@ namespace Jogl.Server.AI.Agent
                 var hubUserIds = _relationService.ListUserIdsForNode(nodeId);
                 searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration, hubUserIds);
             }
+
+            var papers = new Dictionary<string, List<Data.Paper>>();
+            foreach (var searchResult in searchResults)
+            {
+                var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false);
+                papers.Add(searchResult.Document.Id, userPapers);
+
+                searchResult.Document.Papers_Title = new List<string>();
+                searchResult.Document.Papers_Abstract = new List<string>();
+            }
+
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
-                Handle = emailHandles.ContainsKey(u.Document.Email) ? $"@{emailHandles[u.Document.Email]}" : "",
                 //Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 OriginalData = u.Document,
+                Papers = papers[u.Document.Id].Select(p => new { p.Title, p.Summary, p.Journal, p.PublicationDate, p.Authors }),
                 Highlights = u.SemanticSearch.Captions
             }));
 

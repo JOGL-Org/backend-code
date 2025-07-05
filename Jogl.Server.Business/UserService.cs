@@ -102,6 +102,7 @@ namespace Jogl.Server.Business
                 CommunityEntityId = user.Id.ToString(),
                 CreatedByUserId = user.Id.ToString(),
                 CreatedUTC = DateTime.UtcNow,
+                Settings = new List<string> { CONTENT_MEMBER_POST, COMMENT_MEMBER_POST }
             });
 
             await _feedRepository.CreateAsync(new Feed
