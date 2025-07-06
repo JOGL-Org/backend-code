@@ -108,11 +108,11 @@ namespace Jogl.Server.AI.Agent
                 {
                     r.Title,
                     r.Type,
-                    Abstract = r.Data.Contains("Abstract") ? r.Data["Abstract"] : "",
-                    Keywords = r.Data.Contains("Keywords") ? r.Data["Keywords"] : "",
-                    Language = r.Data.Contains("Language") ? r.Data["Language"] : "",
-                    CreatedDate = r.Data.Contains("CreatedDate") ? r.Data["CreatedDate"] : "",
-                    LastPRDate = r.Data.Contains("LastPRDate") ? r.Data["LastPRDate"] : "",
+                    Abstract = r.Data.Contains("Abstract") ? r.Data["Abstract"].AsString : "",
+                    Keywords = r.Data.Contains("Keywords") ? r.Data["Keywords"].AsString : "",
+                    Language = r.Data.Contains("Language") ? r.Data["Language"].AsString : "",
+                    CreatedDate = r.Data.Contains("CreatedDate") ? r.Data["CreatedDate"].AsString : "",
+                    LastPRDate = r.Data.Contains("LastPRDate") ? r.Data["LastPRDate"].AsString : "",
                 }),
                 Highlights = u.SemanticSearch.Captions
             }));
