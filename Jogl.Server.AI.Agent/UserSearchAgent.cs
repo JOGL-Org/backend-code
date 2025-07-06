@@ -6,6 +6,7 @@ using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Jogl.Server.AI.Agent
 {
@@ -15,16 +16,18 @@ namespace Jogl.Server.AI.Agent
         private readonly Search.ISearchService _searchService;
         private readonly IRelationService _relationService;
         private readonly IPaperService _paperService;
+        private readonly IResourceService _resourceService;
         private readonly ISystemValueRepository _systemValueRepository;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserSearchAgent> _logger;
 
-        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, IPaperService paperService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
+        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, IPaperService paperService, IResourceService resourceService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
         {
             _aiService = aIService;
             _searchService = searchService;
             _relationService = relationService;
             _paperService = paperService;
+            _resourceService = resourceService;
             _systemValueRepository = systemValueRepository;
             _configuration = configuration;
             _logger = logger;
@@ -78,9 +81,13 @@ namespace Jogl.Server.AI.Agent
             {
                 var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false);
                 papers.Add(searchResult.Document.Id, userPapers);
+            }
 
-                searchResult.Document.Papers_Title = new List<string>();
-                searchResult.Document.Papers_Abstract = new List<string>();
+            var resources = new Dictionary<string, List<Data.Resource>>();
+            foreach (var searchResult in searchResults)
+            {
+                var userResources = _resourceService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false);
+                resources.Add(searchResult.Document.Id, userResources);
             }
 
             var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
@@ -90,7 +97,23 @@ namespace Jogl.Server.AI.Agent
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 OriginalData = u.Document,
-                Papers = papers[u.Document.Id].Select(p => new { p.Title, p.Summary, p.Journal, p.PublicationDate, p.Authors }),
+                Papers = papers[u.Document.Id].Select(p => new
+                {
+                    p.Title,
+                    p.Journal,
+                    p.PublicationDate,
+                    //p.Authors
+                }),
+                Resources = resources[u.Document.Id].Select(r => new
+                {
+                    r.Title,
+                    r.Type,
+                    Abstract = r.Data.Contains("Abstract") ? r.Data["Abstract"] : "",
+                    Keywords = r.Data.Contains("Keywords") ? r.Data["Keywords"] : "",
+                    Language = r.Data.Contains("Language") ? r.Data["Language"] : "",
+                    CreatedDate = r.Data.Contains("CreatedDate") ? r.Data["CreatedDate"] : "",
+                    LastPRDate = r.Data.Contains("LastPRDate") ? r.Data["LastPRDate"] : "",
+                }),
                 Highlights = u.SemanticSearch.Captions
             }));
 
