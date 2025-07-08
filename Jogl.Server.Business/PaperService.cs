@@ -85,7 +85,7 @@ namespace Jogl.Server.Business
             return paper;
         }
 
-        public List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending, bool recordListings = true)
         {
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
             var papers = _paperRepository
@@ -99,7 +99,8 @@ namespace Jogl.Server.Business
             var entitySet = _feedEntityService.GetFeedEntitySet(entityId);
 
             EnrichPaperData(papers, entitySet, currentUserId);
-            RecordListings(currentUserId, papers);
+            if (recordListings)
+                RecordListings(currentUserId, papers);
 
             return papers;
         }

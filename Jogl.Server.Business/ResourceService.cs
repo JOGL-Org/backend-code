@@ -88,7 +88,7 @@ namespace Jogl.Server.Business
                 .Count();
         }
 
-        public List<Resource> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
+        public List<Resource> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending, bool recordListings = true)
         {
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
             var resources = _resourceRepository
@@ -100,7 +100,8 @@ namespace Jogl.Server.Business
                 .ToList();
 
             EnrichResourceData(resources, currentUserId);
-            RecordListings(currentUserId, resources);
+            if (recordListings)
+                RecordListings(currentUserId, resources);
 
             return resources;
         }

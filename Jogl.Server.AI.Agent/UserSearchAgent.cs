@@ -79,14 +79,14 @@ namespace Jogl.Server.AI.Agent
             var papers = new Dictionary<string, List<Data.Paper>>();
             foreach (var searchResult in searchResults)
             {
-                var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false);
+                var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false);
                 papers.Add(searchResult.Document.Id, userPapers);
             }
 
             var resources = new Dictionary<string, List<Data.Resource>>();
             foreach (var searchResult in searchResults)
             {
-                var userResources = _resourceService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false);
+                var userResources = _resourceService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false);
                 resources.Add(searchResult.Document.Id, userResources);
             }
 

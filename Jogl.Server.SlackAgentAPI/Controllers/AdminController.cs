@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Jogl.Server.SlackAgentAPI.Handler;
 using Jogl.Server.DB;
-using Jogl.Server.Business;
-using Jogl.Server.URL;
-using Jogl.Server.Data;
 using Jogl.Server.Slack;
 using Jogl.Server.Conversation.Data;
 using Jogl.Server.Notifications;
