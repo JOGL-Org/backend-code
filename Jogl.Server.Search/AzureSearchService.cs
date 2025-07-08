@@ -29,10 +29,9 @@ namespace Jogl.Server.Search
                 new DefaultAzureCredential());
 
             var searchDocuments = users.Select(u => TransformUserToSearchDocument(u, documents.Where(d => d.FeedId == u.Id.ToString()), papers.Where(p => p.FeedId == u.Id.ToString()), resources.Where(r => r.EntityId == u.Id.ToString()))).ToList();
-
             foreach (var batch in searchDocuments.Chunk(100))
             {
-                await searchClient.UploadDocumentsAsync(searchDocuments);
+                await searchClient.UploadDocumentsAsync(batch);
             }
         }
 
@@ -42,15 +41,21 @@ namespace Jogl.Server.Search
 
             // Map simple fields
             searchDoc["id"] = user.Id.ToString();
-            searchDoc["Email"] = user.Email;
+            searchDoc["Email"] = user.Email ?? "";
             searchDoc["Name"] = user.FirstName + " " + user.LastName;
             searchDoc["ShortBio"] = user.ShortBio ?? string.Empty;
             searchDoc["Bio"] = user.Bio ?? string.Empty;
             searchDoc["Current"] = user.Current ?? string.Empty;
-            searchDoc["Educations_Institution"] = user.Education != null ? user.Education.Select(e => e.School).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
-            searchDoc["Educations_Program"] = user.Education != null ? user.Education.Select(e => e.Program).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
-            searchDoc["Experiences_Company"] = user.Experience != null ? user.Experience.Select(e => e.Company).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
-            searchDoc["Experiences_Position"] = user.Experience != null ? user.Experience.Select(e => e.Position).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            //searchDoc["Educations_Institution"] = user.Education != null ? user.Education.Select(e => e.School).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            //searchDoc["Educations_Program"] = user.Education != null ? user.Education.Select(e => e.Program).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+
+            searchDoc["Location"] = user.Country ?? string.Empty;
+            searchDoc["Current_Roles"] = user.Experience != null ? user.Experience.Where(e => e.Current).Select(e => e.Position).Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
+            searchDoc["Past_Roles"] = user.Experience != null ? user.Experience.Where(e => !e.Current).Select(e => e.Position).Where(str => !string.IsNullOrEmpty(str)) : new List<string>(); ;
+            searchDoc["Current_Companies"] = user.Experience != null ? user.Experience.Where(e => e.Current).Select(e => e.Company).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
+            searchDoc["Past_Companies"] = user.Experience != null ? user.Experience.Where(e => !e.Current).Select(e => e.Company).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
+            searchDoc["Study_Programs"] = user.Education != null ? user.Education.Select(e => e.Program).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
+            searchDoc["Study_Institutions"] = user.Education != null ? user.Education.Select(e => e.School).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
 
             searchDoc["Documents_Title"] = documents != null ? documents.Select(e => e.Name).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Documents_Content"] = documents != null ? documents.Select(e => e.Description).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();

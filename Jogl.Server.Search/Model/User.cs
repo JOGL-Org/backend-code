@@ -10,10 +10,14 @@ namespace Jogl.Server.Search.Model
         public string Name { get; set; }
         public string ShortBio { get; set; }
         public string Bio { get; set; }
-        public List<string> Educations_Institution { get; set; }
-        public List<string> Educations_Program { get; set; }
-        public List<string> Experiences_Company { get; set; }
-        public List<string> Experiences_Position { get; set; }
+        public string Current { get; set; }
+        public string Location { get; set; }
+        public List<string> Current_Roles { get; set; }
+        public List<string> Past_Roles { get; set; }
+        public List<string> Current_Companies { get; set; }
+        public List<string> Past_Companies { get; set; }
+        public List<string> Study_Programs { get; set; }
+        public List<string> Study_Institutions { get; set; }
         public List<string> Documents_Title { get; set; }
         public List<string> Documents_Content { get; set; }
     }
