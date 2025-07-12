@@ -28,5 +28,15 @@ namespace Jogl.Server.Data
         public override string FeedTitle => Title;
 
         public override FeedType FeedType => FeedType.Resource;
+        public string this[string key]
+        {
+            get
+            {
+                if (Data == null)
+                    return null;
+
+                return Data.Contains(key) ? Data[key].ToString() : null;
+            }
+        }
     }
 }

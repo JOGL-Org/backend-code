@@ -104,15 +104,12 @@ namespace Jogl.Server.AI.Agent
                     p.PublicationDate,
                     //p.Authors
                 }),
-                Resources = resources[u.Document.Id].Select(r => new
+                Repositories = resources[u.Document.Id].Where(r => r.Type == Data.ResourceType.Repository).Select(r => new
                 {
                     r.Title,
-                    r.Type,
                     Abstract = r.Data.Contains("Abstract") ? r.Data["Abstract"].AsString : "",
                     Keywords = r.Data.Contains("Keywords") ? r.Data["Keywords"].AsString : "",
                     Language = r.Data.Contains("Language") ? r.Data["Language"].AsString : "",
-                    CreatedDate = r.Data.Contains("CreatedDate") ? r.Data["CreatedDate"].AsString : "",
-                    LastPRDate = r.Data.Contains("LastPRDate") ? r.Data["LastPRDate"].AsString : "",
                 }),
                 Highlights = u.SemanticSearch.Captions
             }));

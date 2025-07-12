@@ -39,6 +39,8 @@ namespace Jogl.Server.Search
         {
             var searchDoc = new SearchDocument();
 
+            var repositories = resources?.Where(r => r.Type == ResourceType.Repository)?.ToList();
+
             // Map simple fields
             searchDoc["id"] = user.Id.ToString();
             searchDoc["Email"] = user.Email ?? "";
@@ -57,11 +59,14 @@ namespace Jogl.Server.Search
             searchDoc["Study_Programs"] = user.Education != null ? user.Education.Select(e => e.Program).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
             searchDoc["Study_Institutions"] = user.Education != null ? user.Education.Select(e => e.School).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
 
+            searchDoc["Labels"] = GenerateLabels(user, documents, papers, repositories);
+
             searchDoc["Documents_Title"] = documents != null ? documents.Select(e => e.Name).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Documents_Content"] = documents != null ? documents.Select(e => e.Description).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
-            //searchDoc["Resources_Title"] = resources != null ? resources.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
-            //searchDoc["Resources_Content"] = resources != null ? resources.Select(e => e.Data.ToJson()).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            searchDoc["Repositories_Title"] = repositories != null ? repositories.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            searchDoc["Repositories_Languages"] = repositories != null ? repositories.Select(e => e["Language"]).Where(str => !string.IsNullOrEmpty(str)).Distinct().ToList() : new List<string>();
+            searchDoc["Repositories_Keywords"] = repositories != null ? repositories.Select(e => e["Keywords"]).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
             searchDoc["Papers_Title"] = papers != null ? papers.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract"] = papers != null ? papers.Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
@@ -70,6 +75,21 @@ namespace Jogl.Server.Search
             searchDoc["Papers_Abstract_Current"] = papers != null ? papers.Where(IsCurrent).Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
             return searchDoc;
+        }
+
+        private List<string> GenerateLabels(Data.User user, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> repositories)
+        {
+            var res = new List<string>();
+            if (user.Experience?.Any(e => e.Current == true) == true)
+                res.Add("Student");
+
+            if (repositories?.Any() == true)
+                res.Add("Developer");
+
+            if (papers?.Any() == true)
+                res.Add("Researcher");
+
+            return res;
         }
 
         private bool IsCurrent(Paper p)

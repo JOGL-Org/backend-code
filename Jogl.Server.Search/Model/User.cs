@@ -18,6 +18,7 @@ namespace Jogl.Server.Search.Model
         public List<string> Past_Companies { get; set; }
         public List<string> Study_Programs { get; set; }
         public List<string> Study_Institutions { get; set; }
+        public List<string> Labels { get; set; }
         public List<string> Documents_Title { get; set; }
         public List<string> Documents_Content { get; set; }
     }
