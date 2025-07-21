@@ -127,7 +127,7 @@ namespace Jogl.Server.AI.Agent
                 return new AgentResponse { Text = "An error has ocurred" };
             }
 
-            if (messages.Last()?.Text == "qwertyuiopqwertyuiop")
+            if (messages.Last()?.Text == "*qwertyuiopqwertyuiop*")
                 return new AgentResponse { Text = originalQuery };
 
             var promptText = string.Format(prompt.Value, context);
