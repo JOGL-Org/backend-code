@@ -15,5 +15,6 @@ namespace Jogl.Server.Data
         public string ChannelId { get; set; }
         public string Tag { get; set; }
         public string Context { get; set; }
+        public string OriginalQuery { get; set; }
     }
 }

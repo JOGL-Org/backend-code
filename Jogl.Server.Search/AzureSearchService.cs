@@ -118,7 +118,7 @@ namespace Jogl.Server.Search
                     SemanticConfigurationName = configuration,
                     QueryCaption = new QueryCaption(QueryCaptionType.Extractive),
                     QueryAnswer = new QueryAnswer(QueryAnswerType.Extractive)
-                }
+                },
             };
 
             //if ids available, generate filter

@@ -17,6 +17,7 @@ namespace Jogl.Server.DB
         {
             return Builders<InterfaceMessage>.Update.Set(e => e.Tag, updatedEntity.Tag)
                                                     .Set(e => e.Context, updatedEntity.Context)
+                                                    .Set(e => e.OriginalQuery, updatedEntity.OriginalQuery)
                                                     .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                                     .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId);
         }

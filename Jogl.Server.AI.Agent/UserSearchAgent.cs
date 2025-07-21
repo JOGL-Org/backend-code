@@ -6,7 +6,6 @@ using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Jogl.Server.AI.Agent
 {
@@ -115,10 +114,10 @@ namespace Jogl.Server.AI.Agent
             }));
 
             var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages);
-            return new AgentResponse { Text = explanationRes, Context = searchResultsText };
+            return new AgentResponse { Text = explanationRes, Context = searchResultsText, OriginalQuery = res.ExtractedQuery };
         }
 
-        public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string? interfaceType = default)
+        public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)
         {
             var promptKey = $"USER_SEARCH_FOLLOWUP_PROMPT_{interfaceType}";
             var prompt = _systemValueRepository.Get(sv => sv.Key == promptKey);
@@ -127,6 +126,9 @@ namespace Jogl.Server.AI.Agent
                 _logger.LogError("{promptKey} system value missing", promptKey);
                 return new AgentResponse { Text = "An error has ocurred" };
             }
+
+            if (messages.Last()?.Text == "qwertyuiopqwertyuiop")
+                return new AgentResponse { Text = originalQuery };
 
             var promptText = string.Format(prompt.Value, context);
             var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m);

@@ -62,7 +62,7 @@ namespace Jogl.Server.ConversationCoordinator
             messages.Add(new InputItem { FromUser = true, Text = originalPost.Text });
             messages.AddRange(comments.Items.Select(c => new InputItem { FromUser = !string.IsNullOrEmpty(c.CreatedByUserId), Text = c.Text }));
 
-            var followup = await _agent.GetFollowupResponseAsync(messages, rootInterfaceMessage.Context, "JOGL");
+            var followup = await _agent.GetFollowupResponseAsync(messages, rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, "JOGL");
             var replyId = await _contentService.CreateCommentAsync(new Comment
             {
                 ContentEntityId = comment.ContentEntityId,

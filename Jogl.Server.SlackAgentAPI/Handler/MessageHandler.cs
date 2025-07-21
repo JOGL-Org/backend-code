@@ -111,6 +111,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
 
         //store context in root message
         rootInterfaceMessage.Context = response.Context;
+        rootInterfaceMessage.OriginalQuery = response.OriginalQuery;
         await _interfaceMessageRepository.UpdateAsync(rootInterfaceMessage);
     }
 
@@ -136,7 +137,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
         var tempMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, $"We will have a reply for you in a few moments", slackEvent.Ts);
 
         var messages = await _slackService.GetConversationAsync(channel.Key, slackEvent.Channel, slackEvent.ThreadTs ?? slackEvent.Ts);
-        var followup = await _agent.GetFollowupResponseAsync(messages.Where(m => m.Id != tempMessageId).Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), rootInterfaceMessage.Context, "SLACK");
+        var followup = await _agent.GetFollowupResponseAsync(messages.Where(m => m.Id != tempMessageId).Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }), rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, "SLACK");
         var replyMessageId = await _slackService.SendMessageAsync(channel.Key, slackEvent.Channel, followup.Text, slackEvent.Ts);
         await _slackService.DeleteMessageAsync(channel.Key, slackEvent.Channel, tempMessageId);
 
