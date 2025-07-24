@@ -96,7 +96,7 @@ namespace Jogl.Server.AI.Agent
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 OriginalData = u.Document,
-                Papers = papers[u.Document.Id].Select(p => new
+                Papers = papers[u.Document.Id].Take(300).Select(p => new
                 {
                     p.Title,
                     p.Journal,
