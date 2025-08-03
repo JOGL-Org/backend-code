@@ -36,11 +36,6 @@ namespace Jogl.Server.ConversationCoordinator
         {
             var conversation = JsonSerializer.Deserialize<ConversationCreated>(message.Body.ToString());
             var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == conversation.WorkspaceId);
-            if (channel == null)
-            {
-                _logger.LogWarning("Channel not known: {0}", conversation.WorkspaceId);
-                return;
-            }
 
             //log incoming message
             var rootInterfaceMessage = new InterfaceMessage

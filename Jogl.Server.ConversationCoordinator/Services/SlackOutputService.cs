@@ -2,7 +2,6 @@
 using Jogl.Server.Data;
 using Jogl.Server.Slack;
 using Microsoft.Extensions.Logging;
-using SlackNet;
 
 namespace Jogl.Server.ConversationCoordinator.Services
 {
@@ -10,12 +9,22 @@ namespace Jogl.Server.ConversationCoordinator.Services
     {
         public async Task<string> ProcessReplyAsync(InterfaceChannel channel, string workspaceId, string conversationId, string text)
         {
+            if (channel == null)
+                logger.LogError("Channel not found");
+
+            else if (string.IsNullOrEmpty(channel.Key))
+                logger.LogError("Channel not initialized with access key {externalId}", channel.ExternalId);
+
+
             return await slackService.SendMessageAsync(channel.Key, workspaceId, text, conversationId);
         }
 
         public async Task<string> StartIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId)
         {
-            if (string.IsNullOrEmpty(channel.Key))
+            if (channel == null)
+                logger.LogError("Channel not found");
+
+            else if (string.IsNullOrEmpty(channel.Key))
                 logger.LogError("Channel not initialized with access key {externalId}", channel.ExternalId);
 
             return await slackService.SendMessageAsync(channel.Key, workspaceId, $"Your query is being processed now, your results should be available in a few seconds", conversationId);
@@ -23,7 +32,10 @@ namespace Jogl.Server.ConversationCoordinator.Services
 
         public async Task StopIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId, string indicatorId)
         {
-            if (string.IsNullOrEmpty(channel.Key))
+            if (channel == null)
+                logger.LogError("Channel not found");
+
+            else if (string.IsNullOrEmpty(channel.Key))
                 logger.LogError("Channel not initialized with access key {externalId}", channel.ExternalId);
 
             await slackService.DeleteMessageAsync(channel.Key, workspaceId, indicatorId);
@@ -31,7 +43,10 @@ namespace Jogl.Server.ConversationCoordinator.Services
 
         public async Task<List<InputItem>> LoadConversationAsync(InterfaceChannel channel, string workspaceId, string conversationId)
         {
-            if (string.IsNullOrEmpty(channel.Key))
+            if (channel == null)
+                logger.LogError("Channel not found");
+
+            else if (string.IsNullOrEmpty(channel.Key))
                 logger.LogError("Channel not initialized with access key {externalId}", channel.ExternalId);
 
             var messages = await slackService.GetConversationAsync(channel.Key, workspaceId, conversationId);
