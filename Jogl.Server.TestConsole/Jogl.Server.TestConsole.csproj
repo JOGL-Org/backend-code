@@ -23,13 +23,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Jogl.Server.AI\Jogl.Server.AI.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />

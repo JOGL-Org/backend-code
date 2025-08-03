@@ -3,10 +3,8 @@ using Jogl.Server.SlackAgentAPI.Handler;
 using Microsoft.OpenApi.Models;
 using SlackNet.Events;
 using Jogl.Server.Slack.Extensions;
-using Jogl.Server.AI.Agent.Extensions;
-using Jogl.Server.Business.Extensions;
-using Jogl.Server.DB.Extensions;
-using Jogl.Server.Notifications.Extensions;
+using Jogl.Server.ServiceBus.Extensions;
+using SlackNet.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,36 +32,20 @@ builder.Services.AddSwaggerGen(config =>
     config.EnableAnnotations();
 });
 
-//data access
-builder.Services.AddBusiness();
-builder.Services.AddAIAgent();
-
-//add secrets
 builder.Configuration.AddKeyVault();
+builder.Services.AddServiceBus();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSlack(builder.Configuration, (c) =>
 {
     c.RegisterEventHandler<MessageEvent, MessageHandler>();
-    c.RegisterEventHandler<TeamJoin, TeamJoinHandler>();
-    c.RegisterEventHandler<BotAdded, BotAddedHandler>();
+//    c.RegisterEventHandler<TeamJoin, TeamJoinHandler>();
+    //c.RegisterEventHandler<BotAdded, BotAddedHandler>();
 });
+
 var app = builder.Build();
 
-//enable CORS
-app.UseCors();
-
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    options.RoutePrefix = string.Empty;
-});
-
 app.UseRouting();
-app.UseSlack(c =>
-{
-    c.UseSocketMode(true);
-});
+app.UseCors();
+app.UseSlack();
 
-app.MapControllers();
 app.Run();

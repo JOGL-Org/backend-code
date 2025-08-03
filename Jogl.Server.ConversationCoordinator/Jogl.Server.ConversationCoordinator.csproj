@@ -40,6 +40,7 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jogl.Server.AI.Agent\Jogl.Server.AI.Agent.csproj" />
     <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
     <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
     <ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />

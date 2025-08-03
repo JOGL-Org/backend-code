@@ -46,7 +46,7 @@ namespace Jogl.Server.Slack
         {
             var client = _slackApiClient.WithAccessToken(channelAccessToken);
 
-            await client.Chat.Delete(id, channelId, true);
+            await client.Chat.Delete(id, channelId);
         }
 
         public async Task<List<User>> ListWorkspaceUsersAsync(string channelAccessToken)

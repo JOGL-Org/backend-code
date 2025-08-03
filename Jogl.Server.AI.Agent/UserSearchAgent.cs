@@ -32,7 +32,7 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default, string? interfaceType = default)
+        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, string? nodeId = default, string? interfaceType = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
@@ -96,7 +96,7 @@ namespace Jogl.Server.AI.Agent
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 OriginalData = u.Document,
-                Papers = papers[u.Document.Id].Take(300).Select(p => new
+                Papers = papers[u.Document.Id].Select(p => new
                 {
                     p.Title,
                     p.Journal,
@@ -113,7 +113,7 @@ namespace Jogl.Server.AI.Agent
                 Highlights = u.SemanticSearch.Captions
             }));
 
-            var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages);
+            var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages, 0.5m, 8192);
             return new AgentResponse { Text = explanationRes, Context = searchResultsText, OriginalQuery = res.ExtractedQuery };
         }
 
@@ -131,7 +131,7 @@ namespace Jogl.Server.AI.Agent
                 return new AgentResponse { Text = originalQuery };
 
             var promptText = string.Format(prompt.Value, context);
-            var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m);
+            var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
             return new AgentResponse { Text = response };
         }
     }

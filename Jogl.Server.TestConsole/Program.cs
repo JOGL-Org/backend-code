@@ -1,5 +1,4 @@
-﻿using Jogl.Server.AI;
-using Jogl.Server.Configuration;
+﻿using Jogl.Server.Configuration;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Lix;

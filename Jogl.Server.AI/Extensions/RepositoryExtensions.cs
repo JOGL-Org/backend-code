@@ -7,7 +7,8 @@ namespace Jogl.Server.AI.Extensions
     {
         public static void AddAI(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<IAIService, ClaudeAIService>();
+            //serviceCollection.AddTransient<IAIService, ClaudeAIService>();
+            serviceCollection.AddTransient<IAIService, GeminiAIService>();
         }
     }
 }

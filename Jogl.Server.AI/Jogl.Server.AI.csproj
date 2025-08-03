@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Anthropic.SDK" Version="4.4.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-    <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="Google_GenerativeAI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+	  <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
   </ItemGroup>

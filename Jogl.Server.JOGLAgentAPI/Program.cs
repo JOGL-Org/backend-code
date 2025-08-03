@@ -1,13 +1,12 @@
 using Jogl.Server.Configuration;
+using Jogl.Server.DB.Extensions;
+using Jogl.Server.ServiceBus.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Jogl.Server.Business.Extensions;
-using Jogl.Server.AI.Agent.Extensions;
 
 var host = new HostBuilder()
-    //  .ConfigureFunctionsWorkerDefaults()
     .ConfigureFunctionsWebApplication()
     .ConfigureAppConfiguration(config =>
     {
@@ -22,8 +21,8 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
 
-        services.AddBusiness();
-        services.AddAIAgent();
+        services.AddRepositories();
+        services.AddServiceBus();
     })
     .Build();
 

@@ -29,7 +29,7 @@ namespace Jogl.Server.AI
             throw new NotImplementedException();
         }
 
-        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5M)
+        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024)
         {
             var restClient = new RestClient("https://api.perplexity.ai/");
             restClient.AddDefaultHeader("Authorization", "Bearer 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");
@@ -70,7 +70,7 @@ namespace Jogl.Server.AI
             return resultText;
         }
 
-        public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5M)
+        public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024)
         {
             var restClient = new RestClient("https://api.perplexity.ai/");
             restClient.AddDefaultHeader("Authorization", "Bearer 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");

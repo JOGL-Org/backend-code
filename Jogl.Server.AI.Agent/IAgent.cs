@@ -4,7 +4,7 @@ namespace Jogl.Server.AI.Agent
 {
     public interface IAgent
     {
-        Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, Dictionary<string, string> emailHandles, string? nodeId = default, string? interfaceType = default);
+        Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, string? nodeId = default, string? interfaceType = default);
         Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default);
     }
 }
