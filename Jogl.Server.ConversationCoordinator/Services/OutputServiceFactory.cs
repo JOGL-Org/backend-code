@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.ConversationCoordinator.Services
 {
-    public class OutputServiceFactory(ISlackOutputService slackOutputService) : IOutputServiceFactory
+    public class OutputServiceFactory(ISlackOutputService slackOutputService, IWhatsAppOutputService whatsAppOutputService) : IOutputServiceFactory
     {
         public IOutputService GetService(string type)
         {
@@ -10,6 +10,8 @@ namespace Jogl.Server.ConversationCoordinator.Services
             {
                 case Const.TYPE_SLACK:
                     return slackOutputService;
+                case Const.TYPE_WHATSAPP:
+                    return whatsAppOutputService;
                 default:
                     return null;
             }

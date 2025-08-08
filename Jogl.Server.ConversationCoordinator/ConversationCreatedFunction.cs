@@ -53,7 +53,7 @@ namespace Jogl.Server.ConversationCoordinator
             var outputService = _outputServiceFactory.GetService(conversation.ConversationSystem);
             var indicatorId = await outputService.StartIndicatorAsync(channel, conversation.ChannelId, conversation.ConversationId);
 
-            var response = await _aiAgent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = conversation.Text }], channel.NodeId, conversation.ConversationSystem);
+            var response = await _aiAgent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = conversation.Text }], channel?.NodeId, conversation.ConversationSystem);
             var messageId = await outputService.ProcessReplyAsync(channel, conversation.ChannelId, conversation.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(channel, conversation.ChannelId, conversation.ConversationId, indicatorId);
 
@@ -62,7 +62,7 @@ namespace Jogl.Server.ConversationCoordinator
             {
                 CreatedUTC = DateTime.UtcNow,
                 MessageId = messageId,
-                ChannelId = channel.ExternalId,
+                ChannelId = conversation.WorkspaceId,
                 ConversationId = conversation.ConversationId,
                 Text = response.Text,
                 Tag = InterfaceMessage.TAG_SEARCH_USER,

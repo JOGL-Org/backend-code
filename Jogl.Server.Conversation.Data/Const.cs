@@ -8,6 +8,7 @@
         public const string CONVERSATION_REPLY_CREATED = "conversation-reply-created";
 
         public const string TYPE_SLACK = "SLACK";
+        public const string TYPE_WHATSAPP = "WHATSAPP";
         public const string TYPE_JOGL = "JOGL";
     }
 }

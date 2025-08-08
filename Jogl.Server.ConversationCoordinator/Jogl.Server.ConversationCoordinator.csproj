@@ -45,6 +45,7 @@
     <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />
     <ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />
     <ProjectReference Include="..\Jogl.Server.Slack\Jogl.Server.Slack.csproj" />
+    <ProjectReference Include="..\Jogl.Server.WhatsApp\Jogl.Server.WhatsApp.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

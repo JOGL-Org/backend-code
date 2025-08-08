@@ -1,0 +1,33 @@
+using Jogl.Server.Configuration;
+using Jogl.Server.ServiceBus.Extensions;
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("*")
+                 .AllowAnyMethod()
+                 .AllowAnyHeader();
+        });
+});
+
+builder.Configuration.AddKeyVault();
+builder.Services.AddControllers();
+builder.Services.AddServiceBus();
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.Configure<TwilioRequestValidationOptions>(options =>
+{
+    options.AuthToken = builder.Configuration["Twilio:AuthToken"];
+});
+
+var app = builder.Build();
+
+app.MapControllers();
+app.UseRouting();
+app.UseCors();
+
+app.Run();

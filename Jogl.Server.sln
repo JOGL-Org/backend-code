@@ -111,6 +111,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Loader.Profile"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.JOGLAgentAPI", "Jogl.Server.JOGLAgentAPI\Jogl.Server.JOGLAgentAPI.csproj", "{572EBA4D-5F86-4F54-962E-0B6DBD003F90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.WhatsAppAgentAPI", "Jogl.Server.WhatsAppAgentAPI\Jogl.Server.WhatsAppAgentAPI.csproj", "{4F0227B8-FF20-42B9-A763-C67C5D9DA153}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.WhatsApp", "Jogl.Server.WhatsApp\Jogl.Server.WhatsApp.csproj", "{8D0065CF-E179-46DB-BC5A-14C9ABE70A8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -329,6 +333,14 @@ Global
 		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{572EBA4D-5F86-4F54-962E-0B6DBD003F90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F0227B8-FF20-42B9-A763-C67C5D9DA153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F0227B8-FF20-42B9-A763-C67C5D9DA153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F0227B8-FF20-42B9-A763-C67C5D9DA153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0227B8-FF20-42B9-A763-C67C5D9DA153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D0065CF-E179-46DB-BC5A-14C9ABE70A8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D0065CF-E179-46DB-BC5A-14C9ABE70A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D0065CF-E179-46DB-BC5A-14C9ABE70A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D0065CF-E179-46DB-BC5A-14C9ABE70A8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
