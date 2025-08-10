@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.AI;
+using Jogl.Server.ConversationCoordinator.DTO;
 using Jogl.Server.Data;
 using Jogl.Server.Slack;
 using Microsoft.Extensions.Logging;
@@ -7,11 +8,6 @@ namespace Jogl.Server.ConversationCoordinator.Services
 {
     public class JOGLOutputService(ISlackService slackService, ILogger<IJOGLOutputService> logger) : IJOGLOutputService
     {
-        public async Task<string> ProcessReplyAsync(InterfaceChannel channel, string workspaceId, string conversationId, string text)
-        {
-            return null;
-        }
-
         public async Task<string> StartIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId)
         {
             return null;
@@ -25,6 +21,11 @@ namespace Jogl.Server.ConversationCoordinator.Services
         public async Task<List<InputItem>> LoadConversationAsync(InterfaceChannel channel, string workspaceId, string conversationId)
         {
             return new List<InputItem>();
+        }
+
+        public async Task<List<MessageResult>> SendMessagesAsync(InterfaceChannel channel, string workspaceId, string conversationId, List<string> messages)
+        {
+            return new List<MessageResult>();
         }
     }
 }

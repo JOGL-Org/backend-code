@@ -54,19 +54,19 @@ namespace Jogl.Server.ConversationCoordinator
             var indicatorId = await outputService.StartIndicatorAsync(channel, conversation.ChannelId, conversation.ConversationId);
 
             var response = await _aiAgent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = conversation.Text }], channel?.NodeId, conversation.ConversationSystem);
-            var messageId = await outputService.ProcessReplyAsync(channel, conversation.ChannelId, conversation.ConversationId, response.Text);
+            var messageResultData = await outputService.SendMessagesAsync(channel, conversation.ChannelId, conversation.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(channel, conversation.ChannelId, conversation.ConversationId, indicatorId);
 
             //log outgoing message
-            await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
             {
                 CreatedUTC = DateTime.UtcNow,
-                MessageId = messageId,
+                MessageId = r.MessageId,
                 ChannelId = conversation.WorkspaceId,
                 ConversationId = conversation.ConversationId,
-                Text = response.Text,
+                Text = r.MessageText,
                 Tag = InterfaceMessage.TAG_SEARCH_USER,
-            });
+            }).ToList());
 
             //store context in root message
             rootInterfaceMessage.Tag = InterfaceMessage.TAG_SEARCH_USER;

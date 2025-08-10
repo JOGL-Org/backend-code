@@ -38,17 +38,34 @@ namespace Jogl.Server.AI.Agent
             if (queryPrompt == null)
             {
                 _logger.LogError("USER_SEARCH_QUERY_PROMPT system value missing");
-                return new AgentResponse { Text = "An error has ocurred" };
+                return new AgentResponse("An error has ocurred");
             }
 
-            var resultPromptKey = $"USER_SEARCH_RESULT_PROMPT_{interfaceType}";
-            var resultPrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptKey);
-            if (resultPrompt == null)
+            var resultPromptStartKey = $"USER_SEARCH_RESULT_START_PROMPT_{interfaceType}";
+            var resultPromptProfileKey = $"USER_SEARCH_RESULT_PROFILE_PROMPT_{interfaceType}";
+            var resultEndKey = $"USER_SEARCH_RESULT_END_{interfaceType}";
+            var resultStartPrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptStartKey);
+            if (resultStartPrompt == null)
             {
-                _logger.LogError("{resultPromptKey} system value missing", resultPromptKey);
-                return new AgentResponse { Text = "An error has ocurred" };
+                _logger.LogError("{resultPromptKey} system value missing", resultPromptStartKey);
+                return new AgentResponse("An error has ocurred");
             }
 
+            var resultPromptProfile = _systemValueRepository.Get(sv => sv.Key == resultPromptProfileKey);
+            if (resultPromptProfile == null)
+            {
+                _logger.LogError("{resultPromptProfileKey} system value missing", resultPromptProfileKey);
+                return new AgentResponse("An error has ocurred");
+            }
+
+            var resultEnd = _systemValueRepository.Get(sv => sv.Key == resultEndKey);
+            if (resultEnd == null)
+            {
+                _logger.LogError("{resultEndKey} system value missing", resultEndKey);
+                return new AgentResponse("An error has ocurred");
+            }
+
+            //get search query
             var exampleResult = new PromptResult()
             {
                 Explanation = "explanation",
@@ -60,10 +77,11 @@ namespace Jogl.Server.AI.Agent
 
             var res = await _aiService.GetResponseAsync<PromptResult>(string.Format(queryPrompt.Value, JsonSerializer.Serialize(exampleResult)), messages, 0);
             if (!res.Success)
-                return new AgentResponse { Text = res.Explanation };
+                return new AgentResponse(res.Explanation);
 
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
+            //get search results
             var searchResults = new List<SearchResult<User>>();
             if (string.IsNullOrEmpty(nodeId) || res.ExtractedGlobal)
             {
@@ -75,6 +93,7 @@ namespace Jogl.Server.AI.Agent
                 searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration, hubUserIds);
             }
 
+            //load extra paper and resource data
             var papers = new Dictionary<string, List<Data.Paper>>();
             foreach (var searchResult in searchResults)
             {
@@ -89,7 +108,8 @@ namespace Jogl.Server.AI.Agent
                 resources.Add(searchResult.Document.Id, userResources);
             }
 
-            var searchResultsText = JsonSerializer.Serialize(searchResults.Select(u => new
+            //get text responses
+            var searchResultData = searchResults.Select(u => new
             {
                 UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
                 //Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
@@ -111,10 +131,17 @@ namespace Jogl.Server.AI.Agent
                     Language = r.Data.Contains("Language") ? r.Data["Language"].AsString : "",
                 }),
                 Highlights = u.SemanticSearch.Captions
-            }));
+            }).ToList();
 
-            var explanationRes = await _aiService.GetResponseAsync(string.Format(resultPrompt.Value, res.ExtractedQuery, searchResultsText), messages, 0.5m, 8192);
-            return new AgentResponse { Text = explanationRes, Context = searchResultsText, OriginalQuery = res.ExtractedQuery };
+            var startRes = await _aiService.GetResponseAsync(string.Format(resultStartPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
+            var profileRes = new List<string>();
+            foreach (var searchResult in searchResultData)
+            {
+                var profileMatch = await _aiService.GetResponseAsync(string.Format(resultPromptProfile.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
+                profileRes.Add(profileMatch);
+            }
+
+            return new AgentResponse { Text = [startRes,..profileRes, resultEnd.Value], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
         }
 
         public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)
@@ -124,15 +151,15 @@ namespace Jogl.Server.AI.Agent
             if (prompt == null)
             {
                 _logger.LogError("{promptKey} system value missing", promptKey);
-                return new AgentResponse { Text = "An error has ocurred" };
+                return new AgentResponse("An error has ocurred");
             }
 
             if (messages.Last()?.Text == "*qwertyuiopqwertyuiop*")
-                return new AgentResponse { Text = originalQuery };
+                return new AgentResponse(originalQuery);
 
             var promptText = string.Format(prompt.Value, context);
             var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
-            return new AgentResponse { Text = response };
+            return new AgentResponse(response);
         }
     }
 }

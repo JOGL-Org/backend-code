@@ -1,17 +1,23 @@
 ﻿using Jogl.Server.AI;
+using Jogl.Server.ConversationCoordinator.DTO;
 using Jogl.Server.Data;
-using Jogl.Server.Slack;
 using Jogl.Server.WhatsApp;
 using Microsoft.Extensions.Logging;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Jogl.Server.ConversationCoordinator.Services
 {
     public class WhatsAppOutputService(IWhatsAppService whatsappService, ILogger<IWhatsAppOutputService> logger) : IWhatsAppOutputService
     {
-        public async Task<string> ProcessReplyAsync(InterfaceChannel channel, string workspaceId, string conversationId, string text)
+        public async Task<List<MessageResult>> SendMessagesAsync(InterfaceChannel channel, string workspaceId, string conversationId, List<string> messages)
         {
-            return await whatsappService.SendMessageAsync(workspaceId, text);
+            var result = new List<MessageResult>();
+            foreach (var message in messages)
+            {
+                var messageId = await whatsappService.SendMessageAsync(workspaceId, message);
+                result.Add(new MessageResult { MessageId = messageId, MessageText = message });
+            }
+
+            return result;
         }
 
         public async Task<string> StartIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId)

@@ -1,4 +1,5 @@
 ﻿using Jogl.Server.AI;
+using Jogl.Server.ConversationCoordinator.DTO;
 using Jogl.Server.Data;
 using Jogl.Server.Slack;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,7 @@ namespace Jogl.Server.ConversationCoordinator.Services
 {
     public class SlackOutputService(ISlackService slackService, ILogger<ISlackOutputService> logger) : ISlackOutputService
     {
-        public async Task<string> ProcessReplyAsync(InterfaceChannel channel, string workspaceId, string conversationId, string text)
+        public async Task<List<MessageResult>> SendMessagesAsync(InterfaceChannel channel, string workspaceId, string conversationId, List<string> messages)
         {
             if (channel == null)
                 logger.LogError("Channel not found");
@@ -15,8 +16,14 @@ namespace Jogl.Server.ConversationCoordinator.Services
             else if (string.IsNullOrEmpty(channel.Key))
                 logger.LogError("Channel not initialized with access key {externalId}", channel.ExternalId);
 
+            var result = new List<MessageResult>();
+            foreach (var message in messages)
+            {
+                var messageId = await slackService.SendMessageAsync(channel.Key, workspaceId, message, conversationId);
+                result.Add(new MessageResult { MessageId = messageId, MessageText = message });
+            }
 
-            return await slackService.SendMessageAsync(channel.Key, workspaceId, text, conversationId);
+            return result;
         }
 
         public async Task<string> StartIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId)

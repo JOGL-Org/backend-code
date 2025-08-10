@@ -62,19 +62,19 @@ namespace Jogl.Server.ConversationCoordinator
 
             var messages = await outputService.LoadConversationAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId);
             var response = await _aiAgent.GetFollowupResponseAsync([new InputItem { FromUser = true, Text = conversationReply.Text }], rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, conversationReply.ConversationSystem);
-            var messageId = await outputService.ProcessReplyAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId, response.Text);
+            var messageResultData = await outputService.SendMessagesAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId, indicatorId);
 
             //log outgoing message
-            await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
             {
                 CreatedUTC = DateTime.UtcNow,
-                MessageId = messageId,
+                MessageId = r.MessageId,
                 ChannelId = channel.ExternalId,
                 ConversationId = conversationReply.ConversationId,
-                Text = response.Text,
+                Text = r.MessageText,
                 Tag = InterfaceMessage.TAG_SEARCH_USER,
-            });
+            }).ToList());
         }
     }
 }
