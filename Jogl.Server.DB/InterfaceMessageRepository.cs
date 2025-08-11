@@ -16,6 +16,7 @@ namespace Jogl.Server.DB
         protected override UpdateDefinition<InterfaceMessage> GetDefaultUpdateDefinition(InterfaceMessage updatedEntity)
         {
             return Builders<InterfaceMessage>.Update.Set(e => e.Tag, updatedEntity.Tag)
+                                                    .Set(e => e.MessageMirrorId, updatedEntity.MessageMirrorId)
                                                     .Set(e => e.Context, updatedEntity.Context)
                                                     .Set(e => e.OriginalQuery, updatedEntity.OriginalQuery)
                                                     .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)

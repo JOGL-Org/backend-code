@@ -8,22 +8,22 @@ namespace Jogl.Server.ConversationCoordinator.Services
 {
     public class JOGLOutputService(ISlackService slackService, ILogger<IJOGLOutputService> logger) : IJOGLOutputService
     {
-        public async Task<string> StartIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId)
+        public async Task<string> StartIndicatorAsync(string workspaceId, string channelId, string conversationId)
         {
             return null;
         }
 
-        public async Task StopIndicatorAsync(InterfaceChannel channel, string workspaceId, string conversationId, string indicatorId)
+        public async Task StopIndicatorAsync(string workspaceId, string channelId, string conversationId, string indicatorId)
         {
 
         }
 
-        public async Task<List<InputItem>> LoadConversationAsync(InterfaceChannel channel, string workspaceId, string conversationId)
+        public async Task<List<InputItem>> LoadConversationAsync(string workspaceId, string channelId, string conversationId)
         {
             return new List<InputItem>();
         }
 
-        public async Task<List<MessageResult>> SendMessagesAsync(InterfaceChannel channel, string workspaceId, string conversationId, List<string> messages)
+        public async Task<List<MessageResult>> SendMessagesAsync(string workspaceId, string channelId, string conversationId, List<string> messages)
         {
             return new List<MessageResult>();
         }

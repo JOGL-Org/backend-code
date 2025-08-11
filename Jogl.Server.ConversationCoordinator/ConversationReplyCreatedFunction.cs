@@ -7,6 +7,7 @@ using Jogl.Server.ConversationCoordinator.Services;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.ConversationCoordinator
@@ -15,16 +16,16 @@ namespace Jogl.Server.ConversationCoordinator
     {
         private readonly IAgent _aiAgent;
         private readonly IOutputServiceFactory _outputServiceFactory;
-        private readonly IInterfaceChannelRepository _interfaceChannelRepository;
         private readonly IInterfaceMessageRepository _interfaceMessageRepository;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<ConversationReplyCreatedFunction> _logger;
 
-        public ConversationReplyCreatedFunction(IAgent aiAgent, IOutputServiceFactory outputServiceFactory, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceMessageRepository interfaceMessageRepository, ILogger<ConversationReplyCreatedFunction> logger)
+        public ConversationReplyCreatedFunction(IAgent aiAgent, IOutputServiceFactory outputServiceFactory, IInterfaceMessageRepository interfaceMessageRepository, IConfiguration configuration, ILogger<ConversationReplyCreatedFunction> logger)
         {
             _aiAgent = aiAgent;
             _outputServiceFactory = outputServiceFactory;
-            _interfaceChannelRepository = interfaceChannelRepository;
             _interfaceMessageRepository = interfaceMessageRepository;
+            _configuration = configuration;
             _logger = logger;
         }
 
@@ -35,46 +36,49 @@ namespace Jogl.Server.ConversationCoordinator
             ServiceBusMessageActions messageActions)
         {
             var conversationReply = JsonSerializer.Deserialize<ConversationReplyCreated>(message.Body.ToString());
-            var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == conversationReply.WorkspaceId);
-            if (channel == null)
-            {
-                _logger.LogWarning("Channel not known: {0}", conversationReply.WorkspaceId);
-                return;
-            }
-
             var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == conversationReply.ChannelId && m.MessageId == conversationReply.ConversationId);
             if (rootInterfaceMessage?.Context == null)
                 return;
+
+            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, [conversationReply.Text]);
 
             //log incoming message
             await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
             {
                 CreatedUTC = DateTime.UtcNow,
                 MessageId = conversationReply.MessageId,
-                ChannelId = channel.ExternalId,
+                ChannelId = conversationReply.WorkspaceId,
                 ConversationId = conversationReply.ConversationId,
                 UserId = conversationReply.UserId,
                 Text = conversationReply.Text
             });
 
             var outputService = _outputServiceFactory.GetService(conversationReply.ConversationSystem);
-            var indicatorId = await outputService.StartIndicatorAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId);
+            var indicatorId = await outputService.StartIndicatorAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId);
 
-            var messages = await outputService.LoadConversationAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId);
+            var messages = await outputService.LoadConversationAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId);
             var response = await _aiAgent.GetFollowupResponseAsync([new InputItem { FromUser = true, Text = conversationReply.Text }], rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, conversationReply.ConversationSystem);
-            var messageResultData = await outputService.SendMessagesAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId, response.Text);
-            await outputService.StopIndicatorAsync(channel, conversationReply.ChannelId, conversationReply.ConversationId, indicatorId);
+            var messageResultData = await outputService.SendMessagesAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId, response.Text);
+            await outputService.StopIndicatorAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId, indicatorId);
 
-            //log outgoing message
-            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
-            {
-                CreatedUTC = DateTime.UtcNow,
-                MessageId = r.MessageId,
-                ChannelId = channel.ExternalId,
-                ConversationId = conversationReply.ConversationId,
-                Text = r.MessageText,
-                Tag = InterfaceMessage.TAG_SEARCH_USER,
-            }).ToList());
+            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, response.Text);
+
+            ////log outgoing message
+            //await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            //{
+            //    CreatedUTC = DateTime.UtcNow,
+            //    MessageId = r.MessageId,
+            //    ChannelId = channel.ExternalId,
+            //    ConversationId = conversationReply.ConversationId,
+            //    Text = r.MessageText,
+            //    Tag = InterfaceMessage.TAG_SEARCH_USER,
+            //}).ToList());
+        }
+
+        private async Task MirrorRepliesAsync(string mirrorConversationId, List<string> text)
+        {
+            var outputService = _outputServiceFactory.GetService(Const.TYPE_SLACK);
+            var ids = await outputService.SendMessagesAsync(_configuration["Slack:Mirror:WorkspaceID"], _configuration["Slack:Mirror:ChannelID"], mirrorConversationId, text);
         }
     }
 }
