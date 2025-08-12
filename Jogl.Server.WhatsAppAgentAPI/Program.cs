@@ -1,4 +1,5 @@
 using Jogl.Server.Configuration;
+using Jogl.Server.DB.Extensions;
 using Jogl.Server.ServiceBus.Extensions;
 using Twilio.AspNet.Core;
 
@@ -18,6 +19,7 @@ builder.Services.AddCors(options =>
 builder.Configuration.AddKeyVault();
 builder.Services.AddControllers();
 builder.Services.AddServiceBus();
+builder.Services.AddRepositories();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.Configure<TwilioRequestValidationOptions>(options =>
 {

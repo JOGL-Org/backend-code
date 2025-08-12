@@ -16,6 +16,7 @@ namespace Jogl.Server.DB
         protected override UpdateDefinition<InterfaceUser> GetDefaultUpdateDefinition(InterfaceUser updatedEntity)
         {
             return Builders<InterfaceUser>.Update.Set(e => e.ExternalId, updatedEntity.ExternalId)
+                                                 .Set(e => e.Status, updatedEntity.Status)
                                                  .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                                  .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId);
         }
