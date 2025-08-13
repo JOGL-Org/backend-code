@@ -20,20 +20,13 @@ namespace Jogl.Server.WhatsApp
 
         public async Task<Dictionary<string, string>> SendMessageAsync(string number, string message)
         {
-            var messageToSend = message;
-            if (message.Length > 1600)
-            {
-                messageToSend = message.Substring(0, 1600);
-                _logger.LogWarning("Message was truncated to 1600 characters. Original message {message}", message);
-            }
-
             var res = new Dictionary<string, string>();
             foreach (var chunk in SplitString(message, 1600))
             {
                 var msg = await MessageResource.CreateAsync(
-              body: chunk,
-              from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
-              to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
+                    body: chunk,
+                    from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
+                    to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
 
                 res.Add(msg.Sid, chunk);
             }
