@@ -43,7 +43,7 @@ namespace Jogl.Server.AI.Agent
 
             var resultPromptStartKey = $"USER_SEARCH_RESULT_START_PROMPT_{interfaceType}";
             var resultPromptProfileKey = $"USER_SEARCH_RESULT_PROFILE_PROMPT_{interfaceType}";
-            var resultEndKey = $"USER_SEARCH_RESULT_END_{interfaceType}";
+            var resultPromptEndKey = $"USER_SEARCH_RESULT_END_PROMPT_{interfaceType}";
             var resultStartPrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptStartKey);
             if (resultStartPrompt == null)
             {
@@ -51,17 +51,17 @@ namespace Jogl.Server.AI.Agent
                 return new AgentResponse("An error has ocurred");
             }
 
-            var resultPromptProfile = _systemValueRepository.Get(sv => sv.Key == resultPromptProfileKey);
-            if (resultPromptProfile == null)
+            var resultProfilePrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptProfileKey);
+            if (resultProfilePrompt == null)
             {
                 _logger.LogError("{resultPromptProfileKey} system value missing", resultPromptProfileKey);
                 return new AgentResponse("An error has ocurred");
             }
 
-            var resultEnd = _systemValueRepository.Get(sv => sv.Key == resultEndKey);
-            if (resultEnd == null)
+            var resultEndPrompt = _systemValueRepository.Get(sv => sv.Key == resultPromptEndKey);
+            if (resultEndPrompt == null)
             {
-                _logger.LogError("{resultEndKey} system value missing", resultEndKey);
+                _logger.LogError("{resultPromptEndKey} system value missing", resultPromptEndKey);
                 return new AgentResponse("An error has ocurred");
             }
 
@@ -137,11 +137,13 @@ namespace Jogl.Server.AI.Agent
             var profileRes = new List<string>();
             foreach (var searchResult in searchResultData)
             {
-                var profileMatch = await _aiService.GetResponseAsync(string.Format(resultPromptProfile.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
+                var profileMatch = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
                 profileRes.Add(profileMatch);
             }
 
-            return new AgentResponse { Text = [startRes,..profileRes, resultEnd.Value], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
+            var endRes = await _aiService.GetResponseAsync(string.Format(resultEndPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
+
+            return new AgentResponse { Text = [startRes,..profileRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
         }
 
         public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)
