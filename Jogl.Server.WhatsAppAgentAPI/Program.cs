@@ -1,7 +1,9 @@
 using Jogl.Server.Configuration;
-using Jogl.Server.DB.Extensions;
+using Jogl.Server.WhatsApp.Extensions;
 using Jogl.Server.ServiceBus.Extensions;
 using Twilio.AspNet.Core;
+using Jogl.Server.AI.Extensions;
+using Jogl.Server.DB.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Configuration.AddKeyVault();
 builder.Services.AddControllers();
 builder.Services.AddServiceBus();
 builder.Services.AddRepositories();
+builder.Services.AddAI();
+builder.Services.AddWhatsApp(builder.Configuration);
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.Configure<TwilioRequestValidationOptions>(options =>
 {

@@ -16,10 +16,13 @@ namespace Jogl.Server.ConversationCoordinator.Services
                 result.Add(new MessageResult { MessageId = messageId, MessageText = message });
             }
 
+            //add followup prompt
+            await whatsappService.SendMessageButtonAsync(workspaceId);
+
             return result;
         }
 
-        public async Task<string> StartIndicatorAsync( string workspaceId, string channelId, string conversationId)
+        public async Task<string> StartIndicatorAsync(string workspaceId, string channelId, string conversationId)
         {
             return await whatsappService.SendMessageAsync(workspaceId, $"Your query is being processed now, your results should be available in a few seconds");
         }
