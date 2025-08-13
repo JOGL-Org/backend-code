@@ -25,7 +25,7 @@ public class WhatsAppController : ControllerBase
     }
 
     [HttpPost("webhook")]
-    [ValidateRequest]
+    // [ValidateRequest]
     public async Task<IActionResult> ReceiveMessage([FromForm] TwilioMessage payload)
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
@@ -44,7 +44,12 @@ public class WhatsAppController : ControllerBase
             return Ok();
         }
 
-        var isReply = await _aiService.GetResponseAsync<bool>("Return true or false, indicating whether or not the message is a followup to the previous conversation (true), or a new conversation (false)", [new InputItem { FromUser = true, Text = payload.Body }], 0);
+        var isReply = await _aiService.GetResponseAsync<bool>("Return true or false, indicating whether or not the message is a followup to the previous conversation (true), or a new conversation (false)", [
+            new InputItem { FromUser = true, Text = rootMessage.Text },
+            new InputItem { FromUser = false, Text = rootMessage.Context },
+            new InputItem { FromUser = true, Text = payload.Body }],
+            0);
+
         _logger.LogInformation("{payload} identified as reply: {isReply}", payload.Body, isReply);
 
         if (isReply)

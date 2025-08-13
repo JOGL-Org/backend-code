@@ -126,9 +126,9 @@ namespace Jogl.Server.AI.Agent
                 Repositories = resources[u.Document.Id].Where(r => r.Type == Data.ResourceType.Repository).Select(r => new
                 {
                     r.Title,
-                    Abstract = r.Data.Contains("Abstract") ? r.Data["Abstract"].AsString : "",
-                    Keywords = r.Data.Contains("Keywords") ? r.Data["Keywords"].AsString : "",
-                    Language = r.Data.Contains("Language") ? r.Data["Language"].AsString : "",
+                    Abstract = r.Data.Contains("Abstract") &&!r.Data["Abstract"].IsBsonNull ? r.Data["Abstract"].AsString : "",
+                    Keywords = r.Data.Contains("Keywords") && !r.Data["Keywords"].IsBsonNull ? r.Data["Keywords"].AsString : "",
+                    Language = r.Data.Contains("Language") &&!r.Data["Language"].IsBsonNull? r.Data["Language"].AsString : "",
                 }),
                 Highlights = u.SemanticSearch.Captions
             }).ToList();
