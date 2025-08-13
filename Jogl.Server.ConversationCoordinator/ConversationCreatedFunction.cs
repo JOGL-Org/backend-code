@@ -51,6 +51,8 @@ namespace Jogl.Server.ConversationCoordinator
                 Text = conversation.Text,
             };
 
+            var mirrorConversationId = await MirrorConversationAsync(conversation.Text);
+
             await _interfaceMessageRepository.CreateAsync(rootInterfaceMessage);
 
             var outputService = _outputServiceFactory.GetService(conversation.ConversationSystem);
@@ -60,18 +62,17 @@ namespace Jogl.Server.ConversationCoordinator
             var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, indicatorId);
 
-            ////log outgoing message
-            //await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
-            //{
-            //    CreatedUTC = DateTime.UtcNow,
-            //    MessageId = r.MessageId,
-            //    ChannelId = conversation.WorkspaceId,
-            //    ConversationId = conversation.ConversationId,
-            //    Text = r.MessageText,
-            //    Tag = InterfaceMessage.TAG_SEARCH_USER,
-            //}).ToList());
+            //log outgoing messages
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = r.MessageId,
+                ChannelId = conversation.WorkspaceId,
+                ConversationId = conversation.ConversationId,
+                Text = r.MessageText,
+                Tag = InterfaceMessage.TAG_SEARCH_USER,
+            }).ToList());
 
-            var mirrorConversationId = await MirrorConversationAsync(conversation.Text);
             await MirrorRepliesAsync(mirrorConversationId, response.Text);
 
             //store context in root message

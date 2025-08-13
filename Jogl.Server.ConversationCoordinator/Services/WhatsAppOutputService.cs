@@ -16,10 +16,6 @@ namespace Jogl.Server.ConversationCoordinator.Services
                 result.Add(new MessageResult { MessageId = messageId, MessageText = message });
             }
 
-            //send followup message
-            Thread.Sleep(3 * 1000); //yeah I know
-            await whatsappService.SendMessageButtonAsync(workspaceId);
-
             return result;
         }
 
@@ -35,8 +31,8 @@ namespace Jogl.Server.ConversationCoordinator.Services
 
         public async Task<List<InputItem>> LoadConversationAsync(string workspaceId, string channelId, string conversationId)
         {
-            //TODO
-            return new List<InputItem>();
+            var messages = await whatsappService.GetConversationAsync(channelId, conversationId);
+            return messages.Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }).ToList();
         }
     }
 }

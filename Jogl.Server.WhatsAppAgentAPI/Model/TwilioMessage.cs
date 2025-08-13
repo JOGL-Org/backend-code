@@ -10,6 +10,9 @@
     public string MessageSid { get; set; }
     //public string AccountSid { get; set; }
     public string From { get; set; }
+    public string? OriginalRepliedMessageSender { get; set; }
+    public string? OriginalRepliedMessageSid { get; set; }
+    
     //public string? ButtonText { get; set; }
     //public string? ButtonPayload { get; set; }
     //public string ApiVersion { get; set; }

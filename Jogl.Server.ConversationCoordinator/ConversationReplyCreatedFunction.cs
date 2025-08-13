@@ -56,23 +56,23 @@ namespace Jogl.Server.ConversationCoordinator
             var outputService = _outputServiceFactory.GetService(conversationReply.ConversationSystem);
             var indicatorId = await outputService.StartIndicatorAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId);
 
-            var messages = await outputService.LoadConversationAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId);
+            //var messages = await outputService.LoadConversationAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId);
             var response = await _aiAgent.GetFollowupResponseAsync([new InputItem { FromUser = true, Text = conversationReply.Text }], rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, conversationReply.ConversationSystem);
             var messageResultData = await outputService.SendMessagesAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(conversationReply.WorkspaceId, conversationReply.ChannelId, conversationReply.ConversationId, indicatorId);
 
             await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, response.Text);
 
-            ////log outgoing message
-            //await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
-            //{
-            //    CreatedUTC = DateTime.UtcNow,
-            //    MessageId = r.MessageId,
-            //    ChannelId = channel.ExternalId,
-            //    ConversationId = conversationReply.ConversationId,
-            //    Text = r.MessageText,
-            //    Tag = InterfaceMessage.TAG_SEARCH_USER,
-            //}).ToList());
+            //log outgoing message
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = r.MessageId,
+                ChannelId = conversationReply.ChannelId,
+                ConversationId = conversationReply.ConversationId,
+                Text = r.MessageText,
+                Tag = InterfaceMessage.TAG_SEARCH_USER,
+            }).ToList());
         }
 
         private async Task MirrorRepliesAsync(string mirrorConversationId, List<string> text)

@@ -73,7 +73,7 @@ namespace Jogl.Server.Slack
         {
             var client = _slackApiClient.WithAccessToken(channelAccessToken);
 
-            var history = await client.Conversations.Replies(channelId, threadId, limit: 10);
+            var history = await client.Conversations.Replies(channelId, threadId, limit: 20);
             return history.Messages.Where(m => ignoreIds == null || !ignoreIds.Contains(m.Ts)).Select(m => new MessageDTO(m.Ts, string.IsNullOrEmpty(m.BotId), m.Text)).ToList();
         }
 
