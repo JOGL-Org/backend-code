@@ -1,5 +1,6 @@
 ﻿using Azure.Search.Documents.Models;
 using Jogl.Server.AI.Agent.DTO;
+using Jogl.Server.AI.DTO;
 using Jogl.Server.Business;
 using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
@@ -32,7 +33,7 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<AgentResponse> GetInitialResponseAsync(IEnumerable<InputItem> messages, string? nodeId = default, string? interfaceType = default)
+        public async Task<AgentResponse> GetInitialResponseAsync(string message, string? nodeId = default, string? interfaceType = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
@@ -74,6 +75,8 @@ namespace Jogl.Server.AI.Agent
                 ExtractedConfiguration = "default or current",
                 Success = true
             };
+
+            List<InputItem> messages = [new InputItem { FromUser = true, Text = message }];
 
             var res = await _aiService.GetResponseAsync<PromptResult>(string.Format(queryPrompt.Value, JsonSerializer.Serialize(exampleResult)), messages, 0);
             if (!res.Success)
@@ -126,24 +129,27 @@ namespace Jogl.Server.AI.Agent
                 Repositories = resources[u.Document.Id].Where(r => r.Type == Data.ResourceType.Repository).Select(r => new
                 {
                     r.Title,
-                    Abstract = r.Data.Contains("Abstract") &&!r.Data["Abstract"].IsBsonNull ? r.Data["Abstract"].AsString : "",
+                    Abstract = r.Data.Contains("Abstract") && !r.Data["Abstract"].IsBsonNull ? r.Data["Abstract"].AsString : "",
                     Keywords = r.Data.Contains("Keywords") && !r.Data["Keywords"].IsBsonNull ? r.Data["Keywords"].AsString : "",
-                    Language = r.Data.Contains("Language") &&!r.Data["Language"].IsBsonNull? r.Data["Language"].AsString : "",
+                    Language = r.Data.Contains("Language") && !r.Data["Language"].IsBsonNull ? r.Data["Language"].AsString : "",
                 }),
                 Highlights = u.SemanticSearch.Captions
             }).ToList();
 
             var startRes = await _aiService.GetResponseAsync(string.Format(resultStartPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
+            messages.Add(new InputItem { FromUser = false, Text = startRes });
+
             var profileRes = new List<string>();
             foreach (var searchResult in searchResultData)
             {
-                var profileMatch = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
-                profileRes.Add(profileMatch);
+                var profileMatchRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
+                profileRes.Add(profileMatchRes);
             }
 
+            messages.AddRange(profileRes.Select(p => new InputItem { FromUser = false, Text = p }));
             var endRes = await _aiService.GetResponseAsync(string.Format(resultEndPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
 
-            return new AgentResponse { Text = [startRes,..profileRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
+            return new AgentResponse { Text = [startRes, .. profileRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
         }
 
         public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)
@@ -159,7 +165,7 @@ namespace Jogl.Server.AI.Agent
             if (messages.Last()?.Text == "*qwertyuiopqwertyuiop*")
                 return new AgentResponse(originalQuery);
 
-            var promptText = string.Format(prompt.Value, context);
+            var promptText = string.Format(prompt.Value, context, originalQuery);
             var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
             return new AgentResponse(response);
         }

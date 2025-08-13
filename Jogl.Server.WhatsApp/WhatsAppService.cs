@@ -1,6 +1,6 @@
 ﻿using Jogl.Server.WhatsApp.DTO;
 using Microsoft.Extensions.Configuration;
-using System.Threading.RateLimiting;
+using Microsoft.Extensions.Logging;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
@@ -9,27 +9,36 @@ namespace Jogl.Server.WhatsApp
     public class WhatsAppService : IWhatsAppService
     {
         private readonly IConfiguration _configuration;
-        public WhatsAppService(IConfiguration configuration)
+        private readonly ILogger<WhatsAppService> _logger;
+        public WhatsAppService(IConfiguration configuration, ILogger<WhatsAppService> logger)
         {
             _configuration = configuration;
+            _logger = logger;
+
             TwilioClient.Init(configuration["Twilio:AccountSID"], configuration["Twilio:AuthToken"]);
         }
 
-        public async Task<string> SendMessageAsync(string number, string message)
+        public async Task<Dictionary<string, string>> SendMessageAsync(string number, string message)
         {
-            var firstMessageId = string.Empty;
+            var messageToSend = message;
+            if (message.Length > 1600)
+            {
+                messageToSend = message.Substring(0, 1600);
+                _logger.LogWarning("Message was truncated to 1600 characters. Original message {message}", message);
+            }
+
+            var res = new Dictionary<string, string>();
             foreach (var chunk in SplitString(message, 1600))
             {
                 var msg = await MessageResource.CreateAsync(
-                  body: chunk,
-                  from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
-                  to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
+              body: chunk,
+              from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
+              to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
 
-                if (string.IsNullOrEmpty(firstMessageId))
-                    firstMessageId = msg.Sid;
+                res.Add(msg.Sid, chunk);
             }
 
-            return firstMessageId;
+            return res;
         }
 
         public async Task<string> GetMessageAsync(string number, string messageId)
@@ -38,13 +47,13 @@ namespace Jogl.Server.WhatsApp
             return msg?.Body;
         }
 
-        public async Task SendMessageButtonAsync(string number)
-        {
-            var msg = await MessageResource.CreateAsync(
-                     contentSid: "HX7dd2f66c5e458c96046cd4b721834aa2",
-                     from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
-                     to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
-        }
+        //public async Task SendMessageButtonAsync(string number)
+        //{
+        //    var msg = await MessageResource.CreateAsync(
+        //             contentSid: "HX7dd2f66c5e458c96046cd4b721834aa2",
+        //             from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
+        //             to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
+        //}
 
         private List<string> SplitString(string str, int maxChunkSize)
         {

@@ -12,8 +12,9 @@ namespace Jogl.Server.ConversationCoordinator.Services
             var result = new List<MessageResult>();
             foreach (var message in messages)
             {
-                var messageId = await whatsappService.SendMessageAsync(workspaceId, message);
-                result.Add(new MessageResult { MessageId = messageId, MessageText = message });
+                var messageResult = await whatsappService.SendMessageAsync(workspaceId, message);
+                result.AddRange(messageResult.Select(r => new MessageResult { MessageId = r.Key, MessageText = r.Value }));
+                Thread.Sleep(500);
             }
 
             return result;
@@ -21,7 +22,8 @@ namespace Jogl.Server.ConversationCoordinator.Services
 
         public async Task<string> StartIndicatorAsync(string workspaceId, string channelId, string conversationId)
         {
-            return await whatsappService.SendMessageAsync(workspaceId, $"Your query is being processed now, your results should be available in a few seconds");
+            var res = await whatsappService.SendMessageAsync(workspaceId, $"Your query is being processed now, your results should be available in a few seconds");
+            return res.Keys.Single();
         }
 
         public async Task StopIndicatorAsync(string workspaceId, string channelId, string conversationId, string indicatorId)

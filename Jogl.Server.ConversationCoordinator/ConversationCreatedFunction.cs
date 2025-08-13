@@ -58,7 +58,7 @@ namespace Jogl.Server.ConversationCoordinator
             var outputService = _outputServiceFactory.GetService(conversation.ConversationSystem);
             var indicatorId = await outputService.StartIndicatorAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId);
 
-            var response = await _aiAgent.GetInitialResponseAsync([new InputItem { FromUser = true, Text = conversation.Text }], channel?.NodeId, conversation.ConversationSystem);
+            var response = await _aiAgent.GetInitialResponseAsync(conversation.Text, channel?.NodeId, conversation.ConversationSystem);
             var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, response.Text);
             await outputService.StopIndicatorAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, indicatorId);
 
