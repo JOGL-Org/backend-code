@@ -16,7 +16,8 @@ namespace Jogl.Server.ConversationCoordinator.Services
                 result.Add(new MessageResult { MessageId = messageId, MessageText = message });
             }
 
-            //add followup prompt
+            //send followup message
+            Thread.Sleep(3 * 1000); //yeah I know
             await whatsappService.SendMessageButtonAsync(workspaceId);
 
             return result;
