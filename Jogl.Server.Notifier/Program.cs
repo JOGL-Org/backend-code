@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Jogl.Server.DB.Context;
 using Jogl.Server.Localization;
+using Jogl.Server.Email.Extensions;
+using Jogl.Server.Verification.Extensions;
 
 var host = new HostBuilder()
     //  .ConfigureFunctionsWorkerDefaults()
@@ -40,7 +42,6 @@ var host = new HostBuilder()
         services.AddTransient<IMembershipService, MembershipService>();
         services.AddTransient<IInvitationService, InvitationService>();
         services.AddTransient<IUserService, UserService>();
-        services.AddTransient<IUserVerificationService, UserVerificationService>();
         services.AddTransient<IDocumentService, DocumentService>();
         services.AddTransient<IImageService, ImageService>();
         services.AddTransient<INeedService, NeedService>();
@@ -56,14 +57,11 @@ var host = new HostBuilder()
         services.AddTransient<IEntityService, EntityService>();
         services.AddTransient<IFeedEntityService, FeedEntityService>();
 
-        //email
         services.AddSingleton<ILocalizationService, LocalizationService>();
-
-        //email
-        services.AddTransient<IEmailService, SendGridEmailService>();
-
-        //push notifications
         services.AddSingleton<IPushNotificationService, FirebasePushNotificationService>();
+
+        services.AddEmail();
+        services.AddVerification();
     })
     .Build();
 

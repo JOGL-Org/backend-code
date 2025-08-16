@@ -14,6 +14,7 @@ using Jogl.Server.API.Services;
 using Jogl.Server.GitHub;
 using static Duende.IdentityServer.Models.IdentityResources;
 using Microsoft.AspNet.SignalR;
+using Jogl.Server.Verification;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -83,7 +84,7 @@ namespace Jogl.Server.API.Controllers
         {
             var user = _userService.GetForEmail(model.Email);
             if (user == null)
-                return Ok(); //OK is returned here on purpose, as returning anything else exposes the API do data-mining practices
+                return Ok(); //OK is returned here on purpose, as returning anything else exposes data
 
             await _userService.StartOneTimeLoginAsync(model.Email);
             return Ok();

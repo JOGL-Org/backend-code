@@ -2,18 +2,11 @@ using AutoMapper;
 using Jogl.Server.API.Converters;
 using Jogl.Server.API.Mapping;
 using Jogl.Server.API.Middleware;
-using Jogl.Server.Auth;
-using Jogl.Server.OpenAlex;
-using Jogl.Server.Orcid;
-using Jogl.Server.PubMed;
 using Jogl.Server.GoogleAuth;
-using Jogl.Server.SemanticScholar;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using Polly;
-using Polly.Retry;
 using Jogl.Server.LinkedIn;
 using Jogl.Server.API.Services;
 using Jogl.Server.Images;
@@ -27,6 +20,7 @@ using Jogl.Server.DB.Extensions;
 using Jogl.Server.Lix;
 using Jogl.Server.Business.Extensions;
 using Jogl.Server.DB.Context;
+using Jogl.Server.Verification.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +61,7 @@ builder.Services.AddBusiness();
 builder.Services.AddRepositories();
 builder.Services.AddSearch();
 builder.Services.AddInitialization();
+builder.Services.AddVerification();
 
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();

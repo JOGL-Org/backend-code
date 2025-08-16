@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Jogl.Server.AI.Agent.Extensions;
 using Jogl.Server.ConversationCoordinator.Extensions;
+using Jogl.Server.Email.Extensions;
+using Jogl.Server.Verification.Extensions;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -24,6 +26,8 @@ var host = new HostBuilder()
 
         services.AddRepositories();
         services.AddAIAgent();
+        services.AddVerification();
+        services.AddEmail();
         services.AddConversationCoordinator(context.Configuration);
     })
     .Build();

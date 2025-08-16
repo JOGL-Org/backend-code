@@ -38,6 +38,7 @@
     <ProjectReference Include="..\Jogl.Server.GoogleAuth\Jogl.Server.GoogleAuth.csproj" />
     <ProjectReference Include="..\Jogl.Server.OpenAlex\Jogl.Server.OpenAlex.csproj" />
     <ProjectReference Include="..\Jogl.Server.Sockets\Jogl.Server.Sockets.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Verification\Jogl.Server.Verification.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,7 @@ using Jogl.Server.Email;
 using Jogl.Server.Localization;
 using Jogl.Server.PushNotifications;
 using Jogl.Server.URL;
+using Jogl.Server.Verification;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

@@ -14,6 +14,7 @@ using Jogl.Server.OpenAlex;
 using Jogl.Server.Orcid;
 using Jogl.Server.PubMed;
 using Jogl.Server.SemanticScholar;
+using Jogl.Server.Verification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

@@ -12,20 +12,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.ConversationCoordinator
 {
-    public class ConversationReplyCreatedFunction
+    public class ConversationReplyCreatedFunction : BaseFunction
     {
         private readonly IAgent _aiAgent;
-        private readonly IOutputServiceFactory _outputServiceFactory;
         private readonly IInterfaceMessageRepository _interfaceMessageRepository;
-        private readonly IConfiguration _configuration;
         private readonly ILogger<ConversationReplyCreatedFunction> _logger;
 
-        public ConversationReplyCreatedFunction(IAgent aiAgent, IOutputServiceFactory outputServiceFactory, IInterfaceMessageRepository interfaceMessageRepository, IConfiguration configuration, ILogger<ConversationReplyCreatedFunction> logger)
+        public ConversationReplyCreatedFunction(IAgent aiAgent, IOutputServiceFactory outputServiceFactory, IInterfaceMessageRepository interfaceMessageRepository, IConfiguration configuration, ILogger<ConversationReplyCreatedFunction> logger) : base(outputServiceFactory, configuration)
         {
             _aiAgent = aiAgent;
-            _outputServiceFactory = outputServiceFactory;
             _interfaceMessageRepository = interfaceMessageRepository;
-            _configuration = configuration;
             _logger = logger;
         }
 
@@ -73,12 +69,6 @@ namespace Jogl.Server.ConversationCoordinator
                 Text = r.MessageText,
                 Tag = InterfaceMessage.TAG_SEARCH_USER,
             }).ToList());
-        }
-
-        private async Task MirrorRepliesAsync(string mirrorConversationId, List<string> text)
-        {
-            var outputService = _outputServiceFactory.GetService(Const.TYPE_SLACK);
-            var ids = await outputService.SendMessagesAsync(_configuration["Slack:Mirror:WorkspaceID"], _configuration["Slack:Mirror:ChannelID"], mirrorConversationId, text);
         }
     }
 }

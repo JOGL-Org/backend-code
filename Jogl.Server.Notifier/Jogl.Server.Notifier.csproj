@@ -44,6 +44,7 @@
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
     <ProjectReference Include="..\Jogl.Server.Localization\Jogl.Server.Localization.csproj" />
     <ProjectReference Include="..\Jogl.Server.PushNotifications\Jogl.Server.PushNotifications.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Verification\Jogl.Server.Verification.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

@@ -30,7 +30,6 @@ namespace Jogl.Server.Business.Extensions
             serviceCollection.AddTransient<IMembershipService, MembershipService>();
             serviceCollection.AddTransient<IInvitationService, InvitationService>();
             serviceCollection.AddTransient<IUserService, UserService>();
-            serviceCollection.AddTransient<IUserVerificationService, UserVerificationService>();
             serviceCollection.AddTransient<IDocumentService, DocumentService>();
             serviceCollection.AddTransient<IImageService, ImageService>();
             serviceCollection.AddTransient<INeedService, NeedService>();
