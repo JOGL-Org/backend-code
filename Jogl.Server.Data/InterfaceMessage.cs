@@ -5,7 +5,9 @@ namespace Jogl.Server.Data
     [BsonIgnoreExtraElements]
     public class InterfaceMessage : Entity
     {
-        public const string TAG_ONBOARDING = "ONBOARDING";
+        public const string TAG_ONBOARDING_EMAIL_RECEIVED = "ONBOARDING_EMAIL_RECEIVED";
+        public const string TAG_ONBOARDING_CODE_RECEIVED = "ONBOARDING_CODE_RECEIVED";
+        public const string TAG_ONBOARDING_COMPLETED = "ONBOARDING_COMPLETED";
         public const string TAG_SEARCH_USER = "TAG_SEARCH_USER";
 
         public string MessageId { get; set; }

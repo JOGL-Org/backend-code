@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Jogl.Server.AI;
 using Jogl.Server.AI.Agent;
 using Jogl.Server.Conversation.Data;
 using Jogl.Server.ConversationCoordinator.Services;
@@ -62,6 +63,9 @@ namespace Jogl.Server.ConversationCoordinator
                 case InterfaceUserOnboardingStatus.CodePending:
                     await ProcessOnboardingCodeAsync(conversation, interfaceUser);
                     break;
+                case InterfaceUserOnboardingStatus.CurrentWorkPending:
+                    await ProcessOnboardingWorkAsync(conversation, interfaceUser);
+                    break;
                 default:
                     await ProcessConversationAsync(conversation);
                     break;
@@ -94,11 +98,22 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             await _userVerificationService.CreateAsync(user, VerificationAction.Verify, "", true);
-            await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"We need to verify your email. A code has just been sent to {user.Email}, please share it back with me in this chat."]);
+            var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"We need to verify your email. A code has just been sent to {user.Email}, please share it back with me in this chat."]);
 
             interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.CodePending;
             interfaceUser.UserId = user.Id.ToString();
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
+
+            //log outgoing messages
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = r.MessageId,
+                ChannelId = conversation.WorkspaceId,
+                ConversationId = conversation.ConversationId,
+                Text = r.MessageText,
+                Tag = InterfaceMessage.TAG_ONBOARDING_EMAIL_RECEIVED,
+            }).ToList());
         }
 
         public async Task ProcessOnboardingCodeAsync(ConversationCreated conversation, InterfaceUser interfaceUser)
@@ -111,21 +126,66 @@ namespace Jogl.Server.ConversationCoordinator
             switch (verificationResult.Status)
             {
                 case VerificationStatus.Invalid:
-
                     await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, ["It seems that the code is invalid. Please make sure you are using the verification code from JOGL."]);
                     return;
                 case VerificationStatus.Expired:
                     await _userVerificationService.CreateAsync(user, VerificationAction.Verify, "", true);
                     await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, ["It seems that the code has expired. We just sent you a new code to verify yourself with."]);
                     return;
-                default:
-                    var nodeName = GetNodeText(user.Id.ToString());
-                    await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"Your email is confirmed, and we can see that you are a member of {nodeName}. You can now use this conversation agent."]);
-
-                    interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.Onboarded;
-                    await _interfaceUserRepository.UpdateAsync(interfaceUser);
-                    break;
             }
+
+            var nodeName = GetNodeText(user.Id.ToString());
+            var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"We have retrieved your profile: {user.Bio}", $"Please tell us what you're currently working on."]);
+
+            interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.CurrentWorkPending;
+            await _interfaceUserRepository.UpdateAsync(interfaceUser);
+
+            //log outgoing messages
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = r.MessageId,
+                ChannelId = conversation.WorkspaceId,
+                ConversationId = conversation.ConversationId,
+                Text = r.MessageText,
+                Tag = InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED,
+            }).ToList());
+        }
+
+        public async Task ProcessOnboardingWorkAsync(ConversationCreated conversation, InterfaceUser interfaceUser)
+        {
+            var outputService = _outputServiceFactory.GetService(conversation.ConversationSystem);
+            var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == conversation.WorkspaceId);
+
+            var code = conversation.Text;
+            var user = _userRepository.Get(interfaceUser.UserId);
+
+            var lastMessageId = _interfaceMessageRepository.Get(m => m.ChannelId == conversation.ChannelId && m.Tag == InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED).MessageId;
+            var messages = await outputService.LoadConversationAsync(conversation.WorkspaceId, conversation.ChannelId, lastMessageId);
+            if (!messages.Last().FromUser) //sometimes, the whatsapp API doesn't load the latest message
+                messages.Add(new InputItem { FromUser = true, Text = conversation.Text });
+            var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = "Hello" }, .. messages], user.Bio);
+            if (response.Stop)
+            {
+                user.Current = response.Output;
+                await _userRepository.UpdateAsync(user);
+
+                interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.Onboarded;
+                await _interfaceUserRepository.UpdateAsync(interfaceUser);
+            }
+
+            var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, response.Text);
+
+            //log outgoing messages
+            await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = r.MessageId,
+                ChannelId = conversation.WorkspaceId,
+                ConversationId = conversation.ConversationId,
+                Text = r.MessageText,
+                Tag = InterfaceMessage.TAG_ONBOARDING_COMPLETED,
+            }).ToList());
         }
 
         private string GetNodeText(string userId)
@@ -141,7 +201,7 @@ namespace Jogl.Server.ConversationCoordinator
                 case 1:
                     return nodes.Single().Title;
                 default:
-                    return $"{nodes.Count} organizations";
+                    return $"{nodes.Count} communities";
             }
         }
 

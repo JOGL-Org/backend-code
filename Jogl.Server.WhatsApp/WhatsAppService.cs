@@ -65,25 +65,37 @@ namespace Jogl.Server.WhatsApp
 
         public async Task<List<MessageDTO>> GetConversationAsync(string number, string firstMessageId, IEnumerable<string>? ignoreIds = null)
         {
-            var messages = await MessageResource.ReadAsync(
-       from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
-       to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"),
-       limit: 20
-   );
+            var twilioNumber = $"whatsapp:{_configuration["Twilio:Number"]}";
+            var userNumber = $"whatsapp:{number}";
 
-            // Twilio returns messages newest first → reverse to chronological order
-            var chronological = messages.Reverse().ToList();
+            // Get messages sent from your system to user
+            var outboundMessages = await MessageResource.ReadAsync(
+                from: new Twilio.Types.PhoneNumber(twilioNumber),
+                to: new Twilio.Types.PhoneNumber(userNumber),
+                limit: 20
+            );
 
+            // Get messages sent from user to your system
+            var inboundMessages = await MessageResource.ReadAsync(
+                from: new Twilio.Types.PhoneNumber(userNumber),
+                to: new Twilio.Types.PhoneNumber(twilioNumber),
+                limit: 20
+            );
+
+            // Combine and sort by date
+            var allMessages = outboundMessages.Concat(inboundMessages)
+                .OrderBy(m => m.DateSent)
+                .ToList();
+
+            // Rest of your filtering logic...
             var result = new List<MessageDTO>();
             bool inRange = false;
 
-            foreach (var m in chronological)
+            foreach (var m in allMessages)
             {
-                // Skip if this message is in ignore list
                 if (ignoreIds != null && ignoreIds.Contains(m.Sid))
                     continue;
 
-                // Wait until we reach the firstMessageId
                 if (!inRange)
                 {
                     if (m.Sid == firstMessageId)
@@ -94,12 +106,7 @@ namespace Jogl.Server.WhatsApp
                     continue;
                 }
 
-                // Already in range → add message
                 result.Add(new MessageDTO(m.Sid, m.Direction == MessageResource.DirectionEnum.Inbound, m.Body));
-
-                // Stop when next inbound message is found (but include it)
-                if (m.Direction == MessageResource.DirectionEnum.Inbound && m.Sid != firstMessageId)
-                    break;
             }
 
             return result;

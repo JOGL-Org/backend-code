@@ -1,6 +1,5 @@
 ﻿using Azure.Search.Documents.Models;
 using Jogl.Server.AI.Agent.DTO;
-using Jogl.Server.AI.DTO;
 using Jogl.Server.Business;
 using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
@@ -168,6 +167,40 @@ namespace Jogl.Server.AI.Agent
             var promptText = string.Format(prompt.Value, context, originalQuery);
             var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
             return new AgentResponse(response);
+        }
+
+        public async Task<AgentConversationResponse> GetOnboardingResponseAsync(IEnumerable<InputItem> messages, string bio)
+        {
+            var stopPhrase = "Alright, let’s move on then";
+
+            var conversationPromptKey = $"USER_SEARCH_ONBOARDING_CONVERSATION_PROMPT";
+            var conversationPrompt = _systemValueRepository.Get(sv => sv.Key == conversationPromptKey);
+            if (conversationPrompt == null)
+            {
+                _logger.LogError("{promptKey} system value missing", conversationPromptKey);
+                return new AgentConversationResponse("An error has ocurred", false);
+            }
+
+            var conversationPromptText = string.Format(conversationPrompt.Value, bio, stopPhrase);
+            var response = await _aiService.GetResponseAsync(conversationPromptText, messages, 0.5m, 8192);
+
+            if (!response.Contains(stopPhrase))
+            {
+                return new AgentConversationResponse(response, false);
+            }
+
+            var outputPromptKey = $"USER_SEARCH_ONBOARDING_OUTPUT_PROMPT";
+            var outputPrompt = _systemValueRepository.Get(sv => sv.Key == outputPromptKey);
+            if (outputPrompt == null)
+            {
+                _logger.LogError("{promptKey} system value missing", outputPromptKey);
+                return new AgentConversationResponse("An error has ocurred", false);
+            }
+
+            var outputPromptText = outputPrompt.Value;
+            var outputResponse = await _aiService.GetResponseAsync(outputPromptText, messages, 0.5m, 8192);
+
+            return new AgentConversationResponse(response, true, outputResponse);
         }
     }
 }

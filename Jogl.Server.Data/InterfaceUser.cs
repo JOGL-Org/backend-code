@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.Data
 {
-    public enum InterfaceUserOnboardingStatus { EmailPending, CodePending, Onboarded }
+    public enum InterfaceUserOnboardingStatus { EmailPending, CodePending, CurrentWorkPending, Onboarded }
 
     [BsonIgnoreExtraElements]
     public class InterfaceUser : Entity

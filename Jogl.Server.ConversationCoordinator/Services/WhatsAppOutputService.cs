@@ -34,7 +34,7 @@ namespace Jogl.Server.ConversationCoordinator.Services
         public async Task<List<InputItem>> LoadConversationAsync(string workspaceId, string channelId, string conversationId)
         {
             var messages = await whatsappService.GetConversationAsync(channelId, conversationId);
-            return messages.Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }).ToList();
+            return messages.Skip(1).Select(m => new InputItem { FromUser = m.FromUser, Text = m.Text }).ToList();
         }
     }
 }
