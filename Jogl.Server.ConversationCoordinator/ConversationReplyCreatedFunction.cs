@@ -31,7 +31,7 @@ namespace Jogl.Server.ConversationCoordinator
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)
         {
-            var conversationReply = JsonSerializer.Deserialize<ConversationReplyCreated>(message.Body.ToString());
+            var conversationReply = JsonSerializer.Deserialize<Message>(message.Body.ToString());
             var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == conversationReply.ChannelId && m.MessageId == conversationReply.ConversationId);
             if (rootInterfaceMessage?.Context == null)
                 return;

@@ -5,6 +5,7 @@ using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Polly;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
@@ -173,7 +174,7 @@ namespace Jogl.Server.AI.Agent
         {
             var stopPhrase = "Alright, let’s move on then";
 
-            var conversationPromptKey = $"USER_SEARCH_ONBOARDING_CONVERSATION_PROMPT";
+            var conversationPromptKey = $"ONBOARDING_CONVERSATION_PROMPT";
             var conversationPrompt = _systemValueRepository.Get(sv => sv.Key == conversationPromptKey);
             if (conversationPrompt == null)
             {
@@ -189,7 +190,7 @@ namespace Jogl.Server.AI.Agent
                 return new AgentConversationResponse(response, false);
             }
 
-            var outputPromptKey = $"USER_SEARCH_ONBOARDING_OUTPUT_PROMPT";
+            var outputPromptKey = $"ONBOARDING_OUTPUT_PROMPT";
             var outputPrompt = _systemValueRepository.Get(sv => sv.Key == outputPromptKey);
             if (outputPrompt == null)
             {
@@ -201,6 +202,20 @@ namespace Jogl.Server.AI.Agent
             var outputResponse = await _aiService.GetResponseAsync(outputPromptText, messages, 0.5m, 8192);
 
             return new AgentConversationResponse(response, true, outputResponse);
+        }
+
+        public async Task<AgentResponse> GetFirstSearchResponseAsync(string current)
+        {
+            var promptKey = $"FIRST_SEARCH_PROMPT";
+            var prompt = _systemValueRepository.Get(sv => sv.Key == promptKey);
+            if (prompt == null)
+            {
+                _logger.LogError("{promptKey} system value missing", promptKey);
+                return new AgentResponse("An error has ocurred");
+            }
+
+            var response = await _aiService.GetResponseAsync(prompt.Value, [new InputItem { FromUser = true, Text = current }], 0.5m, 8192);
+            return new AgentResponse(response);
         }
     }
 }

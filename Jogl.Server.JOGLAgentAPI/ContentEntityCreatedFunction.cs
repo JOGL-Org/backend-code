@@ -38,7 +38,7 @@ namespace Jogl.Server.Notifier.Discussion
                 return;
 
 
-            await _serviceBusProxy.SendAsync(new ConversationReplyCreated
+            await _serviceBusProxy.SendAsync(new Message
             {
                 ConversationSystem = Const.TYPE_JOGL,
                 WorkspaceId = contentEntity.FeedId,

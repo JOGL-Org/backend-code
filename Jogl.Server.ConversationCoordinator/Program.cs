@@ -8,6 +8,7 @@ using Jogl.Server.AI.Agent.Extensions;
 using Jogl.Server.ConversationCoordinator.Extensions;
 using Jogl.Server.Email.Extensions;
 using Jogl.Server.Verification.Extensions;
+using Jogl.Server.Storage.Extensions;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -24,6 +25,7 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
 
+        services.AddText();
         services.AddRepositories();
         services.AddAIAgent();
         services.AddVerification();

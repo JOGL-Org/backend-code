@@ -45,7 +45,7 @@ public class WhatsAppController : ControllerBase
         var from = payload.From.Replace("whatsapp:", string.Empty);
 
         //loads latest message 
-        await _serviceBusProxy.SendAsync(new ConversationCreated
+        await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_WHATSAPP,
             WorkspaceId = from,
@@ -61,7 +61,7 @@ public class WhatsAppController : ControllerBase
         var from = payload.From.Replace("whatsapp:", string.Empty);
 
         //loads latest message 
-        await _serviceBusProxy.SendAsync(new ConversationReplyCreated
+        await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_WHATSAPP,
             WorkspaceId = from,

@@ -31,7 +31,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
 
     public async Task HandleMessageAsync(MessageEvent slackEvent)
     {
-        await _serviceBusProxy.SendAsync(new ConversationCreated
+        await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_SLACK,
             WorkspaceId = slackEvent.Team,
@@ -44,7 +44,7 @@ public class MessageHandler : IEventHandler<MessageEvent>
 
     public async Task HandleReplyAsync(MessageEvent slackEvent)
     {
-        await _serviceBusProxy.SendAsync(new ConversationReplyCreated
+        await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_SLACK,
             WorkspaceId = slackEvent.Team,

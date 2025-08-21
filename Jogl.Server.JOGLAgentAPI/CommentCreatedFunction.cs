@@ -36,7 +36,7 @@ namespace Jogl.Server.ConversationCoordinator
             if (channel?.Key != "USER_SEARCH")
                 return;
 
-            await _serviceBusProxy.SendAsync(new ConversationReplyCreated
+            await _serviceBusProxy.SendAsync(new Message
             {
                 ConversationSystem = Const.TYPE_JOGL,
                 WorkspaceId = comment.FeedId,
