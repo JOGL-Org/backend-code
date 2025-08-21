@@ -46,6 +46,7 @@
     <ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />
     <ProjectReference Include="..\Jogl.Server.Slack\Jogl.Server.Slack.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Text\Jogl.Server.Text.csproj" />
     <ProjectReference Include="..\Jogl.Server.Verification\Jogl.Server.Verification.csproj" />
     <ProjectReference Include="..\Jogl.Server.WhatsApp\Jogl.Server.WhatsApp.csproj" />
   </ItemGroup>

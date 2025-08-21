@@ -6,7 +6,7 @@ using Jogl.Server.Conversation.Data;
 using Jogl.Server.ConversationCoordinator.Services;
 using Jogl.Server.Data;
 using Jogl.Server.DB;
-using Jogl.Server.Email;
+using Jogl.Server.Text;
 using Jogl.Server.Verification;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
@@ -24,10 +24,10 @@ namespace Jogl.Server.ConversationCoordinator
         private readonly INodeRepository _nodeRepository;
         private readonly IMembershipRepository _membershipRepository;
         private readonly IUserVerificationService _userVerificationService;
-        private readonly IEmailService _emailService;
+        private readonly ITextService _textService;
         private readonly ILogger<ConversationCreatedFunction> _logger;
 
-        public ConversationCreatedFunction(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, IEmailService emailService, ILogger<ConversationCreatedFunction> logger) : base(outputServiceFactory, configuration)
+        public ConversationCreatedFunction(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, ITextService textService, ILogger<ConversationCreatedFunction> logger) : base(outputServiceFactory, configuration)
         {
             _aiAgent = aiAgent;
             _interfaceChannelRepository = interfaceChannelRepository;
@@ -37,7 +37,7 @@ namespace Jogl.Server.ConversationCoordinator
             _nodeRepository = nodeRepository;
             _membershipRepository = membershipRepository;
             _userVerificationService = userVerificationService;
-            _emailService = emailService;
+            _textService = textService;
             _logger = logger;
         }
 
@@ -50,8 +50,6 @@ namespace Jogl.Server.ConversationCoordinator
             var conversation = JsonSerializer.Deserialize<ConversationCreated>(message.Body.ToString());
 
             var interfaceUser = _interfaceUserRepository.Get(iu => iu.ExternalId == conversation.UserId);
-
-
             switch (interfaceUser?.OnboardingStatus)
             {
                 case null:
@@ -135,7 +133,7 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             var nodeName = GetNodeText(user.Id.ToString());
-            var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"We have retrieved your profile: {user.Bio}", $"Please tell us what you're currently working on."]);
+            var messageResultData = await outputService.SendMessagesAsync(conversation.WorkspaceId, conversation.ChannelId, conversation.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"Here is a quick bio based on the data we found about your experience: {_textService.StripHtml(user.Bio)}", $"Please tell us what you're currently working on."]);
 
             interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.CurrentWorkPending;
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
