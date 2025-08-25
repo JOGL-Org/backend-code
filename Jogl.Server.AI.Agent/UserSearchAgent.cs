@@ -114,7 +114,7 @@ namespace Jogl.Server.AI.Agent
             //get text responses
             var searchResultData = searchResults.Select(u => new
             {
-                UserURL = $"<{_configuration["App:URL"]}/user/{u.Document.Id}",
+                UserURL = $"{_configuration["App:URL"]}/user/{u.Document.Id}",
                 //Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
                 SearchScore = u.SemanticSearch.RerankerScore,
