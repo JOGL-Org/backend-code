@@ -142,7 +142,7 @@ namespace Jogl.Server.AI.Agent
             var profileRes = new List<string>();
             foreach (var searchResult in searchResultData)
             {
-                var profileMatchRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResult)), messages, 0.5m, 8192);
+                var profileMatchRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery), [new InputItem { FromUser = true, Text = JsonSerializer.Serialize(searchResult) }], 0.5m, 8192);
                 profileRes.Add(profileMatchRes);
             }
 
