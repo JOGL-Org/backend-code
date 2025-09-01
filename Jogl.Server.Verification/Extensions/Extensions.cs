@@ -6,7 +6,7 @@ namespace Jogl.Server.Verification.Extensions
     {
         public static void AddVerification(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<IUserVerificationService, UserVerificationService>();
+            serviceCollection.AddTransient<IUserVerificationService, UserVerificationService>();
         }
     }
 }
