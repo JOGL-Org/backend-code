@@ -4,15 +4,19 @@ using Jogl.Server.Data;
 using GenerativeAI;
 using GenerativeAI.Types;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.AI
 {
     public class GeminiAIService : IAIService
     {
         private readonly IConfiguration _configuration;
-        public GeminiAIService(IConfiguration configuration)
+        private readonly ILogger<GeminiAIService> _logger;
+
+        public GeminiAIService(IConfiguration configuration, ILogger<GeminiAIService> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
 
@@ -68,8 +72,8 @@ namespace Jogl.Server.AI
         {
             var client = new GoogleAi(_configuration["Gemini:APIKey"]);
 
-            var googleModel = client.CreateGenerativeModel("models/gemini-2.0-flash-thinking-exp-1219");
-            var response = await googleModel.GenerateContentAsync(new GenerativeAI.Types.GenerateContentRequest
+            var googleModel = client.CreateGenerativeModel("models/gemini-2.5-flash");
+            var response = await googleModel.GenerateContentAsync(new GenerateContentRequest
             {
                 SystemInstruction = new Content { Parts = [new Part(prompt)] },
                 Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList(),
@@ -78,7 +82,7 @@ namespace Jogl.Server.AI
             if (string.IsNullOrEmpty(response.Text))
                 throw new Exception($"Gemini request failed");
 
-            return response.Text();
+            return response.Text().Trim();
         }
 
         public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024)
@@ -96,7 +100,15 @@ namespace Jogl.Server.AI
                 throw new Exception($"Claude request failed for feed prompt");
 
             var responseText = response.ToString().Replace("```", string.Empty).Replace("json", string.Empty);
-            return JsonSerializer.Deserialize<T>(responseText);
+            try
+            {
+                return JsonSerializer.Deserialize<T>(responseText);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to deserialize response: {response}", responseText);
+                throw;
+            }
         }
 
         public async Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity

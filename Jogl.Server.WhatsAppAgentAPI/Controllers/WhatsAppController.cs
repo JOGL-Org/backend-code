@@ -1,19 +1,28 @@
-﻿using Jogl.Server.Conversation.Data;
+﻿using Jogl.Server.AI;
+using Jogl.Server.Conversation.Data;
+using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.ServiceBus;
+using Jogl.Server.WhatsApp;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("/")]
 public class WhatsAppController : ControllerBase
 {
+    private readonly IAIService _aiService;
     private readonly IInterfaceMessageRepository _interfaceMessageRepository;
+    private readonly ISystemValueRepository _systemValueRepository;
+    private readonly IWhatsAppService _whatsappService;
     private readonly IServiceBusProxy _serviceBusProxy;
     private readonly ILogger<WhatsAppController> _logger;
 
-    public WhatsAppController(IInterfaceMessageRepository interfaceMessageRepository, IServiceBusProxy serviceBusProxy, ILogger<WhatsAppController> logger)
+    public WhatsAppController(IAIService aiService, IInterfaceMessageRepository interfaceMessageRepository, ISystemValueRepository systemValueRepository, IWhatsAppService whatsAppService, IServiceBusProxy serviceBusProxy, ILogger<WhatsAppController> logger)
     {
+        _aiService = aiService;
         _interfaceMessageRepository = interfaceMessageRepository;
+        _systemValueRepository = systemValueRepository;
+        _whatsappService = whatsAppService;
         _serviceBusProxy = serviceBusProxy;
         _logger = logger;
     }
@@ -23,20 +32,38 @@ public class WhatsAppController : ControllerBase
     public async Task<IActionResult> ReceiveMessage([FromForm] TwilioMessage payload)
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
-        if (!string.IsNullOrEmpty(payload.OriginalRepliedMessageSid))
-        {
-            var originalMessage = _interfaceMessageRepository.Get(im => im.MessageId == payload.OriginalRepliedMessageSid);
-            if (originalMessage == null)
-            {
-                _logger.LogError("No reference message found in data for message id {originalMessageId}", payload.OriginalRepliedMessageSid);
-                return Ok();
-            }
 
-            await SendReply(payload, originalMessage.ConversationId);
+        //loads latest message
+        var rootMessage = _interfaceMessageRepository
+            .Query(im => im.ChannelId == from && im.Tag == InterfaceMessage.TAG_SEARCH_USER)
+            .Sort(Jogl.Server.Data.Util.SortKey.CreatedDate, false)
+            .Page(1, 1)
+            .ToList()
+            .SingleOrDefault();
+
+        if (rootMessage == null)
+        {
+            await SendNewConversation(payload);
             return Ok();
         }
 
-        await SendNewConversation(payload);
+        var msgs = await _whatsappService.GetConversationAsync(from, rootMessage.MessageId);
+        var prompt = _systemValueRepository.Get(sv => sv.Key == "ROUTER_PROMPT");
+        if (prompt == null)
+        {
+            _logger.LogError("ROUTER_PROMPT system value missing");
+            return UnprocessableEntity();
+        }
+
+        _logger.LogInformation("{payload}", payload.Body);
+        var type = await _aiService.GetResponseAsync(prompt.Value, [.. msgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], 0);
+        _logger.LogInformation("Identified as {type}", type);
+
+        if (type == "deepdive")
+            await SendReply(payload, rootMessage);
+        else
+            await SendNewConversation(payload);
+
         return Ok();
     }
 
@@ -56,7 +83,7 @@ public class WhatsAppController : ControllerBase
         }, "conversation-created");
     }
 
-    private async Task SendReply(TwilioMessage payload, string conversationId)
+    private async Task SendReply(TwilioMessage payload, InterfaceMessage message)
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
 
@@ -66,7 +93,7 @@ public class WhatsAppController : ControllerBase
             ConversationSystem = Const.TYPE_WHATSAPP,
             WorkspaceId = from,
             ChannelId = from,
-            ConversationId = conversationId,
+            ConversationId = message.ConversationId,
             Text = payload.Body,
             UserId = from,
             MessageId = payload.MessageSid
