@@ -50,7 +50,6 @@ namespace Jogl.Server.Business
 
             var id = await _feedRepository.CreateAsync(feed);
             user.Id = ObjectId.Parse(id);
-            user.FeedId = id;
 
             if (!string.IsNullOrEmpty(password))
             {

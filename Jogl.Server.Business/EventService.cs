@@ -42,7 +42,7 @@ namespace Jogl.Server.Business
             //mark feed write
             await _userFeedRecordRepository.SetFeedWrittenAsync(ev.CreatedByUserId, id, DateTime.UtcNow);
 
-            //create document
+            //create event
             ev.Id = ObjectId.Parse(id);
             ev.UpdatedUTC = ev.CreatedUTC; //the purpose of this is to always have a value in the UpdatedUTC field, so that sorting by last update works
 
@@ -203,7 +203,7 @@ namespace Jogl.Server.Business
             var entityIds = GetFeedEntityIdsForNode(nodeId);
 
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();
-            var events=_eventRepository
+            var events = _eventRepository
                     .QueryWithAttendanceData(null, currentUserId)
                     .Filter(e => filter != FeedEntityFilter.SharedWithUser || e.Attendances.Any())
                     .Filter(e => entityIds.Contains(e.CommunityEntityId))
@@ -291,8 +291,11 @@ namespace Jogl.Server.Business
         public async Task DeleteAsync(string eventId)
         {
             var ev = _eventRepository.Get(eventId);
-            var externalCalendarId = await _calendarService.GetJoglCalendarAsync();
-            await _calendarService.DeleteEventAsync(externalCalendarId, ev.ExternalId);
+            if (ev != null)
+            {
+                var externalCalendarId = await _calendarService.GetJoglCalendarAsync();
+                await _calendarService.DeleteEventAsync(externalCalendarId, ev.ExternalId);
+            }
 
             var attendances = _eventAttendanceRepository.List(a => a.EventId == eventId && !a.Deleted);
             await _notificationService.NotifyEventInvitesWithdrawAsync(attendances);
@@ -464,7 +467,8 @@ namespace Jogl.Server.Business
             {
                 attendance.UserEmail = null;
                 attendance.UserId = user.Id.ToString();
-            };
+            }
+            ;
 
             return _eventAttendanceRepository.Get(a => a.EventId == attendance.EventId && a.UserEmail == attendance.UserEmail && a.UserId == attendance.UserId && a.CommunityEntityId == attendance.CommunityEntityId && !a.Deleted);
         }
@@ -664,27 +668,6 @@ namespace Jogl.Server.Business
         }
         private class EventAttendanceEqualityComparer : IEqualityComparer<EventAttendance>
         {
-            // Constructor
-            //public EventAttendanceEqualityComparer(Expression<Func<T, TKey>> getKey)
-            //        {
-            //            _KeyExpr = getKey;
-            //            _CompiledFunc = _KeyExpr.Compile();
-            //        }
-
-            //        public int Compare(T obj1, T obj2)
-            //        {
-            //            return Comparer<TKey>.Default.Compare(_CompiledFunc(obj1), _CompiledFunc(obj2));
-            //        }
-
-            //        public bool Equals(T obj1, T obj2)
-            //        {
-            //            return EqualityComparer<TKey>.Default.Equals(_CompiledFunc(obj1), _CompiledFunc(obj2));
-            //        }
-
-            //        public int GetHashCode(T obj)
-            //        {
-            //            return EqualityComparer<TKey>.Default.GetHashCode(_CompiledFunc(obj));
-            //        }
             public bool Equals(EventAttendance? x, EventAttendance? y)
             {
                 return string.Equals(x.EventId, y.EventId, StringComparison.CurrentCultureIgnoreCase)
@@ -695,7 +678,12 @@ namespace Jogl.Server.Business
 
             public int GetHashCode([DisallowNull] EventAttendance obj)
             {
-                return obj.GetHashCode();
+                return HashCode.Combine(
+             obj.EventId?.ToLowerInvariant(),
+             obj.UserEmail?.ToLowerInvariant(),
+             obj.UserId?.ToLowerInvariant(),
+             obj.CommunityEntityId?.ToLowerInvariant()
+         );
             }
         }
     }
