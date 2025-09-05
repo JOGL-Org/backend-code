@@ -22,7 +22,12 @@ var host = Host.CreateDefaultBuilder()
 
 // Resolve and use services
 var app = host.Services.GetRequiredService<IEventService>();
-await app.DeleteAsync("682b500d6363951c53aac2b2");
+await app.DeleteAsync("68babc169c330887f3ad983b");
+await app.DeleteAsync("68babe2cde137e0e9c565902");
+await app.DeleteAsync("68b001ea3f34ae148de73453");
+await app.DeleteAsync("68b001f03f34ae148de73454");
+await app.DeleteAsync("68b997289c330887f3ad9808");
+await app.DeleteAsync("68b9995c9c330887f3ad9824");
 
 await host.StopAsync();
 host.Dispose();
