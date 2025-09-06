@@ -7,7 +7,7 @@ namespace Jogl.Server.WhatsApp.Extensions
     {
         public static void AddWhatsApp(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            serviceCollection.AddSingleton<IWhatsAppService, WhatsAppService>();
+            serviceCollection.AddSingleton<IWhatsAppService, TwilioWhatsAppService>();
         }
     }
 }

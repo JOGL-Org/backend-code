@@ -6,11 +6,11 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace Jogl.Server.WhatsApp
 {
-    public class WhatsAppService : IWhatsAppService
+    public class TwilioWhatsAppService : IWhatsAppService
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogger<WhatsAppService> _logger;
-        public WhatsAppService(IConfiguration configuration, ILogger<WhatsAppService> logger)
+        private readonly ILogger<TwilioWhatsAppService> _logger;
+        public TwilioWhatsAppService(IConfiguration configuration, ILogger<TwilioWhatsAppService> logger)
         {
             _configuration = configuration;
             _logger = logger;

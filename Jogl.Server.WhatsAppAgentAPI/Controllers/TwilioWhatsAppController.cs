@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("/")]
-public class WhatsAppController : ControllerBase
+public class TwilioWhatsAppController : ControllerBase
 {
     private readonly IAIService _aiService;
     private readonly IInterfaceMessageRepository _interfaceMessageRepository;
     private readonly ISystemValueRepository _systemValueRepository;
     private readonly IWhatsAppService _whatsappService;
     private readonly IServiceBusProxy _serviceBusProxy;
-    private readonly ILogger<WhatsAppController> _logger;
+    private readonly ILogger<TwilioWhatsAppController> _logger;
 
-    public WhatsAppController(IAIService aiService, IInterfaceMessageRepository interfaceMessageRepository, ISystemValueRepository systemValueRepository, IWhatsAppService whatsAppService, IServiceBusProxy serviceBusProxy, ILogger<WhatsAppController> logger)
+    public TwilioWhatsAppController(IAIService aiService, IInterfaceMessageRepository interfaceMessageRepository, ISystemValueRepository systemValueRepository, IWhatsAppService whatsAppService, IServiceBusProxy serviceBusProxy, ILogger<TwilioWhatsAppController> logger)
     {
         _aiService = aiService;
         _interfaceMessageRepository = interfaceMessageRepository;
@@ -70,8 +70,6 @@ public class WhatsAppController : ControllerBase
     private async Task SendNewConversation(TwilioMessage payload)
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
-
-        //loads latest message 
         await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_WHATSAPP,
@@ -87,7 +85,6 @@ public class WhatsAppController : ControllerBase
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
 
-        //loads latest message 
         await _serviceBusProxy.SendAsync(new Message
         {
             ConversationSystem = Const.TYPE_WHATSAPP,

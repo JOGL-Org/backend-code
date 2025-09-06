@@ -36,6 +36,7 @@
 		<ProjectReference Include="..\Jogl.Server.Documents\Jogl.Server.Documents.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Lix\Jogl.Server.Lix.csproj" />
 		<ProjectReference Include="..\Jogl.Server.SerpAPI\Jogl.Server.SerpAPI.csproj" />
+		<ProjectReference Include="..\Jogl.Server.WhatsApp\Jogl.Server.WhatsApp.csproj" />
 	</ItemGroup>
 
 </Project>
