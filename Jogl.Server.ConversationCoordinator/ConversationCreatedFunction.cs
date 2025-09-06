@@ -151,7 +151,7 @@ namespace Jogl.Server.ConversationCoordinator
             var messages = await outputService.LoadConversationAsync(message.WorkspaceId, message.ChannelId, lastMessageId);
             if (!messages.Last().FromUser) //sometimes, the whatsapp API doesn't load the latest message
                 messages.Add(new InputItem { FromUser = true, Text = message.Text }); //and we need to inject it manually
-            var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = "Hello" }, .. messages], user.Bio);
+            var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = user.Bio }, .. messages]);
             var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);
 
             if (!response.Stop)

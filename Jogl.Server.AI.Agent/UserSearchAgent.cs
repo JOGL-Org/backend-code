@@ -170,7 +170,7 @@ namespace Jogl.Server.AI.Agent
             return new AgentResponse(response);
         }
 
-        public async Task<AgentConversationResponse> GetOnboardingResponseAsync(IEnumerable<InputItem> messages, string bio)
+        public async Task<AgentConversationResponse> GetOnboardingResponseAsync(IEnumerable<InputItem> messages)
         {
             var stopPhrase = "Alright, let’s move on then";
 
@@ -182,7 +182,7 @@ namespace Jogl.Server.AI.Agent
                 return new AgentConversationResponse("An error has ocurred", false);
             }
 
-            var conversationPromptText = string.Format(conversationPrompt.Value, bio, stopPhrase);
+            var conversationPromptText = string.Format(conversationPrompt.Value, stopPhrase);
             var response = await _aiService.GetResponseAsync(conversationPromptText, messages, 0.5m, 8192);
 
             if (!response.Contains(stopPhrase))
