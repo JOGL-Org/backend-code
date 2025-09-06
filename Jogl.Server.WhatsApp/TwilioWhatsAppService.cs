@@ -40,14 +40,6 @@ namespace Jogl.Server.WhatsApp
             return msg?.Body;
         }
 
-        //public async Task SendMessageButtonAsync(string number)
-        //{
-        //    var msg = await MessageResource.CreateAsync(
-        //             contentSid: "HX7dd2f66c5e458c96046cd4b721834aa2",
-        //             from: new Twilio.Types.PhoneNumber($"whatsapp:{_configuration["Twilio:Number"]}"),
-        //             to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
-        //}
-
         private List<string> SplitString(string str, int maxChunkSize)
         {
             var result = new List<string>();
