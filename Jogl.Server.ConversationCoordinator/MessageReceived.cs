@@ -143,7 +143,7 @@ namespace Jogl.Server.ConversationCoordinator
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
 
             //log outgoing messages
-            //await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
+            await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
         }
 
         public async Task ProcessOnboardingWorkAsync(Message message, InterfaceUser interfaceUser)
