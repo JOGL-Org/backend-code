@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.ConversationCoordinator
 {
-    public class MessageReceived : BaseFunction
+    public class MessageReceivedFunction : BaseFunction
     {
         private readonly IAgent _aiAgent;
         private readonly IInterfaceChannelRepository _interfaceChannelRepository;
@@ -26,9 +26,9 @@ namespace Jogl.Server.ConversationCoordinator
         private readonly IMembershipRepository _membershipRepository;
         private readonly IUserVerificationService _userVerificationService;
         private readonly ITextService _textService;
-        private readonly ILogger<MessageReceived> _logger;
+        private readonly ILogger<MessageReceivedFunction> _logger;
 
-        public MessageReceived(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, ITextService textService, ILogger<MessageReceived> logger) : base(outputServiceFactory, configuration)
+        public MessageReceivedFunction(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, ITextService textService, ILogger<MessageReceivedFunction> logger) : base(outputServiceFactory, configuration)
         {
             _aiAgent = aiAgent;
             _interfaceChannelRepository = interfaceChannelRepository;
@@ -42,7 +42,7 @@ namespace Jogl.Server.ConversationCoordinator
             _logger = logger;
         }
 
-        [Function(nameof(MessageReceived))]
+        [Function(nameof(MessageReceivedFunction))]
         public async Task RunInvitesAsync(
             [ServiceBusTrigger(Const.INTERFACE_MESSAGE_RECEIVED, Connection = "ConnectionString", AutoCompleteMessages = true)]
             ServiceBusReceivedMessage messageData,
