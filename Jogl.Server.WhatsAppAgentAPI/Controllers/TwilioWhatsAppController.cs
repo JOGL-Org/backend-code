@@ -35,7 +35,7 @@ public class TwilioWhatsAppController : ControllerBase
 
         //loads latest message
         var rootMessage = _interfaceMessageRepository
-            .Query(im => im.ChannelId == from && im.Tag == InterfaceMessage.TAG_SEARCH_USER)
+            .Query(im => im.ChannelId == from && !string.IsNullOrEmpty(im.Tag))
             .Sort(Jogl.Server.Data.Util.SortKey.CreatedDate, false)
             .Page(1, 1)
             .ToList()
@@ -43,7 +43,7 @@ public class TwilioWhatsAppController : ControllerBase
 
         if (rootMessage == null)
         {
-            await SendNewConversation(payload);
+            await SendMessageAsync(payload);
             return Ok();
         }
 
@@ -59,15 +59,11 @@ public class TwilioWhatsAppController : ControllerBase
         var type = await _aiService.GetResponseAsync(prompt.Value, [.. msgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], 0);
         _logger.LogInformation("Identified as {type}", type);
 
-        if (type == "deepdive")
-            await SendReply(payload, rootMessage);
-        else
-            await SendNewConversation(payload);
-
+        await SendMessageAsync(payload, rootMessage, type);
         return Ok();
     }
 
-    private async Task SendNewConversation(TwilioMessage payload)
+    private async Task SendMessageAsync(TwilioMessage payload, InterfaceMessage? rootMessage = default, string? type = default)
     {
         var from = payload.From.Replace("whatsapp:", string.Empty);
         await _serviceBusProxy.SendAsync(new Message
@@ -75,25 +71,11 @@ public class TwilioWhatsAppController : ControllerBase
             ConversationSystem = Const.TYPE_WHATSAPP,
             WorkspaceId = from,
             ChannelId = from,
-            ConversationId = payload.MessageSid,
+            ConversationId = type == "deepdive" ? rootMessage.ConversationId : payload.MessageSid,
             Text = payload.Body,
             UserId = from,
-        }, "conversation-created");
-    }
-
-    private async Task SendReply(TwilioMessage payload, InterfaceMessage message)
-    {
-        var from = payload.From.Replace("whatsapp:", string.Empty);
-
-        await _serviceBusProxy.SendAsync(new Message
-        {
-            ConversationSystem = Const.TYPE_WHATSAPP,
-            WorkspaceId = from,
-            ChannelId = from,
-            ConversationId = message.ConversationId,
-            Text = payload.Body,
-            UserId = from,
-            MessageId = payload.MessageSid
-        }, "conversation-reply-created");
+            Type = type,
+            MessageId = payload.MessageSid,
+        }, "interface-message-received");
     }
 }

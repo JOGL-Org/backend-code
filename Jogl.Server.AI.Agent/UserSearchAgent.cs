@@ -217,5 +217,20 @@ namespace Jogl.Server.AI.Agent
             var response = await _aiService.GetResponseAsync(prompt.Value, [new InputItem { FromUser = true, Text = current }], 0.5m, 8192);
             return new AgentResponse(response);
         }
+
+        public async Task<AgentResponse> GetProfileResponseAsync(IEnumerable<InputItem> messages, Data.User user)
+        {
+            var promptKey = $"USER_OWN_PROFILE_PROMPT";
+            var prompt = _systemValueRepository.Get(sv => sv.Key == promptKey);
+            if (prompt == null)
+            {
+                _logger.LogError("{promptKey} system value missing", promptKey);
+                return new AgentResponse("An error has ocurred");
+            }
+
+            var promptText = string.Format(prompt.Value, JsonSerializer.Serialize(user));
+            var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
+            return new AgentResponse(response);
+        }
     }
 }

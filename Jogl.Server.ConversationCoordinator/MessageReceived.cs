@@ -2,6 +2,7 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Jogl.Server.AI;
 using Jogl.Server.AI.Agent;
+using Jogl.Server.AI.Agent.DTO;
 using Jogl.Server.Conversation.Data;
 using Jogl.Server.ConversationCoordinator.Services;
 using Jogl.Server.Data;
@@ -14,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.ConversationCoordinator
 {
-    public class ConversationCreatedFunction : BaseFunction
+    public class MessageReceived : BaseFunction
     {
         private readonly IAgent _aiAgent;
         private readonly IInterfaceChannelRepository _interfaceChannelRepository;
@@ -25,9 +26,9 @@ namespace Jogl.Server.ConversationCoordinator
         private readonly IMembershipRepository _membershipRepository;
         private readonly IUserVerificationService _userVerificationService;
         private readonly ITextService _textService;
-        private readonly ILogger<ConversationCreatedFunction> _logger;
+        private readonly ILogger<MessageReceived> _logger;
 
-        public ConversationCreatedFunction(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, ITextService textService, ILogger<ConversationCreatedFunction> logger) : base(outputServiceFactory, configuration)
+        public MessageReceived(IAgent aiAgent, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IInterfaceMessageRepository interfaceMessageRepository, IOutputServiceFactory outputServiceFactory, IConfiguration configuration, IUserRepository userRepository, INodeRepository nodeRepository, IMembershipRepository membershipRepository, IUserVerificationService userVerificationService, ITextService textService, ILogger<MessageReceived> logger) : base(outputServiceFactory, configuration)
         {
             _aiAgent = aiAgent;
             _interfaceChannelRepository = interfaceChannelRepository;
@@ -41,9 +42,9 @@ namespace Jogl.Server.ConversationCoordinator
             _logger = logger;
         }
 
-        [Function(nameof(ConversationCreatedFunction))]
+        [Function(nameof(MessageReceived))]
         public async Task RunInvitesAsync(
-            [ServiceBusTrigger(Const.CONVERSATION_CREATED, Connection = "ConnectionString", AutoCompleteMessages = true)]
+            [ServiceBusTrigger(Const.INTERFACE_MESSAGE_RECEIVED, Connection = "ConnectionString", AutoCompleteMessages = true)]
             ServiceBusReceivedMessage messageData,
             ServiceBusMessageActions messageActions)
         {
@@ -70,7 +71,11 @@ namespace Jogl.Server.ConversationCoordinator
                     await ProcessOnboardingWorkAsync(message, interfaceUser);
                     break;
                 default:
-                    await ProcessConversationAsync(message);
+                    if (message.Type == "deepdive")
+                        await ProcessReplyAsync(message, interfaceUser);
+                    else
+                        await ProcessMessageAsync(message, interfaceUser);
+
                     break;
             }
         }
@@ -108,7 +113,7 @@ namespace Jogl.Server.ConversationCoordinator
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
 
             //log outgoing messages
-            await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_EMAIL_RECEIVED);
+            //await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_EMAIL_RECEIVED);
         }
 
         public async Task ProcessOnboardingCodeAsync(Message message, InterfaceUser interfaceUser)
@@ -138,7 +143,7 @@ namespace Jogl.Server.ConversationCoordinator
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
 
             //log outgoing messages
-            await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
+            //await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
         }
 
         public async Task ProcessOnboardingWorkAsync(Message message, InterfaceUser interfaceUser)
@@ -160,7 +165,7 @@ namespace Jogl.Server.ConversationCoordinator
                 return;
 
             //log outgoing messages
-            await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_COMPLETED);
+            //await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_COMPLETED);
 
             user.Current = response.Output;
             await _userRepository.UpdateAsync(user);
@@ -172,7 +177,7 @@ namespace Jogl.Server.ConversationCoordinator
             interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.Onboarded;
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
 
-            await ProcessConversationAsync(new Message
+            await ProcessMessageAsync(new Message
             {
                 ChannelId = message.ChannelId,
                 ConversationId = message.ConversationId,
@@ -181,10 +186,10 @@ namespace Jogl.Server.ConversationCoordinator
                 Text = firstSearchResponseText,
                 UserId = message.UserId,
                 WorkspaceId = message.WorkspaceId
-            });
+            }, interfaceUser);
         }
 
-        public async Task ProcessConversationAsync(Message message)
+        public async Task ProcessMessageAsync(Message message, InterfaceUser interfaceUser)
         {
             var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == message.WorkspaceId);
 
@@ -206,22 +211,102 @@ namespace Jogl.Server.ConversationCoordinator
             var outputService = _outputServiceFactory.GetService(message.ConversationSystem);
             var indicatorId = await outputService.StartIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId);
 
-            var response = await _aiAgent.GetInitialResponseAsync(message.Text, channel?.NodeId, message.ConversationSystem);
-            var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);
+            var response = await GetMessageResponseAsync(message, channel, interfaceUser);
+            var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Response.Text);
             await outputService.StopIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, indicatorId);
 
             //log outgoing messages
-            await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_SEARCH_USER);
-
-            await MirrorRepliesAsync(mirrorConversationId, response.Text);
+           // await LogMessagesAsync(messageResultData, message);
+            await MirrorRepliesAsync(mirrorConversationId, response.Response.Text);
 
             //store context in root message
             rootInterfaceMessage.MessageMirrorId = mirrorConversationId;
-            rootInterfaceMessage.Tag = InterfaceMessage.TAG_SEARCH_USER;
-            rootInterfaceMessage.Context = response.Context;
-            rootInterfaceMessage.OriginalQuery = response.OriginalQuery;
+            rootInterfaceMessage.Tag = response.Tag;
+            rootInterfaceMessage.Context = response.Response.Context;
+            rootInterfaceMessage.OriginalQuery = response.Response.OriginalQuery;
 
             await _interfaceMessageRepository.UpdateAsync(rootInterfaceMessage);
+        }
+
+        public async Task ProcessReplyAsync(Message message, InterfaceUser interfaceUser)
+        {
+            var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.MessageId == message.ConversationId);
+            if (rootInterfaceMessage?.Tag == null)
+                return;
+
+            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, [message.Text]);
+
+            //log incoming message
+            await _interfaceMessageRepository.CreateAsync(new InterfaceMessage
+            {
+                CreatedUTC = DateTime.UtcNow,
+                MessageId = message.MessageId,
+                ChannelId = message.WorkspaceId,
+                ConversationId = message.ConversationId,
+                UserId = message.UserId,
+                Text = message.Text
+            });
+
+            var outputService = _outputServiceFactory.GetService(message.ConversationSystem);
+            var indicatorId = await outputService.StartIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId);
+
+            var response = await GetMessageDeepDiveResponseAsync(message, rootInterfaceMessage, interfaceUser);
+            var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);
+            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, response.Text);
+
+            ////log outgoing message
+            //await _interfaceMessageRepository.CreateAsync(messageResultData.Select(r => new InterfaceMessage
+            //{
+            //    CreatedUTC = DateTime.UtcNow,
+            //    MessageId = r.MessageId,
+            //    ChannelId = message.ChannelId,
+            //    ConversationId = message.ConversationId,
+            //    Text = r.MessageText,
+            //    Tag = rootInterfaceMessage.Tag
+            //}).ToList());
+
+            await outputService.StopIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, indicatorId);
+        }
+
+        private async Task<(string Tag, AgentResponse Response)> GetMessageResponseAsync(Message message, InterfaceChannel interfaceChannel, InterfaceUser interfaceUser)
+        {
+            switch (message.Type)
+            {
+                case "consult_profile":
+                    var user = _userRepository.Get(interfaceUser.UserId);
+                    var messages = await GetPreviousMessagesAsync(message);
+                    var profileResponse = await _aiAgent.GetProfileResponseAsync(messages, user);
+                    return (InterfaceMessage.TAG_CONSULT_PROFILE, profileResponse);
+                case "new_request":
+                default:
+                    var searchResponse = await _aiAgent.GetInitialResponseAsync(message.Text, interfaceChannel?.NodeId, message.ConversationSystem);
+                    return (InterfaceMessage.TAG_SEARCH_USER, searchResponse);
+            }
+        }
+
+        private async Task<AgentResponse> GetMessageDeepDiveResponseAsync(Message message, InterfaceMessage rootInterfaceMessage, InterfaceUser interfaceUser)
+        {
+            switch (message.Type)
+            {
+                case "consult_profile":
+                    var user = _userRepository.Get(interfaceUser.UserId);
+                    var messages = await GetPreviousMessagesAsync(message);
+                    var profileResponse = await _aiAgent.GetProfileResponseAsync(messages, user);
+                    return profileResponse;
+                case "new_request":
+                default:
+                    return await _aiAgent.GetFollowupResponseAsync([new InputItem { FromUser = true, Text = message.Text }], rootInterfaceMessage.Context, rootInterfaceMessage.OriginalQuery, message.ConversationSystem);
+            }
+        }
+
+        private async Task<List<InputItem>> GetPreviousMessagesAsync(Message message)
+        {
+            var outputService = _outputServiceFactory.GetService(message.ConversationSystem);
+            var messages = await outputService.LoadConversationAsync(message.WorkspaceId, message.ChannelId, message.ConversationId);
+            if (messages.LastOrDefault()?.FromUser != true) //sometimes, the whatsapp API doesn't load the latest message
+                messages.Add(new InputItem { FromUser = true, Text = message.Text }); //and we need to inject it manually
+
+            return messages;
         }
 
         private async Task LogMessagesAsync(IEnumerable<DTO.MessageResult> messageResultData, Message message, string tag = default)

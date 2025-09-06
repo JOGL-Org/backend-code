@@ -9,6 +9,7 @@ namespace Jogl.Server.Data
         public const string TAG_ONBOARDING_CODE_RECEIVED = "ONBOARDING_CODE_RECEIVED";
         public const string TAG_ONBOARDING_COMPLETED = "ONBOARDING_COMPLETED";
         public const string TAG_SEARCH_USER = "TAG_SEARCH_USER";
+        public const string TAG_CONSULT_PROFILE = "TAG_CONSULT_PROFILE";
 
         public string MessageId { get; set; }
         public string? MessageMirrorId { get; set; }
