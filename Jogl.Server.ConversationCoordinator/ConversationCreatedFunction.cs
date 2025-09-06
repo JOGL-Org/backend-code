@@ -130,7 +130,9 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             var nodeName = GetNodeText(user.Id.ToString());
-            var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"Here is a quick bio based on the data we found about your experience: {_textService.StripHtml(user.Bio)}", $"Please tell us what you're currently working on."]);
+            await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"Here is a quick bio based on the data we found about your experience: {_textService.StripHtml(user.Bio)}"]);
+            var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = user.Bio }]);
+            var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);
 
             interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.CurrentWorkPending;
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
@@ -149,7 +151,7 @@ namespace Jogl.Server.ConversationCoordinator
 
             var lastMessageId = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.Tag == InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED).MessageId;
             var messages = await outputService.LoadConversationAsync(message.WorkspaceId, message.ChannelId, lastMessageId);
-            if (!messages.Last().FromUser) //sometimes, the whatsapp API doesn't load the latest message
+            if (messages.LastOrDefault()?.FromUser != true) //sometimes, the whatsapp API doesn't load the latest message
                 messages.Add(new InputItem { FromUser = true, Text = message.Text }); //and we need to inject it manually
             var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = user.Bio }, .. messages]);
             var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);

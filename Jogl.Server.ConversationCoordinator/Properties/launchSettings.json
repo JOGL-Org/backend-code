@@ -5,7 +5,7 @@
       "commandLineArgs": "--port 7220",
       "launchBrowser": false,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development"
       }
     },
     "prod": {
@@ -13,7 +13,7 @@
       "commandLineArgs": "--port 7220",
       "launchBrowser": false,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
+        "DOTNET_ENVIRONMENT": "Production"
       }
     }
   }

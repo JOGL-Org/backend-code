@@ -9,6 +9,7 @@ namespace Jogl.Server.Text
             var doc = new HtmlDocument();
             doc.LoadHtml(text);
             return doc.DocumentNode.InnerText.Replace('\u00A0', ' ')
+                                             .Replace($"&nbsp;",string.Empty)
                                              .Trim();
         }
     }
