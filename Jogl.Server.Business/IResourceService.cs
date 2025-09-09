@@ -6,6 +6,7 @@ namespace Jogl.Server.Business
     public interface IResourceService
     {
         Resource Get(string resourceId, string userId);
+        List<Resource> List();
         ListPage<Resource> List(string userId, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         long Count(string userId, string search);
         List<Resource> ListForUser(string userId, string targetUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending);

@@ -33,5 +33,11 @@ namespace Jogl.Server.Loader.Profile.DTO
 
         [JsonPropertyName("type")]
         public string Type { get; set; }
+
+        [JsonPropertyName("patents")]
+        public Patents Patents { get; set; }
+
+        [JsonPropertyName("papers")]
+        public List<Paper> Papers { get; set; } = new List<Paper>();
     }
 }

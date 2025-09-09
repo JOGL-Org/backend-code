@@ -27,9 +27,13 @@ var host = Host.CreateDefaultBuilder()
 
 // Resolve and use services
 var userService = host.Services.GetRequiredService<IUserService>();
+var paperService = host.Services.GetRequiredService<IPaperService>();
+var resourceService = host.Services.GetRequiredService<IResourceService>();
 var membershipService = host.Services.GetRequiredService<IMembershipService>();
 
-var existingUsers = userService.List(null, null, 1, int.MaxValue, Jogl.Server.Data.Util.SortKey.CreatedDate, false);
+var existingUsers = userService.List();
+var existingPapers = paperService.List();
+var existingResources = resourceService.List();
 var pasteurNodeId = "684bf7e24b1507a00823d6a3";
 
 
@@ -39,13 +43,13 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
     {
         var jsonString = File.ReadAllText(file);
         var importUser = JsonSerializer.Deserialize<User>(jsonString);
-        if (string.IsNullOrEmpty(importUser.Email))
-        {
-            Console.WriteLine($"{importUser.FirstName} {importUser.LastName} has no email");
-            continue;
-        }
+        //if (string.IsNullOrEmpty(importUser.Email))
+        //{
+        //    Console.WriteLine($"{importUser.FirstName} {importUser.LastName} has no email");
+        //    continue;
+        //}
 
-        var user = existingUsers.Items.SingleOrDefault(u => u.FirstName == importUser.FirstName && u.LastName == importUser.LastName);
+        var user = existingUsers.SingleOrDefault(u => u.FirstName == importUser.FirstName && u.LastName == importUser.LastName);
         if (user == null)
         {
             user = new Jogl.Server.Data.User
@@ -89,187 +93,50 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
                 UserId = userId
             });
         }
-        else
+
+        //papers
+        foreach (var importPaper in importUser.Papers)
         {
-            //await membershipService.AddMembersAsync([new Membership
-            //{
-            //    CommunityEntityId = pasteurNodeId,
-            //    CommunityEntityType = CommunityEntityType.Node,
-            //    CreatedByUserId = user.Id.ToString(),
-            //    CreatedUTC = DateTime.UtcNow,
-            //    UserId = user.Id.ToString()
-            //}]);
+            if (existingPapers.Any(p => p.ExternalId == importPaper.Doi))
+                continue;
+
+            await paperService.CreateAsync(new Paper
+            {
+                Authors = importPaper.AuthorList,
+                CreatedUTC = DateTime.UtcNow,
+                DefaultVisibility = FeedEntityVisibility.View,
+                ExternalId = importPaper.Doi,
+                ExternalSystem = !string.IsNullOrEmpty(importPaper.SemanticScholarId) ? ExternalSystem.SemanticScholar : !string.IsNullOrEmpty(importPaper.OpenAlexId) ? ExternalSystem.OpenAlex : ExternalSystem.None,
+                Journal = importPaper.Location,
+                Title = importPaper.Title,
+                Summary = importPaper.Abstract,
+                SourceId = importPaper.SemanticScholarId ?? importPaper.OpenAlexId,
+                PublicationDate = importPaper.PublicationDate,
+            });
         }
 
-
-
-        //// repositories
-        //var repos = json["repolist"]?.AsArray();
-        //Console.WriteLine($"{repos?.Count} repositories");
-        //foreach (JsonNode repo in repos ?? new JsonArray())
-        //{
-        //    var title = repo.AsObject().ContainsKey("name") ? repo["name"]?.GetValue<string>() : null;
-        //    var description = repo.AsObject().ContainsKey("description") ? repo["description"]?.GetValue<string>() : null;
-        //    var abst = repo.AsObject().ContainsKey("abstract") ? repo["abstract"]?.GetValue<string>() : null;
-        //    var keywords = repo.AsObject().ContainsKey("keywords") ? (repo["keywords"] as JsonArray).Select(node => node.GetValue<string>()).ToList() : null;
-        //    var readme = repo.AsObject().ContainsKey("readme") ? repo["readme"]?.GetValue<string>() : null;
-        //    var homepage = repo.AsObject().ContainsKey("homepage") ? repo["homepage"]?.GetValue<string>() : null;
-
-        //    if (string.IsNullOrEmpty(title))
-        //        continue;
-
-        //    var existingResource = existingResources.FirstOrDefault(r => r.EntityId == user.Id.ToString() && r.Title == title);
-        //    if (existingResource != null)
+        
+        ////patents
+        //var existingPatents = existingResources.Where(er => er.Type == ResourceType.Patent).ToList();
+        //if (importUser.Patents?.PatentFamilies != null)
+        //    foreach (var importPatent in importUser.Patents.PatentFamilies)
         //    {
-        //        existingResource.Description = description;
-        //        existingResource.Data = new BsonDocument {
-        //                { "Source", "Github" },
-        //                { "Url", homepage ?? "" },
-        //                { "Readme", readme ?? "" },
-        //                { "Abstract", abst ?? "" },
-        //                { "Keywords", keywords != null? string.Join("," ,keywords) :"" }
-        //            };
-        //        existingResource.UpdatedUTC = DateTime.UtcNow;
-        //        await resourceRepository.UpdateAsync(existingResource);
-        //    }
-        //    else
-        //    {
-        //        var resource = new Resource
-        //        {
-        //            Title = title,
-        //            Description = description,
-        //            Data = new BsonDocument {
-        //                { "Source", "Github" },
-        //                { "Url", homepage ?? "" },
-        //                { "Readme", readme ?? "" },
-        //                { "Abstract", abst ?? "" },
-        //                { "Keywords", keywords != null? string.Join("," ,keywords) :"" }
-        //            },
-        //            EntityId = user.Id.ToString(),
-        //            CreatedUTC = DateTime.UtcNow,
-        //        };
-
-        //        var feed = new Feed()
-        //        {
-        //            CreatedUTC = resource.CreatedUTC,
-        //            CreatedByUserId = resource.CreatedByUserId,
-        //            Type = FeedType.Resource,
-        //        };
-
-        //        var id = await feedRepository.CreateAsync(feed);
-
-        //        //mark feed write
-        //        await userFeedRecordRepository.SetFeedWrittenAsync(resource.CreatedByUserId, id, DateTime.UtcNow);
-
-        //        //create resource
-        //        resource.Id = ObjectId.Parse(id);
-        //        resource.UpdatedUTC = resource.CreatedUTC;
-        //        await resourceRepository.CreateAsync(resource);
-        //    }
-        //}
-
-        //// papers
-        //var papers = json["paper_list"]?["papers"]?.AsArray();
-        //Console.WriteLine($"{papers?.Count} papers");
-        //foreach (JsonNode paperJson in papers ?? new JsonArray())
-        //{
-        //    var paperId = paperJson.AsObject().ContainsKey("id") ? paperJson["id"]?.GetValue<string>() : null;
-        //    var paperSource = paperJson.AsObject().ContainsKey("source") ? paperJson["source"]?.GetValue<string>() : null;
-
-        //    if (string.IsNullOrEmpty(paperId))
-        //        continue;
-
-        //    if (string.IsNullOrEmpty(paperSource))
-        //        continue;
-
-        //    if (existingPapers.Any(p => p.FeedEntityId == user.Id.ToString() && p.SourceId == paperId))
-        //        continue;
-
-        //    paperId = paperId.Replace("https://doi.org", string.Empty);
-
-        //    Paper paper = null;
-        //    switch (paperSource)
-        //    {
-        //        case "openalex":
-        //            var oaPaper = await openAlexFacade.GetWorkAsync(paperId);
-        //            if (oaPaper == null)
-        //                continue;
-
-        //            paper = new Paper
-        //            {
-        //                Authors = string.Join(", ", oaPaper.Authorships.Select(a => a.Author.DisplayName)),
-        //                ExternalId = oaPaper.Doi,
-        //                ExternalSystem = ExternalSystem.OpenAlex,
-        //                Journal = oaPaper.PrimaryLocation?.Source?.DisplayName,
-        //                OpenAccessPdfUrl = oaPaper.BestOaLocation?.PdfUrl,
-        //                PublicationDate = oaPaper.PublicationDate ?? oaPaper.PublicationYear?.ToString(),
-        //                Summary = FormatOAWorkAbstract(oaPaper.AbstractInvertedIndex),
-        //                Title = oaPaper.Title,
-        //            };
-        //            break;
-
-        //        case "semantic scholar":
-        //            var ssPaper = await semanticScholarFacade.GetWorkAsync(paperId);
-        //            if (ssPaper == null)
-        //                continue;
-
-        //            paper = new Paper
-        //            {
-        //                Authors = string.Join(", ", ssPaper.Authors?.Select(a => a.Name) ?? new List<string>()),
-        //                ExternalId = ssPaper.ExternalIds.DOI,
-        //                ExternalSystem = ExternalSystem.SemanticScholar,
-        //                Journal = ssPaper.Journal?.Name,
-        //                OpenAccessPdfUrl = ssPaper.OpenAccessPdf?.Url,
-        //                PublicationDate = ssPaper.PublicationDate ?? ssPaper.Year?.ToString(),
-        //                Summary = ssPaper.Abstract,
-        //                Title = ssPaper.Title,
-        //            };
-        //            break;
-
-        //        case "orcid":
-        //            var oPaper = await orcidFacade.GetWorkFromDOI(paperId);
-        //            if (oPaper == null)
-        //                continue;
-
-        //            paper = new Paper
-        //            {
-        //                Authors = string.Join(", ", oPaper.Contributors.Select(a => a.Name)),
-        //                ExternalId = oPaper.ExternalIds?.FirstOrDefault()?.UrlValue,
-        //                ExternalSystem = ExternalSystem.SemanticScholar,
-        //                Journal = oPaper.JournalTitle,
-        //                PublicationDate = oPaper.PublicationDate,
-        //                Summary = oPaper.Description,
-        //                Title = oPaper.Title,
-        //            };
-        //            break;
-        //        default:
+        //        if (existingPatents.Any(p => p["PatentId"] == importPatent.Id))
         //            continue;
+
+        //        await resourceService.CreateAsync(new Resource
+        //        {
+        //            Description = importPatent.Abstract,
+        //            Type = ResourceType.Patent,
+        //            CreatedUTC = DateTime.UtcNow,
+        //            DefaultVisibility = FeedEntityVisibility.View,
+        //            Title = importPatent.Title,
+        //            Data = new MongoDB.Bson.BsonDocument[]
+        //        });
         //    }
 
-        //    paper.FeedId = user.Id.ToString();
-        //    paper.CreatedUTC = DateTime.UtcNow;
-        //    paper.DefaultVisibility = FeedEntityVisibility.Comment;
-        //    paper.SourceId = paperId;
-        //    paper.Type = PaperType.Article;
-        //    paper.Status = ContentEntityStatus.Active;
 
-        //    var feed = new Feed()
-        //    {
-        //        CreatedUTC = paper.CreatedUTC,
-        //        CreatedByUserId = paper.CreatedByUserId,
-        //        Type = FeedType.Paper,
-        //    };
-
-        //    var id = await feedRepository.CreateAsync(feed);
-
-        //    //mark feed write
-        //    await userFeedRecordRepository.SetFeedWrittenAsync(paper.CreatedByUserId, id, DateTime.UtcNow);
-
-        //    //create paper
-        //    paper.Id = ObjectId.Parse(id);
-        //    paper.UpdatedUTC = paper.CreatedUTC;
-        //    await paperRepository.CreateAsync(paper);
-        //}
+        //TODO resources
 
         //var existingMembership = existingMemberships.FirstOrDefault(m => m.UserId == user.Id.ToString() && m.CommunityEntityId == "674f3ceda442a3424df80b05");
         //if (existingMembership == null)

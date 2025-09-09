@@ -7,6 +7,7 @@ namespace Jogl.Server.Business
     {
         Task<string> CreateAsync(Paper paper);
         Paper Get(string paperId, string currentUserId);
+        List<Paper> List();
         List<Paper> ListForAuthor(string currentUserId, string userId, PaperType? type, string search, int page, int pageSize, SortKey sortKey, bool ascending);
         List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending, bool recordListings = true, bool enrich = true);
         bool ListForEntityHasNew(string currentUserId, string entityId);

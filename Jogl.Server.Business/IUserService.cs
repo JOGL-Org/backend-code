@@ -7,6 +7,7 @@ namespace Jogl.Server.Business
     {
         Task<string> CreateAsync(User user, string password = "");
         User Get(string userId);
+        List<User> List();
         User GetDetail(string userId, string currentUserId);
         User GetForEmail(string email, bool includeDeleted = false);
         User GetForWallet(string wallet, bool includeDeleted = false);

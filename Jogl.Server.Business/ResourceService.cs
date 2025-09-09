@@ -59,6 +59,11 @@ namespace Jogl.Server.Business
             return resource;
         }
 
+        public List<Resource> List()
+        {
+            return _resourceRepository.Query().ToList();
+        }
+
         public ListPage<Resource> List(string currentUserId, string search, int page, int pageSize, SortKey sortKey, bool ascending)
         {
             var currentUserMemberships = _membershipRepository.Query(m => m.UserId == currentUserId).ToList();

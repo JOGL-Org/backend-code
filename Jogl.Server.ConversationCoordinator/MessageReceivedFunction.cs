@@ -216,7 +216,7 @@ namespace Jogl.Server.ConversationCoordinator
             await outputService.StopIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, indicatorId);
 
             //log outgoing messages
-           // await LogMessagesAsync(messageResultData, message);
+            // await LogMessagesAsync(messageResultData, message);
             await MirrorRepliesAsync(mirrorConversationId, response.Response.Text);
 
             //store context in root message
@@ -230,7 +230,7 @@ namespace Jogl.Server.ConversationCoordinator
 
         public async Task ProcessReplyAsync(Message message, InterfaceUser interfaceUser)
         {
-            var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.MessageId == message.ConversationId);
+            var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.MessageId == message.ConversationId && m.Tag != null);
             if (rootInterfaceMessage?.Tag == null)
                 return;
 

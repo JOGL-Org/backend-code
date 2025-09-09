@@ -54,11 +54,11 @@ namespace Jogl.Server.Business
             paper.Status = ContentEntityStatus.Active;
 
             //load tags
-            await LoadTagsAsync(paper);
+            //await LoadTagsAsync(paper);
 
             //Attempt to load paper abstract from OA
-            if (string.IsNullOrEmpty(paper.Summary) && !string.IsNullOrEmpty(paper.ExternalId))
-                paper.Summary = FormatOAWorkAbstract(await _openAlexFacade.GetAbstractFromDOIAsync(paper.ExternalId));
+            //if (string.IsNullOrEmpty(paper.Summary) && !string.IsNullOrEmpty(paper.ExternalId))
+            //paper.Summary = FormatOAWorkAbstract(await _openAlexFacade.GetAbstractFromDOIAsync(paper.ExternalId));
 
             //create paper
             paper.Id = ObjectId.Parse(id);
@@ -66,7 +66,7 @@ namespace Jogl.Server.Business
             await _paperRepository.CreateAsync(paper);
 
             //process notifications
-            await _notificationFacade.NotifyCreatedAsync(paper);
+            //await _notificationFacade.NotifyCreatedAsync(paper);
 
             return id;
         }
@@ -83,6 +83,11 @@ namespace Jogl.Server.Business
             RecordListing(currentUserId, paper);
 
             return paper;
+        }
+
+        public List<Paper> List()
+        {
+            return _paperRepository.Query().ToList();
         }
 
         public List<Paper> ListForEntity(string currentUserId, string entityId, string search, int page, int pageSize, SortKey sortKey, bool ascending, bool recordListings = true, bool enrich = true)

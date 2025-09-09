@@ -167,6 +167,11 @@ namespace Jogl.Server.Business
             return _userRepository.Get(userId);
         }
 
+        public List<User> List()
+        {
+            return _userRepository.Query().ToList();
+        }
+
         public User GetDetail(string userId, string currentUserId)
         {
             var user = _userRepository.Get(userId);
