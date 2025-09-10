@@ -195,7 +195,7 @@ namespace Jogl.Server.Business
         public async Task UpdateAsync(Paper paper)
         {
             await _paperRepository.UpdateAsync(paper);
-            await _notificationFacade.NotifyUpdatedAsync(paper);
+           // await _notificationFacade.NotifyUpdatedAsync(paper);
         }
 
         public async Task DeleteAsync(Paper paper)

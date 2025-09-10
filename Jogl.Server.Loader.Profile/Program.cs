@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.Business.Extensions;
 using User = Jogl.Server.Loader.Profile.DTO.User;
+using System.Diagnostics.Eventing.Reader;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -36,7 +37,6 @@ var existingPapers = paperService.List();
 var existingResources = resourceService.List();
 var pasteurNodeId = "684bf7e24b1507a00823d6a3";
 
-
 foreach (var file in Directory.GetFiles("../../../pasteur/"))
 {
     try
@@ -52,6 +52,7 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
         var user = existingUsers.SingleOrDefault(u => u.FirstName == importUser.FirstName && u.LastName == importUser.LastName);
         if (user == null)
         {
+            continue;
             user = new Jogl.Server.Data.User
             {
                 Bio = importUser.Bio,
@@ -97,6 +98,9 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
         //papers
         foreach (var importPaper in importUser.Papers)
         {
+            if (importPaper.Doi == null)
+                continue;
+
             if (existingPapers.Any(p => p.ExternalId == importPaper.Doi))
                 continue;
 
@@ -112,10 +116,11 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
                 Summary = importPaper.Abstract,
                 SourceId = importPaper.SemanticScholarId ?? importPaper.OpenAlexId,
                 PublicationDate = importPaper.PublicationDate,
+                FeedId = user.Id.ToString()
             });
         }
 
-        
+
         ////patents
         //var existingPatents = existingResources.Where(er => er.Type == ResourceType.Patent).ToList();
         //if (importUser.Patents?.PatentFamilies != null)
