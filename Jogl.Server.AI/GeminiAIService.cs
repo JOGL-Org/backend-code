@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Jogl.Server.Data;
 using GenerativeAI;
 using GenerativeAI.Types;
-using System;
 using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.AI
@@ -77,6 +76,36 @@ namespace Jogl.Server.AI
             {
                 SystemInstruction = new Content { Parts = [new Part(prompt)] },
                 Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList(),
+            });
+
+            if (string.IsNullOrEmpty(response.Text))
+                throw new Exception($"Gemini request failed");
+
+            return response.Text().Trim();
+        }
+
+        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 1024)
+        {
+            var client = new GoogleAi(_configuration["Gemini:APIKey"]);
+            var googleModel = client.CreateGenerativeModel("models/gemini-2.5-flash");
+
+            var allowedValuesArray = allowedValues.ToArray();
+            var schema = new Schema
+            {
+                Type = SchemaType.STRING.ToString(),
+                Enum = allowedValuesArray.ToList()
+            };
+
+            var response = await googleModel.GenerateContentAsync(new GenerateContentRequest
+            {
+                SystemInstruction = new Content { Parts = [new Part(prompt)] },
+                Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList(),
+                GenerationConfig = new GenerationConfig
+                {
+                    Temperature = (float?)temperature,
+                    MaxOutputTokens = maxTokens,
+                    ResponseSchema = schema
+                }
             });
 
             if (string.IsNullOrEmpty(response.Text))

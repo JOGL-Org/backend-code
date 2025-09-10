@@ -31,7 +31,11 @@ public class TwilioWhatsAppController : ControllerBase
     // [ValidateRequest]
     public async Task<IActionResult> ReceiveMessage([FromForm] TwilioMessage payload)
     {
-        var from = payload.From.Replace("whatsapp:", string.Empty);
+        var from = payload.From.Replace("whatsapp:", string.Empty).Trim();
+
+        var rootMessages = _interfaceMessageRepository
+          .Query(im => im.ChannelId == from && !string.IsNullOrEmpty(im.Tag))
+          .ToList();
 
         //loads latest message
         var rootMessage = _interfaceMessageRepository
@@ -56,7 +60,8 @@ public class TwilioWhatsAppController : ControllerBase
         }
 
         _logger.LogInformation("{payload}", payload.Body);
-        var type = await _aiService.GetResponseAsync(prompt.Value, [.. msgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], 0);
+        var allowedValues = new List<string>(["new_request", "deepdive", "consult_profile", "documentation", "feedback"]);
+        var type = await _aiService.GetResponseAsync(string.Format(prompt.Value, string.Join(Environment.NewLine, allowedValues)), [.. msgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], allowedValues, 0);
         _logger.LogInformation("Identified as {type}", type);
 
         await SendMessageAsync(payload, rootMessage, type);
