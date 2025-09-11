@@ -14,7 +14,10 @@ namespace Jogl.Server.ConversationCoordinator.Services
             {
                 var messageResult = await whatsappService.SendMessageAsync(workspaceId, message);
                 result.AddRange(messageResult.Select(r => new MessageResult { MessageId = r.Key, MessageText = r.Value }));
-                Thread.Sleep(5000);
+
+                //sleep if more messages 
+                if (messages.IndexOf(message) != messages.Count - 1)
+                    Thread.Sleep(5000);
             }
 
             return result;

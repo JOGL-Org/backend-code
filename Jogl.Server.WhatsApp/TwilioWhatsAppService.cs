@@ -21,7 +21,8 @@ namespace Jogl.Server.WhatsApp
         public async Task<Dictionary<string, string>> SendMessageAsync(string number, string message)
         {
             var res = new Dictionary<string, string>();
-            foreach (var chunk in SplitString(message, 1600))
+            var chunks = SplitString(message, 1600);
+            foreach (var chunk in chunks)
             {
                 var msg = await MessageResource.CreateAsync(
                     body: chunk,
@@ -29,6 +30,10 @@ namespace Jogl.Server.WhatsApp
                     to: new Twilio.Types.PhoneNumber($"whatsapp:{number}"));
 
                 res.Add(msg.Sid, chunk);
+
+                //sleep if more messages 
+                if (chunks.IndexOf(chunk) != chunks.Count - 1)
+                    Thread.Sleep(5000);
             }
 
             return res;
