@@ -68,7 +68,7 @@ namespace Jogl.Server.AI
             return response.Candidates.FirstOrDefault().Content.Parts.FirstOrDefault().Text;
         }
 
-        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024)
+        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400)
         {
             var client = new GoogleAi(_configuration["Gemini:APIKey"]);
 
@@ -85,7 +85,7 @@ namespace Jogl.Server.AI
             return response.Text().Trim();
         }
 
-        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 1024)
+        public async Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 102400)
         {
             var client = new GoogleAi(_configuration["Gemini:APIKey"]);
             var googleModel = client.CreateGenerativeModel("models/gemini-2.5-flash");
@@ -117,7 +117,7 @@ namespace Jogl.Server.AI
             return response.Text().Trim();
         }
 
-        public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024)
+        public async Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400)
         {
             var client = new GoogleAi(_configuration["Gemini:APIKey"]);
 

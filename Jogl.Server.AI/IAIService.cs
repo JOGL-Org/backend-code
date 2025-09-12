@@ -8,9 +8,9 @@ namespace Jogl.Server.AI
         //Task<PromptResult> GetSearchQueryAsync(string query);
         //Task<string> ExplainSearchResultAsync(string query, object searchResult);
         Task<string> GetResponseAsync(IEnumerable<string> contextData, IEnumerable<InputItem> inputHistory);
-        Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024);
-        Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 1024);
-        Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 1024);
+        Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400);
+        Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 102400);
+        Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400);
         Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity;
     }
 
