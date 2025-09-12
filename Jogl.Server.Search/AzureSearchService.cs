@@ -123,7 +123,7 @@ namespace Jogl.Server.Search
 
             //if ids available, generate filter
             if (userIds != null && userIds.Any())
-                options.Filter = string.Join(" or ", userIds.Select(id => $"id eq '{id}'"));
+                options.Filter = $"search.in(id, '{string.Join(",", userIds.Select(id => $"{id}"))}')";
 
             try
             {
