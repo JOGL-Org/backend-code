@@ -5,6 +5,7 @@ using Jogl.Server.DB;
 using Jogl.Server.ServiceBus;
 using Jogl.Server.WhatsApp;
 using Microsoft.AspNetCore.Mvc;
+using MoreLinq;
 
 [ApiController]
 [Route("/")]
@@ -52,6 +53,10 @@ public class TwilioWhatsAppController : ControllerBase
         }
 
         var msgs = await _whatsappService.GetConversationAsync(from, rootMessage.MessageId);
+        var userMgs = msgs.Where(m => m.FromUser);
+        var index = msgs.IndexOf(userMgs.Skip(1).FirstOrDefault());
+        var rootMsgs = index == -1 ? msgs : msgs.Take(index).ToList();
+
         var prompt = _systemValueRepository.Get(sv => sv.Key == "ROUTER_PROMPT");
         if (prompt == null)
         {
@@ -61,7 +66,7 @@ public class TwilioWhatsAppController : ControllerBase
 
         _logger.LogInformation("{payload}", payload.Body);
         var allowedValues = new List<string>(["new_request", "deepdive", "consult_profile", "documentation", "feedback"]);
-        var type = await _aiService.GetResponseAsync(string.Format(prompt.Value, string.Join(Environment.NewLine, allowedValues)), [.. msgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], allowedValues, 0);
+        var type = await _aiService.GetResponseAsync(string.Format(prompt.Value, string.Join(Environment.NewLine, allowedValues)), [.. rootMsgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], allowedValues, 0);
         _logger.LogInformation("Identified as {type}", type);
 
         await SendMessageAsync(payload, rootMessage, type);

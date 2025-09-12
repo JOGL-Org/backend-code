@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.Data
 {
-    public enum ChannelType { Slack }
+    public enum ChannelType { Slack, WhatsApp }
 
     [BsonIgnoreExtraElements]
     public class InterfaceChannel : Entity

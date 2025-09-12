@@ -4,6 +4,7 @@ using Jogl.Server.Data;
 using GenerativeAI;
 using GenerativeAI.Types;
 using Microsoft.Extensions.Logging;
+using System.Collections.Immutable;
 
 namespace Jogl.Server.AI
 {
@@ -96,7 +97,7 @@ namespace Jogl.Server.AI
                 Enum = allowedValuesArray.ToList()
             };
 
-            var response = await googleModel.GenerateContentAsync(new GenerateContentRequest
+            var request = new GenerateContentRequest
             {
                 SystemInstruction = new Content { Parts = [new Part(prompt)] },
                 Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList(),
@@ -106,7 +107,9 @@ namespace Jogl.Server.AI
                     MaxOutputTokens = maxTokens,
                     ResponseSchema = schema
                 }
-            });
+            };
+        
+            var response = await googleModel.GenerateContentAsync(request);
 
             if (string.IsNullOrEmpty(response.Text))
                 throw new Exception($"Gemini request failed");

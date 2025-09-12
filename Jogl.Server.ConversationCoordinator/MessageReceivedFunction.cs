@@ -135,12 +135,23 @@ namespace Jogl.Server.ConversationCoordinator
             }
 
             var nodeName = GetNodeText(user.Id.ToString());
+            var nodeId = GetNodeId(user.Id.ToString());
             await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, [$"Your email is confirmed, and you are a member of {nodeName}", $"Here is a quick bio based on the data we found about your experience: {_textService.StripHtml(user.Bio)}"]);
             var response = await _aiAgent.GetOnboardingResponseAsync([new InputItem { FromUser = true, Text = user.Bio }]);
             var messageResultData = await outputService.SendMessagesAsync(message.WorkspaceId, message.ChannelId, message.ConversationId, response.Text);
 
+            //update interface user
             interfaceUser.OnboardingStatus = InterfaceUserOnboardingStatus.CurrentWorkPending;
             await _interfaceUserRepository.UpdateAsync(interfaceUser);
+
+            //create interface channel
+            await _interfaceChannelRepository.CreateAsync(new InterfaceChannel
+            {
+                ExternalId = message.ChannelId,
+                NodeId = nodeId,
+                Type = ChannelType.WhatsApp,
+                CreatedUTC = DateTime.UtcNow,
+            });
 
             //log outgoing messages
             await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
@@ -337,6 +348,20 @@ namespace Jogl.Server.ConversationCoordinator
                 default:
                     return $"{nodes.Count} communities";
             }
+        }
+
+        private string? GetNodeId(string userId)
+        {
+            var nodeIds = _membershipRepository.Query(m => m.UserId == userId && m.CommunityEntityType == CommunityEntityType.Node)
+                .ToList()
+                .Select(m => m.CommunityEntityId)
+                .ToList();
+
+            var nodes = _nodeRepository.Get(nodeIds);
+            if (!nodes.Any())
+                return null;
+
+            return nodes.First().Id.ToString();
         }
 
     }

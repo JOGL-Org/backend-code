@@ -106,7 +106,7 @@ namespace Jogl.Server.WhatsApp
                 result.Add(new MessageDTO(m.Sid, m.Direction == MessageResource.DirectionEnum.Inbound, m.Body));
             }
 
-            return result;
+            return result.Where(r => r.Text != "Your query is being processed now, your results should be available in a few seconds").ToList();
         }
     }
 }
