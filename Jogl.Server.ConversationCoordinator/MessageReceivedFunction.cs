@@ -68,15 +68,21 @@ namespace Jogl.Server.ConversationCoordinator
                     await ProcessOnboardingCodeAsync(message, interfaceUser);
                     break;
                 case InterfaceUserOnboardingStatus.CurrentWorkPending:
-                    await ProcessOnboardingWorkAsync(message, interfaceUser);
-                    break;
+                    {
+                        var user = _userRepository.Get(interfaceUser.UserId);
+                        await ProcessOnboardingWorkAsync(message, interfaceUser, user);
+                        break;
+                    }
                 default:
-                    if (message.Type == "deepdive")
-                        await ProcessReplyAsync(message, interfaceUser);
-                    else
-                        await ProcessMessageAsync(message, interfaceUser);
+                    {
+                        var user = _userRepository.Get(interfaceUser.UserId);
+                        if (message.Type == "deepdive")
+                            await ProcessReplyAsync(message, interfaceUser, user);
+                        else
+                            await ProcessMessageAsync(message, interfaceUser, user);
 
-                    break;
+                        break;
+                    }
             }
         }
 
@@ -157,13 +163,12 @@ namespace Jogl.Server.ConversationCoordinator
             await LogMessagesAsync(messageResultData, message, InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED);
         }
 
-        public async Task ProcessOnboardingWorkAsync(Message message, InterfaceUser interfaceUser)
+        public async Task ProcessOnboardingWorkAsync(Message message, InterfaceUser interfaceUser, Data.User user)
         {
             var outputService = _outputServiceFactory.GetService(message.ConversationSystem);
             var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == message.WorkspaceId);
 
             var code = message.Text;
-            var user = _userRepository.Get(interfaceUser.UserId);
 
             var lastMessageId = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.Tag == InterfaceMessage.TAG_ONBOARDING_CODE_RECEIVED).MessageId;
             var messages = await outputService.LoadConversationAsync(message.WorkspaceId, message.ChannelId, lastMessageId);
@@ -197,10 +202,10 @@ namespace Jogl.Server.ConversationCoordinator
                 Text = firstSearchResponseText,
                 UserId = message.UserId,
                 WorkspaceId = message.WorkspaceId
-            }, interfaceUser);
+            }, interfaceUser, user);
         }
 
-        public async Task ProcessMessageAsync(Message message, InterfaceUser interfaceUser)
+        public async Task ProcessMessageAsync(Message message, InterfaceUser interfaceUser, Data.User user)
         {
             var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == message.WorkspaceId);
 
@@ -217,7 +222,7 @@ namespace Jogl.Server.ConversationCoordinator
 
             await _interfaceMessageRepository.CreateAsync(rootInterfaceMessage);
 
-            var mirrorConversationId = await MirrorConversationAsync(message.Text);
+            var mirrorConversationId = await MirrorConversationAsync(message.Text, user);
 
             var outputService = _outputServiceFactory.GetService(message.ConversationSystem);
             var indicatorId = await outputService.StartIndicatorAsync(message.WorkspaceId, message.ChannelId, message.ConversationId);
@@ -239,13 +244,13 @@ namespace Jogl.Server.ConversationCoordinator
             await _interfaceMessageRepository.UpdateAsync(rootInterfaceMessage);
         }
 
-        public async Task ProcessReplyAsync(Message message, InterfaceUser interfaceUser)
+        public async Task ProcessReplyAsync(Message message, InterfaceUser interfaceUser, Data.User user)
         {
             var rootInterfaceMessage = _interfaceMessageRepository.Get(m => m.ChannelId == message.ChannelId && m.MessageId == message.ConversationId && m.Tag != null);
             if (rootInterfaceMessage?.Tag == null)
                 return;
 
-            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, [message.Text]);
+            await MirrorRepliesAsync(rootInterfaceMessage.MessageMirrorId, [message.Text], user);
 
             //log incoming message
             await _interfaceMessageRepository.CreateAsync(new InterfaceMessage

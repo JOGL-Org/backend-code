@@ -119,5 +119,10 @@ namespace Jogl.Server.URL
         {
             return $"{_configuration["App:URL"]}/signin-auto?email={HttpUtility.UrlEncode(email)}&code={code}";
         }
+
+        public string GetUserUrl(string userId)
+        {
+            return $"{_configuration["App:URL"]}/user/{userId}";
+        }
     }
 }

@@ -38,5 +38,9 @@
 		<ProjectReference Include="..\Jogl.Server.Lix\Jogl.Server.Lix.csproj" />
 		<ProjectReference Include="..\Jogl.Server.SerpAPI\Jogl.Server.SerpAPI.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="pasteur\" />
+	</ItemGroup>
 	
 </Project>

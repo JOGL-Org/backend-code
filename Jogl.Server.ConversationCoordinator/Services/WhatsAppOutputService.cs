@@ -1,5 +1,6 @@
 ﻿using Jogl.Server.AI;
 using Jogl.Server.ConversationCoordinator.DTO;
+using Jogl.Server.Data;
 using Jogl.Server.WhatsApp;
 using Microsoft.Extensions.Logging;
 
@@ -7,6 +8,11 @@ namespace Jogl.Server.ConversationCoordinator.Services
 {
     public class WhatsAppOutputService(IWhatsAppService whatsappService, ILogger<IWhatsAppOutputService> logger) : IWhatsAppOutputService
     {
+        public async Task<List<MessageResult>> SendMessagesAsync(User? user, string workspaceId, string channelId, string conversationId, List<string> messages)
+        {
+            return await SendMessagesAsync(workspaceId, channelId, conversationId, messages);
+        }
+
         public async Task<List<MessageResult>> SendMessagesAsync(string workspaceId, string channelId, string conversationId, List<string> messages)
         {
             var result = new List<MessageResult>();

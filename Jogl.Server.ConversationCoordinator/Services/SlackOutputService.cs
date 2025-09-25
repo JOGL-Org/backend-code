@@ -2,12 +2,26 @@
 using Jogl.Server.ConversationCoordinator.DTO;
 using Jogl.Server.DB;
 using Jogl.Server.Slack;
+using Jogl.Server.URL;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Jogl.Server.ConversationCoordinator.Services
 {
-    public class SlackOutputService(IInterfaceChannelRepository interfaceChannelRepository, ISlackService slackService, ILogger<ISlackOutputService> logger) : ISlackOutputService
+    public class SlackOutputService(IInterfaceChannelRepository interfaceChannelRepository, ISlackService slackService, IUrlService urlService, ILogger<ISlackOutputService> logger) : ISlackOutputService
     {
+        public async Task<List<MessageResult>> SendMessagesAsync(Data.User? user, string workspaceId, string channelId, string conversationId, List<string> messages)
+        {
+            if (user == null)
+            {
+                return await SendMessagesAsync(workspaceId, channelId, conversationId, messages);
+            }
+
+            var userUrl = urlService.GetUserUrl(user.Id.ToString());
+            var userPrefix = $"<{userUrl}|{user.FirstName} {user.LastName}>";
+            return await SendMessagesAsync(workspaceId, channelId, conversationId, messages.Select(m => $"{userPrefix}: {m}").ToList());
+        }
+
         public async Task<List<MessageResult>> SendMessagesAsync(string workspaceId, string channelId, string conversationId, List<string> messages)
         {
             var channel = interfaceChannelRepository.Get(ic => ic.ExternalId == workspaceId);

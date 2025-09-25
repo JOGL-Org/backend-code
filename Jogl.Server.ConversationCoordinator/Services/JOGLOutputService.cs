@@ -27,5 +27,10 @@ namespace Jogl.Server.ConversationCoordinator.Services
         {
             return new List<MessageResult>();
         }
+
+        public async Task<List<MessageResult>> SendMessagesAsync(User? user, string workspaceId, string channelId, string conversationId, List<string> messages)
+        {
+            return await SendMessagesAsync(workspaceId, channelId, conversationId, messages);
+        }
     }
 }

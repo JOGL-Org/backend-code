@@ -9,6 +9,7 @@ namespace Jogl.Server.URL
         string GetUrl(FeedEntity entity, Channel channel);
         string GetUrl(string path);
         string GetImageUrl(string imageId);
+        string GetUserUrl(string userId);
 
         string GetUrlFragment(CommunityEntityType type);
         string GetUrlFragment(FeedType type);
