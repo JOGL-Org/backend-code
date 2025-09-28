@@ -14,7 +14,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Jogl.Server.AI\Jogl.Server.AI.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />
+		<ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
 		<ProjectReference Include="..\Jogl.Server.ServiceBus\Jogl.Server.ServiceBus.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Slack\Jogl.Server.Slack.csproj" />
 		<ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />

@@ -4,7 +4,8 @@ using Microsoft.OpenApi.Models;
 using SlackNet.Events;
 using Jogl.Server.Slack.Extensions;
 using Jogl.Server.ServiceBus.Extensions;
-using SlackNet.AspNetCore;
+using Jogl.Server.DB.Extensions;
+using Jogl.Server.AI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,11 +35,13 @@ builder.Services.AddSwaggerGen(config =>
 
 builder.Configuration.AddKeyVault();
 builder.Services.AddServiceBus();
+builder.Services.AddRepositories();
+builder.Services.AddAI();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSlack(builder.Configuration, (c) =>
 {
     c.RegisterEventHandler<MessageEvent, MessageHandler>();
-//    c.RegisterEventHandler<TeamJoin, TeamJoinHandler>();
+    //    c.RegisterEventHandler<TeamJoin, TeamJoinHandler>();
     //c.RegisterEventHandler<BotAdded, BotAddedHandler>();
 });
 
