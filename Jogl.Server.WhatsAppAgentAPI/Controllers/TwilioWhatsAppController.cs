@@ -57,14 +57,14 @@ public class TwilioWhatsAppController : ControllerBase
         var index = msgs.IndexOf(userMgs.Skip(1).FirstOrDefault());
         var rootMsgs = index == -1 ? msgs : msgs.Take(index).ToList();
 
-        var prompt = _systemValueRepository.Get(sv => sv.Key == "ROUTER_PROMPT");
+        var prompt = _systemValueRepository.Get(sv => sv.Key == "ROUTER_PROMPT_WITH_THREADS");
         if (prompt == null)
         {
-            _logger.LogError("ROUTER_PROMPT system value missing");
+            _logger.LogError("ROUTER_PROMPT_WITH_THREADS system value missing");
             return UnprocessableEntity();
         }
 
-        _logger.LogInformation("{payload}", payload.Body);
+        _logger.LogInformation("{payload}", payload.Body); 
         var allowedValues = new List<string>(["new_request", "deepdive", "consult_profile", "documentation", "feedback"]);
         var type = await _aiService.GetResponseAsync(string.Format(prompt.Value, string.Join(Environment.NewLine, allowedValues)), [.. rootMsgs.Select(msg => new InputItem { FromUser = msg.FromUser, Text = msg.Text }), new InputItem { FromUser = true, Text = payload.Body }], allowedValues, 0);
         _logger.LogInformation("Identified as {type}", type);
