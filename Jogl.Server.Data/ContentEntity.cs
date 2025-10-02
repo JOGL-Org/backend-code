@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Jogl.Server.Data
 {
     public enum ContentEntityFilter { Posts, Mentions, Threads }
-    public enum ContentEntityType { Announcement, JoglDoc, Preprint, Article, Protocol, Need, Paper }
+    public enum ContentEntityType { Post, Message }
     public enum ContentEntityStatus { Active, Draft }
     public enum ContentEntityVisibility { Public, Entity, Event, Ecosystem, Authors }
 

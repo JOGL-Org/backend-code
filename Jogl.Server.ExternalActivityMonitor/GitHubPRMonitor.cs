@@ -43,7 +43,7 @@ namespace Jogl.Server.Mailer
                 ExternalSourceID = integration.Id.ToString(),
                 FeedId = integration.FeedId,
                 Text = $"A new PR was opened: <a href=\"{pr.HtmlUrl}\">{pr.Title}</a> in <a href=\"{pr.Base.Repo.HtmlUrl}\">{pr.Base.Repo.FullName}</a>",
-                Type = ContentEntityType.Announcement,
+                Type = ContentEntityType.Post,
                 Status = ContentEntityStatus.Active,
                 Overrides = new DiscussionItemOverrides
                 {

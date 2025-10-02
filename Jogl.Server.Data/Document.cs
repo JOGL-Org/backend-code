@@ -29,8 +29,6 @@ namespace Jogl.Server.Data
         public string FolderId { get; set; }
         public List<string>? Keywords { get; set; }
         public List<string>? UserIds { get; set; }
-        [Obsolete]
-        public ContentEntityVisibility Visibility { get; set; }
 
         [BsonIgnore]
         [JsonIgnore]

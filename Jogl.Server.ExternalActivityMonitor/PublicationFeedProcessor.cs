@@ -69,7 +69,7 @@ namespace Jogl.Server.ExternalActivityMonitor
                 ExternalSourceID = integration.Id.ToString(),
                 FeedId = integration.FeedId,
                 Text = $"A new publication was submitted to {publication.ExternalSystem}: <a href=\"{publication.ExternalURL}\">{publication.Title}</a>",
-                Type = ContentEntityType.Announcement,
+                Type = ContentEntityType.Post,
                 Status = ContentEntityStatus.Active,
                 Overrides = GetOverrides(publication, integration)
             };

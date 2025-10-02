@@ -57,10 +57,6 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("status")]
         public ContentEntityStatus Status { get; set; }
 
-        [Obsolete]
-        [JsonPropertyName("visibility")]
-        public ContentEntityVisibility Visibility { get; set; }
-
         [JsonPropertyName("default_visibility")]
         public FeedEntityVisibility? DefaultVisibility { get; set; }
 

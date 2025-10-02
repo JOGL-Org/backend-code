@@ -1264,8 +1264,8 @@ namespace Jogl.Server.Business
             var contentEntities = _contentEntityRepository.List(communityEntities.Select(c => c.Id.ToString()));
             foreach (var ce in communityEntities)
             {
-                ce.ContentEntityCount = contentEntities.Count(coe => coe.FeedId == ce.Id.ToString() && !(coe.Type == ContentEntityType.Announcement));
-                ce.PostCount = contentEntities.Count(coe => coe.FeedId == ce.Id.ToString() && (coe.Type == ContentEntityType.Announcement));
+                ce.ContentEntityCount = contentEntities.Count(coe => coe.FeedId == ce.Id.ToString() && !(coe.Type == ContentEntityType.Post));
+                ce.PostCount = contentEntities.Count(coe => coe.FeedId == ce.Id.ToString() && (coe.Type == ContentEntityType.Post));
             }
         }
 

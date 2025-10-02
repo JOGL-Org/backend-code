@@ -31,8 +31,6 @@ namespace Jogl.Server.Data
         public PaperType Type { get; set; }
         public ContentEntityStatus Status { get; set; }
         public ExternalSystem ExternalSystem { get; set; }
-        [Obsolete]
-        public ContentEntityVisibility Visibility { get; set; }
         public string PublicationDate { get; set; }
 
         public TagData TagData { get; set; }
