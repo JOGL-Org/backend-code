@@ -10,6 +10,7 @@ namespace Jogl.Server.Data
         public string UserId { get; set; }
         public string ChannelId { get; set; }
         public string ExternalId { get; set; }
+        public string Type { get; set; }
         public InterfaceUserOnboardingStatus OnboardingStatus { get; set; }
     }
 }

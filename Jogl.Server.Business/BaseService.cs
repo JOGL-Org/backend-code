@@ -1212,20 +1212,6 @@ namespace Jogl.Server.Business
             EnrichResourcesWithPermissions(resources, currentUserMemberships, userId);
         }
 
-        protected void EnrichConversationsWithPermissions(IEnumerable<Conversation> conversations, IEnumerable<Membership> currentUserMemberships, string userId)
-        {
-            foreach (var c in conversations)
-            {
-                c.Permissions = Enum.GetValues<Permission>().Where(p => Can(c, currentUserMemberships, userId, p)).ToList();
-            }
-        }
-
-        protected void EnrichConversationsWithPermissions(IEnumerable<Conversation> conversations, string userId = null)
-        {
-            var currentUserMemberships = _membershipRepository.List(m => m.UserId == userId && !m.Deleted);
-            EnrichConversationsWithPermissions(conversations, currentUserMemberships, userId);
-        }
-
         protected void EnrichEventsWithPermissions(IEnumerable<Event> events, IEnumerable<EventAttendance> eventAttendances, IEnumerable<Membership> currentUserMemberships, string userId = null)
         {
             foreach (var e in events)

@@ -13,6 +13,7 @@ namespace Jogl.Server.ConversationCoordinator.Extensions
             serviceCollection.AddSingleton<IOutputServiceFactory, OutputServiceFactory>();
             serviceCollection.AddSingleton<ISlackOutputService, SlackOutputService>();
             serviceCollection.AddSingleton<IWhatsAppOutputService, WhatsAppOutputService>();
+            serviceCollection.AddSingleton<IJOGLOutputService, JOGLOutputService>();
             serviceCollection.AddSlack(configuration);
             serviceCollection.AddWhatsApp(configuration);
         }
