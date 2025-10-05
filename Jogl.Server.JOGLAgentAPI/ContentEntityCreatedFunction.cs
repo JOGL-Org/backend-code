@@ -46,7 +46,7 @@ namespace Jogl.Server.Notifier.Discussion
                 ConversationId = contentEntity.Id.ToString(),
                 Text = contentEntity.Text,
                 UserId = contentEntity.CreatedByUserId,
-            }, "conversation-created");
+            }, "interface-message-created");
         }
     }
 }

@@ -18,22 +18,18 @@ namespace Jogl.Server.API.Controllers
     public class ChannelController : BaseController
     {
         private readonly IChannelService _channelService;
+        private readonly IContentService _contentService;
         private readonly IDocumentService _documentService;
         private readonly IMembershipService _membershipService;
-        private readonly IUserService _userService;
-        private readonly IContentService _contentService;
         private readonly ICommunityEntityService _communityEntityService;
-        private readonly IConfiguration _configuration;
 
-        public ChannelController(IChannelService channelService, IDocumentService documentService, IMembershipService membershipService, IUserService userService, IContentService contentService, ICommunityEntityService communityEntityService, IConfiguration configuration, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public ChannelController(IChannelService channelService, IContentService contentService, IDocumentService documentService, IMembershipService membershipService, ICommunityEntityService communityEntityService, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
         {
             _channelService = channelService;
+            _contentService = contentService;
             _documentService = documentService;
             _membershipService = membershipService;
-            _userService = userService;
-            _contentService = contentService;
             _communityEntityService = communityEntityService;
-            _configuration = configuration;
         }
 
         [HttpPost]
@@ -66,17 +62,6 @@ namespace Jogl.Server.API.Controllers
                 return Forbid();
 
             var channels = _channelService.ListForEntity(CurrentUserId, entityId, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
-            var channelModels = channels.Select(_mapper.Map<ChannelModel>);
-            return Ok(channelModels);
-        }
-
-        [HttpGet]
-        [Route("agent")]
-        [SwaggerOperation($"Lists agent channels for the current user")]
-        [SwaggerResponse((int)HttpStatusCode.OK, $"channel data", typeof(List<ChannelModel>))]
-        public async Task<IActionResult> GetAgentChannels()
-        {
-            var channels = _channelService.ListAgentChannels(CurrentUserId, SortKey.CreatedDate, false);
             var channelModels = channels.Select(_mapper.Map<ChannelModel>);
             return Ok(channelModels);
         }
@@ -377,6 +362,45 @@ namespace Jogl.Server.API.Controllers
             var documents = _documentService.ListForChannel(CurrentUserId, id, type, model.Search, model.Page, model.PageSize, model.SortKey, model.SortAscending);
             var documentModels = documents.Items.Select(d => _mapper.Map<DocumentModel>(d)).ToList();
             return Ok(new ListPage<DocumentModel>(documentModels, documents.Total));
+        }
+
+        [HttpGet]
+        [Route("agent")]
+        [SwaggerOperation($"Lists agent channels for the current user")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"channel data", typeof(List<ChannelModel>))]
+        public async Task<IActionResult> GetAgentChannels()
+        {
+            var channels = _channelService.ListAgentChannels(CurrentUserId, SortKey.CreatedDate, false);
+            var channelModels = channels.Select(_mapper.Map<ChannelModel>);
+            return Ok(channelModels);
+        }
+
+        [HttpPost]
+        [Route("agent")]
+        [SwaggerOperation($"Creates a new agent channel using a starter message")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"The id of the new channel", typeof(string))]
+        public async Task<IActionResult> CreateAgentChannel([FromBody] ContentEntityUpsertModel model)
+        {
+            var channel = new Channel
+            {
+                AutoJoin = false,
+                CommunityEntityId = CurrentUserId,
+                Title = "New conversation",
+                Members = new List<Membership>(),
+                Key = "USER_SEARCH"
+            };
+
+            //create channel
+            await InitCreationAsync(channel);
+            var channelId = await _channelService.CreateAsync(channel);
+
+            //create content entity
+            var contentEntity = _mapper.Map<ContentEntity>(model);
+            contentEntity.FeedId = channelId;
+            await InitCreationAsync(contentEntity);
+            await _contentService.CreateAsync(contentEntity);
+
+            return Ok(channelId);
         }
     }
 }

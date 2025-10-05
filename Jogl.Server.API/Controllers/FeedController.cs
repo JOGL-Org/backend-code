@@ -35,6 +35,8 @@ namespace Jogl.Server.API.Controllers
 
         [HttpPost]
         [Route("{feedId}")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, $"The current user does not have the rights to post to the feed")]
+        [SwaggerResponse((int)HttpStatusCode.OK, $"ID of the new post or message", typeof(string))]
         public async Task<IActionResult> AddContentEntity([FromRoute] string feedId, [FromBody] ContentEntityUpsertModel model)
         {
             var permissions = _communityEntityService.ListPermissions(feedId, CurrentUserId);

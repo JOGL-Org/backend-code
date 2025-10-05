@@ -45,7 +45,7 @@ namespace Jogl.Server.ConversationCoordinator
                 MessageId = comment.Id.ToString(),
                 Text = comment.Text,
                 UserId = comment.CreatedByUserId,
-            }, "conversation-reply-created");
+            }, "interface-message-created");
         }
     }
 }
