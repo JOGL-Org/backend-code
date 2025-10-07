@@ -100,7 +100,10 @@ namespace Jogl.Server.Business
 
         public List<Channel> ListAgentChannels(string userId, SortKey sortKey, bool sortAscending)
         {
-            var channels = _channelRepository.Query(c => c.CommunityEntityId == userId).ToList();
+            var channels = _channelRepository
+                .Query(c => c.CommunityEntityId == userId)
+                .Sort(sortKey, sortAscending)
+                .ToList();
 
             return channels;
         }

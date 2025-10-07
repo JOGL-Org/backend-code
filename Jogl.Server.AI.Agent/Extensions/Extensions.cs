@@ -10,7 +10,7 @@ namespace Jogl.Server.AI.Agent.Extensions
         public static void AddAIAgent(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddBusiness();
-            serviceCollection.AddTransient<IAgent, UserSearchAgent>();
+            serviceCollection.AddTransient<IAgent, DefaultAgent>();
             serviceCollection.AddAI();
             serviceCollection.AddSearch();
         }

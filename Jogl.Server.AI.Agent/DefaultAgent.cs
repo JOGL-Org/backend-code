@@ -5,12 +5,11 @@ using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Polly;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
 {
-    public class UserSearchAgent : IAgent
+    public class DefaultAgent : IAgent
     {
         private readonly IAIService _aiService;
         private readonly Search.ISearchService _searchService;
@@ -19,9 +18,9 @@ namespace Jogl.Server.AI.Agent
         private readonly IResourceService _resourceService;
         private readonly ISystemValueRepository _systemValueRepository;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<UserSearchAgent> _logger;
+        private readonly ILogger<DefaultAgent> _logger;
 
-        public UserSearchAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, IPaperService paperService, IResourceService resourceService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<UserSearchAgent> logger)
+        public DefaultAgent(IAIService aIService, Search.ISearchService searchService, IRelationService relationService, IPaperService paperService, IResourceService resourceService, ISystemValueRepository systemValueRepository, IConfiguration configuration, ILogger<DefaultAgent> logger)
         {
             _aiService = aIService;
             _searchService = searchService;
@@ -231,6 +230,12 @@ namespace Jogl.Server.AI.Agent
             var promptText = string.Format(prompt.Value, JsonSerializer.Serialize(user));
             var response = await _aiService.GetResponseAsync(promptText, messages, 0.5m, 8192);
             return new AgentResponse(response);
+        }
+
+        public async Task<string> GetChannelTitleAsync(string message)
+        {
+            var response = await _aiService.GetResponseAsync("Summarize the topic of this query or question in a few words", [new InputItem { FromUser = true, Text = message }], 0.5m, 8192);
+            return response;
         }
     }
 }

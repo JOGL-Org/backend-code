@@ -21,6 +21,7 @@ using Jogl.Server.Lix;
 using Jogl.Server.Business.Extensions;
 using Jogl.Server.DB.Context;
 using Jogl.Server.Verification.Extensions;
+using Jogl.Server.AI.Agent.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,7 @@ builder.Services.AddRepositories();
 builder.Services.AddSearch();
 builder.Services.AddInitialization();
 builder.Services.AddVerification();
+builder.Services.AddAIAgent();
 
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
@@ -75,6 +77,8 @@ builder.Services.AddTransient<IDocumentConverter, DocumentConverter>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IOperationContext, HttpOperationContext>();
+builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+builder.Services.AddHostedService<TaskBackgroundService>();
 builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new MappingProfiles(provider.GetService<IHttpContextAccessor>()));

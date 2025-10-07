@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jogl.Server.AI.Agent\Jogl.Server.AI.Agent.csproj" />
     <ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
     <ProjectReference Include="..\Jogl.Server.Business\Jogl.Server.Business.csproj" />
     <ProjectReference Include="..\Jogl.Server.Configuration\Jogl.Server.Configuration.csproj" />

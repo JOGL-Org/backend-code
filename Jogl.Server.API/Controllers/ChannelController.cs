@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using Jogl.Server.Data.Util;
+using Jogl.Server.AI.Agent;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -22,14 +23,18 @@ namespace Jogl.Server.API.Controllers
         private readonly IDocumentService _documentService;
         private readonly IMembershipService _membershipService;
         private readonly ICommunityEntityService _communityEntityService;
+        private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly IAgent _agent;
 
-        public ChannelController(IChannelService channelService, IContentService contentService, IDocumentService documentService, IMembershipService membershipService, ICommunityEntityService communityEntityService, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public ChannelController(IChannelService channelService, IContentService contentService, IDocumentService documentService, IMembershipService membershipService, ICommunityEntityService communityEntityService, IMapper mapper, ILogger<ChannelController> logger, IEntityService entityService, IContextService contextService, IBackgroundTaskQueue taskQueue, IAgent agent) : base(entityService, contextService, mapper, logger)
         {
             _channelService = channelService;
             _contentService = contentService;
             _documentService = documentService;
             _membershipService = membershipService;
             _communityEntityService = communityEntityService;
+            _taskQueue = taskQueue;
+            _agent = agent;
         }
 
         [HttpPost]
@@ -393,6 +398,12 @@ namespace Jogl.Server.API.Controllers
             //create channel
             await InitCreationAsync(channel);
             var channelId = await _channelService.CreateAsync(channel);
+
+            _taskQueue.QueueBackgroundWorkItem(async token =>
+            {
+                channel.Title = await _agent.GetChannelTitleAsync(model.Text);
+                await _channelService.UpdateAsync(channel);
+            });
 
             //create content entity
             var contentEntity = _mapper.Map<ContentEntity>(model);
