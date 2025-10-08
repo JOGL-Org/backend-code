@@ -1226,7 +1226,8 @@ namespace Jogl.Server.Business
                 ListingPrivacy = node.ListingPrivacy,
                 FeedId = node.FeedId,
                 Permissions = node.Permissions,
-                Entities = new List<CommunityEntity>()
+                Entities = new List<CommunityEntity>(),
+                Settings = node.Settings
             };
 
             foreach (var valuePair in GetNodeHierarchy(allRelations, communityEntities, nfd.Id.ToString()))
