@@ -7,6 +7,9 @@ namespace Jogl.Server.API.Model
         [JsonPropertyName("entities")]
         public List<CommunityEntityChannelModel> Entities { get; set; }
 
+        [JsonPropertyName("settings")]
+        public List<string> Settings { get; set; }
+
         [JsonPropertyName("new_events")]
         public bool NewEvents { get; set; }
 
