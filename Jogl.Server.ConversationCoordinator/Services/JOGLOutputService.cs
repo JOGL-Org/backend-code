@@ -39,7 +39,7 @@ namespace Jogl.Server.ConversationCoordinator.Services
                     {
                         UserName = "JOGL Agent",
                         UserURL = "/",
-                        UserAvatarURL = "/images/discussionApps/ai-logo.svg"
+                        UserAvatarURL = "/images/JOGL_logo.png"
                     },
                     FeedId = workspaceId,
                     Type = ContentEntityType.Message,
