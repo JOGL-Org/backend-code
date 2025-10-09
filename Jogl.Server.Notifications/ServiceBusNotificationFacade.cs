@@ -101,5 +101,10 @@ namespace Jogl.Server.Notifications
         {
             await _serviceBus.SendAsync(data, queueOrTopicName);
         }
+
+        public async Task NotifyTypingAsync(UserIndicator indicator)
+        {
+            await _serviceBus.SendAsync(indicator, "typing-indicated");
+        }
     }
 }

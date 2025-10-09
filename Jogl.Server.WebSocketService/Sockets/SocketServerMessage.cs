@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.WebSocketService.Sockets
 {
-    public enum ServerMessageType { Notification, Mention, PostInFeed, CommentInPost, FeedActivity }
+    public enum ServerMessageType { Notification, Mention, PostInFeed, CommentInPost, FeedActivity, UserTyping }
     public class SocketServerMessage
     {
         [JsonPropertyName("type")]

@@ -59,6 +59,11 @@ namespace Jogl.Server.WebSocketService
                 }
             });
 
+            await _serviceBusProxy.SubscribeAsync("typing-indicated", "sockets", async (UserIndicator entity) =>
+            {
+                await _socketGateway.SendMessageAsync(new SocketServerMessage { Type = ServerMessageType.UserTyping, TopicId = entity.FeedId, SubjectId = entity.User });
+            });
+
             await _serviceBusProxy.SubscribeAsync("notification-created", "sockets", async (Notification notification) =>
             {
                 //notify via websockets

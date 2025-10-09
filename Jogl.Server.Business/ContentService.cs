@@ -8,7 +8,6 @@ using Jogl.Server.GitHub;
 using Jogl.Server.HuggingFace;
 using Jogl.Server.Notifications;
 using Jogl.Server.PubMed;
-using Jogl.Server.ServiceBus;
 using Jogl.Server.Storage;
 using Jogl.Server.URL;
 using Microsoft.Extensions.Configuration;

@@ -2,21 +2,60 @@
 using Jogl.Server.Business;
 using Jogl.Server.ConversationCoordinator.DTO;
 using Jogl.Server.Data;
+using Jogl.Server.Notifications;
 using Jogl.Server.Slack;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 
 namespace Jogl.Server.ConversationCoordinator.Services
 {
-    public class JOGLOutputService(IContentService contentService, ILogger<IJOGLOutputService> logger) : IJOGLOutputService
+    public class JOGLOutputService(IContentService contentService, INotificationFacade notificationFacade, ILogger<IJOGLOutputService> logger) : IJOGLOutputService
     {
+        private readonly ConcurrentDictionary<string, CancellationTokenSource> _activeIndicators = new();
+
         public async Task<string> StartIndicatorAsync(string workspaceId, string channelId, string conversationId)
         {
-            return null;
+            var indicatorId = Guid.NewGuid().ToString();
+            var cts = new CancellationTokenSource();
+
+            if (!_activeIndicators.TryAdd(indicatorId, cts))
+            {
+                cts.Dispose();
+                throw new InvalidOperationException("Failed to add indicator to dictionary");
+            }
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    while (!cts.Token.IsCancellationRequested)
+                    {
+                        await notificationFacade.NotifyTypingAsync(new UserIndicator { User = "JOGL Agent", FeedId = channelId });
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when cancelled
+                }
+                finally
+                {
+                    _activeIndicators.TryRemove(indicatorId, out _);
+                    cts.Dispose();
+                }
+            }, cts.Token);
+
+            return indicatorId;
         }
 
         public async Task StopIndicatorAsync(string workspaceId, string channelId, string conversationId, string indicatorId)
         {
+            if (_activeIndicators.TryRemove(indicatorId, out var cts))
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
 
+            await Task.CompletedTask;
         }
 
         public async Task<List<InputItem>> LoadConversationAsync(string workspaceId, string channelId, string conversationId)
