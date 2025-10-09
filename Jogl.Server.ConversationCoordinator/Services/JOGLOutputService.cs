@@ -31,6 +31,7 @@ namespace Jogl.Server.ConversationCoordinator.Services
                     while (!cts.Token.IsCancellationRequested)
                     {
                         await notificationFacade.NotifyTypingAsync(new UserIndicator { User = "JOGL Agent", FeedId = channelId });
+                        await Task.Delay(5000);
                     }
                 }
                 catch (OperationCanceledException)
