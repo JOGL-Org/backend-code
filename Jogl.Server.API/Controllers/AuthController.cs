@@ -12,9 +12,9 @@ using System.Net;
 using Jogl.Server.LinkedIn;
 using Jogl.Server.API.Services;
 using Jogl.Server.GitHub;
-using static Duende.IdentityServer.Models.IdentityResources;
-using Microsoft.AspNet.SignalR;
 using Jogl.Server.Verification;
+using Jogl.Server.Telegram;
+using Jogl.Server.Telegram.DTO;
 
 namespace Jogl.Server.API.Controllers
 {
@@ -32,8 +32,9 @@ namespace Jogl.Server.API.Controllers
         private readonly IInvitationService _invitationService;
         private readonly IConfiguration _configuration;
         private readonly IOrcidFacade _orcidFacade;
+        private readonly ITelegramVerifier _telegramVerifier;
 
-        public AuthController(IGoogleFacade googleFacade, ILinkedInFacade linkedInFacade, IGitHubFacade githubFacade, IOrcidFacade orcidFacade, IUserService userService, IUserVerificationService userVerificationService, IAuthService authService, IAuthChallengeService authChallengeService, IInvitationService invitationService, IConfiguration configuration, IMapper mapper, ILogger<AuthController> logger, IEntityService entityService, IContextService contextService) : base(entityService, contextService, mapper, logger)
+        public AuthController(IGoogleFacade googleFacade, ILinkedInFacade linkedInFacade, IGitHubFacade githubFacade, IOrcidFacade orcidFacade, IUserService userService, IUserVerificationService userVerificationService, IAuthService authService, IAuthChallengeService authChallengeService, IInvitationService invitationService, IConfiguration configuration, IMapper mapper, ILogger<AuthController> logger, IEntityService entityService, IContextService contextService, ITelegramVerifier telegramVerifier) : base(entityService, contextService, mapper, logger)
         {
             _userService = userService;
             _userVerificationService = userVerificationService;
@@ -45,6 +46,7 @@ namespace Jogl.Server.API.Controllers
             _googleFacade = googleFacade;
             _linkedInFacade = linkedInFacade;
             _githubFacade = githubFacade;
+            _telegramVerifier = telegramVerifier;
         }
 
         [AllowAnonymous]
@@ -462,5 +464,54 @@ namespace Jogl.Server.API.Controllers
         //        created = false
         //    });
         //}
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("telegram")]
+        [SwaggerOperation($"Register or sign-in the user with a telegram payload")]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, "Telegram payload verification failed")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, "No telegram record found or user not found")]
+        public async Task<IActionResult> LoginOrSignupWithTelegram([FromBody] TelegramVerificationPayloadModel model)
+        {
+            var payload = _mapper.Map<TelegramVerificationPayload>(model);
+            var verification = await _telegramVerifier.VerifyPayloadAsync(payload);
+            if (!verification)
+                return Forbid();
+
+            var email = $"{model.Id}@telegram.xyz";
+            var existingUser = _userService.GetForEmail(email);
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName?.Trim() ?? string.Empty,
+                    Username = model.Username,
+                    Email = email,
+                    Auth = new UserExternalAuth
+                    {
+                        IsTelegramUser = true
+                    },
+                    Status = UserStatus.Verified
+                };
+
+                await InitCreationAsync(user);
+                var userId = await _userService.CreateAsync(user);
+
+                return Ok(new
+                {
+                    token = _authService.GetToken(email),
+                    userId,
+                    created = true
+                });
+            }
+
+            return Ok(new
+            {
+                token = _authService.GetToken(email),
+                userId = existingUser.Id.ToString(),
+                created = false
+            });
+        }
     }
 }

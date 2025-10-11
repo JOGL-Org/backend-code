@@ -119,6 +119,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Text", "Jogl.Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.InfoBIP", "Jogl.Server.InfoBIP\Jogl.Server.InfoBIP.csproj", "{5FEB489B-F36F-4C13-BB73-0D0F914F69D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogl.Server.Telegram", "Jogl.Server.Telegram\Jogl.Server.Telegram.csproj", "{718E1046-AE8C-4E12-921D-AACD419524BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -353,6 +355,10 @@ Global
 		{5FEB489B-F36F-4C13-BB73-0D0F914F69D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FEB489B-F36F-4C13-BB73-0D0F914F69D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FEB489B-F36F-4C13-BB73-0D0F914F69D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{718E1046-AE8C-4E12-921D-AACD419524BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718E1046-AE8C-4E12-921D-AACD419524BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718E1046-AE8C-4E12-921D-AACD419524BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718E1046-AE8C-4E12-921D-AACD419524BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

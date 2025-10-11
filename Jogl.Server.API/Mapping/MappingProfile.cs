@@ -9,6 +9,7 @@ using Jogl.Server.Images;
 using Jogl.Server.LinkedIn.DTO;
 using Jogl.Server.Orcid;
 using Jogl.Server.PubMed.DTO.EFetch;
+using Jogl.Server.Telegram.DTO;
 using MongoDB.Bson;
 
 namespace Jogl.Server.API.Mapping
@@ -788,6 +789,8 @@ namespace Jogl.Server.API.Mapping
                 .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateStarted))
                 .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateEnded != "Present" ? src.DateEnded : null))
                 .ForMember(dst => dst.Current, opt => opt.MapFrom(src => src.DateEnded == "Present"));
+
+            CreateMap<TelegramVerificationPayloadModel, TelegramVerificationPayload>();
         }
 
         private DateTime GetEventDateTimeUTC(DateTime date, TimezoneModel timezone)

@@ -22,6 +22,7 @@ using Jogl.Server.Business.Extensions;
 using Jogl.Server.DB.Context;
 using Jogl.Server.Verification.Extensions;
 using Jogl.Server.AI.Agent.Extensions;
+using Jogl.Server.Telegram.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,7 @@ builder.Services.AddInitialization();
 builder.Services.AddVerification();
 builder.Services.AddAIAgent();
 
+builder.Services.AddTelegram();
 builder.Services.AddTransient<IGoogleFacade, GoogleFacade>();
 builder.Services.AddTransient<ILinkedInFacade, LinkedInFacade>();
 builder.Services.AddTransient<ILixFacade, LixFacade>();

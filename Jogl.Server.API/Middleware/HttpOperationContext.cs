@@ -1,4 +1,6 @@
-﻿namespace Jogl.Server.DB.Context
+﻿using Jogl.Server.DB.Context;
+
+namespace Jogl.Server.API.Middleware
 {
     public class HttpOperationContext : IOperationContext
     {

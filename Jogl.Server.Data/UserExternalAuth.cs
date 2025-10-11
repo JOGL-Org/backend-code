@@ -9,5 +9,6 @@ namespace Jogl.Server.Data
         public bool IsOrcidUser { get; set; }
         public bool IsGoogleUser { get; set; }
         public bool IsLinkedInUser { get; set; }
+        public bool IsTelegramUser { get; set; }
     }
 }
