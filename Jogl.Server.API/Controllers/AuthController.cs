@@ -507,6 +507,11 @@ namespace Jogl.Server.API.Controllers
                 });
             }
 
+            if (existingUser.Deleted)
+            {
+                return Forbid();
+            }
+
             return Ok(new
             {
                 token = _authService.GetToken(email),
