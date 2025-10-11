@@ -471,6 +471,7 @@ namespace Jogl.Server.API.Controllers
         [SwaggerOperation($"Register or sign-in the user with a telegram payload")]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, "Telegram payload verification failed")]
         [SwaggerResponse((int)HttpStatusCode.NotFound, "No telegram record found or user not found")]
+        [SwaggerResponse((int)HttpStatusCode.OK, "Login or registration successful", typeof(AuthResultExtendedModel))]
         public async Task<IActionResult> LoginOrSignupWithTelegram([FromBody] TelegramVerificationPayloadModel model)
         {
             var payload = _mapper.Map<TelegramVerificationPayload>(model);
