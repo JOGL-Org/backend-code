@@ -92,34 +92,6 @@ namespace Jogl.Server.Business
 
             await _userRepository.CreateAsync(user);
 
-            //create AI agent channel
-            var channelId = await _channelRepository.CreateAsync(new Channel
-            {
-                Title = "Search Agent",
-                Description = "An AI-powered conversational agent that helps you search our database of experts",
-                Key = "USER_SEARCH",
-                CommunityEntityId = user.Id.ToString(),
-                CreatedByUserId = user.Id.ToString(),
-                CreatedUTC = DateTime.UtcNow,
-                Settings = new List<string> { CONTENT_MEMBER_POST, COMMENT_MEMBER_POST }
-            });
-
-            await _feedRepository.CreateAsync(new Feed
-            {
-                CreatedUTC = DateTime.UtcNow,
-                Id = ObjectId.Parse(channelId),
-                Type = FeedType.Channel,
-            });
-
-            var membershipId = await _membershipRepository.CreateAsync(new Membership
-            {
-                AccessLevel = AccessLevel.Member,
-                CommunityEntityId = channelId,
-                UserId = user.Id.ToString(),
-                CreatedByUserId = user.Id.ToString(),
-                CreatedUTC = DateTime.UtcNow,
-            });
-
             //check for pending invitations
             var invites = _invitationRepository.List(i => i.InviteeEmail == user.Email
                                                           && i.Status == InvitationStatus.Pending
