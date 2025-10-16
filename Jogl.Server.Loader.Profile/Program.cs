@@ -8,7 +8,8 @@ using System.Text;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.Business.Extensions;
-using User = Jogl.Server.Loader.Profile.DTO.User;
+using Jogl.Server.Loader.Profile.DTO;
+using MongoDB.Bson;
 
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.json")
@@ -26,96 +27,129 @@ var host = Host.CreateDefaultBuilder()
 
 // Resolve and use services
 var userService = host.Services.GetRequiredService<IUserService>();
-var paperService = host.Services.GetRequiredService<IPaperService>();
+//var paperService = host.Services.GetRequiredService<IPaperService>();
 var resourceService = host.Services.GetRequiredService<IResourceService>();
 var membershipService = host.Services.GetRequiredService<IMembershipService>();
 
 var existingUsers = userService.List();
-var existingPapers = paperService.List();
+//var existingPapers = paperService.List();
 var existingResources = resourceService.List();
-var pasteurNodeId = "650dc1f8092fdb774ae05ff0";
+//var solanaNode = "650dc1f8092fdb774ae05ff0";
 
-foreach (var file in Directory.GetFiles("../../../pasteur/"))
+foreach (var file in Directory.GetFiles("../../../solana/"))
 {
     try
     {
         var jsonString = File.ReadAllText(file);
-        var importUser = JsonSerializer.Deserialize<User>(jsonString);
+        var importUser = JsonSerializer.Deserialize<UserSolana>(jsonString);
         //if (string.IsNullOrEmpty(importUser.Email))
         //{
         //    Console.WriteLine($"{importUser.FirstName} {importUser.LastName} has no email");
         //    continue;
         //}
 
-        var user = existingUsers.SingleOrDefault(u => u.FirstName == importUser.FirstName && u.LastName == importUser.LastName);
-        //if (user == null)
-        //{
-        //    user = new Jogl.Server.Data.User
-        //    {
-        //        Bio = importUser.Bio,
-        //        ShortBio = importUser.Headline,
-        //        CreatedUTC = DateTime.UtcNow,
-        //        Current = importUser.LatestActivities,
-        //        FirstName = importUser.FirstName,
-        //        LastName = importUser.LastName,
-        //        Email = importUser.Email,
-        //        Experience = importUser.Experience?.Select(e => new UserExperience
-        //        {
-        //            Company = e.Company,
-        //            Description = e.Description,
-        //            Position = e.Position,
-        //            DateFrom = e.DateFrom?.ToString(),
-        //            DateTo = e.DateTo?.ToString(),
-        //            Current = e.Current,
-        //        })?.ToList(),
-        //        Education = importUser.Education?.Select(e => new UserEducation
-        //        {
-        //            Program = e.Program,
-        //            Description = e.Description,
-        //            School = e.School,
-        //            DateFrom = e.DateFrom?.ToString(),
-        //            DateTo = e.DateTo?.ToString(),
-        //            Current = e.Current,
-        //        })?.ToList(),
-        //        Skills = importUser.Skills?.Select(s => s.SkillName)?.ToList(),
-        //        Status = UserStatus.Verified
-        //    };
+        if (importUser.ColloseumProfile == null)
+            continue;
 
-        //    var userId = await userService.CreateAsync(user);
-        //    await membershipService.CreateAsync(new Membership
+        var user = existingUsers.SingleOrDefault(u => importUser.ColloseumProfile.Username == u.Username);
+        if (user == null)
+        {
+            user = new User
+            {
+                //Bio = importUser.Bio,
+                //ShortBio = importUser.Headline,
+                CreatedUTC = DateTime.UtcNow,
+                //Current = importUser.LatestActivities,
+                //FirstName = importUser.FirstName,
+                //LastName = importUser.LastName,
+                Email = importUser.ColloseumProfile.Username + "@colloseum.org",
+                Username = importUser.ColloseumProfile.Username,
+                //Experience = importUser.Experience?.Select(e => new UserExperience
+                //{
+                //    Company = e.Company,
+                //    Description = e.Description,
+                //    Position = e.Position,
+                //    DateFrom = e.DateFrom?.ToString(),
+                //    DateTo = e.DateTo?.ToString(),
+                //    Current = e.Current,
+                //})?.ToList(),
+                //Education = importUser.Education?.Select(e => new UserEducation
+                //{
+                //    Program = e.Program,
+                //    Description = e.Description,
+                //    School = e.School,
+                //    DateFrom = e.DateFrom?.ToString(),
+                //    DateTo = e.DateTo?.ToString(),
+                //    Current = e.Current,
+                //})?.ToList(),
+                //Skills = importUser.Skills?.Select(s => s.SkillName)?.ToList(),
+                Status = UserStatus.Verified
+            };
+
+            var userId = await userService.CreateAsync(user);
+            user.Id = ObjectId.Parse(userId);
+
+            //await membershipService.CreateAsync(new Membership
+            //{
+            //    CommunityEntityId = solanaNode,
+            //    CommunityEntityType = CommunityEntityType.Node,
+            //    CreatedByUserId = userId,
+            //    CreatedUTC = DateTime.UtcNow,
+            //    UserId = userId
+            //});
+        }
+
+        ////papers
+        //foreach (var importPaper in importUser.Papers)
+        //{
+        //    if (importPaper.Doi == null)
+        //        continue;
+
+        //    if (existingPapers.Any(p => p.ExternalId == importPaper.Doi))
+        //        continue;
+
+        //    await paperService.CreateAsync(new Paper
         //    {
-        //        CommunityEntityId = pasteurNodeId,
-        //        CommunityEntityType = CommunityEntityType.Node,
-        //        CreatedByUserId = userId,
+        //        Authors = importPaper.AuthorList,
         //        CreatedUTC = DateTime.UtcNow,
-        //        UserId = userId
+        //        DefaultVisibility = FeedEntityVisibility.View,
+        //        ExternalId = importPaper.Doi,
+        //        ExternalSystem = !string.IsNullOrEmpty(importPaper.SemanticScholarId) ? ExternalSystem.SemanticScholar : !string.IsNullOrEmpty(importPaper.OpenAlexId) ? ExternalSystem.OpenAlex : ExternalSystem.None,
+        //        Journal = importPaper.Location,
+        //        Title = importPaper.Title,
+        //        Summary = importPaper.Abstract,
+        //        SourceId = importPaper.SemanticScholarId ?? importPaper.OpenAlexId,
+        //        PublicationDate = importPaper.PublicationDate,
+        //        FeedId = user.Id.ToString()
         //    });
         //}
 
-        //papers
-        foreach (var importPaper in importUser.Papers)
-        {
-            if (importPaper.Doi == null)
-                continue;
-
-            if (existingPapers.Any(p => p.ExternalId == importPaper.Doi))
-                continue;
-
-            await paperService.CreateAsync(new Paper
+        //repos
+        var existingRepos = existingResources.Where(er => er.Type == ResourceType.Repository).ToList();
+        if (importUser.Repos != null)
+            foreach (var importRepo in importUser.Repos)
             {
-                Authors = importPaper.AuthorList,
-                CreatedUTC = DateTime.UtcNow,
-                DefaultVisibility = FeedEntityVisibility.View,
-                ExternalId = importPaper.Doi,
-                ExternalSystem = !string.IsNullOrEmpty(importPaper.SemanticScholarId) ? ExternalSystem.SemanticScholar : !string.IsNullOrEmpty(importPaper.OpenAlexId) ? ExternalSystem.OpenAlex : ExternalSystem.None,
-                Journal = importPaper.Location,
-                Title = importPaper.Title,
-                Summary = importPaper.Abstract,
-                SourceId = importPaper.SemanticScholarId ?? importPaper.OpenAlexId,
-                PublicationDate = importPaper.PublicationDate,
-                FeedId = user.Id.ToString()
-            });
-        }
+                if (existingRepos.Any(p => p.Title == importRepo.Name))
+                    continue;
+
+                await resourceService.CreateAsync(new Resource
+                {
+                    Description = importRepo.Abstract,
+                    EntityId = user.Id.ToString(),
+                    Type = ResourceType.Patent,
+                    CreatedUTC = DateTime.UtcNow,
+                    DefaultVisibility = FeedEntityVisibility.View,
+                    Title = importRepo.Name,
+                    Data = new BsonDocument {
+                        { "License", importRepo.License ?? "" },
+                        { "Source", "Github" },
+                        { "Url", importRepo.Url ?? "" },
+                        { "Readme", importRepo.Readme ?? "" },
+                        { "Language", importRepo.Language ?? "" },
+                        { "Keywords", string.Join(",", importRepo.Topics ?? new List<string>()) }
+                    },
+                });
+            }
 
 
         ////patents
@@ -137,8 +171,6 @@ foreach (var file in Directory.GetFiles("../../../pasteur/"))
         //        });
         //    }
 
-
-        //TODO resources
 
         //var existingMembership = existingMemberships.FirstOrDefault(m => m.UserId == user.Id.ToString() && m.CommunityEntityId == "674f3ceda442a3424df80b05");
         //if (existingMembership == null)

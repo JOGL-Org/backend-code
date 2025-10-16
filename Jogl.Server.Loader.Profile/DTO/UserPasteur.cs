@@ -2,7 +2,7 @@
 
 namespace Jogl.Server.Loader.Profile.DTO
 {
-    public class User
+    public class UserPasteur
     {
         [JsonPropertyName("email")]
         public string Email { get; set; }
