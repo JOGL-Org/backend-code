@@ -59,6 +59,7 @@ namespace Jogl.Server.Business
                 user.PasswordSalt = salt;
             }
 
+            user.Onboarding = true;
             user.ContactMe = true;
             user.NotificationSettings = new UserNotificationSettings
             {
