@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Jogl.Server.DB.Context;
-using Jogl.Server.AI;
 using Jogl.Server.Search;
 
 var host = new HostBuilder()

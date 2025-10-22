@@ -7,7 +7,7 @@ namespace Jogl.Server.Data
 {
     public enum ResourceType
     {
-        Repository, Patent
+        Repository, Patent, Project
     }
 
     [BsonIgnoreExtraElements]

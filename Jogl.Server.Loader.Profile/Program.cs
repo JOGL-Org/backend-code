@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.Business.Extensions;
 using Jogl.Server.Loader.Profile.DTO;
 using MongoDB.Bson;
+using System.Drawing.Text;
 
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.json")
@@ -34,7 +35,7 @@ var membershipService = host.Services.GetRequiredService<IMembershipService>();
 var existingUsers = userService.List();
 //var existingPapers = paperService.List();
 var existingResources = resourceService.List();
-//var solanaNode = "650dc1f8092fdb774ae05ff0";
+var solanaNode = "684bf7e14b1507a00823d69f";
 
 foreach (var file in Directory.GetFiles("../../../solana/"))
 {
@@ -56,48 +57,62 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
         {
             user = new User
             {
-                //Bio = importUser.Bio,
-                //ShortBio = importUser.Headline,
+                Bio = importUser.Bio,
+                ShortBio = importUser.Headline,
+                StatusText = importUser.LookingForCollab ? "Looking for collaboration" : string.Empty,
                 CreatedUTC = DateTime.UtcNow,
-                //Current = importUser.LatestActivities,
-                //FirstName = importUser.FirstName,
-                //LastName = importUser.LastName,
+                Current = importUser.RecentGithubActivity,
+                FirstName = importUser.FirstName,
+                City = importUser.Location,
+                LastName = importUser.LastName,
                 Email = importUser.ColloseumProfile.Username + "@colloseum.org",
                 Username = importUser.ColloseumProfile.Username,
-                //Experience = importUser.Experience?.Select(e => new UserExperience
-                //{
-                //    Company = e.Company,
-                //    Description = e.Description,
-                //    Position = e.Position,
-                //    DateFrom = e.DateFrom?.ToString(),
-                //    DateTo = e.DateTo?.ToString(),
-                //    Current = e.Current,
-                //})?.ToList(),
-                //Education = importUser.Education?.Select(e => new UserEducation
-                //{
-                //    Program = e.Program,
-                //    Description = e.Description,
-                //    School = e.School,
-                //    DateFrom = e.DateFrom?.ToString(),
-                //    DateTo = e.DateTo?.ToString(),
-                //    Current = e.Current,
-                //})?.ToList(),
-                //Skills = importUser.Skills?.Select(s => s.SkillName)?.ToList(),
-                Status = UserStatus.Verified
+                Experience = importUser.Experience?.Select(e => new UserExperience
+                {
+                    Company = e.Company,
+                    Description = e.Description,
+                    Position = e.Position,
+                    DateFrom = e.DateFrom?.ToString(),
+                    DateTo = e.DateTo?.ToString(),
+                    Current = e.Current,
+                })?.ToList(),
+                Education = importUser.Education?.Select(e => new UserEducation
+                {
+                    Program = e.Program,
+                    Description = e.Description,
+                    School = e.School,
+                    DateFrom = e.DateFrom?.ToString(),
+                    DateTo = e.DateTo?.ToString(),
+                    Current = e.Current,
+                })?.ToList(),
+                Skills = importUser.Skills ?? new List<string>(),
+                Status = UserStatus.Verified,
+                Contacts = new Dictionary<string, string>()
             };
 
+            AmendContacts(user.Contacts, importUser);
+            
             var userId = await userService.CreateAsync(user);
             user.Id = ObjectId.Parse(userId);
 
-            //await membershipService.CreateAsync(new Membership
-            //{
-            //    CommunityEntityId = solanaNode,
-            //    CommunityEntityType = CommunityEntityType.Node,
-            //    CreatedByUserId = userId,
-            //    CreatedUTC = DateTime.UtcNow,
-            //    UserId = userId
-            //});
+            await membershipService.CreateAsync(new Membership
+            {
+                CommunityEntityId = solanaNode,
+                CommunityEntityType = CommunityEntityType.Node,
+                CreatedByUserId = userId,
+                CreatedUTC = DateTime.UtcNow,
+                UserId = userId
+            });
         }
+
+        //else
+        //{
+        //    if (user.Contacts == null)
+        //        user.Contacts = new Dictionary<string, string>();
+
+        //    AmendContacts(user.Contacts, importUser);
+        //    await userService.UpdateAsync(user);
+        //}
 
         ////papers
         //foreach (var importPaper in importUser.Papers)
@@ -129,6 +144,9 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
         if (importUser.Repos != null)
             foreach (var importRepo in importUser.Repos)
             {
+                if (importRepo == null)
+                    continue;
+
                 if (existingRepos.Any(p => p.Title == importRepo.Name))
                     continue;
 
@@ -146,11 +164,38 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
                         { "Url", importRepo.Url ?? "" },
                         { "Readme", importRepo.Readme ?? "" },
                         { "Language", importRepo.Language ?? "" },
-                        { "Keywords", string.Join(",", importRepo.Topics ?? new List<string>()) }
+                        { "Keywords", string.Join(",", importRepo.Topics?.Select(t=>t.Topic.Name) ?? new List<string>()) }
                     },
                 });
             }
 
+        //projects
+        var existingProjects = existingResources.Where(er => er.Type == ResourceType.Project).ToList();
+        if (importUser.Projects != null)
+            foreach (var importProject in importUser.Projects)
+            {
+                if (importProject == null)
+                    continue;
+
+                if (existingProjects.Any(p => p.Data["Id"] == importProject.Id && p.EntityId == user.Id.ToString()))
+                    continue;
+
+                await resourceService.CreateAsync(new Resource
+                {
+                    Description = importProject.Description,
+                    EntityId = user.Id.ToString(),
+                    Type = ResourceType.Project,
+                    CreatedUTC = DateTime.UtcNow,
+                    DefaultVisibility = FeedEntityVisibility.View,
+                    Title = importProject.Title,
+                    Data = new BsonDocument {
+                        { "Id", importProject.Id.ToString() },
+                        { "Source", importProject.Source??string.Empty },
+                        { "Url",importProject.RepoLink??string.Empty },
+                        { "Date", importProject.Date??string.Empty },
+                    },
+                });
+            }
 
         ////patents
         //var existingPatents = existingResources.Where(er => er.Type == ResourceType.Patent).ToList();
@@ -191,41 +236,25 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error" + ex.ToString());
+        //Console.WriteLine($"Error" + ex.ToString());
         continue;
     }
 }
 
-string FormatOAWorkAbstract(Dictionary<string, List<int>> invertedIndex)
+void AmendContacts(Dictionary<string, string> contacts, UserSolana importUser)
 {
-    if (invertedIndex == null)
-        return null;
+    var res = new Dictionary<string, string>();
 
-    StringBuilder stringBuilder = new();
-    int maxPosition = invertedIndex.Values.SelectMany(positions => positions).Max();
-
-    for (int position = 0; position <= maxPosition; position++)
-    {
-        var wordAtPosition = invertedIndex
-            .Where(wordInfo => wordInfo.Value.Contains(position))
-            .Select(wordInfo => wordInfo.Key)
-            .SingleOrDefault();
-
-        stringBuilder.Append($"{wordAtPosition} ");
-    }
-
-    return stringBuilder.ToString().Trim();
-}
-
-string FormatPMArticleAbstract(List<AbstractText> abstractFragments)
-{
-    if (abstractFragments == null)
-        return null;
-
-    if (abstractFragments?.Count > 1)
-        return string.Join("\n", abstractFragments.Select(at => $"{at?.Label}: {at?.Text}"));
-
-    return abstractFragments?.First()?.Text;
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.ColloseumHandle) && contacts.ContainsKey("Colloseum"))
+        contacts.Add("Colloseum", importUser.SocialLinks.ColloseumHandle);
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.GithubHandle) && contacts.ContainsKey("Github"))
+        contacts.Add("Github", importUser.SocialLinks.GithubHandle);
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.LinkedinHandle) && contacts.ContainsKey("LinkedIn"))
+        contacts.Add("LinkedIn", importUser.SocialLinks.LinkedinHandle);
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TelegramHandle) && contacts.ContainsKey("Telegram"))
+        contacts.Add("Telegram", importUser.SocialLinks.TelegramHandle);
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TwitterHandle) && contacts.ContainsKey("Twitter"))
+        contacts.Add("Twitter", importUser.SocialLinks.TwitterHandle);
 }
 
 

@@ -68,6 +68,9 @@ namespace Jogl.Server.Search
             searchDoc["Repositories_Languages"] = repositories != null ? repositories.Select(e => e["Language"]).Where(str => !string.IsNullOrEmpty(str)).Distinct().ToList() : new List<string>();
             searchDoc["Repositories_Keywords"] = repositories != null ? repositories.Select(e => e["Keywords"]).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
+            //searchDoc["Projects_Title"] = projects != null ? projects.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
+            //searchDoc["Projects_Languages"] = projects != null ? projects.Select(e => e["Language"]).Where(str => !string.IsNullOrEmpty(str)).Distinct().ToList() : new List<string>();
+
             searchDoc["Papers_Title"] = papers != null ? papers.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract"] = papers != null ? papers.Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
