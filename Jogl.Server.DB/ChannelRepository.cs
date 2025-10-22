@@ -45,6 +45,7 @@ namespace Jogl.Server.DB
                                            .Set(e => e.Settings, updatedEntity.Settings)
                                            .Set(e => e.Visibility, updatedEntity.Visibility)
                                            .Set(e => e.AutoJoin, updatedEntity.AutoJoin)
+                                           .Set(e => e.CommunityEntityId, updatedEntity.CommunityEntityId)
                                            .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)
                                            .Set(e => e.UpdatedByUserId, updatedEntity.UpdatedByUserId).Set(e => e.LastActivityUTC, updatedEntity.LastActivityUTC);
         }

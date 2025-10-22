@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.WhatsApp.Extensions;
 using Jogl.Server.WhatsApp;
 using Jogl.Server.Business;
+using Jogl.Server.DB;
+using Jogl.Server.Data;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -22,15 +24,24 @@ var host = Host.CreateDefaultBuilder()
                services.AddBusiness();
            })
            .Build();
+var nodeId = "684bf7e24b1507a00823d6a3";
 
-var userService = host.Services.GetService<IUserService>();
-var users = userService.List();
-foreach (var user in users)
+var channelRepo = host.Services.GetService<IChannelRepository>();
+var interfaceChannelRepo = host.Services.GetService<IInterfaceChannelRepository>();
+var channels = channelRepo.Query(c => !string.IsNullOrEmpty(c.Key) && c.Title != "Search Agent").ToList();
+
+foreach (var channel in channels)
 {
-    if (user.Onboarding == true)
-        continue;
+    await interfaceChannelRepo.CreateAsync(new Jogl.Server.Data.InterfaceChannel
+    {
+        CreatedByUserId = channel.CreatedByUserId,
+        CreatedUTC = channel.CreatedUTC,
+        ExternalId = channel.Id.ToString(),
+        NodeId = nodeId,
+    });
 
-    user.Onboarding = true;
+    channel.CommunityEntityId = nodeId;
+    await channelRepo.UpdateAsync(channel);
 }
 
 //v/ar whatsappService = host.Services.GetRequiredService<IWhatsAppService>();

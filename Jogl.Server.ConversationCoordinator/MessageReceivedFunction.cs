@@ -207,7 +207,7 @@ namespace Jogl.Server.ConversationCoordinator
 
         public async Task ProcessMessageAsync(Message message, InterfaceUser interfaceUser, Data.User user)
         {
-            var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == message.WorkspaceId);
+            var channel = _interfaceChannelRepository.Get(ic => ic.ExternalId == message.ChannelId);
 
             //log incoming message
             var rootInterfaceMessage = new InterfaceMessage

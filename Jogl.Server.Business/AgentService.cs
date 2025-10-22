@@ -5,7 +5,7 @@ using Jogl.Server.ServiceBus;
 
 namespace Jogl.Server.Business
 {
-    public class AgentService(IChannelRepository channelRepository, IContentEntityRepository contentEntityRepository, IInterfaceUserRepository interfaceUserRepository, IServiceBusProxy serviceBusProxy) : IAgentService
+    public class AgentService(IChannelRepository channelRepository, IContentEntityRepository contentEntityRepository, IInterfaceChannelRepository interfaceChannelRepository, IInterfaceUserRepository interfaceUserRepository, IServiceBusProxy serviceBusProxy) : IAgentService
     {
         public async Task NotifyAsync(ContentEntity contentEntity)
         {
@@ -18,6 +18,19 @@ namespace Jogl.Server.Business
             var channel = channelRepository.Get(contentEntity.FeedId);
             if (channel?.Key != "USER_SEARCH")
                 return;
+
+            //ensure interface channel is created
+            var interfaceChannel = interfaceChannelRepository.Get(u => u.ExternalId == contentEntity.FeedId);
+            if (interfaceChannel == null)
+            {
+                await interfaceChannelRepository.CreateAsync(new InterfaceChannel
+                {
+                    CreatedByUserId = contentEntity.CreatedByUserId,
+                    CreatedUTC = contentEntity.CreatedUTC,
+                    NodeId = channel.CommunityEntityId,
+                    ExternalId = channel.Id.ToString()
+                });
+            }
 
             //ensure interface user is created
             var interfaceUser = interfaceUserRepository.Get(u => u.UserId == contentEntity.CreatedByUserId && u.Type == Const.TYPE_JOGL);

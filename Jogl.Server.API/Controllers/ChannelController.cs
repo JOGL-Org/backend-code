@@ -371,11 +371,11 @@ namespace Jogl.Server.API.Controllers
 
         [HttpGet]
         [Route("agent")]
-        [SwaggerOperation($"Lists agent channels for the current user")]
+        [SwaggerOperation($"Lists agent channels for the current user and seleted community")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"channel data", typeof(List<ChannelModel>))]
-        public async Task<IActionResult> GetAgentChannels()
+        public async Task<IActionResult> GetAgentChannels([FromQuery] string nodeId)
         {
-            var channels = _channelService.ListAgentChannels(CurrentUserId, SortKey.CreatedDate, false);
+            var channels = _channelService.ListAgentChannels(CurrentUserId, nodeId, SortKey.CreatedDate, false);
             var channelModels = channels.Select(_mapper.Map<ChannelModel>);
             return Ok(channelModels);
         }
@@ -384,12 +384,12 @@ namespace Jogl.Server.API.Controllers
         [Route("agent")]
         [SwaggerOperation($"Creates a new agent channel using a starter message")]
         [SwaggerResponse((int)HttpStatusCode.OK, $"The id of the new channel", typeof(string))]
-        public async Task<IActionResult> CreateAgentChannel([FromBody] ContentEntityUpsertModel model)
+        public async Task<IActionResult> CreateAgentChannel([FromBody] AgentChannelCreateModel model)
         {
             var channel = new Channel
             {
                 AutoJoin = false,
-                CommunityEntityId = CurrentUserId,
+                CommunityEntityId = model.NodeId,
                 Title = "New conversation",
                 Members = new List<Membership>(),
                 Key = "USER_SEARCH"
@@ -406,8 +406,13 @@ namespace Jogl.Server.API.Controllers
             });
 
             //create content entity
-            var contentEntity = _mapper.Map<ContentEntity>(model);
-            contentEntity.FeedId = channelId;
+            var contentEntity = new ContentEntity
+            {
+                FeedId = channelId,
+                Type = ContentEntityType.Message,
+                Text = model.Text,
+            };
+
             await InitCreationAsync(contentEntity);
             await _contentService.CreateAsync(contentEntity);
 

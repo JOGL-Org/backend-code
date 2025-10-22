@@ -234,7 +234,7 @@ namespace Jogl.Server.AI.Agent
 
         public async Task<string> GetChannelTitleAsync(string message)
         {
-            var response = await _aiService.GetResponseAsync("Summarize the topic of this query or question in a few words", [new InputItem { FromUser = true, Text = message }], 0.5m, 8192);
+            var response = await _aiService.GetResponseAsync("Summarize the topic of this query or question in a few words. MAXIMUM six words.", [new InputItem { FromUser = true, Text = message }], 0.5m, 8192);
             return response;
         }
     }
