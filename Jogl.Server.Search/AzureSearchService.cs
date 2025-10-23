@@ -28,8 +28,8 @@ namespace Jogl.Server.Search
                 "users",
                 new DefaultAzureCredential());
 
-            var searchDocuments = users.Select(u => TransformUserToSearchDocument(u, documents.Where(d => d.FeedId == u.Id.ToString()), papers.Where(p => p.FeedId == u.Id.ToString()), resources.Where(r => r.EntityId == u.Id.ToString()))).ToList();
-            foreach (var batch in searchDocuments.Chunk(100))
+
+            foreach (var batch in users.Select(u => TransformUserToSearchDocument(u, documents.Where(d => d.FeedId == u.Id.ToString()), papers.Where(p => p.FeedId == u.Id.ToString()), resources.Where(r => r.EntityId == u.Id.ToString()))).Chunk(100))
             {
                 await searchClient.UploadDocumentsAsync(batch);
             }
