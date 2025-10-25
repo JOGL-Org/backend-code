@@ -44,7 +44,6 @@ namespace Jogl.Server.Data
         public DateTime? NotificationsReadUTC { get; set; }
         public string Language { get; set; }
         public bool Onboarding { get; set; }
-        public Dictionary<string,string> Contacts { get; set; }
 
         [BsonIgnore]
         public UserConnectionStatus? UserConnectionStatus { get; set; }

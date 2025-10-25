@@ -112,7 +112,6 @@ namespace Jogl.Server.DB
                                         .Set(e => e.Auth, updatedEntity.Auth)
                                         .Set(e => e.NotificationsReadUTC, updatedEntity.NotificationsReadUTC)
                                         .Set(e => e.Language, updatedEntity.Language)
-                                        .Set(e => e.Contacts, updatedEntity.Contacts)
                                         .Set(e => e.Links, updatedEntity.Links)
                                         .Set(e => e.NotificationSettings, updatedEntity.NotificationSettings)
                                         .Set(e => e.UpdatedUTC, updatedEntity.UpdatedUTC)

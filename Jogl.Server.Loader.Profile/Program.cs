@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.Business.Extensions;
 using Jogl.Server.Loader.Profile.DTO;
 using MongoDB.Bson;
-using System.Drawing.Text;
 
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile($"appsettings.json")
@@ -87,11 +86,9 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
                 })?.ToList(),
                 Skills = importUser.Skills ?? new List<string>(),
                 Status = UserStatus.Verified,
-                Contacts = new Dictionary<string, string>()
+                Links = GetLinks(importUser)
             };
 
-            AmendContacts(user.Contacts, importUser);
-            
             var userId = await userService.CreateAsync(user);
             user.Id = ObjectId.Parse(userId);
 
@@ -105,14 +102,12 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
             });
         }
 
-        //else
-        //{
-        //    if (user.Contacts == null)
-        //        user.Contacts = new Dictionary<string, string>();
-
-        //    AmendContacts(user.Contacts, importUser);
-        //    await userService.UpdateAsync(user);
-        //}
+        else
+        {
+            user.Links = GetLinks(importUser);
+            if (user.Links.Any())
+                await userService.UpdateAsync(user);
+        }
 
         ////papers
         //foreach (var importPaper in importUser.Papers)
@@ -241,20 +236,22 @@ foreach (var file in Directory.GetFiles("../../../solana/"))
     }
 }
 
-void AmendContacts(Dictionary<string, string> contacts, UserSolana importUser)
+List<Link> GetLinks(UserSolana importUser)
 {
-    var res = new Dictionary<string, string>();
+    var res = new List<Link>();
 
-    if (!string.IsNullOrEmpty(importUser.SocialLinks?.ColloseumHandle) && contacts.ContainsKey("Colloseum"))
-        contacts.Add("Colloseum", importUser.SocialLinks.ColloseumHandle);
-    if (!string.IsNullOrEmpty(importUser.SocialLinks?.GithubHandle) && contacts.ContainsKey("Github"))
-        contacts.Add("Github", importUser.SocialLinks.GithubHandle);
-    if (!string.IsNullOrEmpty(importUser.SocialLinks?.LinkedinHandle) && contacts.ContainsKey("LinkedIn"))
-        contacts.Add("LinkedIn", importUser.SocialLinks.LinkedinHandle);
-    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TelegramHandle) && contacts.ContainsKey("Telegram"))
-        contacts.Add("Telegram", importUser.SocialLinks.TelegramHandle);
-    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TwitterHandle) && contacts.ContainsKey("Twitter"))
-        contacts.Add("Twitter", importUser.SocialLinks.TwitterHandle);
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.ColloseumHandle))
+        res.Add(new Link { Title = "Colosseum", Type = "Colosseum", URL = $"https://arena.colosseum.org/profiles/{importUser.SocialLinks?.ColloseumHandle}" });
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TwitterHandle))
+        res.Add(new Link { Title = "Twitter", Type = "Twitter", URL = $"https://x.com/{importUser.SocialLinks?.TwitterHandle}" });
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.LinkedinHandle))
+        res.Add(new Link { Title = "LinkedIn", Type = "LinkedIn", URL = $"https://www.linkedin.com/in/{importUser.SocialLinks?.LinkedinHandle}" });
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.GithubHandle))
+        res.Add(new Link { Title = "Github", Type = "Github", URL = $"https://github.com/{importUser.SocialLinks?.GithubHandle}" });
+    if (!string.IsNullOrEmpty(importUser.SocialLinks?.TelegramHandle))
+        res.Add(new Link { Title = "Telegram", Type = "Telegram", URL = $"https://t.me/{importUser.SocialLinks?.TelegramHandle}" });
+
+    return res;
 }
 
 
