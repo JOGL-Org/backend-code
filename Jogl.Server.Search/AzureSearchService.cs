@@ -115,7 +115,6 @@ namespace Jogl.Server.Search
             var options = new SearchOptions
             {
                 QueryType = SearchQueryType.Semantic,
-                Size = 3,
                 SemanticSearch = new SemanticSearchOptions
                 {
                     SemanticConfigurationName = configuration,
@@ -130,12 +129,19 @@ namespace Jogl.Server.Search
 
             try
             {
-
                 //execute search
-                var results = await searchClient.SearchAsync<User>(query, options);
+                var response = await searchClient.SearchAsync<User>(query, options);
 
-                var x = results.Value.GetResultsAsync().ToBlockingEnumerable().ToList();
-                return /*Select(v => v.Document).*/x.ToList();
+                var filteredResults = new List<SearchResult<User>>();
+                await foreach (SearchResult<User> result in response.Value.GetResultsAsync())
+                {
+                    if (result.SemanticSearch.RerankerScore.HasValue && result.SemanticSearch.RerankerScore.Value >= 1.75d)
+                    {
+                        filteredResults.Add(result);
+                    }
+                }
+
+                return filteredResults;
             }
             catch (Exception ex)
             {

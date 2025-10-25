@@ -4,7 +4,6 @@ using Jogl.Server.Business.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.WhatsApp.Extensions;
-using Jogl.Server.Search;
 using Jogl.Server.Search.Extensions;
 using Jogl.Server.DB;
 
@@ -30,7 +29,6 @@ var documentRepository = host.Services.GetService<IDocumentRepository>();
 var paperRepository = host.Services.GetService<IPaperRepository>();
 var resourceRepository = host.Services.GetService<IResourceRepository>();
 var searchService = host.Services.GetService<Jogl.Server.Search.ISearchService>();
-
 
 var users = userRepository.Query().ToList();
 var documents = documentRepository.Query().ToList();

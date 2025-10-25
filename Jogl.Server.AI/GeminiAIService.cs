@@ -125,7 +125,12 @@ namespace Jogl.Server.AI
             var response = await googleModel.GenerateContentAsync(new GenerativeAI.Types.GenerateContentRequest
             {
                 SystemInstruction = new Content { Parts = [new Part(prompt)] },
-                Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList()
+                Contents = inputHistory.Select(i => new Content { Role = i.FromUser ? Roles.User : Roles.Model, Parts = [new Part(i.Text)] }).ToList(),
+                GenerationConfig = new GenerationConfig
+                {
+                    Temperature = (float?)temperature,
+                    MaxOutputTokens = maxTokens,
+                }
             });
 
             if (response.ToString() == null)

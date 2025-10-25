@@ -5,6 +5,7 @@ using Jogl.Server.DB;
 using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
@@ -32,7 +33,7 @@ namespace Jogl.Server.AI.Agent
             _logger = logger;
         }
 
-        public async Task<AgentResponse> GetInitialResponseAsync(string message, string? nodeId = default, string? interfaceType = default)
+        public async Task<AgentResponse> GetInitialResponseAsync(string message, string nodeId, string? interfaceType = default)
         {
             var queryPrompt = _systemValueRepository.Get(sv => sv.Key == "USER_SEARCH_QUERY_PROMPT");
             if (queryPrompt == null)
@@ -84,71 +85,48 @@ namespace Jogl.Server.AI.Agent
             _logger.LogInformation($"Extracted query: {res.ExtractedQuery}");
 
             //get search results
-            var searchResults = new List<SearchResult<User>>();
-            if (string.IsNullOrEmpty(nodeId) || res.ExtractedGlobal)
-            {
-                searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration);
-            }
-            else
-            {
-                var hubUserIds = _relationService.ListUserIdsForNode(nodeId);
-                searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration, hubUserIds);
-            }
+            var hubUserIds = _relationService.ListUserIdsForNode(nodeId);
+            var searchResults = await _searchService.SearchUsersAsync(res.ExtractedQuery, res.ExtractedConfiguration, hubUserIds);
 
-            //load extra paper and resource data
-            var papers = new Dictionary<string, List<Data.Paper>>();
-            foreach (var searchResult in searchResults)
-            {
-                var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false, false);
-                papers.Add(searchResult.Document.Id, userPapers);
-            }
+            ////load extra paper and resource data
+            //var papers = new Dictionary<string, List<Data.Paper>>();
+            //foreach (var searchResult in searchResults)
+            //{
+            //    var userPapers = _paperService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false, false);
+            //    papers.Add(searchResult.Document.Id, userPapers);
+            //}
 
-            var resources = new Dictionary<string, List<Data.Resource>>();
-            foreach (var searchResult in searchResults)
-            {
-                var userResources = _resourceService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false, false);
-                resources.Add(searchResult.Document.Id, userResources);
-            }
+            //var resources = new Dictionary<string, List<Data.Resource>>();
+            //foreach (var searchResult in searchResults)
+            //{
+            //    var userResources = _resourceService.ListForEntity(searchResult.Document.Id, searchResult.Document.Id, null, 1, int.MaxValue, Data.Util.SortKey.CreatedDate, false, false, false);
+            //    resources.Add(searchResult.Document.Id, userResources);
+            //}
 
             //get text responses
             var searchResultData = searchResults.Select(u => new
             {
                 UserURL = $"{_configuration["App:URL"]}/user/{u.Document.Id}",
-                //Source = hubUsers.Contains(u.Document.Id) ? "Internal" : "External",
                 u.Document.Name,
+                u.Document.Bio,
+                u.Document.ShortBio,
+                u.Document.Current,
+                u.Document.Current_Companies,
+                u.Document.Current_Roles,
+                u.Document.Explanation,
                 SearchScore = u.SemanticSearch.RerankerScore,
-                OriginalData = u.Document,
-                Papers = papers[u.Document.Id].Select(p => new
-                {
-                    p.Title,
-                    p.Journal,
-                    p.PublicationDate,
-                    //p.Authors
-                }),
-                Repositories = resources[u.Document.Id].Where(r => r.Type == Data.ResourceType.Repository).Select(r => new
-                {
-                    r.Title,
-                    Abstract = r.Data.Contains("Abstract") && !r.Data["Abstract"].IsBsonNull ? r.Data["Abstract"].AsString : "",
-                    Keywords = r.Data.Contains("Keywords") && !r.Data["Keywords"].IsBsonNull ? r.Data["Keywords"].AsString : "",
-                    Language = r.Data.Contains("Language") && !r.Data["Language"].IsBsonNull ? r.Data["Language"].AsString : "",
-                }),
                 Highlights = u.SemanticSearch.Captions
             }).ToList();
 
-            var startRes = await _aiService.GetResponseAsync(string.Format(resultStartPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
-            messages.Add(new InputItem { FromUser = false, Text = startRes });
+            //var startRes = await _aiService.GetResponseAsync(string.Format(resultStartPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
+            //messages.Add(new InputItem { FromUser = false, Text = startRes });
 
-            var profileRes = new List<string>();
-            foreach (var searchResult in searchResultData)
-            {
-                var profileMatchRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery), [new InputItem { FromUser = true, Text = JsonSerializer.Serialize(searchResult) }], 0.5m, 8192);
-                profileRes.Add(profileMatchRes);
-            }
-
-            messages.AddRange(profileRes.Select(p => new InputItem { FromUser = false, Text = p }));
+            var profilesRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery), [new InputItem { FromUser = true, Text = JsonSerializer.Serialize(searchResultData) }], 0m, 8192);
+            messages.Add(new InputItem { FromUser = false, Text = profilesRes });
+            
             var endRes = await _aiService.GetResponseAsync(string.Format(resultEndPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
 
-            return new AgentResponse { Text = [startRes, .. profileRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
+            return new AgentResponse { Text = [/*startRes,*/ profilesRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
         }
 
         public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)
@@ -235,7 +213,7 @@ namespace Jogl.Server.AI.Agent
         public async Task<string> GetChannelTitleAsync(string message)
         {
             var response = await _aiService.GetResponseAsync("Summarize the topic of this query or question in a few words. MAXIMUM six words.", [new InputItem { FromUser = true, Text = message }], 0.5m, 8192);
-            return response;
+            return response.Trim('.');
         }
     }
 }
