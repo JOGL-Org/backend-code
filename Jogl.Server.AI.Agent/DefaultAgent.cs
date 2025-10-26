@@ -6,6 +6,7 @@ using Jogl.Server.Search.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 
 namespace Jogl.Server.AI.Agent
@@ -106,14 +107,19 @@ namespace Jogl.Server.AI.Agent
             //get text responses
             var searchResultData = searchResults.Select(u => new
             {
-                UserURL = $"{_configuration["App:URL"]}/user/{u.Document.Id}",
+                u.Document.Id,
                 u.Document.Name,
                 u.Document.Bio,
                 u.Document.ShortBio,
                 u.Document.Current,
                 u.Document.Current_Companies,
                 u.Document.Current_Roles,
-                u.Document.Explanation,
+                //u.Document.Repositories_Title,
+                //u.Document.Repositories_Keywords,
+                //u.Document.Repositories_Languages,
+                //u.Document.Projects_Title,
+                u.Document.Links,
+                //u.Document.Explanation,
                 SearchScore = u.SemanticSearch.RerankerScore,
                 Highlights = u.SemanticSearch.Captions
             }).ToList();
@@ -121,12 +127,52 @@ namespace Jogl.Server.AI.Agent
             //var startRes = await _aiService.GetResponseAsync(string.Format(resultStartPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
             //messages.Add(new InputItem { FromUser = false, Text = startRes });
 
-            var profilesRes = await _aiService.GetResponseAsync(string.Format(resultProfilePrompt.Value, res.ExtractedQuery), [new InputItem { FromUser = true, Text = JsonSerializer.Serialize(searchResultData) }], 0m, 8192);
-            messages.Add(new InputItem { FromUser = false, Text = profilesRes });
-            
+            var explanations = await _aiService.GetResponseAsync(new List<UserExplanation> { new UserExplanation { Id = "68d1c356053c99369231d683", Explanation = "Professor of microbiology at Sorbonne" }, new UserExplanation { Id = "68d1c492053c99369231f1c3", Explanation = "Has published extensively about synthetic microbiology" } }, string.Format(resultProfilePrompt.Value, res.ExtractedQuery), [new InputItem { FromUser = true, Text = JsonSerializer.Serialize(searchResultData) }], 0m);
+            var profileRes = BuildSearchResponse(searchResults, explanations);
+            messages.Add(new InputItem { FromUser = false, Text = profileRes });
+
             var endRes = await _aiService.GetResponseAsync(string.Format(resultEndPrompt.Value, res.ExtractedQuery, JsonSerializer.Serialize(searchResultData)), messages, 0.5m, 8192);
 
-            return new AgentResponse { Text = [/*startRes,*/ profilesRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
+            return new AgentResponse { Text = [/*startRes,*/ profileRes, endRes], Context = JsonSerializer.Serialize(searchResultData), OriginalQuery = res.ExtractedQuery };
+        }
+
+        private string BuildSearchResponse(List<SearchResult<User>> users, List<UserExplanation> explanations)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("<ul>");
+            foreach (var user in users)
+            {
+                var explanation = explanations.SingleOrDefault(e => e.Id == user.Document.Id);
+
+                sb.AppendLine("<li>");
+                sb.Append("<a href=\"");
+                sb.Append($"{_configuration["App:URL"]}/user/{user.Document.Id}");
+                sb.Append("\"");
+                foreach (var link in user.Document.Links)
+                {
+                    sb.Append($" data-{link.Type}=");
+                    sb.Append($"\"{link.URL}\"");
+                }
+                sb.Append("><strong>");
+                sb.Append(user.Document.Name);
+                sb.Append("</strong></a>");
+                if (explanation != null)
+                {
+                    sb.Append(": ");
+                    sb.Append(explanation.Explanation);
+                }
+                sb.AppendLine("</li>");
+            }
+
+            sb.AppendLine("</ul>");
+
+            return sb.ToString();
+        }
+
+        private class UserExplanation
+        {
+            public string Id { get; set; }
+            public string Explanation { get; set; }
         }
 
         public async Task<AgentResponse> GetFollowupResponseAsync(IEnumerable<InputItem> messages, string context, string originalQuery, string? interfaceType = default)

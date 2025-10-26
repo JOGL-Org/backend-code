@@ -1,3 +1,4 @@
+using Azure.Search.Documents.Indexes.Models;
 using System.Text.Json.Serialization;
 
 namespace Jogl.Server.Search.Model
@@ -12,6 +13,11 @@ namespace Jogl.Server.Search.Model
         public string Bio { get; set; }
         public string Current { get; set; }
         public string Location { get; set; }
+        public List<Link> Links { get; set; }
+        public List<string> Repositories_Title { get; set; }
+        public List<string> Repositories_Languages { get; set; }
+        public List<string> Repositories_Keywords { get; set; }
+        public List<string> Projects_Title { get; set; }
         public List<string> Current_Roles { get; set; }
         public List<string> Past_Roles { get; set; }
         public List<string> Current_Companies { get; set; }

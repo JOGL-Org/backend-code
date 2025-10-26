@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.WhatsApp.Extensions;
 using Jogl.Server.Search.Extensions;
 using Jogl.Server.DB;
-using ZoomNet.Resources;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()
@@ -31,11 +30,15 @@ var paperRepository = host.Services.GetService<IPaperRepository>();
 var resourceRepository = host.Services.GetService<IResourceRepository>();
 var searchService = host.Services.GetService<Jogl.Server.Search.ISearchService>();
 
-//var users = userRepository.Query().ToList();
-//var documents = documentRepository.Query().ToList();
-//var papers = paperRepository.Query().ToList();
-//var resources = resourceRepository.Query().ToList();
-//await searchService.IndexUsersAsync(users, documents, papers, resources);
+var users = userRepository.Query().ToList();
+Console.WriteLine("users");
+var documents = documentRepository.Query().ToList();
+Console.WriteLine("documents loaded");
+var papers = paperRepository.Query().ToList();
+Console.WriteLine("papers loaded");
+var resources = resourceRepository.Query().ToList();
+Console.WriteLine("resources loaded");
+await searchService.IndexUsersAsync(users, documents, papers, resources);
 
 await host.StopAsync();
 host.Dispose();

@@ -134,5 +134,10 @@ namespace Jogl.Server.AI
         {
             throw new NotImplementedException();
         }
+
+        public Task<T> GetResponseAsync<T>(T sample, string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5M, int maxTokens = 102400)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

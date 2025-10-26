@@ -6,7 +6,6 @@ using Azure.Identity;
 using Jogl.Server.Data;
 using User = Jogl.Server.Search.Model.User;
 using System.Globalization;
-using MongoDB.Bson;
 
 namespace Jogl.Server.Search
 {
@@ -40,6 +39,7 @@ namespace Jogl.Server.Search
             var searchDoc = new SearchDocument();
 
             var repositories = resources?.Where(r => r.Type == ResourceType.Repository)?.ToList();
+            var projects = resources?.Where(r => r.Type == ResourceType.Project)?.ToList();
 
             // Map simple fields
             searchDoc["id"] = user.Id.ToString();
@@ -59,7 +59,7 @@ namespace Jogl.Server.Search
             searchDoc["Study_Programs"] = user.Education != null ? user.Education.Select(e => e.Program).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
             searchDoc["Study_Institutions"] = user.Education != null ? user.Education.Select(e => e.School).Distinct().Where(str => !string.IsNullOrEmpty(str)) : new List<string>();
 
-            searchDoc["Labels"] = GenerateLabels(user, documents, papers, repositories);
+            //searchDoc["Labels"] = GenerateLabels(user, documents, papers, repositories);
 
             searchDoc["Documents_Title"] = documents != null ? documents.Select(e => e.Name).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Documents_Content"] = documents != null ? documents.Select(e => e.Description).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
@@ -68,8 +68,7 @@ namespace Jogl.Server.Search
             searchDoc["Repositories_Languages"] = repositories != null ? repositories.Select(e => e["Language"]).Where(str => !string.IsNullOrEmpty(str)).Distinct().ToList() : new List<string>();
             searchDoc["Repositories_Keywords"] = repositories != null ? repositories.Select(e => e["Keywords"]).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
-            //searchDoc["Projects_Title"] = projects != null ? projects.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
-            //searchDoc["Projects_Languages"] = projects != null ? projects.Select(e => e["Language"]).Where(str => !string.IsNullOrEmpty(str)).Distinct().ToList() : new List<string>();
+            searchDoc["Projects_Title"] = projects != null ? projects.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
             searchDoc["Papers_Title"] = papers != null ? papers.Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract"] = papers != null ? papers.Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
@@ -77,23 +76,25 @@ namespace Jogl.Server.Search
             searchDoc["Papers_Title_Current"] = papers != null ? papers.Where(IsCurrent).Select(e => e.Title).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
             searchDoc["Papers_Abstract_Current"] = papers != null ? papers.Where(IsCurrent).Select(e => e.Summary).Where(str => !string.IsNullOrEmpty(str)).ToList() : new List<string>();
 
+            searchDoc["Links"] = user.Links?.Select(l => new { Type = l.Type, URL = l.URL }).ToList() ?? (object)new List<object>();
+          
             return searchDoc;
         }
 
-        private List<string> GenerateLabels(Data.User user, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> repositories)
-        {
-            var res = new List<string>();
-            if (user.Experience?.Any(e => e.Current == true) == true)
-                res.Add("Student");
+        //private List<string> GenerateLabels(Data.User user, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> repositories)
+        //{
+        //    var res = new List<string>();
+        //    if (user.Experience?.Any(e => e.Current == true) == true)
+        //        res.Add("Student");
 
-            if (repositories?.Any() == true)
-                res.Add("Developer");
+        //    if (repositories?.Any() == true)
+        //        res.Add("Developer");
 
-            if (papers?.Any() == true)
-                res.Add("Researcher");
+        //    if (papers?.Any() == true)
+        //        res.Add("Researcher");
 
-            return res;
-        }
+        //    return res;
+        //}
 
         private bool IsCurrent(Paper p)
         {

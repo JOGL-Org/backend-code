@@ -1,5 +1,4 @@
-﻿using Jogl.Server.AI.DTO;
-using Jogl.Server.Data;
+﻿using Jogl.Server.Data;
 
 namespace Jogl.Server.AI
 {
@@ -11,6 +10,7 @@ namespace Jogl.Server.AI
         Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400);
         Task<string> GetResponseAsync(string prompt, IEnumerable<InputItem> inputHistory, IEnumerable<string> allowedValues, decimal? temperature = 0.5m, int maxTokens = 102400);
         Task<T> GetResponseAsync<T>(string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400);
+        Task<T> GetResponseAsync<T>(T sample, string prompt, IEnumerable<InputItem> inputHistory, decimal? temperature = 0.5m, int maxTokens = 102400);
         Task<decimal> GetBotScoreAsync<T>(T payload) where T : Entity;
     }
 
