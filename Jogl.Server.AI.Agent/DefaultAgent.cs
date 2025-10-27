@@ -149,7 +149,7 @@ namespace Jogl.Server.AI.Agent
                     continue;
                 }
 
-                sb.AppendLine("<li>");
+                sb.AppendLine("<li><div>");
                 sb.Append("<a href=\"");
                 sb.Append($"{_configuration["App:URL"]}/user/{user.Document.Id}");
                 sb.Append("\"");
@@ -162,7 +162,7 @@ namespace Jogl.Server.AI.Agent
                 sb.Append(user.Document.Name);
                 sb.Append("</strong></a>: ");
                 sb.Append(explanation.Explanation);
-                sb.AppendLine("</li>");
+                sb.AppendLine("</div></li>");
             }
 
             sb.AppendLine("</ul>");
