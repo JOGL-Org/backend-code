@@ -140,7 +140,7 @@ namespace Jogl.Server.AI.Agent
         private string BuildSearchResponse(List<SearchResult<User>> users, List<UserExplanation> explanations)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("<ul class=\"search-results\">");
+            sb.AppendLine("<ul>");
             foreach (var user in users)
             {
                 var explanation = explanations.SingleOrDefault(e => e.Id == user.Document.Id);
