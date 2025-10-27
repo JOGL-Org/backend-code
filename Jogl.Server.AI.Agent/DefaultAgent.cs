@@ -107,6 +107,7 @@ namespace Jogl.Server.AI.Agent
             //get text responses
             var searchResultData = searchResults.Select(u => new
             {
+                URL = $"{_configuration["App:URL"]}/user/{u.Document.Id}",
                 u.Document.Id,
                 u.Document.Name,
                 u.Document.Bio,
@@ -143,6 +144,10 @@ namespace Jogl.Server.AI.Agent
             foreach (var user in users)
             {
                 var explanation = explanations.SingleOrDefault(e => e.Id == user.Document.Id);
+                if (explanation == null)
+                {
+                    continue;
+                }
 
                 sb.AppendLine("<li>");
                 sb.Append("<a href=\"");
@@ -155,12 +160,8 @@ namespace Jogl.Server.AI.Agent
                 }
                 sb.Append("><strong>");
                 sb.Append(user.Document.Name);
-                sb.Append("</strong></a>");
-                if (explanation != null)
-                {
-                    sb.Append(": ");
-                    sb.Append(explanation.Explanation);
-                }
+                sb.Append("</strong></a>: ");
+                sb.Append(explanation.Explanation);
                 sb.AppendLine("</li>");
             }
 
