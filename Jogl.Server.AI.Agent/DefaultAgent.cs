@@ -144,7 +144,7 @@ namespace Jogl.Server.AI.Agent
             foreach (var user in users)
             {
                 var explanation = explanations.SingleOrDefault(e => e.Id == user.Document.Id);
-                if (explanation?.Explanation == null)
+                if (string.IsNullOrEmpty(explanation?.Explanation))
                 {
                     continue;
                 }
