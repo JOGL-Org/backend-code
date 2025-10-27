@@ -160,9 +160,9 @@ namespace Jogl.Server.AI.Agent
                 }
                 sb.Append("><strong>");
                 sb.Append(user.Document.Name);
-                sb.Append("</strong></a>: ");
+                sb.Append("</strong></a></div>");
                 sb.Append(explanation.Explanation);
-                sb.AppendLine("</div></li>");
+                sb.AppendLine("</li>");
             }
 
             sb.AppendLine("</ul>");
