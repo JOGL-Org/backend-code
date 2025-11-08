@@ -34,7 +34,7 @@ namespace Jogl.Server.SearchAPI.Controllers
             var userIds = _relationService.ListUserIdsForNode(_contextService.CurrentNodeId);
             var results = await _searchService.SearchUsersAsync(query, userIds: userIds, minScore: 1);
 
-            var resultModels = results.Select(r => new IdResult { Id = r.Document.Id, SearchScore = r.SemanticSearch.RerankerScore ?? 0 }).ToList();
+            var resultModels = results.Select(r => new IdResult { Id = r.Document.Id, Username = r.Document.Name, SearchScore = r.SemanticSearch.RerankerScore ?? 0 }).ToList();
             return Ok(resultModels);
         }
     }
