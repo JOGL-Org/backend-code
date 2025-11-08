@@ -313,18 +313,6 @@ namespace Jogl.Server.API.Controllers
             return Ok(new ListPage<UserMiniModel>(models, entities.Total));
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("search")]
-        [SwaggerOperation("searches users for a given query")]
-        [SwaggerResponse((int)HttpStatusCode.OK, "A list of user models", typeof(ListPage<Search.Model.User>))]
-        public async Task<IActionResult> Search2([FromQuery] string query)
-        {
-            var entities = await _searchService.SearchUsersAsync(query);
-            var models = entities.Select(e => e.Document);
-            return Ok(models);
-        }
-
         [HttpPatch]
         [Route("{id}")]
         [SwaggerOperation($"Patches the specified user.")]

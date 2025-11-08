@@ -52,12 +52,9 @@ builder.Services.AddSwaggerGen(config =>
     config.ParameterFilter<QueryArrayParameterFilter>();
 });
 
-// Program.cs
 builder.Services.AddTransient<TelemetryMiddleware>();
-//api services
 builder.Services.AddTransient<IVerificationService, CaptchaVerificationService>();
 builder.Services.AddTransient<IContextService, ContextService>();
-//auth services
 
 builder.Services.AddBusiness();
 builder.Services.AddRepositories();

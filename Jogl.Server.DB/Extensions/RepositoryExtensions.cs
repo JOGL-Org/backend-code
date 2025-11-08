@@ -53,6 +53,7 @@ namespace Jogl.Server.DB.Extensions
             serviceCollection.AddTransient<IInterfaceUserRepository, InterfaceUserRepository>();
             serviceCollection.AddTransient<IInterfaceMessageRepository, InterfaceMessageRepository>();
             serviceCollection.AddTransient<IUserConnectionRepository, UserConnectionRepository>();
+            serviceCollection.AddTransient<IApiKeyRepository, ApiKeyRepository>();
 
             serviceCollection.AddTransient<IOperationContext, OperationContext>();
         }

@@ -104,7 +104,7 @@ namespace Jogl.Server.Search
             return (DateTime.UtcNow - date) < TimeSpan.FromDays(2 * 365);
         }
 
-        public async Task<List<SearchResult<User>>> SearchUsersAsync(string query, string configuration = "default", IEnumerable<string>? userIds = default)
+        public async Task<List<SearchResult<User>>> SearchUsersAsync(string query, string configuration = "default", IEnumerable<string>? userIds = default, double minScore = 1.75d)
         {
             // Create a search client
             SearchClient searchClient = new SearchClient(
@@ -136,7 +136,7 @@ namespace Jogl.Server.Search
                 var filteredResults = new List<SearchResult<User>>();
                 await foreach (SearchResult<User> result in response.Value.GetResultsAsync())
                 {
-                    if (result.SemanticSearch.RerankerScore.HasValue && result.SemanticSearch.RerankerScore.Value >= 1.75d)
+                    if (result.SemanticSearch.RerankerScore.HasValue && result.SemanticSearch.RerankerScore.Value >= minScore)
                     {
                         filteredResults.Add(result);
                     }

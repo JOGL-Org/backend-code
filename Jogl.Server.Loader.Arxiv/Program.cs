@@ -20,7 +20,7 @@ var serviceClient = new BlobServiceClient(new Uri($"https://jogldatastore.blob.c
 var blobContainer = serviceClient.GetBlobContainerClient("publications");
 await blobContainer.CreateIfNotExistsAsync();
 
-var hashService = new HashService();
+var hashService = new CryptographyService();
 var i = 0;
 foreach (var lineBatch in File.ReadLines("arxiv-metadata-oai-snapshot.json").Batch(10000))
 {

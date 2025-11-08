@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Jogl.Server.Arxiv\Jogl.Server.Arxiv.csproj" />
     <ProjectReference Include="..\Jogl.Server.Auth\Jogl.Server.Auth.csproj" />
     <ProjectReference Include="..\Jogl.Server.Conversation.Data\Jogl.Server.Conversation.Data.csproj" />
+    <ProjectReference Include="..\Jogl.Server.Cryptography\Jogl.Server.Cryptography.csproj" />
     <ProjectReference Include="..\Jogl.Server.Data\Jogl.Server.Data.csproj" />
     <ProjectReference Include="..\Jogl.Server.DB\Jogl.Server.DB.csproj" />
     <ProjectReference Include="..\Jogl.Server.Email\Jogl.Server.Email.csproj" />

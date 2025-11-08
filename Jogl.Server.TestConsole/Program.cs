@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Jogl.Server.WhatsApp.Extensions;
 using Jogl.Server.Search.Extensions;
 using Jogl.Server.DB;
+using Jogl.Server.Auth.Extensions;
+using Jogl.Server.Cryptography.Extensions;
+using Jogl.Server.Cryptography;
 
 // Build a config object, using env vars and JSON providers.
 IConfiguration config = new ConfigurationBuilder()

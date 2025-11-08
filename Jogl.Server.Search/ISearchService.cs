@@ -6,7 +6,7 @@ namespace Jogl.Server.Search
 {
     public interface ISearchService
     {
-        Task<List<SearchResult<User>>> SearchUsersAsync(string query, string configuration = "default", IEnumerable<string>? userIds = default);
+        Task<List<SearchResult<User>>> SearchUsersAsync(string query, string configuration = "default", IEnumerable<string>? userIds = default, double minScore = 1.75d);
         Task IndexUsersAsync(IEnumerable<Data.User> users, IEnumerable<Document> documents, IEnumerable<Paper> papers, IEnumerable<Resource> resources);
     }
 }

@@ -1,10 +1,8 @@
-﻿using Jogl.Server.Data;
+﻿using Jogl.Server.Cryptography;
+using Jogl.Server.Data;
 using Jogl.Server.DB;
 using Jogl.Server.Email;
 using Microsoft.Extensions.Configuration;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 
 namespace Jogl.Server.Verification
 {
@@ -13,13 +11,15 @@ namespace Jogl.Server.Verification
     {
         private readonly IUserVerificationCodeRepository _verificationCodeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICryptographyService _cryptographyService;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public UserVerificationService(IUserVerificationCodeRepository verificationCodeRepository, IUserRepository userRepository, IEmailService emailService, IConfiguration configuration)
+        public UserVerificationService(IUserVerificationCodeRepository verificationCodeRepository, IUserRepository userRepository, ICryptographyService cryptographyService, IEmailService emailService, IConfiguration configuration)
         {
             _verificationCodeRepository = verificationCodeRepository;
             _userRepository = userRepository;
+            _cryptographyService = cryptographyService;
             _emailService = emailService;
             _configuration = configuration;
         }
@@ -31,7 +31,7 @@ namespace Jogl.Server.Verification
             //await _verificationCodeRepository.DeleteAsync(existingVerifications);
 
             //generate code
-            var code = GenerateCode(6, false);
+            var code = _cryptographyService.GenerateCode(6, false);
             await _verificationCodeRepository.CreateAsync(new UserVerificationCode
             {
                 Action = action,
@@ -80,27 +80,6 @@ namespace Jogl.Server.Verification
             return new VerificationResult { Status = VerificationStatus.OK, RedirectURL = existingVerification.RedirectURL };
         }
 
-        private string GenerateCode(int size = 16, bool allowAlpha = true)
-        {
-            var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
-            if (!allowAlpha)
-                chars = "1234567890".ToCharArray();
 
-            byte[] data = new byte[4 * size];
-            using (var crypto = RandomNumberGenerator.Create())
-            {
-                crypto.GetBytes(data);
-            }
-            StringBuilder result = new StringBuilder(size);
-            for (int i = 0; i < size; i++)
-            {
-                var rnd = BitConverter.ToUInt32(data, i * 4);
-                var idx = rnd % chars.Length;
-
-                result.Append(chars[idx]);
-            }
-
-            return result.ToString();
-        }
     }
 }
