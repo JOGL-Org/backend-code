@@ -71,9 +71,8 @@ namespace Jogl.Server.AI.Agent
             var exampleResult = new PromptResult()
             {
                 Explanation = "explanation",
-                ExtractedQuery = "topic or field",
-                ExtractedGlobal = true,
-                ExtractedConfiguration = "default or current",
+                ExtractedQuery = "extracted topic or name",
+                ExtractedConfiguration = "default or name",
                 Success = true
             };
 
